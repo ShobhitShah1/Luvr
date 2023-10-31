@@ -4,26 +4,27 @@ import { CommonSize } from '../../../Common/CommonSize';
 
 const styles = StyleSheet.create({
   Container: {
-    flex: 1,
-    justifyContent: 'center',
+    flex: 1, 
   },
-  ContantView: {
+  SubContainer: {
     width: '90%',
-    top: CommonSize(20),
     alignSelf: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
+    marginTop: CommonSize(40),
   },
   TinderLogoView: {
-    justifyContent: 'center',
-    alignSelf: 'center',
     height: '30%',
+    alignSelf: 'center',
   },
   TinderLogo: {
-    height: CommonSize(40),
+    height: CommonSize(35),
   },
-  LogiBottomView:{
+  LoginBottomView:{
+    width: '90%',
+    alignSelf: 'center',
+    position:'absolute',
+    bottom: CommonSize(35),
     justifyContent:'flex-end',
-    top: CommonSize(55)
   },
   PolicyTextView:{
     alignSelf:'center',
@@ -40,8 +41,8 @@ const styles = StyleSheet.create({
   },
   TroubleView:{
     alignSelf:'center',
+    top: CommonSize(20),
     justifyContent:'center',
-    top: CommonSize(20)
   },
   TroubleText:{
     textAlign:'center',

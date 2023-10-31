@@ -19,10 +19,10 @@ export const FONTS = {
   ExtraBold: 'OpenSans-ExtraBold',
 };
 
-export const ActiveOpacity = 0.8;
+export const ActiveOpacity = 0.8
 
 export default {
   COLORS,
   FONTS,
-  ActiveOpacity,
+  ActiveOpacity
 };
