@@ -1,35 +1,38 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import {COLORS, FONTS} from '../../../Common/Theme';
+import { COLORS, FONTS } from '../../../Common/Theme';
 import styles from './styles';
-import {Image, Text, View} from 'react-native';
+import { Image, Text, View,StatusBar } from 'react-native';
 import CommonLogos from '../../../Common/CommonLogos';
 import LoginButton from '../../../Components/AuthComponents/LoginButton';
-import {MotiView} from 'moti';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {useNavigation} from '@react-navigation/native';
+import { MotiView } from 'moti';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import Animated from 'react-native-reanimated';
 
 export default function LoginScreen() {
   const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+    useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
 
   return (
     <LinearGradient
       colors={COLORS.Gradient}
       style={styles.Container}
-      start={{x: 0, y: 1}}
-      end={{x: 1, y: 0}}>
+      start={{ x: 0, y: 1 }}
+      end={{ x: 1, y: 0 }}>
+      <StatusBar backgroundColor={COLORS.Secondary} barStyle="light-content" />
       <View style={styles.ContantView}>
         <View style={styles.TinderLogoView}>
-          <Image
+          <Animated.Image
+            sharedTransitionTag="Tag"
             resizeMode="contain"
             style={styles.TinderLogo}
             source={CommonLogos.TinderTextLogo}
           />
         </View>
         <MotiView
-          from={{opacity: 0, scale: 0}}
-          animate={{opacity: 1, scale: 1}}
+          from={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{
             type: 'timing',
             duration: 500,

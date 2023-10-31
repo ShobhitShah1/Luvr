@@ -1,15 +1,10 @@
 const ApiConfig = {
-  BASE_URL: 'https://api.deemit.app/api/user/',
-  ADMIN_BASE_URL: 'https://api.deemit.app/api/admin/',
-  IMAGE_BASE_URL: 'https://api.deemit.app/',
+  BASE_URL: 'URL',
 
   //* Auth
-  LOGIN: 'sign-in',
-  SIGNUP: 'sign-up',
-  Verifyotp: 'verify-otp',
-  SendEmailLink: 'send-email-link',
-  ResendOTP: 'resend-otp',
-  VerifyEmailLink: 'verify-link/',
+  Login: 'sign-in',
+  Signup: 'sign-up',
+  VerifyOTP: 'verify-otp',
   SignOut: 'sign-out',
 };
 

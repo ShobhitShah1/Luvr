@@ -13,8 +13,6 @@ interface AuthHeaderProps {
   onPress: () => void;
 }
 const AuthHeader: React.FC<AuthHeaderProps> = ({Logo, Value, onPress}) => {
-    console.log("Logo",Logo);
-    
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   return (
@@ -22,7 +20,11 @@ const AuthHeader: React.FC<AuthHeaderProps> = ({Logo, Value, onPress}) => {
       <TouchableOpacity
         activeOpacity={ActiveOpacity}
         onPress={() => {
-          navigation.goBack();
+          if (onPress() !== undefined) {
+            onPress
+          } else {
+            navigation.goBack();
+          }
         }}
         style={styles.BackIconView}>
         <Image
@@ -52,8 +54,8 @@ export default AuthHeader;
 const styles = StyleSheet.create({
   HeaderView: {
     flexDirection: 'row',
-    // alignSelf:'flex-start',
     justifyContent: 'space-between',
+    height: CommonSize(35),
   },
   BackIconView: {
     justifyContent: 'center',

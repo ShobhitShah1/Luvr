@@ -1,13 +1,15 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useEffect} from 'react';
-import {Animated, View} from 'react-native';
-import CommonLogos from '../../Common/CommonLogos';
-import styles from './styles';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import React, {useEffect} from 'react';
+import {Animated, StatusBar, View} from 'react-native';
+import CommonLogos from '../../Common/CommonLogos';
+import {COLORS} from '../../Common/Theme';
+import styles from './styles';
 
 const SplashScreen: React.FC = () => {
   const LoadingProgress = new Animated.Value(0);
-  const navigation = useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
   useEffect(() => {
     Animated.timing(LoadingProgress, {
@@ -35,6 +37,7 @@ const SplashScreen: React.FC = () => {
 
   return (
     <View style={styles.Container}>
+      <StatusBar backgroundColor={COLORS.Primary} barStyle="light-content" />
       <Animated.Image
         resizeMode="center"
         style={[styles.TinderLogoStyle, ImageScale]}
