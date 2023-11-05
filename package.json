@@ -21,6 +21,8 @@
     "react": "18.2.0",
     "react-native": "0.72.0",
     "react-native-country-picker-modal": "^2.0.0",
+    "react-native-deck-swiper": "^2.0.16",
+    "react-native-device-info": "^10.11.0",
     "react-native-gesture-handler": "^2.13.4",
     "react-native-image-picker": "^7.0.2",
     "react-native-linear-gradient": "^2.8.3",
@@ -31,6 +33,7 @@
     "react-native-reanimated": "^3.5.4",
     "react-native-safe-area-context": "^4.7.4",
     "react-native-screens": "^3.27.0",
+    "react-native-sms-retriever": "^1.1.1",
     "react-native-svg": "^13.14.0"
   },
   "devDependencies": {

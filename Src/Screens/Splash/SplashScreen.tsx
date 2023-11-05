@@ -22,7 +22,7 @@ const SplashScreen: React.FC = () => {
         screen: 'Login',
       });
     });
-  }, []);
+  }, [navigation]);
 
   const ImageScale = {
     transform: [

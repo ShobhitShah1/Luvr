@@ -18,8 +18,8 @@ export default function LoginScreen() {
     <LinearGradient
       colors={COLORS.Gradient}
       style={styles.Container}
-      start={{x: 0, y: 1}}
-      end={{x: 0, y: 1}}>
+      start={{x: 1, y: 0}}
+      end={{x: 1, y: 1}}>
       <StatusBar backgroundColor={COLORS.Black} barStyle="light-content" />
       <View style={styles.SubContainer}>
         <View style={styles.TinderLogoView}>
@@ -42,26 +42,40 @@ export default function LoginScreen() {
         style={styles.LoginBottomView}>
         <View style={styles.PolicyTextView}>
           <Text style={styles.PolicyText}>
-            By tapping Create Account or Sign In, you agree to our Terms. Learn
-            how we process your data in our{' '}
+            By clicking "Log in.", you agree with our{' '}
+            <Text style={styles.PolicyLinkText}>Terms</Text>. Learn how we
+            process your data in our{' '}
             <Text style={styles.PolicyLinkText}>Privacy Policy</Text> and{' '}
             <Text style={styles.PolicyLinkText}>Cookies Policy</Text>.
           </Text>
         </View>
 
         <LoginButton
-          Title="SIGN IN WITH GOOGLE"
+          Title="LOG IN WITH GOOGLE"
+          Icon={CommonLogos.GoogleLogo}
           onPress={() =>
             navigation.navigate('LoginStack', {
-              screen: 'CreateAccount',
+              screen: 'PhoneNumber',
             })
           }
         />
+
         <LoginButton
-          Title="SIGN IN WITH PHONE NUMBER"
+          Title="LOG IN WITH FACEBOOK"
+          Icon={CommonLogos.FacebookLogo}
           onPress={() =>
             navigation.navigate('LoginStack', {
-              screen: 'CreateAccount',
+              screen: 'PhoneNumber',
+            })
+          }
+        />
+
+        <LoginButton
+          Title="LOG IN WITH PHONE NUMBER"
+          Icon={CommonLogos.EmailLoginLogo}
+          onPress={() =>
+            navigation.navigate('LoginStack', {
+              screen: 'PhoneNumber',
             })
           }
         />

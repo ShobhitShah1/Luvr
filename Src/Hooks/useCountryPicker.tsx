@@ -1,42 +1,57 @@
-import { Text, View, ActivityIndicator, StyleSheet, Image } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import {useIsFocused} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, Image, StyleSheet, Text, View} from 'react-native';
 import CountryPicker, {
   Country,
   CountryCode,
   getAllCountries,
 } from 'react-native-country-picker-modal';
 import * as RNLocalize from 'react-native-localize';
-import { ActiveOpacity, COLORS, FONTS } from '../Common/Theme';
-import { CommonSize } from '../Common/CommonSize';
 import CommonIcons from '../Common/CommonIcons';
+import {CommonSize} from '../Common/CommonSize';
+import {COLORS, FONTS} from '../Common/Theme';
 
 const useCountryPicker = () => {
   const [Visible, setVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [countryCode, setCountryCode] = useState<string | null>(null);
-  const [defaultCountryCode, setDefaultCountryCode] = useState<number | null>(
+  const [defaultCountryCode, setDefaultCountryCode] = useState<string | null>(
     null,
   );
 
+  const isFocused = useIsFocused();
+
   useEffect(() => {
     setIsLoading(true);
-    const userCountryCode = RNLocalize.getCountry();
-    setCountryCode(userCountryCode);
-
-    getAllCountries(userCountryCode).then(data => {
-      if (data) {
-        const country = data.find(country => country.cca2 === userCountryCode);
-        if (country) {
-          setDefaultCountryCode(Number(country.callingCode[0]));
-        }
-      }
+    const userCountryCode: string = RNLocalize.getCountry();
+    if (userCountryCode) {
+      setCountryCode(userCountryCode);
+      getAllCountries(countryCode)
+        .then((countries: Country[]) => {
+          const country = countries.find(
+            (c: Country) => c.cca2 === userCountryCode,
+          );
+          console.log('country:', country && country.callingCode);
+          if (country && country.callingCode) {
+            setDefaultCountryCode(country.callingCode[0]);
+            setCountryCode(userCountryCode);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching countries:', error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } else {
       setIsLoading(false);
-    });
-  }, []);
+    }
+  }, [isFocused]);
 
   const handleCountrySelect = (country: Country) => {
     setCountryCode(country.cca2);
-    setDefaultCountryCode(Number(country.callingCode[0]));
+    setDefaultCountryCode(country.callingCode[0]);
+    setVisible(false);
   };
 
   const CountryPickerComponent = () => (
@@ -51,29 +66,30 @@ const useCountryPicker = () => {
       ) : (
         <View style={styles.CountyCodeAndNameContainer}>
           <View style={styles.CountryNameView}>
-            <Text style={{
-              fontSize: CommonSize(15),
-              fontFamily: FONTS.Medium,
-              color: COLORS.Black
-            }}>{countryCode}</Text>
+            <Text
+              style={{
+                fontSize: CommonSize(16),
+                fontFamily: FONTS.Medium,
+                color: COLORS.Black,
+              }}>
+              {countryCode || 'IN'}
+            </Text>
           </View>
-          <View> 
+          <View>
             <CountryPicker
               visible={Visible}
               theme={{
-                fontSize: CommonSize(15),
-                fontFamily: FONTS.Medium,
-                // color: COLORS.Black
+                fontSize: CommonSize(16),
+                fontFamily: FONTS.Regular,
               }}
               onOpen={() => {
-                setVisible(!Visible)
+                setVisible(!Visible);
               }}
               onSelect={handleCountrySelect}
               withFlagButton={false}
               withFilter={true}
               withFlag={true}
               withModal={true}
-              ActiveOpacity={ActiveOpacity}
               withCloseButton={true}
               withCurrency={false}
               withCurrencyButton={false}
@@ -82,17 +98,16 @@ const useCountryPicker = () => {
               withAlphaFilter={true}
               withCallingCode={false}
               withEmoji={true}
-              countryCode={countryCode as CountryCode}
-              //! Bellow Is Wrong Its Passing Number Rather Then String It Should Pass "IN" Not 91 Need To Change
-              preferredCountries={
-                defaultCountryCode ? [defaultCountryCode] : []
-              }
+              countryCode={(countryCode as CountryCode) || 'IN'}
             />
           </View>
           <View style={styles.DownImage}>
-            <Image resizeMode='contain' source={CommonIcons.Down} style={styles.DownIcon} />
+            <Image
+              resizeMode="contain"
+              source={CommonIcons.Down}
+              style={styles.DownIcon}
+            />
           </View>
-
         </View>
       )}
     </View>
@@ -104,6 +119,7 @@ const useCountryPicker = () => {
     Visible,
     setVisible,
     CountryPickerComponent,
+    setDefaultCountryCode,
   };
 };
 
@@ -115,27 +131,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   CountryNameView: {
-    marginRight: CommonSize(5)
+    marginRight: CommonSize(5),
   },
   LoaderView: {
-    justifyContent: 'center',
     alignSelf: 'center',
+    justifyContent: 'center',
   },
   LoadingIndicator: {
-    justifyContent: 'center',
-    alignItems: 'center',
     alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   Text: {
-    fontSize: CommonSize(20)
+    fontSize: CommonSize(20),
   },
   DownImage: {
-    marginLeft: CommonSize(5),
-    justifyContent: 'center',
-    alignSelf: 'center'
+    flex: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    marginRight: CommonSize(5),
   },
   DownIcon: {
-    width: CommonSize(18),
-    height: CommonSize(18)
-  }
+    width: CommonSize(13),
+    height: CommonSize(13),
+  },
 });

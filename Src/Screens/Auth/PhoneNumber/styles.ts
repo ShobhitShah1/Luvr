@@ -8,20 +8,21 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.White,
   },
   SubContainerView: {
-    margin: CommonSize(20),
+    marginHorizontal: CommonSize(20),
+    marginVertical: CommonSize(10),
   },
   NumberContainer: {
     justifyContent: 'center',
 
     marginHorizontal: CommonSize(10),
-    marginVertical: CommonSize(20),
+    marginVertical: CommonSize(10),
   },
   MyNumberTextView: {
     justifyContent: 'center',
   },
   MyNumberText: {
     color: COLORS.Black,
-    fontSize: CommonSize(30),
+    fontSize: CommonSize(20),
     fontFamily: FONTS.Bold,
   },
   PhoneNumberView: {
@@ -29,6 +30,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginHorizontal: CommonSize(10),
+    marginTop: CommonSize(15),
   },
   UserCountyAndCodeView: {
     width: '30%',
@@ -52,7 +54,24 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     color: COLORS.Black,
     fontFamily: FONTS.SemiBold,
-    fontSize: CommonSize(15),
+    fontSize: CommonSize(16),
+  },
+  NumberHelpText: {
+    color: COLORS.Gray,
+    textAlign: 'left',
+    fontFamily: FONTS.Medium,
+    lineHeight: CommonSize(16),
+  },
+  LearnWhatText: {
+    color: COLORS.Blue,
+    textDecorationLine: 'underline',
+    textDecorationStyle: 'solid',
+    textDecorationColor: COLORS.Black,
+    fontFamily: FONTS.Bold,
+  },
+  NumberChangesAlertText: {
+    color: 'rgba(68, 65, 66, 1)',
+    fontFamily: FONTS.Regular,
   },
 });
 

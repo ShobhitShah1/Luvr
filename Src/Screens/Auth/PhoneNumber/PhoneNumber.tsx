@@ -1,19 +1,66 @@
-import {Alert, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import React, {useEffect, useMemo, useState} from 'react';
+import {
+  PermissionsAndroid,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import DeviceInfo from 'react-native-device-info';
+import SmsRetriever from 'react-native-sms-retriever';
 import {CommonSize} from '../../../Common/CommonSize';
-import {ActiveOpacity, COLORS, FONTS} from '../../../Common/Theme';
+import {ActiveOpacity, COLORS} from '../../../Common/Theme';
 import AuthHeader from '../../../Components/AuthComponents/AuthHeader';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import useCountryPicker from '../../../Hooks/useCountryPicker';
 import styles from './styles';
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {useState} from 'react';
 
 export default function PhoneNumber() {
-  const {Visible, setVisible, CountryPickerComponent} = useCountryPicker();
+  const {Visible, setVisible, CountryPickerComponent, setDefaultCountryCode} =
+    useCountryPicker();
+
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const [PhoneNumber, setPhoneNumber] = useState<Number | null>(null);
+  const [StorePhoneNumber, setStorePhoneNumber] = useState<string | null>(null);
+
+  const memoizedCountryPickerComponent = useMemo(
+    () => <CountryPickerComponent />,
+    [Visible],
+  );
+
+  useEffect(() => {
+    GetPhoneNumbers();
+  }, []);
+
+  const GetPhoneNumbers = async () => {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.READ_PHONE_NUMBERS,
+      {
+        title: 'Cool Photo App Camera Permission',
+        message:
+          'Cool Photo App needs access to your camera ' +
+          'so you can take awesome pictures.',
+        buttonNeutral: 'Ask Me Later',
+        buttonNegative: 'Cancel',
+        buttonPositive: 'OK',
+      },
+    );
+
+    const N = await DeviceInfo.getPhoneNumber();
+    console.log('N:', N);
+
+    console.log('granted', granted);
+
+    // try {
+    //   const UserNumber = await SmsRetriever.requestPhoneNumber();
+    //   console.log('UserNumber', UserNumber);
+    // } catch (error) {
+    //   console.log('error:', JSON.stringify(error));
+    // }
+  };
+
   return (
     <View style={styles.Container}>
       <View style={styles.SubContainerView}>
@@ -32,60 +79,46 @@ export default function PhoneNumber() {
               setVisible(!Visible);
             }}
             style={styles.UserCountyAndCodeView}>
-            <CountryPickerComponent />
+            {memoizedCountryPickerComponent}
+            {/* <CountryPickerComponent /> */}
           </TouchableOpacity>
           <View style={styles.UserNumberTextView}>
             <TextInput
+              autoFocus={true}
+              textContentType="telephoneNumber"
               style={styles.UserNumberTextStyle}
-              placeholder="000000000"
-              placeholderTextColor={COLORS.Brown}
+              cursorColor={COLORS.Primary}
+              placeholder="Phone Number"
+              placeholderTextColor={COLORS.Placeholder}
               keyboardType="phone-pad"
-              onChangeText={(value: any) => {
-                setPhoneNumber(value);
+              onChangeText={(value: string) => {
+                setStorePhoneNumber(value);
               }}
             />
           </View>
         </View>
 
         <View
-          style={{marginTop: CommonSize(40), marginHorizontal: CommonSize(10)}}>
-          <Text
-            style={{
-              color: 'rgba(130, 134, 147, 1)',
-              textAlign: 'left',
-              fontFamily: FONTS.Regular,
-            }}>
-            We will send a text with a verification code. Message and data rates
-            may apply.{' '}
-            <Text
-              style={{
-                color: 'rgba(68, 65, 66, 1)',
-                textDecorationLine: 'underline',
-                textDecorationStyle: 'solid',
-                textDecorationColor: COLORS.Black,
-                fontFamily: FONTS.Regular,
-              }}>
-              Learn what
-            </Text>{' '}
-            <Text
-              style={{
-                color: 'rgba(68, 65, 66, 1)',
-                fontFamily: FONTS.Regular,
-              }}>
-              happens when your number changes.
+          style={{marginTop: CommonSize(20), marginHorizontal: CommonSize(10)}}>
+          <Text style={styles.NumberHelpText}>
+            When you tap "Continue", Tinder will send a test with verification
+            code. Message and data rates may apply. The verified phone number
+            can be used to log in.{' '}
+            <Text style={styles.LearnWhatText}>
+              Learn what happens when your number changes.
             </Text>
           </Text>
         </View>
 
-        <View style={{top: CommonSize(70)}}>
+        <View style={{marginVertical: CommonSize(15)}}>
           <GradientButton
             Title={'CONTINUE'}
-            Disabled={false}
+            Disabled={StorePhoneNumber?.length === 0 ? true : false}
             Navigation={() => {
               navigation.navigate('LoginStack', {
                 screen: 'OTP',
                 params: {
-                  number: PhoneNumber,
+                  number: StorePhoneNumber,
                 },
               });
             }}

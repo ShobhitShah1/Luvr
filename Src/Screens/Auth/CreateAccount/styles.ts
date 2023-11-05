@@ -32,12 +32,18 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Medium,
   },
   CreateAccountButton: {
-    width: '80%',
+    width: '90%',
+    backgroundColor: 'red',
     height: CommonSize(45),
     justifyContent: 'center',
     alignSelf: 'center',
-    marginTop: CommonSize(50),
+    top: CommonSize(50),
     borderRadius: CommonSize(50),
+    overflow: 'hidden',
+  },
+  GradientViewStyle: {
+    flex: 1,
+    justifyContent: 'center',
   },
   NewAccountText: {
     textAlign: 'center',

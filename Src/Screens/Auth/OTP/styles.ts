@@ -8,30 +8,37 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.White,
   },
   SubContainerView: {
-    margin: CommonSize(20),
+    marginHorizontal: CommonSize(20),
+    marginVertical: CommonSize(10),
   },
   borderStyleBase: {
     width: 30,
-    height: 45
+    height: 45,
   },
-  CodeAndNumberView:{
+  CodeAndNumberView: {
     marginVertical: CommonSize(5),
     marginHorizontal: CommonSize(20),
   },
-  MyCodeText:{
+  MyCodeText: {
     fontSize: CommonSize(20),
     fontFamily: FONTS.Bold,
     color: COLORS.Black,
   },
-  NumberText:{
+  NumberText: {
     marginVertical: CommonSize(10),
     fontSize: CommonSize(15),
     fontFamily: FONTS.Medium,
     color: COLORS.Silver,
   },
   borderStyleHighLighted: {
-    borderColor: "#03DAC6",
-  }, 
+    borderColor: '#03DAC6',
+  },
+  VerifyOTPButtonView: {
+    width: '90%',
+    alignSelf: 'center',
+    top: CommonSize(30),
+    justifyContent: 'center',
+  },
 });
 
 export default styles;

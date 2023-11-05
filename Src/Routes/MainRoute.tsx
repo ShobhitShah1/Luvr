@@ -1,6 +1,6 @@
+import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React from 'react';
 import SplashScreen from '../Screens/Splash/SplashScreen';
 import LoginScreen from '../Screens/Auth/Login/LoginScreen';
 import CreateAccount from '../Screens/Auth/CreateAccount/CreateAccount';
@@ -11,6 +11,7 @@ import MyBirthDate from '../Screens/Auth/CreateProfile/MyBirthDate';
 import MyInterests from '../Screens/Auth/CreateProfile/MyInterests';
 import MyGender from '../Screens/Auth/CreateProfile/MyGender';
 import MyPhotos from '../Screens/Auth/CreateProfile/MyPhotos';
+import HomeScreen from '../Screens/Home/HomeScreen';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -37,6 +38,17 @@ export default function MainRoute() {
     );
   };
 
+  const HomeStack = () => {
+    return (
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}>
+        <Stack.Screen component={HomeScreen} name="Home" />
+      </Stack.Navigator>
+    );
+  };
+
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -46,6 +58,7 @@ export default function MainRoute() {
         }}>
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="LoginStack" component={LoginStack} />
+        <Stack.Screen name="HomeStack" component={HomeStack} />
       </Stack.Navigator>
     </NavigationContainer>
   );

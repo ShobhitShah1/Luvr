@@ -1,16 +1,16 @@
 import {StyleSheet} from 'react-native';
- import { COLORS, FONTS } from '../../../Common/Theme';
-import { CommonSize } from '../../../Common/CommonSize';
+import {COLORS, FONTS} from '../../../Common/Theme';
+import {CommonSize} from '../../../Common/CommonSize';
 
 const styles = StyleSheet.create({
   Container: {
-    flex: 1, 
+    flex: 1,
   },
   SubContainer: {
     width: '90%',
     alignSelf: 'center',
     justifyContent: 'center',
-    marginTop: CommonSize(40),
+    marginTop: CommonSize(33),
   },
   TinderLogoView: {
     height: '30%',
@@ -19,37 +19,39 @@ const styles = StyleSheet.create({
   TinderLogo: {
     height: CommonSize(35),
   },
-  LoginBottomView:{
+  LoginBottomView: {
     width: '90%',
     alignSelf: 'center',
-    position:'absolute',
+    position: 'absolute',
     bottom: CommonSize(35),
-    justifyContent:'flex-end',
+    justifyContent: 'flex-end',
   },
-  PolicyTextView:{
-    alignSelf:'center',
-    justifyContent:'center',
+  PolicyTextView: {
+    alignSelf: 'center',
+    justifyContent: 'center',
   },
-  PolicyText:{
-    textAlign:'center',
+  PolicyText: {
+    textAlign: 'center',
     color: COLORS.White,
     fontSize: CommonSize(13.3),
-    fontFamily: FONTS.Regular,
+    fontFamily: FONTS.Medium,
+    lineHeight: CommonSize(16)
   },
-  PolicyLinkText:{
-    textDecorationLine: 'underline'
+  PolicyLinkText: {
+    textDecorationLine: 'underline',
   },
-  TroubleView:{
-    alignSelf:'center',
+  TroubleView: {
+    alignSelf: 'center',
     top: CommonSize(20),
-    justifyContent:'center',
+    marginBottom: CommonSize(13),
+    justifyContent: 'center',
   },
-  TroubleText:{
-    textAlign:'center',
+  TroubleText: {
+    textAlign: 'center',
     color: COLORS.White,
-    fontSize: CommonSize(13.5),
-    fontFamily: FONTS.SemiBold,
-  }
+    fontSize: CommonSize(15),
+    fontFamily: FONTS.Bold,
+  },
 });
 
 export default styles;

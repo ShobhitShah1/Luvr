@@ -5,7 +5,7 @@ import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import CommonIcons from '../../Common/CommonIcons';
 import CommonLogos from '../../Common/CommonLogos';
 import {CommonSize} from '../../Common/CommonSize';
-import {ActiveOpacity} from '../../Common/Theme';
+import {ActiveOpacity, COLORS} from '../../Common/Theme';
 
 interface AuthHeaderProps {
   Logo: boolean;
@@ -21,7 +21,7 @@ const AuthHeader: React.FC<AuthHeaderProps> = ({Logo, Value, onPress}) => {
         activeOpacity={ActiveOpacity}
         onPress={() => {
           if (onPress() !== undefined) {
-            onPress
+            onPress;
           } else {
             navigation.goBack();
           }
@@ -30,7 +30,7 @@ const AuthHeader: React.FC<AuthHeaderProps> = ({Logo, Value, onPress}) => {
         <Image
           resizeMode="contain"
           style={styles.BackIcon}
-          source={CommonIcons.Back}
+          source={CommonIcons.TinderBack}
         />
       </TouchableOpacity>
       {Logo && (
@@ -62,8 +62,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   BackIcon: {
-    width: CommonSize(25),
-    height: CommonSize(25),
+    width: CommonSize(18),
+    height: CommonSize(18),
+    tintColor: COLORS.Brown,
   },
   LogoView: {
     justifyContent: 'center',
