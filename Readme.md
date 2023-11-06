@@ -1,6 +1,6 @@
 # Tinder Clone - Modern Love in the Digital Age ❤️
 
-![Tinder Clone Logo](./Assets/Logos/TinderColorLogo.png)
+![Tinder Clone Logo](./Assets/Logos/TinderTextLogo.png)
 
 Welcome to the world of modern love where we've reimagined the iconic Tinder experience in your very own React Native Tinder Clone! 💑
 
