@@ -8,11 +8,17 @@ import {CommonSize} from '../../Common/CommonSize';
 import {ActiveOpacity, COLORS} from '../../Common/Theme';
 
 interface AuthHeaderProps {
-  Logo: boolean;
+  Icon?: string;
+  Logo?: boolean;
   Value?: number;
   onPress: () => void;
 }
-const AuthHeader: React.FC<AuthHeaderProps> = ({Logo, Value, onPress}) => {
+const AuthHeader: React.FC<AuthHeaderProps> = ({
+  Icon,
+  Logo,
+  Value,
+  onPress,
+}) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   return (
@@ -30,7 +36,7 @@ const AuthHeader: React.FC<AuthHeaderProps> = ({Logo, Value, onPress}) => {
         <Image
           resizeMode="contain"
           style={styles.BackIcon}
-          source={CommonIcons.TinderBack}
+          source={Icon ? Icon : CommonIcons.TinderBack}
         />
       </TouchableOpacity>
       {Logo && (

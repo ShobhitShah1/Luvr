@@ -1,6 +1,6 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {useState} from 'react';
+import React, {FC, useState} from 'react';
 import {Text, View} from 'react-native';
 import AuthHeader from '../../../Components/AuthComponents/AuthHeader';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
@@ -11,7 +11,7 @@ interface RouteParams {
   number: string;
 }
 
-export default function OTPScreen() {
+const OTPScreen: FC = () => {
   const route = useRoute();
   const {number} = route.params as RouteParams;
   const [OTPCode, setOTPCode] = useState<String | null>(null);
@@ -26,6 +26,7 @@ export default function OTPScreen() {
     } else {
       setDisableButton(true);
     }
+    console.log(OTPCode);
   };
 
   return (
@@ -57,4 +58,6 @@ export default function OTPScreen() {
       </View>
     </View>
   );
-}
+};
+
+export default OTPScreen;

@@ -1,14 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import {StyleSheet, Text, View} from 'react-native';
+import React, {FC} from 'react';
 
-const MyBirthDate = () => {
+const MyBirthDate: FC = () => {
   return (
     <View>
       <Text>MyBirthDate</Text>
     </View>
-  )
-}
+  );
+};
 
-export default MyBirthDate
+export default MyBirthDate;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

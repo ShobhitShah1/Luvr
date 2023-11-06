@@ -1,3 +1,5 @@
+import {CommonSize} from './CommonSize';
+
 export const COLORS = {
   Primary: 'rgba(244, 68, 135, 1)',
   Secondary: 'rgba(238, 128, 95, 1)',
@@ -30,10 +32,88 @@ export const FONTS = {
   ExtraBold: 'OpenSans-ExtraBold',
 };
 
+export const SIZES = {
+  base: CommonSize(8),
+  font: CommonSize(14),
+  radius: CommonSize(12),
+  subRadius: CommonSize(20),
+  padding: CommonSize(24),
+
+  // font sizes
+  h1: 30,
+  h2: 22,
+  h3: 16,
+  h4: 14,
+  body1: 30,
+  body2: 22,
+  body3: 16,
+  body4: 14,
+  body5: 12,
+};
+
+export const GROUP_FONT = {
+  h1: {
+    fontFamily: 'OpenSans-Bold',
+    fontSize: SIZES.h1,
+    lineHeight: 36,
+    color: COLORS.Black,
+  },
+  h2: {
+    fontFamily: 'OpenSans-Bold',
+    fontSize: SIZES.h2,
+    lineHeight: 30,
+    color: COLORS.Black,
+  },
+  h3: {
+    fontFamily: 'OpenSans-Bold',
+    fontSize: SIZES.h3,
+    lineHeight: 22,
+    color: COLORS.Black,
+  },
+  h4: {
+    fontFamily: 'OpenSans-Bold',
+    fontSize: SIZES.h4,
+    lineHeight: 22,
+    color: COLORS.Black,
+  },
+  body1: {
+    fontFamily: 'OpenSans-Regular',
+    fontSize: SIZES.body1,
+    lineHeight: 36,
+    color: COLORS.Black,
+  },
+  body2: {
+    fontFamily: 'OpenSans-Regular',
+    fontSize: SIZES.body2,
+    lineHeight: 30,
+    color: COLORS.Black,
+  },
+  body3: {
+    fontFamily: 'OpenSans-Regular',
+    fontSize: SIZES.body3,
+    lineHeight: 22,
+    color: COLORS.Black,
+  },
+  body4: {
+    fontFamily: 'OpenSans-Regular',
+    fontSize: SIZES.body4,
+    lineHeight: 22,
+    color: COLORS.Black,
+  },
+  body5: {
+    fontFamily: 'OpenSans-Regular',
+    fontSize: SIZES.body5,
+    lineHeight: 22,
+    color: COLORS.Black,
+  },
+};
+
 export const ActiveOpacity = 0.8;
 
 export default {
   COLORS,
   FONTS,
   ActiveOpacity,
+  SIZES,
+  GROUP_FONT,
 };

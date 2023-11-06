@@ -55,7 +55,7 @@ export default function LoginScreen() {
           Icon={CommonLogos.GoogleLogo}
           onPress={() =>
             navigation.navigate('LoginStack', {
-              screen: 'PhoneNumber',
+              screen: 'Welcome',
             })
           }
         />
@@ -65,7 +65,7 @@ export default function LoginScreen() {
           Icon={CommonLogos.FacebookLogo}
           onPress={() =>
             navigation.navigate('LoginStack', {
-              screen: 'PhoneNumber',
+              screen: 'Welcome',
             })
           }
         />
@@ -75,7 +75,7 @@ export default function LoginScreen() {
           Icon={CommonLogos.EmailLoginLogo}
           onPress={() =>
             navigation.navigate('LoginStack', {
-              screen: 'PhoneNumber',
+              screen: 'Welcome',
             })
           }
         />
