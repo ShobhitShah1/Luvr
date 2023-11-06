@@ -2,6 +2,10 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {CommonSize} from '../../Common/CommonSize';
 import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 interface LoginButtonProps {
   Title: string;
@@ -30,7 +34,8 @@ export default LoginButton;
 const styles = StyleSheet.create({
   LoginButtonContainer: {
     width: '100%',
-    height: CommonSize(45),
+    height: hp('6%'),
+    // height: CommonSize(45),
     borderColor: COLORS.White,
     marginTop: CommonSize(15),
     borderWidth: CommonSize(2),
@@ -59,6 +64,7 @@ const styles = StyleSheet.create({
     color: COLORS.Black,
     fontFamily: FONTS.Bold,
     justifyContent: 'center',
-    fontSize: CommonSize(14.5),
+    fontSize: hp('2.2%'),
+    // fontSize: CommonSize(14.5),
   },
 });

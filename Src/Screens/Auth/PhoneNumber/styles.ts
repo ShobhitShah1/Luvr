@@ -1,36 +1,39 @@
 import {StyleSheet} from 'react-native';
 import {CommonSize} from '../../../Common/CommonSize';
 import {COLORS, FONTS} from '../../../Common/Theme';
-
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
     backgroundColor: COLORS.White,
   },
   SubContainerView: {
-    marginHorizontal: CommonSize(20),
-    marginVertical: CommonSize(10),
+    marginHorizontal: hp('2.7%'),
+    marginVertical: hp('1.5%'),
   },
   NumberContainer: {
     justifyContent: 'center',
 
-    marginHorizontal: CommonSize(10),
-    marginVertical: CommonSize(10),
+    marginHorizontal: hp('1.5%'),
+    marginVertical: hp('1.5%'),
   },
   MyNumberTextView: {
     justifyContent: 'center',
   },
   MyNumberText: {
     color: COLORS.Black,
-    fontSize: CommonSize(20),
+    fontSize: hp('2.7%'),
     fontFamily: FONTS.Bold,
   },
   PhoneNumberView: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginHorizontal: CommonSize(10),
-    marginTop: CommonSize(15),
+    marginHorizontal: hp('1.5%'),
+    marginTop: hp('1.9%'),
   },
   UserCountyAndCodeView: {
     width: '30%',
@@ -54,13 +57,13 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     color: COLORS.Black,
     fontFamily: FONTS.SemiBold,
-    fontSize: CommonSize(16),
+    fontSize: hp('2.2%'),
   },
   NumberHelpText: {
     color: COLORS.Gray,
     textAlign: 'left',
     fontFamily: FONTS.Medium,
-    lineHeight: CommonSize(16),
+    lineHeight: hp('2.2%'),
   },
   LearnWhatText: {
     color: COLORS.Blue,

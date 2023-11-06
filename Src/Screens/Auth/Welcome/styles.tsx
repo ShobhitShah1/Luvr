@@ -1,23 +1,27 @@
 import {StyleSheet} from 'react-native';
 import {CommonSize} from '../../../Common/CommonSize';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   SubContainerView: {
-    marginHorizontal: CommonSize(20),
-    marginVertical: CommonSize(10),
+    marginHorizontal: hp('2.7%'),
+    marginVertical: hp('1.5%'),
   },
   ContentView: {},
   AppLogoView: {
-    marginTop: CommonSize(20),
+    marginTop: hp('2.7%'),
     justifyContent: 'center',
   },
   AppLogo: {
-    width: CommonSize(30),
-    height: CommonSize(30),
+    width: hp('4.1%'),
+    height: hp('4.1%'),
   },
   WelcomeTitleView: {
     marginVertical: CommonSize(15),

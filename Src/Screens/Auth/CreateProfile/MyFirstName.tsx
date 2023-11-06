@@ -6,6 +6,10 @@ import {CommonSize} from '../../../Common/CommonSize';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CreateProfileHeader from './CreateProfileHeader';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const MyFirstName: FC = () => {
   let ProgressCount: number = 0.1;
@@ -20,10 +24,12 @@ const MyFirstName: FC = () => {
       <View style={styles.ContentView}>
         <Text style={styles.TitleText}>What's your first name</Text>
         <TextInput
+          autoFocus
           value={FirstName}
           onChangeText={value => {
             setFirstName(value);
           }}
+          textContentType='givenName'
           placeholder="Enter first name"
           style={styles.TextInputStyle}
           placeholderTextColor={COLORS.Placeholder}
@@ -59,30 +65,31 @@ const styles = StyleSheet.create({
     width: '90%',
     alignSelf: 'center',
     position: 'absolute',
-    bottom: CommonSize(10),
+    bottom: hp('1.5%'),
     justifyContent: 'center',
   },
   ContentView: {
-    marginVertical: CommonSize(10),
-    marginHorizontal: CommonSize(15),
+    marginVertical: hp('1.5%'),
+    marginHorizontal: hp('1.9%'),
   },
   TitleText: {
     ...GROUP_FONT.h2,
   },
   TextInputStyle: {
-    padding: 0,
+    paddingVertical: hp('0.1%'),
     color: COLORS.Black,
+    fontSize: hp('1.7%'),
     borderBottomWidth: 1,
     borderColor: COLORS.Black,
-    marginVertical: CommonSize(10),
+    marginVertical: hp('1.5%'),
   },
   InfoText: {
     fontFamily: FONTS.Medium,
     color: COLORS.Black,
-    fontSize: CommonSize(12.5),
+    fontSize: hp('1.6%'),
   },
   CantChangeText: {
     ...GROUP_FONT.h4,
-    fontSize: CommonSize(12.5),
+    fontSize: hp('1.6%'),
   },
 });

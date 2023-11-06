@@ -6,6 +6,10 @@ import CommonIcons from '../../Common/CommonIcons';
 import CommonLogos from '../../Common/CommonLogos';
 import {CommonSize} from '../../Common/CommonSize';
 import {ActiveOpacity, COLORS} from '../../Common/Theme';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 interface AuthHeaderProps {
   Icon?: string;
@@ -61,15 +65,15 @@ const styles = StyleSheet.create({
   HeaderView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    height: CommonSize(35),
+    height: hp('4.6%'),
   },
   BackIconView: {
     justifyContent: 'center',
     alignSelf: 'center',
   },
   BackIcon: {
-    width: CommonSize(18),
-    height: CommonSize(18),
+    width: hp('2.4%'),
+    height: hp('2.4%'),
     tintColor: COLORS.Brown,
   },
   LogoView: {
@@ -78,7 +82,7 @@ const styles = StyleSheet.create({
     marginRight: CommonSize(25),
   },
   Logo: {
-    width: CommonSize(35),
-    height: CommonSize(35),
+    width: hp('4.6%'),
+    height: hp('4.6%'),
   },
 });

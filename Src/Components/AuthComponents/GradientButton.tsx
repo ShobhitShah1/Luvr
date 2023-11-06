@@ -3,6 +3,10 @@ import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {CommonSize} from '../../Common/CommonSize';
 import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 interface ButtonProps {
   Title: string;
@@ -41,19 +45,9 @@ const styles = StyleSheet.create({
     width: '100%',
     overflow: 'hidden',
     alignSelf: 'center',
-    height: CommonSize(40),
+    height: hp('5.5%'),
     justifyContent: 'center',
     borderRadius: CommonSize(50),
-
-    // shadowColor: COLORS.Black,
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 5,
-    // },
-    // shadowOpacity: 0.34,
-    // shadowRadius: 6.27,
-
-    // elevation: 10,
   },
   GradientViewStyle: {
     flex: 1,
@@ -62,11 +56,9 @@ const styles = StyleSheet.create({
   NewAccountText: {
     textAlign: 'center',
     color: COLORS.White,
-    fontSize: CommonSize(14),
+    fontSize: hp("1.8%"),
+    // fontSize: CommonSize(14),
     fontFamily: FONTS.Bold,
   },
-  TouchButtonStyle: {
-    // flex: 1,
-    // justifyContent: 'center',
-  },
+  TouchButtonStyle: {},
 });

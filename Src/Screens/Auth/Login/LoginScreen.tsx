@@ -75,7 +75,7 @@ export default function LoginScreen() {
           Icon={CommonLogos.EmailLoginLogo}
           onPress={() =>
             navigation.navigate('LoginStack', {
-              screen: 'Welcome',
+              screen: 'PhoneNumber',
             })
           }
         />

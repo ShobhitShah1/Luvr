@@ -1,18 +1,17 @@
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import React, {FC} from 'react';
 import {
   Dimensions,
   Image,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {FC} from 'react';
 import * as Progress from 'react-native-progress';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
 import {COLORS, FONTS} from '../../../Common/Theme';
-import {CommonSize} from '../../../Common/CommonSize';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {useNavigation} from '@react-navigation/native';
 
 const {width} = Dimensions.get('window');
 
@@ -50,17 +49,17 @@ export default CreateProfileHeader;
 
 const styles = StyleSheet.create({
   CancelButtonAndTitleText: {
-    margin: CommonSize(10),
+    margin: hp('1.5%'),
   },
   CancelButton: {
-    width: CommonSize(20),
-    height: CommonSize(20),
+    width: hp('2.7%'),
+    height: hp('2.7%'),
   },
   TitleContainer: {
-    marginTop: CommonSize(20),
+    marginTop: hp('2.7%'),
   },
   TitleText: {
-    fontSize: CommonSize(20),
+    fontSize: hp('2.7%'),
     color: COLORS.Black,
     fontFamily: FONTS.Bold,
   },
@@ -72,6 +71,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     position: 'absolute',
-    bottom: CommonSize(10),
+    bottom: hp('1.5%'),
   },
 });

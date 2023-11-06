@@ -1,6 +1,10 @@
 import {StyleSheet} from 'react-native';
 import {COLORS, FONTS} from '../../../Common/Theme';
 import {CommonSize} from '../../../Common/CommonSize';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const styles = StyleSheet.create({
   Container: {
@@ -10,14 +14,16 @@ const styles = StyleSheet.create({
     width: '90%',
     alignSelf: 'center',
     justifyContent: 'center',
-    marginTop: CommonSize(33),
+    // marginTop: CommonSize(33),
+    marginTop: hp('4.5%'),
   },
   TinderLogoView: {
     height: '30%',
     alignSelf: 'center',
   },
   TinderLogo: {
-    height: CommonSize(35),
+    height: hp('4.9%'),
+    // height: CommonSize(35),
   },
   LoginBottomView: {
     width: '90%',
@@ -33,9 +39,11 @@ const styles = StyleSheet.create({
   PolicyText: {
     textAlign: 'center',
     color: COLORS.White,
-    fontSize: CommonSize(13.3),
+    fontSize: hp('1.9%'),
+    // fontSize: CommonSize(13.3),
     fontFamily: FONTS.Medium,
-    lineHeight: CommonSize(16)
+    lineHeight: hp('2.8%'),
+    // lineHeight: CommonSize(16),
   },
   PolicyLinkText: {
     textDecorationLine: 'underline',
@@ -49,7 +57,8 @@ const styles = StyleSheet.create({
   TroubleText: {
     textAlign: 'center',
     color: COLORS.White,
-    fontSize: CommonSize(15),
+    fontSize: hp('2%'),
+    // fontSize: CommonSize(15),
     fontFamily: FONTS.Bold,
   },
 });

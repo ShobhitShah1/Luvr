@@ -10,6 +10,10 @@ import * as RNLocalize from 'react-native-localize';
 import CommonIcons from '../Common/CommonIcons';
 import {CommonSize} from '../Common/CommonSize';
 import {COLORS, FONTS} from '../Common/Theme';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const useCountryPicker = () => {
   const [Visible, setVisible] = useState(false);
@@ -68,7 +72,7 @@ const useCountryPicker = () => {
           <View style={styles.CountryNameView}>
             <Text
               style={{
-                fontSize: CommonSize(16),
+                fontSize: hp('2.1%'),
                 fontFamily: FONTS.Medium,
                 color: COLORS.Black,
               }}>
@@ -79,7 +83,7 @@ const useCountryPicker = () => {
             <CountryPicker
               visible={Visible}
               theme={{
-                fontSize: CommonSize(16),
+                fontSize: hp('2.1%'),
                 fontFamily: FONTS.Regular,
               }}
               onOpen={() => {
@@ -131,7 +135,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   CountryNameView: {
-    marginRight: CommonSize(5),
+    marginRight: hp('0.5%'),
   },
   LoaderView: {
     alignSelf: 'center',
@@ -143,16 +147,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   Text: {
-    fontSize: CommonSize(20),
+    fontSize: hp('2.7%'),
   },
   DownImage: {
     flex: 1,
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
-    marginRight: CommonSize(5),
+    marginRight: hp('0.5%'),
   },
   DownIcon: {
-    width: CommonSize(13),
-    height: CommonSize(13),
+    width: hp('1.7%'),
+    height: hp('1.7%'),
   },
 });

@@ -44,17 +44,18 @@ const OtpInput: React.FC<OtpInputProps> = ({onTextChange, clearText}) => {
       inputCount={6}
       autoFocus={true}
       textInputStyle={{
+        width: ,
         borderBottomWidth: 1,
         borderBottomColor: 'yellow',
       }}
       handleTextChange={text => {
-        console.log('Handle Change Test Call:', text);
         onTextChange(text);
       }}
       tintColor={COLORS.Primary}
       offTintColor={COLORS.Black}
       containerStyle={{
-        width: '90%',
+        width: '100%',
+        backgroundColor: 'red',
         justifyContent: 'center',
         alignSelf: 'center',
       }}

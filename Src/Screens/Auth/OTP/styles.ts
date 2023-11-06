@@ -1,6 +1,10 @@
 import {StyleSheet} from 'react-native';
 import {CommonSize} from '../../../Common/CommonSize';
 import {COLORS, FONTS} from '../../../Common/Theme';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const styles = StyleSheet.create({
   Container: {
@@ -8,8 +12,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.White,
   },
   SubContainerView: {
-    marginHorizontal: CommonSize(20),
-    marginVertical: CommonSize(10),
+    marginHorizontal: hp('2.7%'),
+    marginVertical: hp('1.5%'),
   },
   borderStyleBase: {
     width: 30,
@@ -17,16 +21,16 @@ const styles = StyleSheet.create({
   },
   CodeAndNumberView: {
     marginVertical: CommonSize(5),
-    marginHorizontal: CommonSize(20),
+    marginHorizontal: hp('2.7%'),
   },
   MyCodeText: {
-    fontSize: CommonSize(20),
+    fontSize: hp('2.7%'),
     fontFamily: FONTS.Bold,
     color: COLORS.Black,
   },
   NumberText: {
-    marginVertical: CommonSize(10),
-    fontSize: CommonSize(15),
+    marginVertical: hp('1.5%'),
+    fontSize: hp('1.9%'),
     fontFamily: FONTS.Medium,
     color: COLORS.Silver,
   },
@@ -36,7 +40,7 @@ const styles = StyleSheet.create({
   VerifyOTPButtonView: {
     width: '90%',
     alignSelf: 'center',
-    top: CommonSize(30),
+    top: hp('4.1%'),
     justifyContent: 'center',
   },
 });

@@ -1,4 +1,8 @@
 import {CommonSize} from './CommonSize';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 export const COLORS = {
   Primary: 'rgba(244, 68, 135, 1)',
@@ -34,20 +38,20 @@ export const FONTS = {
 
 export const SIZES = {
   base: CommonSize(8),
-  font: CommonSize(14),
+  font: hp('1.8%'),
   radius: CommonSize(12),
   subRadius: CommonSize(20),
   padding: CommonSize(24),
 
   // font sizes
-  h1: 30,
-  h2: 22,
-  h3: 16,
-  h4: 14,
-  body1: 30,
-  body2: 22,
+  h1: hp('3.5%'),
+  h2: hp('2.5%'),
+  h3: hp('1.8%'),
+  h4: hp('1.6%'),
+  body1: hp('3.5%'),
+  body2: hp('2.5%'),
   body3: 16,
-  body4: 14,
+  body4: hp('1.6%'),
   body5: 12,
 };
 
@@ -61,19 +65,21 @@ export const GROUP_FONT = {
   h2: {
     fontFamily: 'OpenSans-Bold',
     fontSize: SIZES.h2,
-    lineHeight: 30,
+    lineHeight: hp('3.5%'),
     color: COLORS.Black,
   },
   h3: {
     fontFamily: 'OpenSans-Bold',
     fontSize: SIZES.h3,
-    lineHeight: 22,
+    lineHeight: hp('2.5%'),
+
     color: COLORS.Black,
   },
   h4: {
     fontFamily: 'OpenSans-Bold',
     fontSize: SIZES.h4,
-    lineHeight: 22,
+    lineHeight: hp('2.5%'),
+
     color: COLORS.Black,
   },
   body1: {
@@ -85,25 +91,25 @@ export const GROUP_FONT = {
   body2: {
     fontFamily: 'OpenSans-Regular',
     fontSize: SIZES.body2,
-    lineHeight: 30,
+    lineHeight: hp('3.5%'),
     color: COLORS.Black,
   },
   body3: {
     fontFamily: 'OpenSans-Regular',
     fontSize: SIZES.body3,
-    lineHeight: 22,
+    lineHeight: hp('2.5%'),
     color: COLORS.Black,
   },
   body4: {
     fontFamily: 'OpenSans-Regular',
     fontSize: SIZES.body4,
-    lineHeight: 22,
+    lineHeight: hp('2.5%'),
     color: COLORS.Black,
   },
   body5: {
     fontFamily: 'OpenSans-Regular',
     fontSize: SIZES.body5,
-    lineHeight: 22,
+    lineHeight: hp('2.5%'),
     color: COLORS.Black,
   },
 };
