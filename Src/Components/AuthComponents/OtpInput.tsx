@@ -30,8 +30,6 @@ const OtpInput: React.FC<OtpInputProps> = ({onTextChange, clearText}) => {
       console.log('message', message);
       // Extract the OTP using regex, e.g., the below regex extracts a 4-digit OTP from the message.
       // const otp = /(\d{4})/g.exec(message)[1];
-      // console.log('otp:', otp);
-
       // otpInput.current.setValue(otp);
     });
 
@@ -44,7 +42,6 @@ const OtpInput: React.FC<OtpInputProps> = ({onTextChange, clearText}) => {
       inputCount={6}
       autoFocus={true}
       textInputStyle={{
-        width: ,
         borderBottomWidth: 1,
         borderBottomColor: 'yellow',
       }}

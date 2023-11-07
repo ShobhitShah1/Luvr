@@ -21,6 +21,8 @@ export default function MainRoute() {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
+          animation: 'none',
+          statusBarAnimation: 'fade',
         }}>
         <Stack.Screen component={LoginScreen} name="Login" />
         <Stack.Screen component={WelcomeScreen} name="Welcome" />
