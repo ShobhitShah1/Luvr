@@ -9,6 +9,7 @@ import {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.White
   },
   SubContainerView: {
     marginHorizontal: hp('2.7%'),

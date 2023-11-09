@@ -43,7 +43,7 @@ const OtpInput: React.FC<OtpInputProps> = ({onTextChange, clearText}) => {
       autoFocus={true}
       textInputStyle={{
         borderBottomWidth: 1,
-        borderBottomColor: 'yellow',
+        // borderBottomColor: 'yellow',
       }}
       handleTextChange={text => {
         onTextChange(text);
@@ -52,7 +52,7 @@ const OtpInput: React.FC<OtpInputProps> = ({onTextChange, clearText}) => {
       offTintColor={COLORS.Black}
       containerStyle={{
         width: '100%',
-        backgroundColor: 'red',
+        // backgroundColor: 'red',
         justifyContent: 'center',
         alignSelf: 'center',
       }}

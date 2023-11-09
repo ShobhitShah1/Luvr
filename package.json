@@ -15,6 +15,7 @@
     "@react-navigation/native-stack": "^6.9.16",
     "@testing-library/react-native": "^12.3.2",
     "@types/jest": "^29.5.7",
+    "@types/react-native-vector-icons": "^6.4.17",
     "axios": "^1.6.0",
     "moti": "^0.26.1",
     "native-base": "^3.4.28",
@@ -36,7 +37,8 @@
     "react-native-safe-area-context": "^4.7.4",
     "react-native-screens": "^3.27.0",
     "react-native-sms-retriever": "^1.1.1",
-    "react-native-svg": "^13.14.0"
+    "react-native-svg": "^13.14.0",
+    "react-native-vector-icons": "^10.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

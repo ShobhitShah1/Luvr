@@ -1,7 +1,14 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -22,16 +29,21 @@ const MyFirstName: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
+  const OnLetsGoButtonPress = async () => {
+    setWelcomeModal(false);
+    Keyboard.dismiss();
+    setTimeout(() => {
+      navigation.navigate('LoginStack', {
+        screen: 'MyBirthDate',
+      });
+    }, 500);
+  };
+
   function LetsGoButton() {
     return (
       <TouchableOpacity
         activeOpacity={0.9}
-        onPress={() => {
-          navigation.navigate('LoginStack', {
-            screen: 'MyBirthDate',
-          });
-          setWelcomeModal(false);
-        }}
+        onPress={OnLetsGoButtonPress}
         style={styles.CreateAccountButton}>
         <LinearGradient
           colors={COLORS.ButtonGradient}
@@ -48,7 +60,7 @@ const MyFirstName: FC = () => {
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={ProgressCount} />
+      <CreateProfileHeader ProgressCount={ProgressCount} Skip={false} />
 
       <View style={CreateProfileStyles.ContentView}>
         <Text style={CreateProfileStyles.TitleText}>
@@ -136,7 +148,7 @@ const styles = StyleSheet.create({
     width: wp('80%'),
     alignSelf: 'center',
     justifyContent: 'center',
-    paddingVertical: hp('3.5%'),
+    paddingVertical: hp('4%'),
     borderRadius: SIZES.radius,
     backgroundColor: COLORS.White,
   },
@@ -145,7 +157,7 @@ const styles = StyleSheet.create({
   },
   WelcomeUserText: {
     ...GROUP_FONT.h2,
-    marginVertical: hp('1%'),
+    marginBottom: hp('1%'),
   },
   DescriptionText: {
     ...GROUP_FONT.h3,
@@ -176,9 +188,9 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Bold,
   },
   EditNameText: {
-    marginTop: hp('1%'),
+    marginBottom: hp('1.5%'),
     fontFamily: FONTS.Bold,
-    color: COLORS.Black,
+    color: COLORS.Gray,
     fontSize: hp('2.2%'),
   },
 });

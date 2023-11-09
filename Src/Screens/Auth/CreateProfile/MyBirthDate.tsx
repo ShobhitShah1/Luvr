@@ -47,7 +47,7 @@ const MyBirthDate: FC = () => {
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={ProgressCount} />
+      <CreateProfileHeader ProgressCount={ProgressCount} Skip={false} />
 
       <View style={CreateProfileStyles.ContentView}>
         <Text style={CreateProfileStyles.TitleText}>Your b-day?</Text>
@@ -71,7 +71,7 @@ const MyBirthDate: FC = () => {
           Disabled={false}
           Navigation={() => {
             navigation.navigate('LoginStack', {
-              screen: 'MyBirthDate',
+              screen: 'SexualOrientationScreen',
             });
           }}
         />

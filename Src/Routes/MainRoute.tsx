@@ -12,6 +12,8 @@ import WelcomeScreen from '../Screens/Auth/Welcome/WelcomeScreen';
 import HomeScreen from '../Screens/Home/HomeScreen';
 import SplashScreen from '../Screens/Splash/SplashScreen';
 import CreateProfile from '../Screens/Auth/CreateProfile';
+import SexualOrientation from '../Screens/Auth/CreateProfile/SexualOrientation';
+import ImLookingFor from '../Screens/Auth/CreateProfile/ImLookingFor';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -34,6 +36,11 @@ export default function MainRoute() {
         <Stack.Screen component={CreateProfile} name="CreateProfile" />
         <Stack.Screen component={MyFirstName} name="MyFirstName" />
         <Stack.Screen component={MyBirthDate} name="MyBirthDate" />
+        <Stack.Screen
+          component={SexualOrientation}
+          name="SexualOrientationScreen"
+        />
+        <Stack.Screen component={ImLookingFor} name="ImLookingFor" />
       </Stack.Navigator>
     );
   };

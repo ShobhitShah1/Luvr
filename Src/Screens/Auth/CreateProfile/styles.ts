@@ -9,6 +9,7 @@ import {
 const CreateProfileStyles = StyleSheet.create({
   Container: {
     flex: 1,
+    backgroundColor: COLORS.White
   },
   BottomButton: {
     width: '90%',
