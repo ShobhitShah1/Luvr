@@ -9,7 +9,6 @@ import {
   View,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
-import SmsRetriever from 'react-native-sms-retriever';
 import {CommonSize} from '../../../Common/CommonSize';
 import {ActiveOpacity, COLORS} from '../../../Common/Theme';
 import AuthHeader from '../../../Components/AuthComponents/AuthHeader';

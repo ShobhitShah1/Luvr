@@ -1,5 +1,5 @@
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {FC} from 'react';
+import React, {FC, useCallback, useState} from 'react';
 import CreateProfileStyles from './styles';
 import CreateProfileHeader from './CreateProfileHeader';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
@@ -13,9 +13,44 @@ const ImLookingFor: FC = () => {
   let ProgressCount: number = 0.4;
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const renderItem = ({item, index}: {item: any; index: number}) => (
-    <TouchableOpacity style={styles.GenderButtonView}></TouchableOpacity>
+
+  const [SelectedLookingForIndex, setSelectedLookingForIndex] = useState<
+    number[]
+  >([]);
+
+  const onPressLookingFor = useCallback(
+    (index: number) => {
+      if (SelectedLookingForIndex.includes(index)) {
+        setSelectedLookingForIndex(prev => prev.filter(i => i !== index));
+      } else if (SelectedLookingForIndex.length < 3) {
+        //Select How Many You want "Change 3 To Any"
+        setSelectedLookingForIndex(prev => [...prev, index]);
+      }
+    },
+    [SelectedLookingForIndex],
   );
+
+  const isGenderSelected = (index: number) =>
+    SelectedLookingForIndex.includes(index);
+
+  const renderItem = ({item, index}: {item: any; index: number}) => (
+    <TouchableOpacity
+      onPress={() => onPressLookingFor(index)}
+      style={
+        isGenderSelected(index)
+          ? styles.SelectedLookingForListView
+          : styles.LookingForListView
+      }
+      key={index}>
+      <View style={styles.TextView}>
+        <Text style={styles.EmojiText}>{item.Emoji}</Text>
+        <Text numberOfLines={2} style={styles.LookingForText}>
+          {item.Title}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={CreateProfileStyles.Container}>
       <CreateProfileHeader ProgressCount={ProgressCount} Skip={false} />
@@ -28,18 +63,20 @@ const ImLookingFor: FC = () => {
       </View>
 
       <FlatList
+        numColumns={3}
         data={LookingFor}
-        keyExtractor={item => item.id.toString()}
         renderItem={renderItem}
+        contentContainerStyle={styles.FlatListContainer}
+        keyExtractor={item => item.id.toString()}
       />
 
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
           Title={'Next'}
-          Disabled={false}
+          Disabled={SelectedLookingForIndex.length !== 0 ? false : true}
           Navigation={() => {
             navigation.navigate('LoginStack', {
-              screen: 'SexualOrientationScreen',
+              screen: 'DistancePreference',
             });
           }}
         />
@@ -55,5 +92,53 @@ const styles = StyleSheet.create({
     ...GROUP_FONT.h3,
     marginVertical: hp('1%'),
     fontFamily: FONTS.Regular,
+  },
+  FlatListContainer: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  SelectedLookingForListView: {
+    width: '31%',
+    left: hp('0.5%'),
+    alignContent: 'center',
+    marginHorizontal: hp('0.4%'),
+    justifyContent: 'center',
+    alignSelf: 'center',
+    height: hp('15%'),
+    borderRadius: hp('1%'),
+    marginVertical: hp('0.5%'),
+    overflow: 'hidden',
+    borderWidth: hp('0.2%'),
+    borderColor: COLORS.Primary,
+  },
+  LookingForListView: {
+    width: '31%',
+    left: hp('0.5%'),
+    alignContent: 'center',
+    marginHorizontal: hp('0.4%'),
+    justifyContent: 'center',
+    alignSelf: 'center',
+    height: hp('15%'),
+    borderRadius: hp('1%'),
+    backgroundColor: 'rgba(97,106,118,0.1)',
+    marginVertical: hp('0.5%'),
+    overflow: 'hidden',
+  },
+  TextView: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    width: '85%',
+  },
+  EmojiText: {
+    ...GROUP_FONT.h1,
+    textAlign: 'center',
+    marginVertical: hp('0.5%'),
+  },
+  LookingForText: {
+    marginVertical: hp('0.2%'),
+    ...GROUP_FONT.body3,
+    fontSize: hp('1.6%'),
+    color: COLORS.Black,
+    textAlign: 'center',
   },
 });

@@ -1,9 +1,9 @@
-import React, {useRef, useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import OTPTextInput from 'react-native-otp-textinput';
-import OTPTextView, {
+import {
   getHash,
-  startOtpListener,
   removeListener,
+  startOtpListener,
   useOtpVerify,
 } from 'react-native-otp-verify';
 import {COLORS} from '../../Common/Theme';
@@ -43,7 +43,6 @@ const OtpInput: React.FC<OtpInputProps> = ({onTextChange, clearText}) => {
       autoFocus={true}
       textInputStyle={{
         borderBottomWidth: 1,
-        // borderBottomColor: 'yellow',
       }}
       handleTextChange={text => {
         onTextChange(text);
@@ -52,7 +51,6 @@ const OtpInput: React.FC<OtpInputProps> = ({onTextChange, clearText}) => {
       offTintColor={COLORS.Black}
       containerStyle={{
         width: '100%',
-        // backgroundColor: 'red',
         justifyContent: 'center',
         alignSelf: 'center',
       }}

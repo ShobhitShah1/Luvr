@@ -48,6 +48,7 @@ const SexualOrientation: FC = () => {
 
   const renderItem = ({item, index}: {item: any; index: number}) => (
     <TouchableOpacity
+      key={index}
       onPress={() => onPressGenders(index)}
       style={styles.GenderButtonView}>
       <View style={styles.GenderFlexView}>

@@ -2,9 +2,12 @@
     "cSpell.words": [
         "birthdate",
         "Birthdate",
+        "closecircle",
         "moti",
         "Moti",
         "swiper",
         "Swiper"
-    ]
+    ],
+    "vsintellicode.features.python.deepLearning": "enabled",
+    "vsintellicode.modelDownloadPath": ""
 }
