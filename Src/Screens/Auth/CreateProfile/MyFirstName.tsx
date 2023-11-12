@@ -30,13 +30,13 @@ const MyFirstName: FC = () => {
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
   const OnLetsGoButtonPress = async () => {
-    setWelcomeModal(false);
     Keyboard.dismiss();
+    setWelcomeModal(false);
     setTimeout(() => {
       navigation.navigate('LoginStack', {
         screen: 'MyBirthDate',
       });
-    }, 500);
+    }, 200);
   };
 
   function LetsGoButton() {
@@ -86,7 +86,8 @@ const MyFirstName: FC = () => {
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
           Title={'Next'}
-          Disabled={FirstName.length === 0 ? true : false}
+          // Disabled={FirstName.length === 0 ? true : false}
+          Disabled={false}
           Navigation={() => setWelcomeModal(true)}
         />
       </View>

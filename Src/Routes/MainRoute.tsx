@@ -16,6 +16,10 @@ import SexualOrientation from '../Screens/Auth/CreateProfile/SexualOrientation';
 import ImLookingFor from '../Screens/Auth/CreateProfile/ImLookingFor';
 import DistancePreference from '../Screens/Auth/CreateProfile/DistancePreference';
 import YourStudy from '../Screens/Auth/CreateProfile/YourStudy';
+import AddLifestyle from '../Screens/Auth/CreateProfile/AddLifestyle';
+import WhatElseExtra from '../Screens/Auth/CreateProfile/WhatElseExtra';
+import YourIntro from '../Screens/Auth/CreateProfile/YourIntro';
+import AddRecentPics from '../Screens/Auth/CreateProfile/AddRecentPics';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -48,6 +52,10 @@ export default function MainRoute() {
           name="DistancePreference"
         />
         <Stack.Screen component={YourStudy} name="YourStudy" />
+        <Stack.Screen component={AddLifestyle} name="AddLifestyle" />
+        <Stack.Screen component={WhatElseExtra} name="WhatElseExtra" />
+        <Stack.Screen component={YourIntro} name="YourIntro" />
+        <Stack.Screen component={AddRecentPics} name="AddRecentPics" />
       </Stack.Navigator>
     );
   };

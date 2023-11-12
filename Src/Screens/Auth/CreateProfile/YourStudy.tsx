@@ -12,7 +12,7 @@ import {
   SIZES,
 } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import CustomTextInput from '../../../Components/CustomTextInput';
+import SearchSchoolModal from '../../../Components/Modals/SearchSchoolModal';
 import CreateProfileHeader from './CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
@@ -21,21 +21,44 @@ const YourStudy: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
-  const [SchoolNameText, setSchoolNameText] = useState<string>('second');
+  const [SchoolNameText, setSchoolNameText] = useState<string>('');
+  const [SearchSchoolModalVisible, setSearchSchoolModalVisible] =
+    useState<boolean>(false);
+
+  const openModal = () => {
+    setSearchSchoolModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setSearchSchoolModalVisible(false);
+  };
+
+  const handleSchoolSelect = (school: string) => {
+    setSchoolNameText(school);
+    closeModal();
+  };
 
   return (
     <View style={CreateProfileStyles.Container}>
       <CreateProfileHeader ProgressCount={ProgressCount} Skip={true} />
-
       <View style={CreateProfileStyles.ContentView}>
         <Text style={CreateProfileStyles.TitleText}>
           If studying is your thing...?
         </Text>
       </View>
-
       <View style={styles.TextInputContainerView}>
         <View style={styles.TextInputTextView}>
-          <CustomTextInput
+          <TouchableOpacity
+            onPress={openModal}
+            activeOpacity={1}
+            style={styles.SchoolInputStyle}>
+            <Text style={styles.SchoolInputText}>
+              {SchoolNameText.length !== 0
+                ? SchoolNameText
+                : 'Enter school name, past or current'}
+            </Text>
+          </TouchableOpacity>
+          {/* <CustomTextInput
             editable={false}
             value={SchoolNameText}
             style={styles.TextInputStyle}
@@ -44,7 +67,7 @@ const YourStudy: FC = () => {
             }}
             placeholderTextColor={COLORS.Placeholder}
             placeholder="Enter school name, past or current"
-          />
+          /> */}
           <TouchableOpacity
             style={styles.CloseButtonView}
             activeOpacity={ActiveOpacity}>
@@ -61,13 +84,19 @@ const YourStudy: FC = () => {
         </Text>
       </View>
 
+      <SearchSchoolModal
+        visible={SearchSchoolModalVisible}
+        onClose={closeModal}
+        onSelect={handleSchoolSelect}
+      />
+
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
           Title={'Next'}
           Disabled={false}
           Navigation={() => {
             navigation.navigate('LoginStack', {
-              screen: '',
+              screen: 'AddLifestyle',
             });
           }}
         />
@@ -91,10 +120,20 @@ const styles = StyleSheet.create({
     fontSize: SIZES.body4,
     fontFamily: FONTS.Regular,
   },
+  SchoolInputStyle: {
+    width: '90%',
+    marginVertical: hp('0.5%'),
+  },
+  SchoolInputText: {
+    color: COLORS.Black,
+    fontSize: SIZES.body4,
+    fontFamily: FONTS.Regular,
+  },
   CloseButtonView: {
     width: '10%',
     alignSelf: 'center',
     justifyContent: 'center',
+    marginVertical: hp('0.5%'),
   },
   IconView: {
     alignSelf: 'flex-end',

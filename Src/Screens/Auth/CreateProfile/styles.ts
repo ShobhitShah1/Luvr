@@ -12,10 +12,12 @@ const CreateProfileStyles = StyleSheet.create({
     backgroundColor: COLORS.White
   },
   BottomButton: {
+    backgroundColor: COLORS.White,
     width: '90%',
     alignSelf: 'center',
     position: 'absolute',
     bottom: hp('1.5%'),
+    overflow: 'hidden',
     justifyContent: 'center',
   },
   ContentView: {

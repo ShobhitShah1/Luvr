@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   NewAccountText: {
     textAlign: 'center',
     color: COLORS.White,
-    fontSize: hp("1.8%"),
+    fontSize: hp('1.8%'),
     // fontSize: CommonSize(14),
     fontFamily: FONTS.Bold,
   },
