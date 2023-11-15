@@ -1,8 +1,8 @@
-import React, {useState, useRef, useEffect} from 'react';
-import {View, TouchableOpacity, StyleSheet, Animated} from 'react-native';
+import React, {useEffect, useRef} from 'react';
+import {Animated, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {COLORS} from '../Common/Theme';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 interface CustomCheckBoxProps {
   isChecked: boolean;
@@ -31,7 +31,9 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
     <TouchableOpacity onPress={onToggle}>
       <View style={[styles.checkbox, isChecked && styles.checked]}>
         <Animated.View style={[styles.checkboxIcon, animatedStyle]}>
-          {isChecked && <Icon name="check" size={13} color={COLORS.White} />}
+          {isChecked && (
+            <Icon name="check" size={hp('1.5%')} color={COLORS.White} />
+          )}
         </Animated.View>
       </View>
     </TouchableOpacity>

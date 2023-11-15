@@ -18,7 +18,7 @@ import GendersData from '../../../Components/Data/genders';
 import CreateProfileHeader from './CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
-const {width, height} = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 const SexualOrientation: FC = () => {
   let ProgressCount: number = 0.3;
@@ -86,7 +86,7 @@ const SexualOrientation: FC = () => {
         <View style={styles.BorderBottomWidth} />
       </View>
 
-      <View style={{height: '67%'}}>
+      <View style={{height: '65%'}}>
         <FlatList
           data={GendersData}
           keyExtractor={item => item.id.toString()}
@@ -95,26 +95,28 @@ const SexualOrientation: FC = () => {
         />
       </View>
 
-      <View style={[CreateProfileStyles.BottomButton, {zIndex: 1}]}>
-        <View style={styles.BorderBottomWidth} />
-        <View style={styles.CheckBoxView}>
-          <CustomCheckBox
-            isChecked={ShowOnProfile}
-            onToggle={toggleCheckMark}
+      <View style={[CreateProfileStyles.BottomButton, styles.BottomContainer]}>
+        <View style={styles.BottomView}>
+          <View style={styles.BorderBottomWidth} />
+          <View style={styles.CheckBoxView}>
+            <CustomCheckBox
+              isChecked={ShowOnProfile}
+              onToggle={toggleCheckMark}
+            />
+            <Text style={styles.CheckboxText}>
+              Show my orientation on my profile
+            </Text>
+          </View>
+          <GradientButton
+            Title={'Next'}
+            Disabled={false}
+            Navigation={() => {
+              navigation.navigate('LoginStack', {
+                screen: 'ImLookingFor',
+              });
+            }}
           />
-          <Text style={styles.CheckboxText}>
-            Show my orientation on my profile
-          </Text>
         </View>
-        <GradientButton
-          Title={'Next'}
-          Disabled={false}
-          Navigation={() => {
-            navigation.navigate('LoginStack', {
-              screen: 'ImLookingFor',
-            });
-          }}
-        />
       </View>
     </View>
   );
@@ -127,6 +129,18 @@ const styles = StyleSheet.create({
     ...GROUP_FONT.h3,
     marginVertical: hp('1%'),
     fontFamily: FONTS.Regular,
+  },
+  BottomContainer: {
+    zIndex: 1,
+    width: '100%',
+    overflow: 'hidden',
+    borderStartColor: COLORS.White,
+  },
+  BottomView: {
+    width: '90%',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    marginHorizontal: hp('1.9%'),
   },
   BorderBottomWidth: {
     width: '110%',
