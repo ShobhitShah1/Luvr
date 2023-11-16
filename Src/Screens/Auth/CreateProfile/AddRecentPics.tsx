@@ -131,6 +131,7 @@ const AddRecentPics: FC = () => {
         }}
         style={styles.DraggableStyle}
         renderItem={picture => (
+          
           <View style={{}}>
             <AddUserPhoto
               onDelete={() => {
