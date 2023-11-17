@@ -37,16 +37,6 @@ const ManageContacts: FC = () => {
         });
 
         Contacts.checkPermission();
-
-        // console.log('Permission: ', res);
-        // Contacts.getAll()
-        //   .then(contacts => {
-        //     // work with contacts
-        //     console.log(contacts);
-        //   })
-        //   .catch(e => {
-        //     console.log(e);
-        //   });
       })
       .catch(error => {
         console.error('Permission error: ', error);

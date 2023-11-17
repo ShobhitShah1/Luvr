@@ -3,30 +3,31 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 
-// ========================== AUTH SCREENS ==========================
 import SplashScreen from '../Screens/Splash/SplashScreen';
+
+// ========================== AUTH SCREENS ==========================
 import {
+  AddLifestyle,
+  AddRecentPics,
   CreateAccount,
+  CreateProfile,
+  DistancePreference,
+  ImLookingFor,
+  LocationPermission,
+  LoginScreen,
+  ManageContacts,
   MyBirthDate,
   MyFirstName,
-  LoginScreen,
+  MyGender,
   OTPScreen,
   PhoneNumber,
-  WelcomeScreen,
-  CreateProfile,
   SexualOrientation,
-  ImLookingFor,
-  DistancePreference,
-  YourStudy,
-  AddLifestyle,
+  WelcomeScreen,
   WhatElseExtra,
   YourIntro,
-  AddRecentPics,
-  MyGender,
-  LocationPermission,
-  ManageContacts,
+  YourStudy,
+  AllGendersSearch,
 } from '../Screens/Auth';
-import AllGendersSearch from '../Screens/Auth/CreateProfile/AllGendersSearch';
 
 // ========================== HOME SCREENS ==========================
 import HomeScreen from '../Screens/Home/HomeScreen';

@@ -15,5 +15,6 @@ export {default as WhatElseExtra} from './CreateProfile/WhatElseExtra';
 export {default as YourIntro} from './CreateProfile/YourIntro';
 export {default as AddRecentPics} from './CreateProfile/AddRecentPics';
 export {default as MyGender} from './CreateProfile/MyGender';
+export {default as AllGendersSearch} from './CreateProfile/AllGendersSearch';
 export {default as LocationPermission} from './CreateProfile/LocationPermission';
 export {default as ManageContacts} from './CreateProfile/ManageContacts';

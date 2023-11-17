@@ -53,31 +53,31 @@ const LoginScreen: FC = () => {
         <LoginButton
           Title="LOG IN WITH GOOGLE"
           Icon={CommonLogos.GoogleLogo}
-          onPress={() =>
+          onPress={() => {
             navigation.navigate('LoginStack', {
               screen: 'Welcome',
-            })
-          }
+            });
+          }}
         />
 
         <LoginButton
           Title="LOG IN WITH FACEBOOK"
           Icon={CommonLogos.FacebookLogo}
-          onPress={() =>
+          onPress={() => {
             navigation.navigate('LoginStack', {
               screen: 'Welcome',
-            })
-          }
+            });
+          }}
         />
 
         <LoginButton
           Title="LOG IN WITH PHONE NUMBER"
           Icon={CommonLogos.EmailLoginLogo}
-          onPress={() =>
+          onPress={() => {
             navigation.navigate('LoginStack', {
               screen: 'PhoneNumber',
-            })
-          }
+            });
+          }}
         />
 
         <View style={styles.TroubleView}>
