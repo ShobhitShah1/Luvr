@@ -13,16 +13,8 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import LifestyleData from '../../../Components/Data/LifestyleData';
-import CreateProfileHeader from './CreateProfileHeader';
+import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-
-const ITEM_HEIGHT: number = 70;
-
-interface HabitItemProps {
-  habit: {id: number; habit: string; options: string[]};
-  selectedOption?: string;
-  onPress: (habitId: number, option: string) => void;
-}
 
 const AddLifestyle: FC = () => {
   let ProgressCount: number = 0.7;
@@ -40,42 +32,6 @@ const AddLifestyle: FC = () => {
   //   }
   //   return result;
   // };
-
-  const HabitItem: FC<HabitItemProps> = React.memo(
-    ({habit, selectedOption, onPress}) => {
-      return (
-        <React.Fragment>
-          <View key={habit.id} style={styles.habitContainer}>
-            <Text style={styles.habitTitle}>{habit.habit}</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{flexDirection: 'row', maxWidth: '100%'}}>
-              {habit.options.map((option, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.optionButton,
-                    selectedOption === option && styles.selectedOption,
-                  ]}
-                  onPress={() => onPress(habit.id, option)}>
-                  <Text
-                    style={[
-                      styles.CategoriesText,
-                      selectedOption === option &&
-                        styles.SelectedCategoriesText,
-                    ]}>
-                    {option}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
-          <View style={styles.BottomLine} />
-        </React.Fragment>
-      );
-    },
-  );
 
   const handleOptionPress = useCallback((habitId: number, option: string) => {
     setSelectedItems(prevSelection => ({
@@ -98,13 +54,40 @@ const AddLifestyle: FC = () => {
     item,
   }: {
     item: {id: number; habit: string; options: string[]};
-  }) => (
-    <HabitItem
-      habit={item}
-      selectedOption={selectedItems[item.id.toString()]}
-      onPress={handleOptionPress}
-    />
-  );
+  }) => {
+    const selectedOption = selectedItems[item.id.toString()];
+    return (
+      <React.Fragment>
+        <View key={item?.id} style={styles.habitContainer}>
+          <Text style={styles.habitTitle}>{item?.habit}</Text>
+          <ScrollView
+            horizontal
+            removeClippedSubviews={true}
+            showsHorizontalScrollIndicator={false}
+            style={styles.OptionScrollViewContainer}>
+            {item?.options.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.optionButton,
+                  selectedOption === option && styles.selectedOption,
+                ]}
+                onPress={() => handleOptionPress(item.id, option)}>
+                <Text
+                  style={[
+                    styles.CategoriesText,
+                    selectedOption === option && styles.SelectedCategoriesText,
+                  ]}>
+                  {option}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+        <View style={styles.BottomLine} />
+      </React.Fragment>
+    );
+  };
 
   return (
     <View style={CreateProfileStyles.Container}>
@@ -124,6 +107,7 @@ const AddLifestyle: FC = () => {
           renderItem={renderItem}
           style={{height: '100%'}}
           initialNumToRender={20}
+          // numColumns={5}
           nestedScrollEnabled={false}
           keyExtractor={item => item.id.toString()}
           removeClippedSubviews={true}
@@ -236,8 +220,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: hp('1.5%'),
     borderTopColor: COLORS.Placeholder,
+    backgroundColor: COLORS.White,
+    overflow: 'hidden',
     borderTopWidth: hp('0.07%'),
     paddingTop: hp('1.5%'),
+  },
+  OptionScrollViewContainer: {
+    flexDirection: 'row',
+    maxWidth: '100%',
+    display: 'flex',
   },
 });
 

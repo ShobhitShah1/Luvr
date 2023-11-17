@@ -3,10 +3,12 @@ import OTPTextInput from 'react-native-otp-textinput';
 import {
   getHash,
   removeListener,
+  requestHint,
   startOtpListener,
   useOtpVerify,
 } from 'react-native-otp-verify';
 import {COLORS} from '../../Common/Theme';
+import {StyleSheet} from 'react-native';
 
 interface OtpInputProps {
   onTextChange: (text: string) => void;
@@ -16,24 +18,24 @@ interface OtpInputProps {
 const OtpInput: React.FC<OtpInputProps> = ({onTextChange, clearText}) => {
   let otpInputREF = useRef(null);
 
-  const {message} = useOtpVerify({numberOfDigits: 6});
+  const [hashFromMethod, setHashFromMethod] = React.useState<string[]>();
+  const [otpFromMethod, setOtpFromMethod] = React.useState<string>();
+  const [hint, setHint] = React.useState<string>();
 
   useEffect(() => {
-    getHash()
-      .then(hash => {
-        console.log('hash', hash);
-        // Use this hash in the message.
-      })
-      .catch(console.log);
+    console.log('hint', hint);
+    console.log('hashFromMethod', hashFromMethod);
+    console.log('otpFromMethod', otpFromMethod);
+  }, [hashFromMethod, otpFromMethod, hint]);
 
-    startOtpListener(message => {
-      console.log('message', message);
-      // Extract the OTP using regex, e.g., the below regex extracts a 4-digit OTP from the message.
-      // const otp = /(\d{4})/g.exec(message)[1];
-      // otpInput.current.setValue(otp);
-    });
+  // using hook - you can use the startListener and stopListener to manually trigger listeners again.
+  const {hash, otp, timeoutError, stopListener, startListener} = useOtpVerify();
 
-    return () => removeListener();
+  // using methods
+  React.useEffect(() => {
+    getHash().then(setHashFromMethod).catch(console.log);
+    requestHint().then(setHint).catch(console.log);
+    startOtpListener(setOtpFromMethod);
   }, []);
 
   return (
@@ -41,21 +43,26 @@ const OtpInput: React.FC<OtpInputProps> = ({onTextChange, clearText}) => {
       ref={otpInputREF}
       inputCount={6}
       autoFocus={true}
-      textInputStyle={{
-        borderBottomWidth: 1,
-      }}
+      textInputStyle={styles.TextInputStyle}
       handleTextChange={text => {
         onTextChange(text);
       }}
       tintColor={COLORS.Primary}
       offTintColor={COLORS.Black}
-      containerStyle={{
-        width: '100%',
-        justifyContent: 'center',
-        alignSelf: 'center',
-      }}
+      containerStyle={styles.ContainContainer}
     />
   );
 };
 
 export default OtpInput;
+
+const styles = StyleSheet.create({
+  ContainContainer: {
+    width: '100%',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  TextInputStyle: {
+    borderBottomWidth: 1,
+  },
+});

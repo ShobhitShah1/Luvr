@@ -16,11 +16,11 @@ import {
 import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
-import CreateProfileHeader from './CreateProfileHeader';
 import CreateProfileStyles from './styles';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import {CommonSize} from '../../../Common/CommonSize';
+import CreateProfileHeader from './Components/CreateProfileHeader';
 
 const MyFirstName: FC = () => {
   let ProgressCount: number = 0.1;
@@ -159,6 +159,8 @@ const styles = StyleSheet.create({
   WelcomeUserText: {
     ...GROUP_FONT.h2,
     marginBottom: hp('1%'),
+    width: '75%',
+    textAlign: 'center',
   },
   DescriptionText: {
     ...GROUP_FONT.h3,

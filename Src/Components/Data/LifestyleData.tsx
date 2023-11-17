@@ -17,8 +17,16 @@ const LifestyleData = [
   {
     id: 4,
     habit: '🐶 Do you have any pets?',
-    options: ['Yes, dogs', 'Yes, cats', 'Yes, other pets', 'No pets'],
-  }, 
+    options: [
+      'Yes, dogs',
+      'Yes, cats',
+      'Yes, other pets',
+      'No pets',
+      'I dont like',
+      'Dummy text',
+      'Test dude',
+    ],
+  },
 ];
 
 export default LifestyleData;

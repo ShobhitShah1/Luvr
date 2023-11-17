@@ -2,24 +2,34 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
-import CreateAccount from '../Screens/Auth/CreateAccount/CreateAccount';
-import MyBirthDate from '../Screens/Auth/CreateProfile/MyBirthDate';
-import MyFirstName from '../Screens/Auth/CreateProfile/MyFirstName';
-import LoginScreen from '../Screens/Auth/Login/LoginScreen';
-import OTPScreen from '../Screens/Auth/OTP/OTPScreen';
-import PhoneNumber from '../Screens/Auth/PhoneNumber/PhoneNumber';
-import WelcomeScreen from '../Screens/Auth/Welcome/WelcomeScreen';
-import HomeScreen from '../Screens/Home/HomeScreen';
+
+// ========================== AUTH SCREENS ==========================
 import SplashScreen from '../Screens/Splash/SplashScreen';
-import CreateProfile from '../Screens/Auth/CreateProfile';
-import SexualOrientation from '../Screens/Auth/CreateProfile/SexualOrientation';
-import ImLookingFor from '../Screens/Auth/CreateProfile/ImLookingFor';
-import DistancePreference from '../Screens/Auth/CreateProfile/DistancePreference';
-import YourStudy from '../Screens/Auth/CreateProfile/YourStudy';
-import AddLifestyle from '../Screens/Auth/CreateProfile/AddLifestyle';
-import WhatElseExtra from '../Screens/Auth/CreateProfile/WhatElseExtra';
-import YourIntro from '../Screens/Auth/CreateProfile/YourIntro';
-import AddRecentPics from '../Screens/Auth/CreateProfile/AddRecentPics';
+import {
+  CreateAccount,
+  MyBirthDate,
+  MyFirstName,
+  LoginScreen,
+  OTPScreen,
+  PhoneNumber,
+  WelcomeScreen,
+  CreateProfile,
+  SexualOrientation,
+  ImLookingFor,
+  DistancePreference,
+  YourStudy,
+  AddLifestyle,
+  WhatElseExtra,
+  YourIntro,
+  AddRecentPics,
+  MyGender,
+  LocationPermission,
+  ManageContacts,
+} from '../Screens/Auth';
+import AllGendersSearch from '../Screens/Auth/CreateProfile/AllGendersSearch';
+
+// ========================== HOME SCREENS ==========================
+import HomeScreen from '../Screens/Home/HomeScreen';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -42,6 +52,8 @@ export default function MainRoute() {
         <Stack.Screen component={CreateProfile} name="CreateProfile" />
         <Stack.Screen component={MyFirstName} name="MyFirstName" />
         <Stack.Screen component={MyBirthDate} name="MyBirthDate" />
+        <Stack.Screen component={MyGender} name="MyGender" />
+        <Stack.Screen component={AllGendersSearch} name="AllGendersSearch" />
         <Stack.Screen
           component={SexualOrientation}
           name="SexualOrientationScreen"
@@ -56,6 +68,11 @@ export default function MainRoute() {
         <Stack.Screen component={WhatElseExtra} name="WhatElseExtra" />
         <Stack.Screen component={YourIntro} name="YourIntro" />
         <Stack.Screen component={AddRecentPics} name="AddRecentPics" />
+        <Stack.Screen
+          component={LocationPermission}
+          name="LocationPermission"
+        />
+        <Stack.Screen component={ManageContacts} name="ManageContacts" />
       </Stack.Navigator>
     );
   };

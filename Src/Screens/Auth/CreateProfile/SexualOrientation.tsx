@@ -15,7 +15,7 @@ import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomCheckBox from '../../../Components/CustomCheckBox';
 import GendersData from '../../../Components/Data/genders';
-import CreateProfileHeader from './CreateProfileHeader';
+import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
 const {width} = Dimensions.get('window');

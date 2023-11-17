@@ -1,13 +1,13 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React from 'react';
+import React, {FC} from 'react';
 import {Text, TouchableOpacity, View, StatusBar} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {ActiveOpacity, COLORS} from '../../../Common/Theme';
 import AuthHeader from '../../../Components/AuthComponents/AuthHeader';
 import styles from './styles';
 
-export default function CreateAccount() {
+const CreateAccount: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   return (
@@ -46,4 +46,5 @@ export default function CreateAccount() {
       </View>
     </View>
   );
-}
+};
+export default CreateAccount;

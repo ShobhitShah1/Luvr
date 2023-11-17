@@ -1,10 +1,8 @@
 import {StyleSheet} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {CommonSize} from '../../../Common/CommonSize';
 import {COLORS, FONTS} from '../../../Common/Theme';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
@@ -53,11 +51,12 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.Black,
   },
   UserNumberTextStyle: {
-    top: 5,
-    alignContent: 'center',
+    padding: 0,
+    top: hp(0.8),
+    fontSize: hp('2%'),
     color: COLORS.Black,
+    alignContent: 'center',
     fontFamily: FONTS.SemiBold,
-    fontSize: hp('2.2%'),
   },
   NumberHelpText: {
     color: COLORS.Gray,

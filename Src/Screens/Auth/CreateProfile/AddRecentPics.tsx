@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import DraggableGrid from 'react-native-draggable-grid';
 import Animated from 'react-native-reanimated';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -14,30 +14,21 @@ import {
   deleteUrlFromItem,
   sortByUrl,
 } from '../../../Utils/ImagePickerUtils';
-import CreateProfileHeader from './CreateProfileHeader';
+import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 import * as ImagePicker from 'react-native-image-picker';
 
-const AddUserPhoto = ({picture, onDelete, onAdd}: any) => {
+const AddUserPhoto = ({picture}: any) => {
   const hasPicture = !!picture.url;
 
   return (
-    <TouchableOpacity
-      onPress={hasPicture ? onDelete : onAdd}
-      style={[
-        styles.item,
-        {
-          borderWidth: !hasPicture ? hp('0.15%') : 0,
-          borderStyle: !hasPicture ? 'dashed' : undefined,
-        },
-      ]}
-      key={picture?.url}>
+    <View style={[styles.item(hasPicture)]} key={picture?.url}>
       {picture?.url && (
         <Animated.View style={styles.UserImageContainer}>
           <Image
             source={{uri: picture?.url}}
             resizeMode="cover"
-            style={{width: '100%', height: '100%', overflow: 'hidden'}}
+            style={styles.ImageView}
           />
         </Animated.View>
       )}
@@ -50,23 +41,23 @@ const AddUserPhoto = ({picture, onDelete, onAdd}: any) => {
             borderColor: hasPicture ? COLORS.Gray : COLORS.White,
           },
         ]}>
-        {hasPicture ? (
+        {!hasPicture ? (
           <Entypo
             name={'plus'}
             size={hp('3%')}
             color={hasPicture ? COLORS.Gray : COLORS.White}
-            style={{justifyContent: 'center', alignSelf: 'center'}}
+            style={styles.IconView}
           />
         ) : (
           <Ionicons
             name={'close'}
             size={hp('3%')}
             color={hasPicture ? COLORS.Gray : COLORS.White}
-            style={{justifyContent: 'center', alignSelf: 'center'}}
+            style={styles.IconView}
           />
         )}
       </Animated.View>
-    </TouchableOpacity>
+    </View>
   );
 };
 
@@ -76,36 +67,38 @@ const AddRecentPics: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
-  const [data, setData] = useState([
-    {name: '', type: '', key: '0', uri: ''},
-    {name: '', type: '', key: '1', uri: ''},
-    {name: '', type: '', key: '2', uri: ''},
-    {name: '', type: '', key: '3', uri: ''},
-    {name: '', type: '', key: '4', uri: ''},
-    {name: '', type: '', key: '5', uri: ''},
-  ]);
+  const [data, setData] = useState(
+    Array.from({length: 6}, (_, index) => ({
+      name: '',
+      type: '',
+      key: String(index),
+      url: '',
+    })),
+  );
 
-  const handleImagePicker = async () => {
+  const HandleImagePicker = async (Key: string) => {
+    console.log('Key', Key);
     try {
       const res = await ImagePicker.launchImageLibrary({
         mediaType: 'photo',
-        selectionLimit: 6 - data.length,
+        selectionLimit: 6 - data.filter(item => item.url !== '').length,
       });
 
       const newImages =
         res?.assets?.map((image, index) => ({
           name: `Selected Image ${index + 1}`,
-          type: image.type,
-          key: `${String(index + data.length)}`,
-          uri: image.uri,
+          type: image.type || '',
+          key: `${Date.now()}-${index}`,
+          url: image.uri || '',
         })) || [];
 
       if (newImages.length > 0) {
-        console.log(newImages);
-        // setData(prevImages => [...prevImages, ...newImages]);
+        const newData = data.map(item =>
+          item.url === '' ? newImages.shift() || item : item,
+        );
+        setData(newData);
+        console.log('Selected Images:', newData);
       }
-
-      console.log('Selected Images:', data);
     } catch (error) {
       console.log('Image Picker Error:', error);
     }
@@ -115,7 +108,7 @@ const AddRecentPics: FC = () => {
     <View style={CreateProfileStyles.Container}>
       <CreateProfileHeader ProgressCount={ProgressCount} Skip={false} />
 
-      <View style={CreateProfileStyles.ContentView}>
+      <View style={[CreateProfileStyles.ContentView]}>
         <Text style={CreateProfileStyles.TitleText}>Add your recent pics</Text>
         <Text style={styles.CompatibilityText}>
           Upload 2 phots to start. Add 4 or more to make your profile stand out.
@@ -128,10 +121,18 @@ const AddRecentPics: FC = () => {
         itemHeight={hp('20%')}
         onItemPress={item => {
           console.log('OnItemPress:', item);
+
+          if (item.url.length === 0) {
+            HandleImagePicker(item.key);
+            // const newPics = data.map(addUrlToItem(item)).sort(sortByUrl);
+            // setData(newPics);
+          } else {
+            const newPics = data.map(deleteUrlFromItem(item)).sort(sortByUrl);
+            setData(newPics);
+          }
         }}
         style={styles.DraggableStyle}
         renderItem={picture => (
-          
           <View style={{}}>
             <AddUserPhoto
               onDelete={() => {
@@ -148,21 +149,21 @@ const AddRecentPics: FC = () => {
             />
           </View>
         )}
-        onDragRelease={data => {
-          console.log('data:', data);
-          setData(data);
+        onDragRelease={DragRelease => {
+          console.log('data:', DragRelease);
+          setData(DragRelease);
         }}
-        onDragStart={data => {
-          console.log('onDragStart:', data);
+        onDragStart={DragStar => {
+          console.log('onDragStart:', DragStar);
         }}
-        onDragItemActive={data => {
-          console.log('onDragItemActive:', data);
+        onDragItemActive={DragItemActive => {
+          console.log('onDragItemActive:', DragItemActive);
         }}
-        onResetSort={data => {
-          console.log('onResetSort:', data);
+        onResetSort={ResetSort => {
+          console.log('onResetSort:', ResetSort);
         }}
-        onDragging={data => {
-          console.log('onDragging:', data);
+        onDragging={Dragging => {
+          console.log('onDragging:', Dragging);
         }}
       />
 
@@ -172,7 +173,7 @@ const AddRecentPics: FC = () => {
           Disabled={false}
           Navigation={() => {
             navigation.navigate('LoginStack', {
-              screen: '',
+              screen: 'LocationPermission',
             });
           }}
         />
@@ -196,8 +197,9 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
+    // zIndex: 1,
   },
-  item: {
+  item: hasPicture => ({
     width: hp('14.5%'),
     height: hp('19%'),
     borderRadius: hp('1.5%'),
@@ -205,7 +207,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: hp('1%'),
-    backgroundColor: COLORS.DisableText,
+    backgroundColor: COLORS.LightGray,
+    borderWidth: !hasPicture ? hp('0.15%') : 0,
+    borderStyle: !hasPicture ? 'dashed' : undefined,
+  }),
+  ImageView: {
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
   },
   item_text: {
     ...GROUP_FONT.h4,
@@ -216,6 +225,10 @@ const styles = StyleSheet.create({
     height: '100%',
     overflow: 'hidden',
     borderRadius: hp('1.5%'),
+  },
+  IconView: {
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
   UserImageAddAndCloseButton: {
     flex: 1,

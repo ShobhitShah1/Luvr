@@ -1,17 +1,17 @@
-import axios from 'axios'
+import axios from 'axios';
 import ApiConfig from '../Config/ApiConfig';
 
 const JsonHeader = {
   'Content-Type': 'application/json',
-//   Authorization: Token,
+  // Authorization: Token,
 };
 
 const MultipartHeader = {
   'Content-Type': 'multipart/form-data',
-//   Authorization: Token,
+  // Authorization: Token,
 };
 
-export const client =   axios.create({
+export const client = axios.create({
   baseURL: ApiConfig.BASE_URL,
   headers: {'Content-Type': 'application/json'},
   timeout: 5000,

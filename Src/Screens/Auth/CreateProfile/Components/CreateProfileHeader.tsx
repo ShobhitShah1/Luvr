@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useEffect, useRef} from 'react';
+import React, {FC} from 'react';
 import {
   Dimensions,
   Image,
@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import * as Progress from 'react-native-progress';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import CommonIcons from '../../../Common/CommonIcons';
-import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import CommonIcons from '../../../../Common/CommonIcons';
+import {COLORS, FONTS, GROUP_FONT} from '../../../../Common/Theme';
 
 const {width} = Dimensions.get('window');
 

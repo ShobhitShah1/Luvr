@@ -1,7 +1,7 @@
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {FC, useCallback, useState} from 'react';
 import CreateProfileStyles from './styles';
-import CreateProfileHeader from './CreateProfileHeader';
+import CreateProfileHeader from './Components/CreateProfileHeader';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import LookingFor from '../../../Components/Data/LookingFor';
@@ -73,7 +73,8 @@ const ImLookingFor: FC = () => {
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
           Title={'Next'}
-          Disabled={SelectedLookingForIndex.length !== 0 ? false : true}
+          Disabled={false}
+          // Disabled={SelectedLookingForIndex.length !== 0 ? false : true}
           Navigation={() => {
             navigation.navigate('LoginStack', {
               screen: 'DistancePreference',

@@ -1,14 +1,15 @@
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {FC, useEffect, useMemo, useState} from 'react';
 import {
+  Alert,
   PermissionsAndroid,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
+import {requestHint} from 'react-native-otp-verify';
 import {CommonSize} from '../../../Common/CommonSize';
 import {ActiveOpacity, COLORS} from '../../../Common/Theme';
 import AuthHeader from '../../../Components/AuthComponents/AuthHeader';
@@ -16,13 +17,16 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import useCountryPicker from '../../../Hooks/useCountryPicker';
 import styles from './styles';
 
-export default function PhoneNumber() {
+const PhoneNumber: FC = () => {
   const {Visible, setVisible, CountryPickerComponent, setDefaultCountryCode} =
     useCountryPicker();
 
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const [StorePhoneNumber, setStorePhoneNumber] = useState<string | null>(null);
+
+  const isFocused = useIsFocused();
+
+  const [StorePhoneNumber, setStorePhoneNumber] = useState<string>('');
 
   const memoizedCountryPickerComponent = useMemo(
     () => <CountryPickerComponent />,
@@ -30,10 +34,12 @@ export default function PhoneNumber() {
   );
 
   useEffect(() => {
-    GetPhoneNumbers();
+    // if (isFocused === true) {
+    GetPermisstion();
+    // }
   }, []);
 
-  const GetPhoneNumbers = async () => {
+  const GetPermisstion = async () => {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.READ_PHONE_NUMBERS,
       {
@@ -46,18 +52,16 @@ export default function PhoneNumber() {
         buttonPositive: 'OK',
       },
     );
-
-    const N = await DeviceInfo.getPhoneNumber();
-    console.log('N:', N);
-
-    console.log('granted', granted);
-
-    // try {
-    //   const UserNumber = await SmsRetriever.requestPhoneNumber();
-    //   console.log('UserNumber', UserNumber);
-    // } catch (error) {
-    //   console.log('error:', JSON.stringify(error));
-    // }
+    if (granted === 'granted') {
+      Alert.alert('call', granted);
+      requestHint()
+        .then(res => {
+          console.log(res);
+        })
+        .catch(Error => {
+          console.log(Error);
+        });
+    }
   };
 
   return (
@@ -83,6 +87,7 @@ export default function PhoneNumber() {
           </TouchableOpacity>
           <View style={styles.UserNumberTextView}>
             <TextInput
+              value={StorePhoneNumber}
               autoFocus={true}
               textContentType="telephoneNumber"
               style={styles.UserNumberTextStyle}
@@ -126,4 +131,6 @@ export default function PhoneNumber() {
       </View>
     </View>
   );
-}
+};
+
+export default PhoneNumber;

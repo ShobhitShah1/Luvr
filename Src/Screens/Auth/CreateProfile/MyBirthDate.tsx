@@ -2,7 +2,7 @@ import React, {FC, useState} from 'react';
 import {StyleSheet, Text, TextInput, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
-import CreateProfileHeader from './CreateProfileHeader';
+import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -71,7 +71,7 @@ const MyBirthDate: FC = () => {
           Disabled={false}
           Navigation={() => {
             navigation.navigate('LoginStack', {
-              screen: 'SexualOrientationScreen',
+              screen: 'MyGender',
             });
           }}
         />

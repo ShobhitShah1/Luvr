@@ -13,7 +13,7 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import WhatElseExtraData from '../../../Components/Data/WhatElseExtraData';
-import CreateProfileHeader from './CreateProfileHeader';
+import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
 const YourIntro: FC = () => {

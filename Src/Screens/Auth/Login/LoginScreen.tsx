@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {MotiView} from 'moti';
-import React from 'react';
+import React, {FC} from 'react';
 import {StatusBar, Text, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated from 'react-native-reanimated';
@@ -10,7 +10,7 @@ import {COLORS} from '../../../Common/Theme';
 import LoginButton from '../../../Components/AuthComponents/LoginButton';
 import styles from './styles';
 
-export default function LoginScreen() {
+const LoginScreen: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
@@ -86,4 +86,5 @@ export default function LoginScreen() {
       </MotiView>
     </LinearGradient>
   );
-}
+};
+export default LoginScreen;
