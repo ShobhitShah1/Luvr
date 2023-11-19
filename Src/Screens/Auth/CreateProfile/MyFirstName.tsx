@@ -36,7 +36,18 @@ const MyFirstName: FC = () => {
       navigation.navigate('LoginStack', {
         screen: 'MyBirthDate',
       });
-    }, 200);
+    }, 300);
+  };
+
+  const OnNextButtonClick = () => {
+    Keyboard.dismiss();
+    if (Keyboard.isVisible()) {
+      setTimeout(() => {
+        setWelcomeModal(true);
+      }, 100);
+    } else {
+      setWelcomeModal(true);
+    }
   };
 
   function LetsGoButton() {
@@ -88,7 +99,7 @@ const MyFirstName: FC = () => {
           Title={'Next'}
           // Disabled={FirstName.length === 0 ? true : false}
           Disabled={false}
-          Navigation={() => setWelcomeModal(true)}
+          Navigation={() => OnNextButtonClick()}
         />
       </View>
 

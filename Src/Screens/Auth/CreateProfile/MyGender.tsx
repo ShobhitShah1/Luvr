@@ -32,7 +32,6 @@ const MyGender: FC = () => {
     setShowGenderOnProfile(prev => !prev);
   }, []);
 
-  // eslint-disable-next-line react/no-unstable-nested-components
   const RenderGender: FC<{item: GenderItem}> = ({
     item: {id, name, navigate},
   }) => {
@@ -105,7 +104,7 @@ const styles = StyleSheet.create({
     height: hp('6%'),
     marginTop: hp('1%'),
     alignSelf: 'center',
-    borderWidth: hp('0.24%'),
+    borderWidth: hp('0.20%'),
     justifyContent: 'center',
     marginVertical: hp('1%'),
     borderRadius: hp('2.5%'),

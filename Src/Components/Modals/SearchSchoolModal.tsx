@@ -1,18 +1,11 @@
 import React, {FC, useState} from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
-import SchoolsData from '../Data/SchoolsData';
-import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../Common/Theme';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import Modal from 'react-native-modal';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import Modal from 'react-native-modal';
+import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../Common/Theme';
 import CustomTextInput from '../CustomTextInput';
+import SchoolsData from '../Data/SchoolsData';
 interface SchoolModalProps {
   visible: boolean;
   onClose: () => void;
@@ -31,19 +24,12 @@ const SearchSchoolModal: FC<SchoolModalProps> = ({
   );
 
   return (
-    <Modal
-      isVisible={visible}
-      style={{
-        width: '90%',
-        height: '100%',
-      }}>
+    <Modal isVisible={visible} style={styles.ModalContainer}>
       <View style={styles.container}>
         <View style={styles.HeaderView}>
           <Text style={styles.HeaderText}>{`My \nuniversity is`}</Text>
           <TouchableOpacity
-            onPress={() => {
-              onClose();
-            }}
+            onPress={() => onClose()}
             style={styles.CloseIconView}>
             <AntDesign
               name="close"
@@ -62,6 +48,8 @@ const SearchSchoolModal: FC<SchoolModalProps> = ({
         />
         <FlatList
           data={filteredSchools}
+          style={styles.FlatlistStyle}
+          keyboardShouldPersistTaps="handled"
           keyExtractor={item => item.id.toString()}
           contentContainerStyle={styles.contentContainerStyle}
           renderItem={({item}) => (
@@ -80,9 +68,15 @@ const styles = StyleSheet.create({
     flex: 1,
     top: '3%',
     width: '95%',
-    height: '95%',
+    height: '97%',
     alignSelf: 'center',
     backgroundColor: COLORS.White,
+  },
+  ModalContainer: {
+    width: '95%',
+    height: '100%',
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
   HeaderView: {
     margin: hp('2%'),
@@ -110,8 +104,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: hp('0.15%'),
     borderBottomColor: COLORS.Black,
   },
+  FlatlistStyle: {
+    marginVertical: hp('1%'),
+  },
   contentContainerStyle: {
-    marginTop: hp('1%'),
+    // marginVertical: hp('5%'),
   },
   SearchedSchools: {
     fontFamily: FONTS.Regular,
