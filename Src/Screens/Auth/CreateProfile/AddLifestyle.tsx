@@ -52,11 +52,7 @@ const AddLifestyle: FC = () => {
       <React.Fragment>
         <View key={item?.id} style={styles.habitContainer}>
           <Text style={styles.habitTitle}>{item?.habit}</Text>
-          <ScrollView
-            horizontal
-            removeClippedSubviews={true}
-            showsHorizontalScrollIndicator={false}
-            style={styles.OptionScrollViewContainer}>
+          <View style={styles.OptionScrollViewContainer}>
             {item?.options.map((option, index) => (
               <TouchableOpacity
                 key={index}
@@ -74,7 +70,7 @@ const AddLifestyle: FC = () => {
                 </Text>
               </TouchableOpacity>
             ))}
-          </ScrollView>
+          </View>
         </View>
         <View style={styles.BottomLine} />
       </React.Fragment>
@@ -167,16 +163,19 @@ const styles = StyleSheet.create({
     ...GROUP_FONT.h3,
   },
   optionButton: {
+    // display: 'flex',
+    // flexWrap: 'wrap',
+    borderRadius: hp('2%'),
     marginRight: hp('0.8%'),
+    borderWidth: hp('0.064%'),
+    borderColor: COLORS.Gray,
+    marginVertical: hp('1%'),
     paddingHorizontal: hp('1%'),
     paddingVertical: hp('0.5%'),
-    marginVertical: hp('1.5%'),
-    borderWidth: hp('0.08%'),
-    borderRadius: hp('2%'),
-    borderColor: COLORS.Gray,
+    marginHorizontal: hp('0.5%'),
   },
   selectedOption: {
-    backgroundColor: COLORS.Primary, // Highlight selected option
+    backgroundColor: COLORS.Primary,
   },
   CategoriesText: {
     textAlign: 'center',
@@ -215,6 +214,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     maxWidth: '100%',
     display: 'flex',
+    flexWrap: 'wrap',
   },
 });
 

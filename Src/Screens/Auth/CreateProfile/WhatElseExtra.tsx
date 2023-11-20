@@ -36,10 +36,13 @@ const WhatElseExtra: FC = () => {
         <React.Fragment>
           <View key={habit.id} style={styles.habitContainer}>
             <Text style={styles.habitTitle}>{habit.habit}</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{flexDirection: 'row', maxWidth: '100%'}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                maxWidth: '100%',
+                display: 'flex',
+                flexWrap: 'wrap',
+              }}>
               {habit.options.map((option, index) => (
                 <TouchableOpacity
                   key={index}
@@ -58,7 +61,7 @@ const WhatElseExtra: FC = () => {
                   </Text>
                 </TouchableOpacity>
               ))}
-            </ScrollView>
+            </View>
           </View>
           <View style={styles.BottomLine} />
         </React.Fragment>
@@ -180,8 +183,8 @@ const styles = StyleSheet.create({
     marginRight: hp('0.8%'),
     paddingHorizontal: hp('1%'),
     paddingVertical: hp('0.5%'),
-    marginVertical: hp('1.5%'),
-    borderWidth: hp('0.08%'),
+    marginVertical: hp('1%'),
+    borderWidth: hp('0.064%'),
     borderRadius: hp('2%'),
     borderColor: COLORS.Gray,
   },

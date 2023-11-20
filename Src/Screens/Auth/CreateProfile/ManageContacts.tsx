@@ -1,59 +1,21 @@
-import {
-  FlatList,
-  PermissionsAndroid,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import React, {FC, useEffect, useState} from 'react';
-import Contacts from 'react-native-contacts';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
+import React from 'react';
+import {useContacts} from '../../../Hooks/useContacts';
 
-const ManageContacts: FC = () => {
-  useEffect(() => {
-    AskPermission();
-  }, []);
+const ManageContacts: React.FC = () => {
+  const {contacts} = useContacts();
 
-  const [StoreContacts, setStoreContacts] = useState<[]>([]);
-
-  const windowSize = StoreContacts.length > 50 ? StoreContacts.length / 4 : 21;
-  console.log('windowSize', windowSize);
-  const AskPermission = () => {
-    PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
-      title: 'Contacts',
-      message: 'This app would like to view your contacts.',
-      buttonPositive: 'Please accept bare mortal',
-    })
-      .then(res => {
-        Contacts.getAll()
-          .then(contacts => {
-            setStoreContacts(contacts);
-          })
-          .catch(e => {
-            console.log(e);
-          });
-
-        Contacts.getCount().then(count => {
-          console.log(`Search ${count} contacts`);
-        });
-
-        Contacts.checkPermission();
-      })
-      .catch(error => {
-        console.error('Permission error: ', error);
-      });
-  };
+  const windowSize = contacts.length > 50 ? contacts.length / 4 : 21;
 
   return (
     <View>
       <FlatList
-        data={StoreContacts}
+        data={contacts}
         disableVirtualization={true}
-        // maxToRenderPerBatch={windowSize}
-        // windowSize={windowSize}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({item, index}) => (
           <View key={index}>
-            <Text>
+            <Text style={{color: 'red'}}>
               {item?.displayName}: {item?.phoneNumbers[0]?.number}
             </Text>
           </View>
