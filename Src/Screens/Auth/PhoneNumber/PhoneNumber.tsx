@@ -1,4 +1,4 @@
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useEffect, useMemo, useState} from 'react';
 import {
@@ -24,8 +24,6 @@ const PhoneNumber: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
-  const isFocused = useIsFocused();
-
   const [StorePhoneNumber, setStorePhoneNumber] = useState<string>('');
 
   const memoizedCountryPickerComponent = useMemo(
@@ -34,12 +32,10 @@ const PhoneNumber: FC = () => {
   );
 
   useEffect(() => {
-    // if (isFocused === true) {
-    GetPermisstion();
-    // }
+    GetPermission();
   }, []);
 
-  const GetPermisstion = async () => {
+  const GetPermission = async () => {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.READ_PHONE_NUMBERS,
       {
@@ -53,14 +49,21 @@ const PhoneNumber: FC = () => {
       },
     );
     if (granted === 'granted') {
-      Alert.alert('call', granted);
-      requestHint()
-        .then(res => {
-          console.log(res);
-        })
-        .catch(Error => {
-          console.log(Error);
-        });
+      try {
+        console.log('CALL');
+        requestHint()
+          .then(res => {
+            console.log('requestHint RES:', res);
+          })
+          .catch(Error => {
+            console.log('requestHint ERROR:', Error);
+          })
+          .finally(() => {
+            console.log('END');
+          });
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
