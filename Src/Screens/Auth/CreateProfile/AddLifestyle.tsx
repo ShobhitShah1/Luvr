@@ -1,14 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useState} from 'react';
-import {
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
@@ -167,7 +160,7 @@ const styles = StyleSheet.create({
     // flexWrap: 'wrap',
     borderRadius: hp('2%'),
     marginRight: hp('0.8%'),
-    borderWidth: hp('0.064%'),
+    borderWidth: hp('0.09%'),
     borderColor: COLORS.Gray,
     marginVertical: hp('1%'),
     paddingHorizontal: hp('1%'),
@@ -175,7 +168,7 @@ const styles = StyleSheet.create({
     marginHorizontal: hp('0.5%'),
   },
   selectedOption: {
-    backgroundColor: COLORS.Primary,
+    borderColor: COLORS.Primary,
   },
   CategoriesText: {
     textAlign: 'center',
@@ -184,7 +177,7 @@ const styles = StyleSheet.create({
   },
   SelectedCategoriesText: {
     ...GROUP_FONT.h4,
-    color: COLORS.White,
+    color: COLORS.Gray,
   },
   checkMissingCategories: {
     marginTop: 16,

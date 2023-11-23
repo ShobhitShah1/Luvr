@@ -1,30 +1,37 @@
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import React from 'react';
-import {useContacts} from '../../../Hooks/useContacts';
+import {StyleSheet, View} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {COLORS, GROUP_FONT} from '../../../Common/Theme';
+import Blocked from './Contacts/Blocked';
+import ContactScreen from './Contacts/ContactScreen'
+
+const Tab = createMaterialTopTabNavigator();
 
 const ManageContacts: React.FC = () => {
-  const {contacts} = useContacts();
-
-  const windowSize = contacts.length > 50 ? contacts.length / 4 : 21;
-
   return (
-    <View>
-      <FlatList
-        data={contacts}
-        disableVirtualization={true}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({item, index}) => (
-          <View key={index}>
-            <Text style={{color: 'red'}}>
-              {item?.displayName}: {item?.phoneNumbers[0]?.number}
-            </Text>
-          </View>
-        )}
-      />
+    <View style={styles.Container}>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarIndicatorStyle: {
+            backgroundColor: COLORS.Black,
+          },
+          tabBarLabelStyle: {
+            ...GROUP_FONT.h4,
+            fontSize: hp('1.3%'),
+          },
+        }}>
+        <Tab.Screen name="Contacts" component={ContactScreen} />
+        <Tab.Screen name="Blocked" component={Blocked} />
+      </Tab.Navigator>
     </View>
   );
 };
 
 export default ManageContacts;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  Container: {
+    flex: 1,
+  },
+});

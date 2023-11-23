@@ -1,15 +1,8 @@
-import React, {useEffect, useRef} from 'react';
-import OTPTextInput from 'react-native-otp-textinput';
-import {
-  getHash,
-  removeListener,
-  requestHint,
-  startOtpListener,
-  useOtpVerify,
-} from 'react-native-otp-verify';
-import {COLORS} from '../../Common/Theme';
+import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet} from 'react-native';
-
+import OTPTextInput from 'react-native-otp-textinput';
+import {getHash, startOtpListener, useOtpVerify} from 'react-native-otp-verify';
+import {COLORS} from '../../Common/Theme';
 interface OtpInputProps {
   onTextChange: (text: string) => void;
   clearText: () => void;
@@ -18,24 +11,23 @@ interface OtpInputProps {
 const OtpInput: React.FC<OtpInputProps> = ({onTextChange, clearText}) => {
   let otpInputREF = useRef(null);
 
+  const {otp} = useOtpVerify();
   const [hashFromMethod, setHashFromMethod] = React.useState<string[]>();
   const [otpFromMethod, setOtpFromMethod] = React.useState<string>();
-  const [hint, setHint] = React.useState<string>();
 
   useEffect(() => {
-    console.log('hint', hint);
     console.log('hashFromMethod', hashFromMethod);
     console.log('otpFromMethod', otpFromMethod);
-  }, [hashFromMethod, otpFromMethod, hint]);
+    console.log('otp', otp);
+  }, [otpFromMethod]);
 
-  // using hook - you can use the startListener and stopListener to manually trigger listeners again.
-  const {hash, otp, timeoutError, stopListener, startListener} = useOtpVerify();
-
-  // using methods
-  React.useEffect(() => {
+  useEffect(() => {
     getHash().then(setHashFromMethod).catch(console.log);
-    requestHint().then(setHint).catch(console.log);
-    startOtpListener(setOtpFromMethod);
+    startOtpListener(res => {
+      const OTP = res ? /(\d{4})/g.exec(res)[1] : '';
+      console.log('OTP:>>>', OTP);
+      onTextChange(OTP);
+    });
   }, []);
 
   return (

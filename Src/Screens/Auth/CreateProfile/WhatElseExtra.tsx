@@ -184,12 +184,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: hp('1%'),
     paddingVertical: hp('0.5%'),
     marginVertical: hp('1%'),
-    borderWidth: hp('0.064%'),
+    borderWidth: hp('0.1%'),
     borderRadius: hp('2%'),
     borderColor: COLORS.Gray,
   },
   selectedOption: {
-    backgroundColor: COLORS.Primary, // Highlight selected option
+    borderColor: COLORS.Primary,
   },
   CategoriesText: {
     textAlign: 'center',
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   },
   SelectedCategoriesText: {
     ...GROUP_FONT.h4,
-    color: COLORS.White,
+    color: COLORS.Gray,
   },
   checkMissingCategories: {
     marginTop: 16,

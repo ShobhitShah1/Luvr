@@ -8,7 +8,6 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import YourIntoData from '../../../Components/Data/YourIntoData';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import LifestyleData from '../../../Components/Data/LifestyleData';
 
 const YourIntro: FC = () => {
   let ProgressCount: number = 0.9;
@@ -17,8 +16,6 @@ const YourIntro: FC = () => {
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
     {},
   );
-
-  console.log('selectedItems:', selectedItems);
 
   const handleOptionPress = useCallback((YourIntoID: number, name: string) => {
     setSelectedItems(prevSelection => {
@@ -139,6 +136,7 @@ const styles = StyleSheet.create({
   FlatListStyle: {
     height: '100%',
     marginHorizontal: hp('1%'),
+    bottom: hp('0.5%'),
   },
   ContainerContainerStyle: {
     flexDirection: 'row',
@@ -184,7 +182,7 @@ const styles = StyleSheet.create({
     marginHorizontal: hp('0.5%'),
   },
   selectedOption: {
-    backgroundColor: COLORS.Primary,
+    borderColor: COLORS.Primary,
   },
   CategoriesText: {
     textAlign: 'center',
@@ -193,6 +191,6 @@ const styles = StyleSheet.create({
   },
   SelectedCategoriesText: {
     ...GROUP_FONT.h4,
-    color: COLORS.White,
+    color: COLORS.Gray,
   },
 });

@@ -2,7 +2,6 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useEffect, useMemo, useState} from 'react';
 import {
-  Alert,
   PermissionsAndroid,
   Text,
   TextInput,
@@ -18,8 +17,7 @@ import useCountryPicker from '../../../Hooks/useCountryPicker';
 import styles from './styles';
 
 const PhoneNumber: FC = () => {
-  const {Visible, setVisible, CountryPickerComponent, setDefaultCountryCode} =
-    useCountryPicker();
+  const {Visible, setVisible, CountryPickerComponent} = useCountryPicker();
 
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
@@ -33,6 +31,9 @@ const PhoneNumber: FC = () => {
 
   useEffect(() => {
     GetPermission();
+    requestHint()
+      .then(res => console.log('requestHint:', res))
+      .catch(console.log);
   }, []);
 
   const GetPermission = async () => {
@@ -49,21 +50,13 @@ const PhoneNumber: FC = () => {
       },
     );
     if (granted === 'granted') {
-      try {
-        console.log('CALL');
-        requestHint()
-          .then(res => {
-            console.log('requestHint RES:', res);
-          })
-          .catch(Error => {
-            console.log('requestHint ERROR:', Error);
-          })
-          .finally(() => {
-            console.log('END');
-          });
-      } catch (error) {
-        console.log(error);
-      }
+      requestHint()
+        .then(res => {
+          console.log(res);
+        })
+        .catch(Error => {
+          console.log(Error);
+        });
     }
   };
 
