@@ -4,7 +4,7 @@ import {StyleSheet, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS, GROUP_FONT} from '../../../Common/Theme';
 import Blocked from './Contacts/Blocked';
-import ContactScreen from './Contacts/ContactScreen'
+import ContactScreen from './Contacts/ContactScreen';
 
 const Tab = createMaterialTopTabNavigator();
 

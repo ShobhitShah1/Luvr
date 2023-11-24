@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useState} from 'react';
@@ -17,6 +18,9 @@ import CustomCheckBox from '../../../Components/CustomCheckBox';
 import GendersData from '../../../Components/Data/genders';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {useUserData} from '../../../Contexts/UserDataContext';
+import {useFieldConfig} from '../../../Utils/StorageUtils';
 
 const {width} = Dimensions.get('window');
 
@@ -25,43 +29,58 @@ const SexualOrientation: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
+  const {userData, dispatch} = useUserData();
+  const StoreStringName = useFieldConfig(LocalStorageFields.sexualOrientation);
+
+  const initialSexualOrientation: {id: number; name: string}[] = userData.sexualOrientation?.length
+    ? userData.sexualOrientation
+    : [];
+
+  console.log('userData.sexualOrientation', userData);
+  console.log('userData.sexualOrientation', userData.sexualOrientation);
+
   const [ShowOnProfile, setShowOnProfile] = useState<boolean>(false);
-  const [SelectedGenderIndex, setSelectedGenderIndex] = useState<number[]>([]);
+  const [SelectedGenderIndex, setSelectedGenderIndex] = useState<Object[]>(
+    initialSexualOrientation,
+  );
 
   const toggleCheckMark = useCallback(() => {
     setShowOnProfile(prev => !prev);
   }, []);
 
   const onPressGenders = useCallback(
-    (index: number) => {
-      if (SelectedGenderIndex.includes(index)) {
-        setSelectedGenderIndex(prev => prev.filter(i => i !== index));
+    (item: string) => {
+      if (SelectedGenderIndex.includes(item)) {
+        setSelectedGenderIndex(prev => prev.filter(i => i !== item));
       } else if (SelectedGenderIndex.length < 3) {
-        setSelectedGenderIndex(prev => [...prev, index]);
+        setSelectedGenderIndex(prev => [...prev, item]);
       }
     },
     [SelectedGenderIndex],
   );
 
-  const isGenderSelected = (index: number) =>
-    SelectedGenderIndex.includes(index);
+  const isGenderSelected = (item: string) => SelectedGenderIndex.includes(item);
+
+  const handleInputChange = (field: any, value: any) => {
+    dispatch({type: 'UPDATE_FIELD', field, value});
+  };
 
   const renderItem = ({item, index}: {item: any; index: number}) => (
     <TouchableOpacity
       key={index}
-      onPress={() => onPressGenders(index)}
+      onPress={() => onPressGenders(item)}
       style={styles.GenderButtonView}>
       <View style={styles.GenderFlexView}>
         <Text
           style={[
             styles.SelectGenderText,
             {
-              fontFamily: isGenderSelected(index) ? FONTS.Bold : FONTS.Medium,
+              fontFamily: isGenderSelected(item) ? FONTS.Bold : FONTS.Medium,
             },
           ]}>
           {item.name}
         </Text>
-        {isGenderSelected(index) && (
+        {isGenderSelected(item) && (
           <Feather name="check" size={20} color={COLORS.Primary} />
         )}
       </View>
@@ -73,6 +92,13 @@ const SexualOrientation: FC = () => {
       <Text style={styles.EmptyViewText}>We Don't Have Any Genders, Sorry</Text>
     </View>
   );
+
+  const OnNextButtonClick = () => {
+    handleInputChange(StoreStringName, SelectedGenderIndex);
+    navigation.navigate('LoginStack', {
+      screen: 'ImLookingFor',
+    });
+  };
 
   return (
     <View style={CreateProfileStyles.Container}>
@@ -109,12 +135,8 @@ const SexualOrientation: FC = () => {
           </View>
           <GradientButton
             Title={'Next'}
-            Disabled={false}
-            Navigation={() => {
-              navigation.navigate('LoginStack', {
-                screen: 'ImLookingFor',
-              });
-            }}
+            Disabled={SelectedGenderIndex.length !== 0 ? false : true}
+            Navigation={OnNextButtonClick}
           />
         </View>
       </View>

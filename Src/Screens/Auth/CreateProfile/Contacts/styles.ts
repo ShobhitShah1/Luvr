@@ -5,7 +5,7 @@ import {COLORS, GROUP_FONT} from '../../../../Common/Theme';
 const styles = StyleSheet.create({
   // Contact Screen
   Container: {
-    backgroundColor: COLORS.White
+    backgroundColor: COLORS.White,
   },
   ContactView: {
     top: hp('2%'),

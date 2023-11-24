@@ -1,20 +1,30 @@
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
-import {StyleSheet, Text, TextInput, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import GradientButton from '../../../Components/AuthComponents/GradientButton';
+import CustomTextInput from '../../../Components/CustomTextInput';
+import {useUserData} from '../../../Contexts/UserDataContext';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {useFieldConfig} from '../../../Utils/StorageUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {useNavigation} from '@react-navigation/native';
-import CustomTextInput from '../../../Components/CustomTextInput';
 
 const MyBirthDate: FC = () => {
   let ProgressCount: number = 0.2;
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const [birthdate, setBirthdate] = useState<string>('');
 
+  //* Get Local Storage State
+  const {userData, dispatch} = useUserData();
+  const StoreStringName = useFieldConfig(LocalStorageFields.dob);
+
+  //* All State
+  const [birthdate, setBirthdate] = useState<string>(userData.dob);
+
+  //* On Submit Change Format And Store Data
   const handleBirthdateChange = (text: string) => {
     text = text.replace(/[^0-9]/g, '');
     const formattedText = formatBirthdate(text);
@@ -24,11 +34,14 @@ const MyBirthDate: FC = () => {
     }
   };
 
+  //* Format Date Data Change In DD/MM/YYYY
   const formatBirthdate = (text: string): string => {
     const cleanedText = text.replace(/\D/g, '');
     const match = cleanedText.match(/^(\d{0,2})(\d{0,2})(\d{0,4})$/);
 
-    if (!match) return '';
+    if (!match) {
+      return '';
+    }
 
     let formattedText = '';
 
@@ -43,6 +56,19 @@ const MyBirthDate: FC = () => {
     }
 
     return formattedText;
+  };
+
+  //* Store Data In Local Storage
+  const handleInputChange = (field: string, value: string) => {
+    dispatch({type: 'UPDATE_FIELD', field, value});
+  };
+
+  //* Store Data And Navigate To Screen
+  const OnSubmitBirthDatePress = () => {
+    handleInputChange(StoreStringName, birthdate);
+    navigation.navigate('LoginStack', {
+      screen: 'MyGender',
+    });
   };
 
   return (
@@ -68,12 +94,8 @@ const MyBirthDate: FC = () => {
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
           Title={'Next'}
-          Disabled={false}
-          Navigation={() => {
-            navigation.navigate('LoginStack', {
-              screen: 'MyGender',
-            });
-          }}
+          Disabled={birthdate.length < 10 ? true : false}
+          Navigation={OnSubmitBirthDatePress}
         />
       </View>
     </View>

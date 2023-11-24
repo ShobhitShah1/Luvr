@@ -1,5 +1,13 @@
 import React, {FC, useState} from 'react';
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Dimensions,
+  FlatList,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Modal from 'react-native-modal';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -11,6 +19,14 @@ interface SchoolModalProps {
   onClose: () => void;
   onSelect: (school: string) => void;
 }
+
+const deviceWidth = Dimensions.get('window').width;
+const deviceHeight =
+  Platform.OS === 'ios'
+    ? Dimensions.get('window').height
+    : require('react-native-extra-dimensions-android').get(
+        'REAL_WINDOW_HEIGHT',
+      );
 
 const SearchSchoolModal: FC<SchoolModalProps> = ({
   visible,
@@ -24,7 +40,19 @@ const SearchSchoolModal: FC<SchoolModalProps> = ({
   );
 
   return (
-    <Modal isVisible={visible} style={styles.ModalContainer}>
+    <Modal
+      isVisible={visible}
+      animationIn={'fadeIn'}
+      animationOut={'fadeOut'}
+      onDismiss={onClose}
+      deviceWidth={deviceWidth}
+      deviceHeight={deviceHeight}
+      onBackdropPress={onClose}
+      onBackButtonPress={onClose}
+      avoidKeyboard={true}
+      removeClippedSubviews={true}
+      useNativeDriver={true}
+      style={styles.ModalContainer}>
       <View style={styles.container}>
         <View style={styles.HeaderView}>
           <Text style={styles.HeaderText}>{`My \nuniversity is`}</Text>

@@ -1,35 +1,49 @@
+/* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useState} from 'react';
-import {
-  Keyboard,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {FC, useCallback, useState} from 'react';
+import {Keyboard, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Modal from 'react-native-modal';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import {CommonSize} from '../../../Common/CommonSize';
 import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
-import CreateProfileStyles from './styles';
-import Modal from 'react-native-modal';
-import LinearGradient from 'react-native-linear-gradient';
-import {CommonSize} from '../../../Common/CommonSize';
+import {useUserData} from '../../../Contexts/UserDataContext';
+import {useFieldConfig} from '../../../Utils/StorageUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
+import CreateProfileStyles from './styles';
+import {LocalStorageFields, UserField} from '../../../Types/LocalStorageFields';
 
 const MyFirstName: FC = () => {
   let ProgressCount: number = 0.1;
-  const [FirstName, setFirstName] = useState<string>('');
+
+  //* Get Key Name. From Where You Want To Store Data
+  const StoreStringName = useFieldConfig(LocalStorageFields.firstName);
+  const {userData, dispatch} = useUserData();
+
+  //* All States
+  const [FirstName, setFirstName] = useState<string>(userData.firstName);
   const [WelcomeModal, setWelcomeModal] = useState<boolean>(false);
+
+  //* Navigation
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
-  const OnLetsGoButtonPress = async () => {
+  //* On Next Click This Will Call And Store Data
+  const handleInputChange = useCallback(
+    (field: string, value: string) => {
+      dispatch({type: 'UPDATE_FIELD', field, value});
+    },
+    [dispatch],
+  );
+
+  //* Modal Button Navigate To Screen
+  const OnLetsGoButtonPress = useCallback(() => {
     Keyboard.dismiss();
     setWelcomeModal(false);
     setTimeout(() => {
@@ -37,20 +51,23 @@ const MyFirstName: FC = () => {
         screen: 'MyBirthDate',
       });
     }, 300);
-  };
+  }, [navigation]);
 
-  const OnNextButtonClick = () => {
+  //* Next Button Click Open Modal
+  const OnNextButtonClick = useCallback(() => {
     Keyboard.dismiss();
     if (Keyboard.isVisible()) {
+      handleInputChange(StoreStringName, FirstName);
       setTimeout(() => {
         setWelcomeModal(true);
       }, 100);
     } else {
       setWelcomeModal(true);
     }
-  };
+  }, [handleInputChange, StoreStringName, FirstName]);
 
-  function LetsGoButton() {
+  //* Lets Go Button For Modal
+  const LetsGoButton = () => {
     return (
       <TouchableOpacity
         activeOpacity={0.9}
@@ -67,7 +84,7 @@ const MyFirstName: FC = () => {
         </LinearGradient>
       </TouchableOpacity>
     );
-  }
+  };
 
   return (
     <View style={CreateProfileStyles.Container}>
@@ -97,13 +114,12 @@ const MyFirstName: FC = () => {
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
           Title={'Next'}
-          // Disabled={FirstName.length === 0 ? true : false}
-          Disabled={false}
+          Disabled={FirstName.length === 0 ? true : false}
           Navigation={() => OnNextButtonClick()}
         />
       </View>
 
-      <Modal isVisible={WelcomeModal}>
+      <Modal isVisible={WelcomeModal} onDismiss={() => setWelcomeModal(false)}>
         <View style={styles.ModalContainer}>
           <View style={styles.ModalSubView}>
             <View style={{alignItems: 'center'}}>

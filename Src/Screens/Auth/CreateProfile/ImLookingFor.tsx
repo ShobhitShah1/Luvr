@@ -8,36 +8,48 @@ import LookingFor from '../../../Components/Data/LookingFor';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useNavigation} from '@react-navigation/native';
+import {useUserData} from '../../../Contexts/UserDataContext';
+import {useFieldConfig} from '../../../Utils/StorageUtils';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 
 const ImLookingFor: FC = () => {
   let ProgressCount: number = 0.4;
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
+  const {userData, dispatch} = useUserData();
+  const StoreStringName = useFieldConfig(LocalStorageFields.sexualOrientation);
+
   const [SelectedLookingForIndex, setSelectedLookingForIndex] = useState<
-    number[]
+    string[]
   >([]);
 
   const onPressLookingFor = useCallback(
-    (index: number) => {
-      if (SelectedLookingForIndex.includes(index)) {
-        setSelectedLookingForIndex(prev => prev.filter(i => i !== index));
-      } else if (SelectedLookingForIndex.length < 3) {
-        //Select How Many You want "Change 3 To Any"
-        setSelectedLookingForIndex(prev => [...prev, index]);
+    (item: string) => {
+      //* Check if the selected item is already in the array
+      const isSelected = SelectedLookingForIndex.includes(item);
+
+      //* If the selected item is already in the array, unselect it
+      if (isSelected) {
+        setSelectedLookingForIndex([]);
+      } else {
+        //* If the selected item is not in the array, select it and unselect the previous one
+        setSelectedLookingForIndex([item]);
       }
+
+      console.log('SelectedLookingForIndex', SelectedLookingForIndex);
     },
     [SelectedLookingForIndex],
   );
 
-  const isGenderSelected = (index: number) =>
-    SelectedLookingForIndex.includes(index);
+  const isGenderSelected = (item: string) =>
+    SelectedLookingForIndex.includes(item);
 
   const renderItem = ({item, index}: {item: any; index: number}) => (
     <TouchableOpacity
-      onPress={() => onPressLookingFor(index)}
+      onPress={() => onPressLookingFor(item)}
       style={
-        isGenderSelected(index)
+        isGenderSelected(item)
           ? styles.SelectedLookingForListView
           : styles.LookingForListView
       }
@@ -73,8 +85,7 @@ const ImLookingFor: FC = () => {
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
           Title={'Next'}
-          Disabled={false}
-          // Disabled={SelectedLookingForIndex.length !== 0 ? false : true}
+          Disabled={SelectedLookingForIndex.length !== 0 ? false : true}
           Navigation={() => {
             navigation.navigate('LoginStack', {
               screen: 'DistancePreference',

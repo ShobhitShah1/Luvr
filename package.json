@@ -32,6 +32,7 @@
     "react-native-deck-swiper": "^2.0.16",
     "react-native-device-info": "^10.11.0",
     "react-native-draggable-grid": "^2.1.8",
+    "react-native-extra-dimensions-android": "^1.2.5",
     "react-native-gesture-handler": "^2.13.4",
     "react-native-image-picker": "^7.0.2",
     "react-native-linear-gradient": "^2.8.3",

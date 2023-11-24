@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useState} from 'react';
@@ -12,7 +13,9 @@ import CustomCheckBox from '../../../Components/CustomCheckBox';
 import GenderListData from '../../../Components/Data/GenderListData';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-
+import {useUserData} from '../../../Contexts/UserDataContext';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {useFieldConfig} from '../../../Utils/StorageUtils';
 interface GenderItem {
   id: number;
   name: string;
@@ -23,14 +26,27 @@ const MyGender: FC = () => {
   let ProgressCount: number = 0.3;
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+  const {userData, dispatch} = useUserData();
+  const StoreStringName = useFieldConfig(LocalStorageFields.gender);
 
-  const [UserGender, setUserGender] = useState<string>('');
+  const [UserGender, setUserGender] = useState<string>(userData.gender);
   const [ShowGenderOnProfile, setShowGenderOnProfile] =
     useState<boolean>(false);
 
   const toggleCheckMark = useCallback(() => {
     setShowGenderOnProfile(prev => !prev);
   }, []);
+
+  const handleInputChange = (field: string, value: string) => {
+    dispatch({type: 'UPDATE_FIELD', field, value});
+  };
+
+  const OnSubmitGenderPress = () => {
+    handleInputChange(StoreStringName, UserGender);
+    navigation.navigate('LoginStack', {
+      screen: 'SexualOrientationScreen',
+    });
+  };
 
   const RenderGender: FC<{item: GenderItem}> = ({
     item: {id, name, navigate},
@@ -58,6 +74,7 @@ const MyGender: FC = () => {
     }
   };
 
+  console.log('UserGender', UserGender.length);
   return (
     <View style={CreateProfileStyles.Container}>
       <CreateProfileHeader ProgressCount={ProgressCount} Skip={false} />
@@ -84,12 +101,8 @@ const MyGender: FC = () => {
         </View>
         <GradientButton
           Title={'Next'}
-          Disabled={false}
-          Navigation={() => {
-            navigation.navigate('LoginStack', {
-              screen: 'SexualOrientationScreen',
-            });
-          }}
+          Disabled={UserGender.length !== 0 ? false : true}
+          Navigation={OnSubmitGenderPress}
         />
       </View>
     </View>

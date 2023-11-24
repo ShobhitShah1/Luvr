@@ -14,25 +14,20 @@ interface Section {
   data: Contact[];
 }
 
-const ContactItem = memo(
-  ({item, index}: any) => (
-    console.log(index),
-    (
-      <View
-        style={[
-          styles.ContactView,
-          {
-            borderTopWidth: index === 0 ? 0 : 0.3,
-          },
-        ]}>
-        <Text style={styles.ContactDisplayName}>{item?.displayName}</Text>
-        <Text style={styles.ContactDisplayNumber}>
-          {item?.phoneNumbers[0]?.number}
-        </Text>
-      </View>
-    )
-  ),
-);
+const ContactItem = memo(({item, index}: any) => (
+  <View
+    style={[
+      styles.ContactView,
+      {
+        borderTopWidth: index === 0 ? 0 : 0.3,
+      },
+    ]}>
+    <Text style={styles.ContactDisplayName}>{item?.displayName}</Text>
+    <Text style={styles.ContactDisplayNumber}>
+      {item?.phoneNumbers[0]?.number}
+    </Text>
+  </View>
+));
 
 const RenderHeader = (value: any) => {
   return (

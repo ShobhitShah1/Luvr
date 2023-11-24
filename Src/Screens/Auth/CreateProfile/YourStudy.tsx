@@ -58,16 +58,6 @@ const YourStudy: FC = () => {
                 : 'Enter school name, past or current'}
             </Text>
           </TouchableOpacity>
-          {/* <CustomTextInput
-            editable={false}
-            value={SchoolNameText}
-            style={styles.TextInputStyle}
-            onChangeText={(value: string) => {
-              setSchoolNameText(value);
-            }}
-            placeholderTextColor={COLORS.Placeholder}
-            placeholder="Enter school name, past or current"
-          /> */}
           <TouchableOpacity
             style={styles.CloseButtonView}
             activeOpacity={ActiveOpacity}>

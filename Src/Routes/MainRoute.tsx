@@ -31,6 +31,7 @@ import {
 
 // ========================== HOME SCREENS ==========================
 import HomeScreen from '../Screens/Home/HomeScreen';
+import ExploreCard from '../Screens/Explore/ExploreCard';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -85,6 +86,7 @@ export default function MainRoute() {
           headerShown: false,
         }}>
         <Stack.Screen component={HomeScreen} name="Home" />
+        <Stack.Screen component={ExploreCard} name="Explore" />
       </Stack.Navigator>
     );
   };
