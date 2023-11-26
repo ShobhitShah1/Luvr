@@ -5,11 +5,12 @@ import {
 } from 'react-native-responsive-screen';
 
 export const COLORS = {
-  Primary: 'rgba(244, 68, 135, 1)',
-  Secondary: 'rgba(238, 128, 95, 1)',
-  Gradient: ['rgba(238, 128, 95, 1)', 'rgba(244, 68, 135, 1)'],
-  ButtonGradient: ['rgba(234, 64, 128, 1)', 'rgba(238, 128, 95, 1)'],
+  Primary: 'rgba(255, 65, 101, 1)',
+  Secondary: 'rgba(255, 229, 234, 1)',
+  Gradient: ['rgba(255, 229, 234, 1)', 'rgba(255, 65, 101, 1)'],
+  ButtonGradient: ['rgba(234, 64, 128, 1)', 'rgba(255, 229, 234, 1)'],
   DisableButtonGradient: ['rgba(233, 235, 240, 1)', 'rgba(233, 235, 240, 1)'],
+  DisableButtonBackground: 'rgba(184, 184, 184, 1)',
   White: 'rgba(255, 255, 255, 1)',
   Brown: 'rgba(68, 65, 66, 1)',
   Silver: 'rgba(130, 134, 147, 1)',
@@ -40,7 +41,7 @@ export const FONTS = {
 export const SIZES = {
   base: CommonSize(8),
   font: hp('1.8%'),
-  radius: CommonSize(12),
+  radius: 25,
   subRadius: CommonSize(20),
   padding: CommonSize(24),
 

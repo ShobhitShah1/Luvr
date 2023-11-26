@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {CommonSize} from '../../Common/CommonSize';
 import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
@@ -21,19 +21,24 @@ const GradientButton: FC<ButtonProps> = ({Title, Navigation, Disabled}) => {
       activeOpacity={ActiveOpacity}
       onPress={Navigation}
       style={styles.CreateAccountButton}>
-      <LinearGradient
-        colors={Disabled ? COLORS.DisableButtonGradient : COLORS.ButtonGradient}
-        start={{x: 0, y: 1}}
-        end={{x: 1, y: 0}}
-        style={styles.GradientViewStyle}>
+      <View
+        // colors={Disabled ? COLORS.DisableButtonGradient : COLORS.ButtonGradient}
+        // start={{x: 0, y: 1}}
+        // end={{x: 1, y: 0}}
+        style={[
+          styles.GradientViewStyle,
+          {
+            backgroundColor: Disabled ? COLORS.DisableButtonBackground : COLORS.Primary,
+          },
+        ]}>
         <Text
           style={[
             styles.NewAccountText,
-            {color: Disabled ? COLORS.DisableText : COLORS.White},
+            {color: Disabled ? COLORS.Black : COLORS.White},
           ]}>
           {Title}
         </Text>
-      </LinearGradient>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -42,10 +47,10 @@ export default GradientButton;
 
 const styles = StyleSheet.create({
   CreateAccountButton: {
-    width: '100%',
+    width: hp('25%'),
     overflow: 'hidden',
     alignSelf: 'center',
-    height: hp('5.5%'),
+    height: hp('6%'),
     justifyContent: 'center',
     borderRadius: CommonSize(50),
   },

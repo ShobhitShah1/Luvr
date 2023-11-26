@@ -22,7 +22,9 @@ const LoginButton: React.FC<LoginButtonProps> = ({Title, onPress, Icon}) => {
       <View style={styles.ItemWarper}>
         <Image resizeMode="contain" source={Icon} style={styles.IconView} />
         <View style={styles.ButtonTextView}>
-          <Text style={styles.ButtonTitleText}>{Title}</Text>
+          <Text numberOfLines={2} style={styles.ButtonTitleText}>
+            {Title}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -34,8 +36,7 @@ export default LoginButton;
 const styles = StyleSheet.create({
   LoginButtonContainer: {
     width: '100%',
-    height: hp('6%'),
-    // height: CommonSize(45),
+    height: hp('7%'),
     borderColor: COLORS.White,
     marginTop: CommonSize(15),
     borderWidth: CommonSize(2),
@@ -49,8 +50,8 @@ const styles = StyleSheet.create({
   },
   IconView: {
     alignSelf: 'center',
-    width: CommonSize(16),
-    height: CommonSize(16),
+    width: CommonSize(19),
+    height: CommonSize(19),
     justifyContent: 'center',
   },
   ButtonTextView: {
@@ -64,7 +65,6 @@ const styles = StyleSheet.create({
     color: COLORS.Black,
     fontFamily: FONTS.Bold,
     justifyContent: 'center',
-    fontSize: hp('2.2%'),
-    // fontSize: CommonSize(14.5),
+    fontSize: hp('1.8%'),
   },
 });

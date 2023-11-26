@@ -1,10 +1,11 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {useEffect} from 'react';
-import {Animated, StatusBar, View} from 'react-native';
+import {Animated, Image, StatusBar, View} from 'react-native';
 import CommonLogos from '../../Common/CommonLogos';
 import {COLORS} from '../../Common/Theme';
 import styles from './styles';
+import CommonImages from '../../Common/CommonImages';
 
 const SplashScreen: React.FC = () => {
   const LoadingProgress = new Animated.Value(0);
@@ -12,16 +13,21 @@ const SplashScreen: React.FC = () => {
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
   useEffect(() => {
-    Animated.timing(LoadingProgress, {
-      toValue: 100,
-      duration: 1000,
-      useNativeDriver: true,
-      delay: 1000,
-    }).start(() => {
+    // Animated.timing(LoadingProgress, {
+    //   toValue: 100,
+    //   duration: 1000,
+    //   useNativeDriver: true,
+    //   delay: 1000,
+    // }).start(() => {
+    //   navigation.replace('LoginStack', {
+    //     screen: 'Login',
+    //   });
+    // });
+    setTimeout(() => {
       navigation.replace('LoginStack', {
         screen: 'Login',
       });
-    });
+    }, 1000);
   }, [navigation]);
 
   const ImageScale = {
@@ -40,7 +46,7 @@ const SplashScreen: React.FC = () => {
       <StatusBar backgroundColor={COLORS.Primary} barStyle="light-content" />
       <Animated.Image
         resizeMode="center"
-        style={[styles.TinderLogoStyle, ImageScale]}
+        style={[styles.TinderLogoStyle]}
         source={CommonLogos.TinderLogo}
       />
     </View>

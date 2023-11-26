@@ -46,10 +46,11 @@ export default function MainRoute() {
         <Stack.Screen component={LoginScreen} name="Login" />
         <Stack.Screen component={WelcomeScreen} name="Welcome" />
         <Stack.Screen component={PhoneNumber} name="PhoneNumber" />
-        <Stack.Screen component={OTPScreen} name="OTP" />
+        {/* <Stack.Screen component={OTPScreen} name="OTP" /> */}
 
         {/* CreateProfile: Why Added Here? Its Part Of Login */}
-        <Stack.Screen component={CreateProfile} name="CreateProfile" />
+
+        {/* <Stack.Screen component={CreateProfile} name="CreateProfile" />
         <Stack.Screen component={MyFirstName} name="MyFirstName" />
         <Stack.Screen component={MyBirthDate} name="MyBirthDate" />
         <Stack.Screen component={MyGender} name="MyGender" />
@@ -72,7 +73,7 @@ export default function MainRoute() {
           component={LocationPermission}
           name="LocationPermission"
         />
-        <Stack.Screen component={ManageContacts} name="ManageContacts" />
+        <Stack.Screen component={ManageContacts} name="ManageContacts" /> */}
       </Stack.Navigator>
     );
   };

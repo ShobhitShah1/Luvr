@@ -1,33 +1,47 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useEffect, useMemo, useState} from 'react';
-import {
-  PermissionsAndroid,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {FC, useEffect, useState} from 'react';
+import {Image, PermissionsAndroid, Text, View} from 'react-native';
 import {requestHint} from 'react-native-otp-verify';
 import {CommonSize} from '../../../Common/CommonSize';
-import {ActiveOpacity, COLORS} from '../../../Common/Theme';
 import AuthHeader from '../../../Components/AuthComponents/AuthHeader';
+import CountryPickerView from '../../../Components/AuthComponents/CountryPickerView';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import useCountryPicker from '../../../Hooks/useCountryPicker';
 import styles from './styles';
+import {heightPercentageToDP} from 'react-native-responsive-screen';
+import {COLORS, SIZES} from '../../../Common/Theme';
+import CommonIcons from '../../../Common/CommonIcons';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 const PhoneNumber: FC = () => {
-  const {Visible, setVisible, CountryPickerComponent} = useCountryPicker();
-
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-
-  const [StorePhoneNumber, setStorePhoneNumber] = useState<string>('');
-
-  const memoizedCountryPickerComponent = useMemo(
-    () => <CountryPickerComponent />,
-    [Visible],
+  const [visible, setVisible] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [diallingCode, setDiallingCode] = useState<string | null>(null);
+  const [defaultDiallingCode, setDefaultDiallingCode] = useState<string | null>(
+    null,
   );
+  const [StorePhoneNumber, setStorePhoneNumber] = useState<string | null>('');
+  const opacity = useSharedValue(0);
+
+  useEffect(() => {
+    opacity.value = withTiming(visible ? 1 : 0, {
+      duration: 500,
+      easing: Easing.inOut(Easing.ease),
+    });
+  }, [visible]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    };
+  });
 
   useEffect(() => {
     GetPermission();
@@ -67,47 +81,41 @@ const PhoneNumber: FC = () => {
 
         <View style={styles.NumberContainer}>
           <View style={styles.MyNumberTextView}>
-            <Text style={styles.MyNumberText}>My number is</Text>
+            <Text style={styles.MyNumberText}>What’s your {'\n'}number?</Text>
+            <Text style={styles.MyNumberSubText}>
+              Please enter your valid phone number. We will send you 4-digit
+              code to verify your account.
+            </Text>
           </View>
         </View>
 
-        <View style={styles.PhoneNumberView}>
-          <TouchableOpacity
-            activeOpacity={ActiveOpacity}
-            onPress={() => {
-              setVisible(!Visible);
-            }}
-            style={styles.UserCountyAndCodeView}>
-            {memoizedCountryPickerComponent}
-            {/* <CountryPickerComponent /> */}
-          </TouchableOpacity>
-          <View style={styles.UserNumberTextView}>
-            <TextInput
-              value={StorePhoneNumber}
-              autoFocus={true}
-              textContentType="telephoneNumber"
-              style={styles.UserNumberTextStyle}
-              cursorColor={COLORS.Primary}
-              placeholder="Phone Number"
-              placeholderTextColor={COLORS.Placeholder}
-              keyboardType="phone-pad"
-              onChangeText={(value: string) => {
-                setStorePhoneNumber(value);
-              }}
+        <View>
+          <View style={styles.PhoneNumberView}>
+            <CountryPickerView
+              visible={visible}
+              setVisible={setVisible}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+              diallingCode={diallingCode}
+              defaultDiallingCode={defaultDiallingCode}
+              setDiallingCode={setDiallingCode}
+              setDefaultDiallingCode={setDefaultDiallingCode}
             />
           </View>
-        </View>
 
-        <View
-          style={{marginTop: CommonSize(20), marginHorizontal: CommonSize(10)}}>
-          <Text style={styles.NumberHelpText}>
-            When you tap "Continue", Tinder will send a test with verification
-            code. Message and data rates may apply. The verified phone number
-            can be used to log in.{' '}
-            <Text style={styles.LearnWhatText}>
-              Learn what happens when your number changes.
-            </Text>
-          </Text>
+          {visible && (
+            <Animated.View style={[styles.CountryCodeModalView, animatedStyle]}>
+              <Image
+                resizeMethod="auto"
+                resizeMode="contain"
+                source={CommonIcons.UP}
+                style={styles.UpIcon}
+              />
+              <View>
+                <Text>Hello</Text>
+              </View>
+            </Animated.View>
+          )}
         </View>
 
         <View style={{marginVertical: CommonSize(15)}}>

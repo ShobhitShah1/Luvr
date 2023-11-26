@@ -1,12 +1,12 @@
 import {StyleSheet} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {CommonSize} from '../../../Common/CommonSize';
-import {COLORS, FONTS} from '../../../Common/Theme';
+import {COLORS, FONTS, SIZES} from '../../../Common/Theme';
 
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
-    backgroundColor: COLORS.White,
+    backgroundColor: COLORS.Secondary,
   },
   SubContainerView: {
     marginHorizontal: hp('2.7%'),
@@ -22,24 +22,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   MyNumberText: {
-    color: COLORS.Black,
-    fontSize: hp('2.7%'),
+    color: COLORS.Primary,
+    fontSize: hp('3%'),
     fontFamily: FONTS.Bold,
   },
+  MyNumberSubText: {
+    width: '95%',
+    marginTop: hp('1%'),
+    color: COLORS.Black,
+    fontSize: hp('1.7%'),
+    fontFamily: FONTS.Medium,
+  },
   PhoneNumberView: {
-    alignItems: 'center',
+    width: '93%',
+    alignSelf: 'center',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: hp('1.5%'),
+    alignItems: 'center',
     marginTop: hp('1.9%'),
+    paddingVertical: hp('2%'),
+    paddingHorizontal: hp('1.5%'),
+    borderRadius: SIZES.radius,
+    backgroundColor: COLORS.White,
+    justifyContent: 'space-between',
   },
   UserCountyAndCodeView: {
     width: '30%',
     justifyContent: 'center',
     alignSelf: 'center',
     height: CommonSize(35),
-    borderBottomWidth: CommonSize(2),
-    borderBottomColor: COLORS.Black,
   },
   UserNumberTextView: {
     width: '65%',
@@ -58,22 +68,25 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     fontFamily: FONTS.SemiBold,
   },
-  NumberHelpText: {
-    color: COLORS.Gray,
-    textAlign: 'left',
-    fontFamily: FONTS.Medium,
-    lineHeight: hp('2.2%'),
-  },
-  LearnWhatText: {
-    color: COLORS.Blue,
-    textDecorationLine: 'underline',
-    textDecorationStyle: 'solid',
-    textDecorationColor: COLORS.Black,
-    fontFamily: FONTS.Bold,
-  },
   NumberChangesAlertText: {
     color: 'rgba(68, 65, 66, 1)',
     fontFamily: FONTS.Regular,
+  },
+  CountryCodeModalView: {
+    width: '93%',
+    height: hp('35%'),
+    marginVertical: hp('4%'),
+    backgroundColor: COLORS.White,
+    alignSelf: 'center',
+    borderRadius: SIZES.radius,
+  },
+  UpIcon: {
+    width: hp('6%'),
+    height: hp('6%'),
+    padding: 0,
+    position: 'absolute',
+    left: hp('3.4%'),
+    top: hp('-3.7%'),
   },
 });
 
