@@ -1,4 +1,4 @@
-import Slider from '@react-native-community/slider';
+// import Slider from '@react-native-community/slider';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
@@ -41,7 +41,7 @@ const DistancePreference: FC = () => {
             milesValue,
           )} mi`}</Text>
         </View>
-        <Slider
+        {/* <Slider
           value={milesValue}
           minimumValue={0}
           maximumValue={1}
@@ -51,7 +51,7 @@ const DistancePreference: FC = () => {
           maximumTrackTintColor={COLORS.Black}
           minimumTrackTintColor={COLORS.Primary}
           style={styles.SliderStyle}
-        />
+        /> */}
       </View>
 
       <View style={CreateProfileStyles.BottomButton}>

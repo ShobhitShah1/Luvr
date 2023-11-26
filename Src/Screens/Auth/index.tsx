@@ -1,4 +1,3 @@
-export {default as CreateAccount} from './CreateAccount/CreateAccount';
 export {default as MyBirthDate} from './CreateProfile/MyBirthDate';
 export {default as MyFirstName} from './CreateProfile/MyFirstName';
 export {default as LoginScreen} from './Login/LoginScreen';

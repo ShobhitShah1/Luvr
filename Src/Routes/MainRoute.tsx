@@ -9,7 +9,6 @@ import SplashScreen from '../Screens/Splash/SplashScreen';
 import {
   AddLifestyle,
   AddRecentPics,
-  CreateAccount,
   CreateProfile,
   DistancePreference,
   ImLookingFor,
@@ -46,7 +45,6 @@ export default function MainRoute() {
         }}>
         <Stack.Screen component={LoginScreen} name="Login" />
         <Stack.Screen component={WelcomeScreen} name="Welcome" />
-        <Stack.Screen component={CreateAccount} name="CreateAccount" />
         <Stack.Screen component={PhoneNumber} name="PhoneNumber" />
         <Stack.Screen component={OTPScreen} name="OTP" />
 
