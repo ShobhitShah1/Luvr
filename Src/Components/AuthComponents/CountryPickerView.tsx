@@ -1,3 +1,4 @@
+/* eslint-disable react/react-in-jsx-scope */
 import {FC, useEffect} from 'react';
 import {
   ActivityIndicator,
@@ -10,7 +11,7 @@ import {
 import {getCountry} from 'react-native-localize';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../Common/CommonIcons';
-import {COLORS, GROUP_FONT, SIZES} from '../../Common/Theme';
+import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../Common/Theme';
 import CustomTextInput from '../CustomTextInput';
 import CountryWithCode from '../Data/CountryWithCode';
 
@@ -21,6 +22,8 @@ interface CountryData {
 }
 
 interface CountryPickerProps {
+  value: string | null;
+  setValue: React.Dispatch<React.SetStateAction<string | null>>;
   diallingCode: string | null;
   defaultDiallingCode: string | null;
   visible: boolean;
@@ -31,6 +34,8 @@ interface CountryPickerProps {
   setDefaultDiallingCode: React.Dispatch<React.SetStateAction<string | null>>;
 }
 const CountryPickerView: FC<CountryPickerProps> = ({
+  value,
+  setValue,
   diallingCode,
   defaultDiallingCode,
   visible,
@@ -84,12 +89,15 @@ const CountryPickerView: FC<CountryPickerProps> = ({
               source={CommonIcons.Down}
               style={styles.downIcon}
             />
-            <View style={styles.SapLine} />
           </TouchableOpacity>
+
+          <View style={styles.SapLine} />
 
           <View style={styles.PhoneNumberTextInput}>
             <View style={styles.TextInputView}>
               <CustomTextInput
+                value={value}
+                onChangeText={setValue}
                 keyboardType="number-pad"
                 style={styles.TextInput}
                 placeholderTextColor={COLORS.Gray}
@@ -123,10 +131,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   CountryCodeAndIconView: {
-    width: '25%',
+    maxWidth: '25%',
     overflow: 'hidden',
     alignItems: 'center',
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   countryNameView: {
     marginRight: hp('0.5%'),
@@ -152,16 +161,18 @@ const styles = StyleSheet.create({
   downIcon: {
     width: hp('1.7%'),
     height: hp('1.7%'),
-    marginHorizontal: hp('1%'),
+    marginRight: hp('0.5%'),
   },
   CountryNameText: {
+    width: '60%',
     ...GROUP_FONT.h3,
     color: COLORS.Black,
   },
   SapLine: {
     height: '110%',
     alignSelf: 'center',
-    marginLeft: hp('0.5%'),
+    marginLeft: hp('0.8%'),
+    marginRight: hp('0.8%'),
     justifyContent: 'center',
     borderRadius: SIZES.radius,
     borderLeftWidth: hp('0.3%'),
@@ -172,13 +183,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   TextInputView: {
-    width: '85%',
+    width: '82%',
+    marginLeft: hp('0.5%'),
     justifyContent: 'center',
   },
   TextInput: {
     padding: 0,
     margin: 0,
     ...GROUP_FONT.h3,
+    fontFamily: FONTS.SemiBold
   },
   CancelIconView: {
     width: '15%',

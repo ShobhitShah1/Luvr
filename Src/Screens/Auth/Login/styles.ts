@@ -1,8 +1,6 @@
-import { StyleSheet } from 'react-native';
-import {
-  heightPercentageToDP as hp
-} from 'react-native-responsive-screen';
-import { COLORS, FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
+import {StyleSheet} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 
 const styles = StyleSheet.create({
   Container: {
@@ -27,7 +25,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   ButtonView: {
-    paddingVertical: hp('1%')
+    paddingVertical: hp('1%'),
   },
   LoginBoxContainer: {
     overflow: 'hidden',

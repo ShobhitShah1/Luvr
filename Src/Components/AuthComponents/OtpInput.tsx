@@ -1,7 +1,8 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {StyleSheet} from 'react-native';
 import OTPTextInput from 'react-native-otp-textinput';
 import {getHash, startOtpListener, useOtpVerify} from 'react-native-otp-verify';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS} from '../../Common/Theme';
 interface OtpInputProps {
   onTextChange: (text: string) => void;
@@ -16,17 +17,10 @@ const OtpInput: React.FC<OtpInputProps> = ({onTextChange, clearText}) => {
   const [otpFromMethod, setOtpFromMethod] = React.useState<string>();
 
   useEffect(() => {
-    console.log('hashFromMethod', hashFromMethod);
-    console.log('otpFromMethod', otpFromMethod);
-    console.log('otp', otp);
-  }, [otpFromMethod]);
-
-  useEffect(() => {
-    getHash().then(setHashFromMethod).catch(console.log);
     startOtpListener(res => {
-      const OTP = res ? /(\d{4})/g.exec(res)[1] : '';
-      console.log('OTP:>>>', OTP);
-      onTextChange(OTP);
+      // const OTP = res ? /(\d{4})/g.exec(res)[1] : '';
+      // console.log('OTP:>>>', OTP);
+      // onTextChange(OTP);
     });
   }, []);
 
@@ -40,7 +34,7 @@ const OtpInput: React.FC<OtpInputProps> = ({onTextChange, clearText}) => {
         onTextChange(text);
       }}
       tintColor={COLORS.Primary}
-      offTintColor={COLORS.Black}
+      offTintColor={COLORS.White}
       containerStyle={styles.ContainContainer}
     />
   );
@@ -53,8 +47,12 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignSelf: 'center',
+    marginTop: hp(4),
   },
   TextInputStyle: {
-    borderBottomWidth: 1,
+    borderRadius: 30,
+    borderWidth: 1,
+    backgroundColor: COLORS.White,
+    color: COLORS.Gray,
   },
 });

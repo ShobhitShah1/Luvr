@@ -1,8 +1,16 @@
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {FC, useCallback, useState} from 'react';
 import CreateProfileStyles from './styles';
 import CreateProfileHeader from './Components/CreateProfileHeader';
-import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import LookingFor from '../../../Components/Data/LookingFor';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
@@ -11,6 +19,8 @@ import {useNavigation} from '@react-navigation/native';
 import {useUserData} from '../../../Contexts/UserDataContext';
 import {useFieldConfig} from '../../../Utils/StorageUtils';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import CommonIcons from '../../../Common/CommonIcons';
+const {width} = Dimensions.get('window');
 
 const ImLookingFor: FC = () => {
   let ProgressCount: number = 0.4;
@@ -48,43 +58,56 @@ const ImLookingFor: FC = () => {
   const renderItem = ({item, index}: {item: any; index: number}) => (
     <TouchableOpacity
       onPress={() => onPressLookingFor(item)}
-      style={
-        isGenderSelected(item)
-          ? styles.SelectedLookingForListView
-          : styles.LookingForListView
-      }
+      style={styles.LookingForListView}
       key={index}>
       <View style={styles.TextView}>
-        <Text style={styles.EmojiText}>{item.Emoji}</Text>
-        <Text numberOfLines={2} style={styles.LookingForText}>
+        <Text
+          numberOfLines={2}
+          style={[
+            styles.LookingForText,
+            {
+              fontFamily: isGenderSelected(item) ? FONTS.Bold : FONTS.Medium,
+            },
+          ]}>
           {item.Title}
         </Text>
+        {isGenderSelected(item) && (
+          <Image
+            resizeMethod="auto"
+            resizeMode="contain"
+            source={CommonIcons.CheckMark}
+            style={{width: hp('2.5%'), height: hp('2.5%')}}
+          />
+        )}
       </View>
     </TouchableOpacity>
   );
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={ProgressCount} Skip={false} />
+      <CreateProfileHeader ProgressCount={3} Skip={false} />
 
-      <View style={CreateProfileStyles.ContentView}>
-        <Text style={CreateProfileStyles.TitleText}>I'm Looking For ...</Text>
-        <Text style={styles.CompatibilityText}>
-          increase compatibility by sharing yours!
-        </Text>
+      <View style={{marginHorizontal: hp('1.5%')}}>
+        <View style={CreateProfileStyles.ContentView}>
+          <Text style={CreateProfileStyles.TitleText}>
+            What’s your hoping {'\n'}to find?
+          </Text>
+          <Text style={styles.CompatibilityText}>
+            Honesty helps you and everyone on find what you're looking for.
+          </Text>
+        </View>
+
+        <FlatList
+          data={LookingFor}
+          renderItem={renderItem}
+          contentContainerStyle={styles.FlatListContainer}
+          keyExtractor={item => item.id.toString()}
+        />
       </View>
-
-      <FlatList
-        numColumns={3}
-        data={LookingFor}
-        renderItem={renderItem}
-        contentContainerStyle={styles.FlatListContainer}
-        keyExtractor={item => item.id.toString()}
-      />
 
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
-          Title={'Next'}
+          Title={'Continue'}
           Disabled={SelectedLookingForIndex.length !== 0 ? false : true}
           Navigation={() => {
             navigation.navigate('LoginStack', {
@@ -101,13 +124,15 @@ export default ImLookingFor;
 
 const styles = StyleSheet.create({
   CompatibilityText: {
+    width: '90%',
     ...GROUP_FONT.h3,
     marginVertical: hp('1%'),
-    fontFamily: FONTS.Regular,
+    fontFamily: FONTS.Medium,
   },
   FlatListContainer: {
     justifyContent: 'center',
     alignSelf: 'center',
+    marginTop: hp('5%')
   },
   SelectedLookingForListView: {
     width: '31%',
@@ -124,20 +149,24 @@ const styles = StyleSheet.create({
     borderColor: COLORS.Primary,
   },
   LookingForListView: {
-    width: '31%',
-    left: hp('0.5%'),
-    alignContent: 'center',
-    marginHorizontal: hp('0.4%'),
-    justifyContent: 'center',
-    alignSelf: 'center',
-    height: hp('15%'),
-    borderRadius: hp('1%'),
-    backgroundColor: 'rgba(97,106,118,0.1)',
+    height: hp('6.5%'),
+    width: width - hp('8%'),
     marginVertical: hp('0.5%'),
-    overflow: 'hidden',
+    alignSelf: 'center',
+    backgroundColor: COLORS.White,
+    borderRadius: SIZES.radius,
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
+  GenderFlexView: {
+    flexDirection: 'row',
+    marginHorizontal: hp('2.8%'),
+    justifyContent: 'space-between',
   },
   TextView: {
-    justifyContent: 'center',
+    flexDirection: 'row',
+    marginHorizontal: hp('2.8%'),
+    justifyContent: 'space-between',
     alignSelf: 'center',
     width: '85%',
   },
@@ -147,10 +176,11 @@ const styles = StyleSheet.create({
     marginVertical: hp('0.5%'),
   },
   LookingForText: {
-    marginVertical: hp('0.2%'),
-    ...GROUP_FONT.body3,
-    fontSize: hp('1.6%'),
-    color: COLORS.Black,
-    textAlign: 'center',
+    ...GROUP_FONT.h3,
+    // marginVertical: hp('0.2%'),
+    // ...GROUP_FONT.body3,
+    // fontSize: hp('1.6%'),
+    // color: COLORS.Black,
+    // textAlign: 'center',
   },
 });

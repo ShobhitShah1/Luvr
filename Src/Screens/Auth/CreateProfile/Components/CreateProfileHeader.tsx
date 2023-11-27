@@ -22,37 +22,53 @@ interface CreateProfileProps {
 }
 
 const CreateProfileHeader: FC<CreateProfileProps> = ({ProgressCount, Skip}) => {
+  console.log(ProgressCount);
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
   return (
-    <View>
-      <Progress.Bar
-        color={COLORS.Primary}
-        width={width}
-        progress={ProgressCount}
-        animated={true}
-        animationType="timing"
-        animationConfig={{bounciness: 10}}
-        borderRadius={0}
-        borderColor="transparent"
-        unfilledColor="rgba(217, 217, 217, 1)"
-      />
-
+    <View style={{width: '100%'}}>
       <View style={styles.CancelButtonAndTitleText}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image source={CommonIcons.TinderBack} style={styles.CancelButton} />
+        <TouchableOpacity
+          style={{
+            width: '33.33%',
+            justifyContent: 'center',
+            alignSelf: 'center', 
+          }}
+          onPress={() => navigation.goBack()}>
+          <Image
+            resizeMode="contain"
+            source={CommonIcons.TinderBack}
+            style={styles.CancelButton}
+          />
         </TouchableOpacity>
-        {Skip && (
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('LoginStack', {
-                screens: '',
-              })
-            }>
-            <Text style={styles.SkipText}>Skip</Text>
-          </TouchableOpacity>
-        )}
+
+        <View
+          style={{
+            width: '33.33%',
+            justifyContent: 'center',
+            right: hp('1%')
+          }}>
+          {ProgressCount !== 0 && <Text style={{...GROUP_FONT.h3, textAlign:'center'}}>{ProgressCount}/9</Text>}
+        </View>
+
+        <View
+          style={{
+            width: '33.33%',
+            justifyContent: 'center',
+            alignSelf: 'center', 
+          }}>
+          {Skip && (
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('LoginStack', {
+                  screens: '',
+                })
+              }>
+              <Text style={styles.SkipText}>Skip</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -62,13 +78,14 @@ export default CreateProfileHeader;
 
 const styles = StyleSheet.create({
   CancelButtonAndTitleText: {
+    width: '100%',
     margin: hp('1.5%'),
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   CancelButton: {
-    width: hp('2.7%'),
-    height: hp('2.7%'),
+    width: hp('3.5%'),
+    height: hp('3.5%'),
   },
   TitleContainer: {
     marginTop: hp('2.7%'),
@@ -91,5 +108,7 @@ const styles = StyleSheet.create({
   SkipText: {
     ...GROUP_FONT.h3,
     color: COLORS.Gray,
+    textAlign: 'right',
+    marginRight: hp('4%')
   },
 });

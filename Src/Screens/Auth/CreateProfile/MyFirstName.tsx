@@ -1,10 +1,15 @@
 /* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useState} from 'react';
-import {Keyboard, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import Modal from 'react-native-modal';
+import React, {FC, useCallback, useEffect, useState} from 'react';
+import {
+  Keyboard,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -14,10 +19,10 @@ import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
 import {useUserData} from '../../../Contexts/UserDataContext';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useFieldConfig} from '../../../Utils/StorageUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import {LocalStorageFields, UserField} from '../../../Types/LocalStorageFields';
 
 const MyFirstName: FC = () => {
   let ProgressCount: number = 0.1;
@@ -28,7 +33,38 @@ const MyFirstName: FC = () => {
 
   //* All States
   const [FirstName, setFirstName] = useState<string>(userData.firstName);
-  const [WelcomeModal, setWelcomeModal] = useState<boolean>(false);
+  const [BirthDateDD, setBirthDateDD] = useState<string>('');
+  const [BirthDateMM, setBirthDateMM] = useState<string>('');
+  const [BirthDateYYYY, setBirthDateYYYY] = useState<string>('');
+  const [CityName, setCityName] = useState<string>('');
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const [selectedGender, setSelectedGender] = useState('');
+
+  const genders = ['Man', 'Woman', 'Other'];
+
+  const handleGenderSelection = (gender: string) => {
+    setSelectedGender(gender);
+  };
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setIsKeyboardOpen(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setIsKeyboardOpen(false);
+      },
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
 
   //* Navigation
   const navigation =
@@ -45,101 +81,146 @@ const MyFirstName: FC = () => {
   //* Modal Button Navigate To Screen
   const OnLetsGoButtonPress = useCallback(() => {
     Keyboard.dismiss();
-    setWelcomeModal(false);
+    handleInputChange(StoreStringName, FirstName);
     setTimeout(() => {
       navigation.navigate('LoginStack', {
-        screen: 'MyBirthDate',
+        screen: 'SexualOrientationScreen',
       });
     }, 300);
   }, [navigation]);
 
-  //* Next Button Click Open Modal
-  const OnNextButtonClick = useCallback(() => {
-    Keyboard.dismiss();
-    if (Keyboard.isVisible()) {
-      handleInputChange(StoreStringName, FirstName);
-      setTimeout(() => {
-        setWelcomeModal(true);
-      }, 100);
-    } else {
-      setWelcomeModal(true);
-    }
-  }, [handleInputChange, StoreStringName, FirstName]);
-
-  //* Lets Go Button For Modal
-  const LetsGoButton = () => {
-    return (
-      <TouchableOpacity
-        activeOpacity={0.9}
-        onPress={OnLetsGoButtonPress}
-        style={styles.CreateAccountButton}>
-        <LinearGradient
-          colors={COLORS.ButtonGradient}
-          start={{x: 0, y: 1}}
-          end={{x: 1, y: 0}}
-          style={styles.GradientViewStyle}>
-          <Text style={[styles.NewAccountText, {color: COLORS.White}]}>
-            Let's Go
-          </Text>
-        </LinearGradient>
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={ProgressCount} Skip={false} />
+      <CreateProfileHeader ProgressCount={1} Skip={false} />
 
-      <View style={CreateProfileStyles.ContentView}>
-        <Text style={CreateProfileStyles.TitleText}>
-          What's your first name
+      <ScrollView
+        style={[CreateProfileStyles.ContentView, {paddingBottom: hp('12%')}]}
+        showsVerticalScrollIndicator={false}>
+        <Text
+          style={{
+            color: COLORS.Primary,
+            fontSize: hp('3.3%'),
+            fontFamily: FONTS.Bold,
+          }}>
+          Identify your{'\n'}real self
         </Text>
-        <CustomTextInput
-          autoFocus
-          value={FirstName}
-          onChangeText={value => {
-            setFirstName(value);
-          }}
-          textContentType="givenName"
-          placeholder="Enter first name"
-          style={styles.TextInputStyle}
-          placeholderTextColor={COLORS.Placeholder}
-        />
-        <Text style={styles.InfoText}>
-          This is how it'll appear on your profile.
+        <Text style={CreateProfileStyles.subTitleText}>
+          Introduce yourself fill out the details{'\n'}so people know about you.
         </Text>
-        <Text style={styles.CantChangeText}>Can't change it later.</Text>
-      </View>
-
-      <View style={CreateProfileStyles.BottomButton}>
-        <GradientButton
-          Title={'Next'}
-          Disabled={FirstName.length === 0 ? true : false}
-          Navigation={() => OnNextButtonClick()}
-        />
-      </View>
-
-      <Modal isVisible={WelcomeModal} onDismiss={() => setWelcomeModal(false)}>
-        <View style={styles.ModalContainer}>
-          <View style={styles.ModalSubView}>
-            <View style={{alignItems: 'center'}}>
-              <Text style={styles.EmojiView}>👋🏻</Text>
-              <Text
-                style={styles.WelcomeUserText}>{`Welcome, ${FirstName}!`}</Text>
-              <Text style={styles.DescriptionText}>
-                There's a lot to discover out there. But let's get your profile
-                set up first.
-              </Text>
-              <LetsGoButton />
-              <Text
-                onPress={() => setWelcomeModal(false)}
-                style={styles.EditNameText}>
-                Edit name
-              </Text>
-            </View>
+        <View style={CreateProfileStyles.nameView}>
+          <Text style={CreateProfileStyles.NameText}>My name is</Text>
+          <CustomTextInput
+            value={FirstName}
+            onChangeText={value => {
+              setFirstName(value);
+            }}
+            textContentType="givenName"
+            placeholder="Enter your name"
+            style={styles.TextInputStyle}
+            placeholderTextColor={COLORS.Gray}
+          />
+        </View>
+        <View style={[{marginTop: hp('3.5%')}]}>
+          <Text style={CreateProfileStyles.NameText}>My birthday is</Text>
+          <View style={CreateProfileStyles.BirthdayInputView}>
+            <CustomTextInput
+              editable={true}
+              keyboardType={'number-pad'}
+              value={BirthDateDD}
+              onChangeText={value => {
+                setBirthDateDD(value);
+              }}
+              maxLength={2}
+              textContentType="givenName"
+              placeholder="DD"
+              style={[styles.TextInputStyle, {width: hp('12%')}]}
+              placeholderTextColor={COLORS.Gray}
+            />
+            <CustomTextInput
+              value={BirthDateMM}
+              onChangeText={value => {
+                setBirthDateMM(value);
+              }}
+              maxLength={2}
+              textContentType="givenName"
+              placeholder="MM"
+              style={[
+                styles.TextInputStyle,
+                {width: hp('12%'), marginLeft: hp('1.2%')},
+              ]}
+              placeholderTextColor={COLORS.Gray}
+            />
+            <CustomTextInput
+              value={BirthDateYYYY}
+              onChangeText={value => {
+                setBirthDateYYYY(value);
+              }}
+              maxLength={4}
+              textContentType="givenName"
+              placeholder="YYYY"
+              style={[
+                styles.TextInputStyle,
+                {width: hp('12%'), marginLeft: hp('1.2%')},
+              ]}
+              placeholderTextColor={COLORS.Gray}
+            />
           </View>
         </View>
-      </Modal>
+        <View style={{marginTop: hp('3.5%')}}>
+          <Text style={CreateProfileStyles.NameText}>I am a</Text>
+          <View style={CreateProfileStyles.BirthdayInputView}>
+            {genders.map((gender, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleGenderSelection(gender)}
+                style={[
+                  styles.GenderView,
+                  {
+                    width: hp('12%'),
+                    marginLeft: index > 0 ? hp('1.2%') : 0,
+                    backgroundColor:
+                      selectedGender === gender ? COLORS.Primary : COLORS.White,
+                  },
+                ]}>
+                <Text
+                  style={[
+                    styles.GenderText,
+                    {
+                      color:
+                        selectedGender === gender ? COLORS.White : COLORS.Black,
+                    },
+                  ]}>
+                  {gender}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+        <View style={[{marginTop: hp('2.5%'), marginBottom: hp('2.5%')}]}>
+          <Text style={CreateProfileStyles.NameText}>I am from</Text>
+          <CustomTextInput
+            value={CityName}
+            onChangeText={value => {
+              setCityName(value);
+            }}
+            textContentType="givenName"
+            placeholder="Enter your city name"
+            style={styles.TextInputStyle}
+            placeholderTextColor={COLORS.Gray}
+          />
+        </View>
+      </ScrollView>
+
+      {!isKeyboardOpen && (
+        <View style={CreateProfileStyles.BottomButton}>
+          <GradientButton
+            Title={'Continue'}
+            // Disabled={FirstName.length === 0 ? true : false}
+            Disabled={false}
+            Navigation={() => OnLetsGoButtonPress()}
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -150,12 +231,32 @@ const styles = StyleSheet.create({
   TextInputStyle: {
     padding: 0,
     paddingVertical: hp('0.1%'),
-    marginTop: hp('2.6%'),
+    marginTop: hp('1%'),
     color: COLORS.Black,
     fontSize: hp('1.7%'),
-    borderBottomWidth: 1,
     borderColor: COLORS.Black,
-    marginVertical: hp('1.5%'),
+    marginVertical: hp('1%'),
+    backgroundColor: COLORS.White,
+    height: hp('5.7%'),
+    width: wp('85%'),
+    borderRadius: 30,
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  GenderView: {
+    marginVertical: hp('1%'),
+    backgroundColor: COLORS.White,
+    height: hp('5.2%'),
+    width: wp('80%'),
+    borderRadius: 30,
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+  },
+  GenderText: {
+    fontFamily: FONTS.Medium,
+    color: COLORS.Gray,
+    fontSize: hp('1.7%'),
   },
   InfoText: {
     fontFamily: FONTS.Medium,

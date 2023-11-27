@@ -1,4 +1,4 @@
-package com.tinder;
+package com.HeartSync;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

@@ -11,11 +11,11 @@ import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomCheckBox from '../../../Components/CustomCheckBox';
 import GenderListData from '../../../Components/Data/GenderListData';
-import CreateProfileHeader from './Components/CreateProfileHeader';
-import CreateProfileStyles from './styles';
 import {useUserData} from '../../../Contexts/UserDataContext';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useFieldConfig} from '../../../Utils/StorageUtils';
+import CreateProfileHeader from './Components/CreateProfileHeader';
+import CreateProfileStyles from './styles';
 interface GenderItem {
   id: number;
   name: string;

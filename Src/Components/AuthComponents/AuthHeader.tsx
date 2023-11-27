@@ -40,7 +40,7 @@ const AuthHeader: React.FC<AuthHeaderProps> = ({
         <Image
           resizeMode="contain"
           style={styles.BackIcon}
-          source={Icon ? Icon : CommonIcons.TinderBack}
+          source={ CommonIcons.TinderBack}
         />
       </TouchableOpacity>
       {Logo && (

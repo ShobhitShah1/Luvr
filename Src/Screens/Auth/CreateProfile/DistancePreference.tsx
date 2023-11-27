@@ -2,7 +2,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {Alert, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
@@ -22,15 +22,14 @@ const DistancePreference: FC = () => {
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={ProgressCount} Skip={false} />
+      <CreateProfileHeader ProgressCount={4} Skip={false} />
 
       <View style={CreateProfileStyles.ContentView}>
         <Text style={CreateProfileStyles.TitleText}>
-          Your Distance Preference?
+          Set your distance {'\n'}Preference
         </Text>
         <Text style={styles.CompatibilityText}>
-          Use the slider to set the maximum distance you would like potential
-          matches to be located.
+          Adjusting distance, It's like searching by location.
         </Text>
       </View>
 
@@ -39,7 +38,7 @@ const DistancePreference: FC = () => {
           <Text style={styles.SliderInfoText}>Distance Preference</Text>
           <Text style={styles.SliderValue}>{`${calculateMiles(
             milesValue,
-          )} mi`}</Text>
+          )} KM`}</Text>
         </View>
         {/* <Slider
           value={milesValue}
@@ -55,18 +54,19 @@ const DistancePreference: FC = () => {
       </View>
 
       <View style={CreateProfileStyles.BottomButton}>
-        <View style={styles.LaterCanSaveTextView}>
+        {/* <View style={styles.LaterCanSaveTextView}>
           <Text style={styles.LaterCanSaveText}>
             You can change preferences later in Setting
           </Text>
-        </View>
+        </View> */}
         <GradientButton
-          Title={'Next'}
+          Title={'Continue'}
           Disabled={false}
           Navigation={() => {
-            navigation.navigate('LoginStack', {
-              screen: 'YourStudy',
-            });
+            alert('work in progress 🚧');
+            // navigation.navigate('LoginStack', {
+            //   screen: 'YourStudy',
+            // });
           }}
         />
       </View>
@@ -80,11 +80,15 @@ const styles = StyleSheet.create({
   CompatibilityText: {
     ...GROUP_FONT.h3,
     marginVertical: hp('1%'),
-    fontFamily: FONTS.Regular,
+    fontFamily: FONTS.Medium,
   },
   SliderContainerView: {
     width: '100%',
-    marginVertical: hp('2%'),
+    alignSelf: 'center',
+    // backgroundColor:'red',
+    marginVertical: hp('6%'),
+    paddingHorizontal: hp('1%'),
+    // paddingHorizontal: hp('1.9%'),
   },
   DistancePrefView: {
     flexDirection: 'row',
@@ -98,10 +102,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   SliderInfoText: {
-    ...GROUP_FONT.body3,
+    ...GROUP_FONT.h3,
+    fontFamily: FONTS.SemiBold,
   },
   SliderValue: {
-    ...GROUP_FONT.body3,
+    ...GROUP_FONT.h3,
+    fontFamily: FONTS.SemiBold,
   },
   LaterCanSaveTextView: {
     marginVertical: hp('1.5%'),

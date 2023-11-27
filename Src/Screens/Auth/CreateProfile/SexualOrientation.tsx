@@ -5,6 +5,7 @@ import React, {FC, useCallback, useState} from 'react';
 import {
   Dimensions,
   FlatList,
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -12,7 +13,13 @@ import {
 } from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
-import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import {
+  ActiveOpacity,
+  COLORS,
+  FONTS,
+  GROUP_FONT,
+  SIZES,
+} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomCheckBox from '../../../Components/CustomCheckBox';
 import GendersData from '../../../Components/Data/genders';
@@ -21,6 +28,7 @@ import CreateProfileStyles from './styles';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useUserData} from '../../../Contexts/UserDataContext';
 import {useFieldConfig} from '../../../Utils/StorageUtils';
+import CommonIcons from '../../../Common/CommonIcons';
 
 const {width} = Dimensions.get('window');
 
@@ -32,12 +40,10 @@ const SexualOrientation: FC = () => {
   const {userData, dispatch} = useUserData();
   const StoreStringName = useFieldConfig(LocalStorageFields.sexualOrientation);
 
-  const initialSexualOrientation: {id: number; name: string}[] = userData.sexualOrientation?.length
+  const initialSexualOrientation: {id: number; name: string}[] = userData
+    .sexualOrientation?.length
     ? userData.sexualOrientation
     : [];
-
-  console.log('userData.sexualOrientation', userData);
-  console.log('userData.sexualOrientation', userData.sexualOrientation);
 
   const [ShowOnProfile, setShowOnProfile] = useState<boolean>(false);
   const [SelectedGenderIndex, setSelectedGenderIndex] = useState<Object[]>(
@@ -52,7 +58,7 @@ const SexualOrientation: FC = () => {
     (item: string) => {
       if (SelectedGenderIndex.includes(item)) {
         setSelectedGenderIndex(prev => prev.filter(i => i !== item));
-      } else if (SelectedGenderIndex.length < 3) {
+      } else if (SelectedGenderIndex.length < 4) {
         setSelectedGenderIndex(prev => [...prev, item]);
       }
     },
@@ -68,6 +74,7 @@ const SexualOrientation: FC = () => {
   const renderItem = ({item, index}: {item: any; index: number}) => (
     <TouchableOpacity
       key={index}
+      activeOpacity={ActiveOpacity}
       onPress={() => onPressGenders(item)}
       style={styles.GenderButtonView}>
       <View style={styles.GenderFlexView}>
@@ -81,7 +88,12 @@ const SexualOrientation: FC = () => {
           {item.name}
         </Text>
         {isGenderSelected(item) && (
-          <Feather name="check" size={20} color={COLORS.Primary} />
+          <Image
+            resizeMethod="auto"
+            resizeMode="contain"
+            source={CommonIcons.CheckMark}
+            style={{width: hp('2.5%'), height: hp('2.5%')}}
+          />
         )}
       </View>
     </TouchableOpacity>
@@ -102,17 +114,21 @@ const SexualOrientation: FC = () => {
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={ProgressCount} Skip={true} />
+      <CreateProfileHeader ProgressCount={2} Skip={true} />
 
       <View style={CreateProfileStyles.ContentView}>
-        <Text style={CreateProfileStyles.TitleText}>
-          Your sexual orientation?
+        <Text
+          style={{
+            color: COLORS.Primary,
+            fontSize: hp('3.3%'),
+            fontFamily: FONTS.Bold,
+          }}>
+          What is your sexual orientation?
         </Text>
         <Text style={styles.SelectUptoText}>Select upto 3</Text>
-        <View style={styles.BorderBottomWidth} />
       </View>
 
-      <View style={{height: '65%'}}>
+      <View style={{height: '60%'}}>
         <FlatList
           data={GendersData}
           keyExtractor={item => item.id.toString()}
@@ -123,7 +139,6 @@ const SexualOrientation: FC = () => {
 
       <View style={[CreateProfileStyles.BottomButton, styles.BottomContainer]}>
         <View style={styles.BottomView}>
-          <View style={styles.BorderBottomWidth} />
           <View style={styles.CheckBoxView}>
             <CustomCheckBox
               isChecked={ShowOnProfile}
@@ -134,7 +149,7 @@ const SexualOrientation: FC = () => {
             </Text>
           </View>
           <GradientButton
-            Title={'Next'}
+            Title={'Continue'}
             Disabled={SelectedGenderIndex.length !== 0 ? false : true}
             Navigation={OnNextButtonClick}
           />
@@ -148,9 +163,9 @@ export default SexualOrientation;
 
 const styles = StyleSheet.create({
   SelectUptoText: {
-    ...GROUP_FONT.h3,
+    ...GROUP_FONT.h4,
     marginVertical: hp('1%'),
-    fontFamily: FONTS.Regular,
+    fontFamily: FONTS.SemiBold,
   },
   BottomContainer: {
     zIndex: 1,
@@ -172,8 +187,12 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.Black,
   },
   GenderButtonView: {
-    width: width,
-    height: hp('6%'),
+    height: hp('6.5%'),
+    width: width - hp('5%'),
+    marginVertical: hp('0.5%'),
+    alignSelf: 'center',
+    backgroundColor: COLORS.White,
+    borderRadius: SIZES.radius,
     justifyContent: 'center',
     alignContent: 'center',
   },
@@ -184,7 +203,7 @@ const styles = StyleSheet.create({
   },
   GenderFlexView: {
     flexDirection: 'row',
-    marginHorizontal: hp('2%'),
+    marginHorizontal: hp('2.8%'),
     justifyContent: 'space-between',
   },
   SelectGenderText: {

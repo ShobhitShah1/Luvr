@@ -1,6 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
-apply plugin: 'com.google.gms.google-services'
+// apply plugin: 'com.google.gms.google-services'
 //apply plugin: 'com.google.firebase.firebase-perf'
 //apply plugin: 'com.google.firebase.crashlytics'
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
@@ -97,9 +97,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.tinder"
+    namespace "com.HeartSync"
     defaultConfig {
-        applicationId "com.tinder"
+        applicationId "com.HeartSync"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

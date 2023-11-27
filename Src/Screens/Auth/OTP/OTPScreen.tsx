@@ -6,6 +6,7 @@ import AuthHeader from '../../../Components/AuthComponents/AuthHeader';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import OtpInput from '../../../Components/AuthComponents/OtpInput';
 import styles from './styles';
+import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 
 interface RouteParams {
   number: string;
@@ -16,7 +17,7 @@ const OTPScreen: FC = () => {
   const {number} = route.params as RouteParams;
   const [OTPCode, setOTPCode] = useState<String | null>(null);
   const navigation =
-    useNavigation<NativeStackNavigationProp<{HomeStack: {}}>>();
+    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const [DisableButton, setDisableButton] = useState<boolean>(true);
 
   const OnOTPInput = (text: String) => {
@@ -31,28 +32,35 @@ const OTPScreen: FC = () => {
 
   return (
     <View style={styles.Container}>
-      <View style={styles.SubContainerView}>
+      <CreateProfileHeader ProgressCount={0} Skip={true} />
+
+      {/* <View style={styles.SubContainerView}>
         <AuthHeader Logo={false} onPress={() => {}} />
-      </View>
+      </View> */}
 
       <View style={styles.CodeAndNumberView}>
-        <Text style={styles.MyCodeText}>My code is</Text>
-        <Text style={styles.NumberText}>{number}</Text>
+        <Text style={styles.MyCodeText}>Enter your{'\n'}code</Text>
+        <Text style={styles.DescText}>
+          Enter 4-digit code. We have sent to{'\n'}you at{' '}
+          <Text style={styles.NumberText}>{number}</Text>
+        </Text>
       </View>
 
       <OtpInput onTextChange={text => OnOTPInput(text)} clearText={() => {}} />
 
-      <View style={styles.VerifyOTPButtonView}>
+      <View style={styles.ResendView}>
+        <Text style={styles.NoCodeText}>Didn't you received any code?</Text>
+        <Text style={styles.ResendText}>Resend a new code</Text>
+      </View>
+
+      <View style={[styles.VerifyOTPButtonView,{}]}>
         <GradientButton
           Disabled={DisableButton}
-          Title={'CONTINUE'}
+          Title={'Continue'}
           Navigation={() => {
-            navigation.navigate('HomeStack', {
-              screen: 'Home',
+            navigation.navigate('LoginStack', {
+              screen: 'MyFirstName',
             });
-            // navigation.navigate('LoginStack', {
-            //   screen: 'MyFirstName',
-            // });
           }}
         />
       </View>

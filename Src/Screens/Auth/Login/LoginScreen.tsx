@@ -29,8 +29,7 @@ const LoginScreen: FC = () => {
       <ScrollView
         bounces={false}
         style={styles.ContentView}
-        contentContainerStyle={{ flex: 1, justifyContent: 'space-between' }}
-      >
+        contentContainerStyle={{flex: 1, justifyContent: 'space-between'}}>
         <View style={styles.AppNameTitleView}>
           <Text style={styles.AppNameTitle}>Welcome to the{'\n'}App Name</Text>
         </View>

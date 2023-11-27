@@ -14,7 +14,7 @@ interface ButtonProps {
   Disabled: boolean;
 }
 
-const GradientButton: FC<ButtonProps> = ({Title, Navigation, Disabled}) => {
+const GradientButton: FC<ButtonProps> = ({ Title, Navigation, Disabled }) => {
   return (
     <TouchableOpacity
       disabled={Disabled}

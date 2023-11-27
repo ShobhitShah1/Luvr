@@ -4,6 +4,7 @@ const Cancel = require('../../Assets/Icons/Cancel.png');
 const TinderBack = require('../../Assets/Icons/TinderBack.png');
 const CancelPhoneNumber = require('../../Assets/Icons/CancelPhoneNumber.png');
 const UP = require('../../Assets/Icons/Up.png');
+const CheckMark = require('../../Assets/Icons/CheckMark.png');
 
 export default {
   Back,
@@ -12,4 +13,5 @@ export default {
   TinderBack,
   CancelPhoneNumber,
   UP,
+  CheckMark,
 };

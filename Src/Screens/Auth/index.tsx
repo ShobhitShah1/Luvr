@@ -1,7 +1,7 @@
-export {default as MyBirthDate} from './CreateProfile/MyBirthDate';
-export {default as MyFirstName} from './CreateProfile/MyFirstName';
 export {default as LoginScreen} from './Login/LoginScreen';
 export {default as OTPScreen} from './OTP/OTPScreen';
+export {default as MyFirstName} from './CreateProfile/MyFirstName';
+export {default as MyBirthDate} from './CreateProfile/MyBirthDate';
 export {default as PhoneNumber} from './PhoneNumber/PhoneNumber';
 export {default as WelcomeScreen} from './Welcome/WelcomeScreen';
 export {default as CreateProfile} from './CreateProfile/index';
