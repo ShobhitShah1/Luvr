@@ -116,37 +116,40 @@ const SexualOrientation: FC = () => {
     <View style={CreateProfileStyles.Container}>
       <CreateProfileHeader ProgressCount={2} Skip={true} />
 
-      <View style={CreateProfileStyles.ContentView}>
-        <Text
-          style={{
-            color: COLORS.Primary,
-            fontSize: hp('3.3%'),
-            fontFamily: FONTS.Bold,
-          }}>
-          What is your sexual orientation?
-        </Text>
-        <Text style={styles.SelectUptoText}>Select upto 3</Text>
+      <View style={styles.RenderDataContainer}>
+        <View style={CreateProfileStyles.ContentView}>
+          <Text
+            style={{
+              color: COLORS.Primary,
+              fontSize: hp('3.3%'),
+              fontFamily: FONTS.Bold,
+            }}>
+            What is your sexual orientation?
+          </Text>
+          <Text style={styles.SelectUptoText}>Select upto 3</Text>
+        </View>
+
+        <View style={{height: '67%'}}>
+          <FlatList
+            data={GendersData}
+            keyExtractor={item => item.id.toString()}
+            renderItem={renderItem}
+            ListEmptyComponent={ListEmptyComponent}
+          />
+        </View>
       </View>
 
-      <View style={{height: '60%'}}>
-        <FlatList
-          data={GendersData}
-          keyExtractor={item => item.id.toString()}
-          renderItem={renderItem}
-          ListEmptyComponent={ListEmptyComponent}
-        />
-      </View>
-
-      <View style={[CreateProfileStyles.BottomButton, styles.BottomContainer]}>
+      <View style={[styles.BottomContainer]}>
         <View style={styles.BottomView}>
           <View style={styles.CheckBoxView}>
             <CustomCheckBox
               isChecked={ShowOnProfile}
               onToggle={toggleCheckMark}
+              BoxText="Show my orientation on my profile"
             />
-            <Text style={styles.CheckboxText}>
+            {/* <Text style={styles.CheckboxText}>
               Show my orientation on my profile
-            </Text>
+            </Text> */}
           </View>
           <GradientButton
             Title={'Continue'}
@@ -167,11 +170,18 @@ const styles = StyleSheet.create({
     marginVertical: hp('1%'),
     fontFamily: FONTS.SemiBold,
   },
+  RenderDataContainer: {
+    flex: 1,
+    paddingHorizontal: hp('1'),
+    marginTop: hp('1'),
+  },
   BottomContainer: {
-    zIndex: 1,
-    width: '100%',
+    width: '90%',
+    alignSelf: 'center',
+    position: 'absolute',
+    bottom: hp('2%'),
     overflow: 'hidden',
-    borderStartColor: COLORS.White,
+    justifyContent: 'center',
   },
   BottomView: {
     width: '90%',

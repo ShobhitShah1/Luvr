@@ -12,8 +12,7 @@ import {
   SIZES,
 } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import SearchSchoolModal from '../../../Components/Modals/SearchSchoolModal';
-import CreateProfileHeader from './Components/CreateProfileHeader';
+ import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
 const YourStudy: FC = () => {
@@ -74,11 +73,11 @@ const YourStudy: FC = () => {
         </Text>
       </View>
 
-      <SearchSchoolModal
+      {/* <SearchSchoolModal
         visible={SearchSchoolModalVisible}
         onClose={closeModal}
         onSelect={handleSchoolSelect}
-      />
+      /> */}
 
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton

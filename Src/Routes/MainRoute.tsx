@@ -9,23 +9,19 @@ import SplashScreen from '../Screens/Splash/SplashScreen';
 import {
   AddLifestyle,
   AddRecentPics,
-  CreateProfile,
   DistancePreference,
   ImLookingFor,
   LocationPermission,
   LoginScreen,
-  ManageContacts,
-  MyBirthDate,
-  MyFirstName,
-  MyGender,
+  ManageContacts, 
+  IdentifyYourSelf, 
   OTPScreen,
   PhoneNumber,
   SexualOrientation,
   WelcomeScreen,
   WhatElseExtra,
   YourIntro,
-  YourStudy,
-  AllGendersSearch,
+  YourStudy, 
 } from '../Screens/Auth';
 
 // ========================== HOME SCREENS ==========================
@@ -50,11 +46,7 @@ export default function MainRoute() {
 
         {/* CreateProfile: Why Added Here? Its Part Of Login */}
 
-        <Stack.Screen component={CreateProfile} name="CreateProfile" />
-        <Stack.Screen component={MyFirstName} name="MyFirstName" />
-        <Stack.Screen component={MyBirthDate} name="MyBirthDate" />
-        <Stack.Screen component={MyGender} name="MyGender" />
-        <Stack.Screen component={AllGendersSearch} name="AllGendersSearch" />
+        <Stack.Screen component={IdentifyYourSelf} name="IdentifyYourSelf" /> 
         <Stack.Screen
           component={SexualOrientation}
           name="SexualOrientationScreen"

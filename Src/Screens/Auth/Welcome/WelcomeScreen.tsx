@@ -80,7 +80,7 @@ const WelcomeScreen: FC = () => {
           Disabled={false}
           Navigation={() => {
             navigation.navigate('LoginStack', {
-              screen: 'MyFirstName',
+              screen: 'IdentifyYourSelf',
             });
           }}
         />

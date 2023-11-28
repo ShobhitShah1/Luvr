@@ -13,7 +13,7 @@ import * as Progress from 'react-native-progress';
 import CommonIcons from '../../../Common/CommonIcons';
 import {CommonSize} from '../../../Common/CommonSize';
 import {COLORS, FONTS} from '../../../Common/Theme';
-import MyFirstName from './MyFirstName';
+import IdentifyYourSelf from './IdentifyYourSelf';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import MyBirthDate from './MyBirthDate';
 import MyGender from './MyGender';
@@ -25,7 +25,7 @@ const CreateProfile: FC = () => {
 
   //* Add All Screen That Incudes In Create Profile
   const screens = [
-    {key: 'Name', component: <MyFirstName />},
+    {key: 'Name', component: <IdentifyYourSelf />},
     {key: 'BOB', component: <MyBirthDate />},
     {key: 'Gender', component: <MyGender />},
   ];
@@ -136,7 +136,7 @@ export default CreateProfile;
 // import CommonIcons from '../../../Common/CommonIcons';
 // import {CommonSize} from '../../../Common/CommonSize';
 // import {COLORS, FONTS} from '../../../Common/Theme';
-// import MyFirstName from './MyFirstName';
+// import IdentifyYourSelf from './IdentifyYourSelf';
 // import GradientButton from '../../../Components/AuthComponents/GradientButton';
 // import MyBirthDate from './MyBirthDate';
 // import MyGender from './MyGender';
@@ -151,7 +151,7 @@ export default CreateProfile;
 
 //   switch (Type) {
 //     case 'Name':
-//       typeElement = <MyFirstName Title={'Your First Name'} />;
+//       typeElement = <IdentifyYourSelf Title={'Your First Name'} />;
 //       break;
 //     case 'BOB':
 //       typeElement = <MyBirthDate />;

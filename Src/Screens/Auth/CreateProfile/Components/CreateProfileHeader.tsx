@@ -9,31 +9,34 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import * as Progress from 'react-native-progress';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
 import {COLORS, FONTS, GROUP_FONT} from '../../../../Common/Theme';
-
-const {width} = Dimensions.get('window');
-
+ 
 interface CreateProfileProps {
   ProgressCount: number;
   Skip: boolean;
 }
 
 const CreateProfileHeader: FC<CreateProfileProps> = ({ProgressCount, Skip}) => {
-  console.log(ProgressCount);
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
   return (
-    <View style={{width: '100%'}}>
+    <View
+      style={{
+        width: '100%',
+        margin: hp('1%'),
+        paddingHorizontal: hp('1.5%'),
+        justifyContent: 'center',
+        alignSelf: 'center',
+      }}>
       <View style={styles.CancelButtonAndTitleText}>
         <TouchableOpacity
           style={{
             width: '33.33%',
             justifyContent: 'center',
-            alignSelf: 'center', 
+            alignSelf: 'center',
           }}
           onPress={() => navigation.goBack()}>
           <Image
@@ -47,16 +50,19 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({ProgressCount, Skip}) => {
           style={{
             width: '33.33%',
             justifyContent: 'center',
-            right: hp('1%')
+            right: hp('1%'),
           }}>
-          {ProgressCount !== 0 && <Text style={{...GROUP_FONT.h3, textAlign:'center'}}>{ProgressCount}/9</Text>}
+          {ProgressCount !== 0 && (
+            <Text style={{...GROUP_FONT.h3, textAlign: 'center'}}>
+              {ProgressCount}/9
+            </Text>
+          )}
         </View>
 
         <View
           style={{
             width: '33.33%',
             justifyContent: 'center',
-            alignSelf: 'center', 
           }}>
           {Skip && (
             <TouchableOpacity
@@ -109,6 +115,6 @@ const styles = StyleSheet.create({
     ...GROUP_FONT.h3,
     color: COLORS.Gray,
     textAlign: 'right',
-    marginRight: hp('4%')
+    marginRight: hp('4%'),
   },
 });

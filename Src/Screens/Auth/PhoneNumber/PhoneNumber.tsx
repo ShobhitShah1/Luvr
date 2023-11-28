@@ -1,4 +1,4 @@
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useEffect, useState} from 'react';
 import {
@@ -9,30 +9,28 @@ import {
   Text,
   View,
 } from 'react-native';
+import {requestHint} from 'react-native-otp-verify';
+import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import CommonIcons from '../../../Common/CommonIcons';
-import {CommonSize} from '../../../Common/CommonSize';
-import {COLORS} from '../../../Common/Theme';
-import AuthHeader from '../../../Components/AuthComponents/AuthHeader';
 import CountryPickerView from '../../../Components/AuthComponents/CountryPickerView';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
 import CountryWithCode from '../../../Components/Data/CountryWithCode';
+import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import RenderCountryData from '../CreateProfile/Components/RenderCountryData';
 import styles from './styles';
-import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-
 const PhoneNumber: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  // const isFocused = useIsFocused();
+  const isFocused = useIsFocused();
   // const TextInputRef = useRef();
   const [visible, setVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -58,23 +56,23 @@ const PhoneNumber: FC = () => {
     };
   });
 
-  // useEffect(() => {
-  //   if (isFocused === true) {
-  //     GetPermission();
-  //   }
-  // }, [isFocused]);
+  useEffect(() => {
+    if (isFocused === true) {
+      GetPermission();
+    }
+  }, [isFocused]);
 
-  // const GetPermission = async () => {
-  //   try {
-  //     const result = await request(PERMISSIONS.ANDROID.READ_PHONE_NUMBERS);
+  const GetPermission = async () => {
+    try {
+      const result = await request(PERMISSIONS.ANDROID.READ_PHONE_NUMBERS);
 
-  //     if (result === RESULTS.GRANTED) {
-  //       setStorePhoneNumber(await requestHint());
-  //     }
-  //   } catch (error) {
-  //     console.error('Permission request failed:', error);
-  //   }
-  // };
+      if (result === RESULTS.GRANTED) {
+        setStorePhoneNumber(await requestHint());
+      }
+    } catch (error) {
+      console.error('Permission request failed:', error);
+    }
+  };
 
   const handleCountryPress = (item: any, index: number) => {
     // Handle the press action with the item's data and index

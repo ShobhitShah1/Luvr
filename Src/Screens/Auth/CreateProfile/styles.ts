@@ -16,8 +16,7 @@ const CreateProfileStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   ContentView: {
-    // marginVertical: hp('1.5%'),
-    marginHorizontal: hp('2.8%'),
+    paddingHorizontal: hp('2.8%'),
   },
   TitleText: {
     color: COLORS.Primary,

@@ -24,23 +24,24 @@ const DistancePreference: FC = () => {
     <View style={CreateProfileStyles.Container}>
       <CreateProfileHeader ProgressCount={4} Skip={false} />
 
-      <View style={CreateProfileStyles.ContentView}>
-        <Text style={CreateProfileStyles.TitleText}>
-          Set your distance {'\n'}Preference
-        </Text>
-        <Text style={styles.CompatibilityText}>
-          Adjusting distance, It's like searching by location.
-        </Text>
-      </View>
-
-      <View style={styles.SliderContainerView}>
-        <View style={styles.DistancePrefView}>
-          <Text style={styles.SliderInfoText}>Distance Preference</Text>
-          <Text style={styles.SliderValue}>{`${calculateMiles(
-            milesValue,
-          )} KM`}</Text>
+      <View style={styles.DataViewContainer}>
+        <View style={CreateProfileStyles.ContentView}>
+          <Text style={styles.TitleText}>
+            Set your distance {'\n'}Preference
+          </Text>
+          <Text style={styles.CompatibilityText}>
+            Adjusting distance, It's like searching by location.
+          </Text>
         </View>
-        {/* <Slider
+
+        <View style={styles.SliderContainerView}>
+          <View style={styles.DistancePrefView}>
+            <Text style={styles.SliderInfoText}>Distance Preference</Text>
+            <Text style={styles.SliderValue}>{`${calculateMiles(
+              milesValue,
+            )} KM`}</Text>
+          </View>
+          {/* <Slider
           value={milesValue}
           minimumValue={0}
           maximumValue={1}
@@ -51,6 +52,7 @@ const DistancePreference: FC = () => {
           minimumTrackTintColor={COLORS.Primary}
           style={styles.SliderStyle}
         /> */}
+        </View>
       </View>
 
       <View style={CreateProfileStyles.BottomButton}>
@@ -63,7 +65,6 @@ const DistancePreference: FC = () => {
           Title={'Continue'}
           Disabled={false}
           Navigation={() => {
-            alert('work in progress 🚧');
             // navigation.navigate('LoginStack', {
             //   screen: 'YourStudy',
             // });
@@ -81,6 +82,15 @@ const styles = StyleSheet.create({
     ...GROUP_FONT.h3,
     marginVertical: hp('1%'),
     fontFamily: FONTS.Medium,
+  },
+  DataViewContainer: {
+    marginHorizontal: hp('1.2%'),
+    marginTop: hp('1%'),
+  },
+  TitleText: {
+    color: COLORS.Primary,
+    fontSize: hp('3.3%'),
+    fontFamily: FONTS.Bold,
   },
   SliderContainerView: {
     width: '100%',

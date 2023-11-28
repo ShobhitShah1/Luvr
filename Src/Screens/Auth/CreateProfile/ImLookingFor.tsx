@@ -10,7 +10,7 @@ import {
 import React, {FC, useCallback, useState} from 'react';
 import CreateProfileStyles from './styles';
 import CreateProfileHeader from './Components/CreateProfileHeader';
-import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
+import {ActiveOpacity, COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import LookingFor from '../../../Components/Data/LookingFor';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
@@ -57,6 +57,7 @@ const ImLookingFor: FC = () => {
 
   const renderItem = ({item, index}: {item: any; index: number}) => (
     <TouchableOpacity
+      activeOpacity={ActiveOpacity}
       onPress={() => onPressLookingFor(item)}
       style={styles.LookingForListView}
       key={index}>
@@ -87,9 +88,9 @@ const ImLookingFor: FC = () => {
     <View style={CreateProfileStyles.Container}>
       <CreateProfileHeader ProgressCount={3} Skip={false} />
 
-      <View style={{marginHorizontal: hp('1.5%')}}>
+      <View style={styles.DataViewContainer}>
         <View style={CreateProfileStyles.ContentView}>
-          <Text style={CreateProfileStyles.TitleText}>
+          <Text style={styles.TitleText}>
             What’s your hoping {'\n'}to find?
           </Text>
           <Text style={styles.CompatibilityText}>
@@ -129,10 +130,19 @@ const styles = StyleSheet.create({
     marginVertical: hp('1%'),
     fontFamily: FONTS.Medium,
   },
+  DataViewContainer: {
+    marginHorizontal: hp('1.2%'),
+    marginTop: hp('1%'),
+  },
+  TitleText: {
+    color: COLORS.Primary,
+    fontSize: hp('3.3%'),
+    fontFamily: FONTS.Bold,
+  },
   FlatListContainer: {
     justifyContent: 'center',
     alignSelf: 'center',
-    marginTop: hp('5%')
+    marginTop: hp('5%'),
   },
   SelectedLookingForListView: {
     width: '31%',
