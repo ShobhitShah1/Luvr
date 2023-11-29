@@ -119,11 +119,7 @@ const SexualOrientation: FC = () => {
       <View style={styles.RenderDataContainer}>
         <View style={CreateProfileStyles.ContentView}>
           <Text
-            style={{
-              color: COLORS.Primary,
-              fontSize: hp('3.3%'),
-              fontFamily: FONTS.Bold,
-            }}>
+            style={styles.TitleText}>
             What is your sexual orientation?
           </Text>
           <Text style={styles.SelectUptoText}>Select upto 3</Text>
@@ -132,9 +128,10 @@ const SexualOrientation: FC = () => {
         <View style={{height: '67%'}}>
           <FlatList
             data={GendersData}
-            keyExtractor={item => item.id.toString()}
             renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
             ListEmptyComponent={ListEmptyComponent}
+            keyExtractor={item => item.id.toString()}
           />
         </View>
       </View>
@@ -198,7 +195,7 @@ const styles = StyleSheet.create({
   },
   GenderButtonView: {
     height: hp('6.5%'),
-    width: width - hp('5%'),
+    width: width - hp('8%'),
     marginVertical: hp('0.5%'),
     alignSelf: 'center',
     backgroundColor: COLORS.White,
@@ -241,5 +238,10 @@ const styles = StyleSheet.create({
   EmptyViewText: {
     ...GROUP_FONT.h2,
     textAlign: 'center',
+  },
+  TitleText: {
+    color: COLORS.Primary,
+    fontSize: hp('3.3%'),
+    fontFamily: FONTS.Bold,
   },
 });

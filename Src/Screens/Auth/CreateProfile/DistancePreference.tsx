@@ -1,4 +1,4 @@
-// import Slider from '@react-native-community/slider';
+import Slider from 'react-native-slider';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
@@ -10,7 +10,6 @@ import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
 const DistancePreference: FC = () => {
-  let ProgressCount: number = 0.5;
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const [milesValue, setMilesValue] = useState<number>(0.75);
@@ -41,33 +40,30 @@ const DistancePreference: FC = () => {
               milesValue,
             )} KM`}</Text>
           </View>
-          {/* <Slider
-          value={milesValue}
-          minimumValue={0}
-          maximumValue={1}
-          step={0.01}
-          onValueChange={value => setMilesValue(value)}
-          thumbTintColor={COLORS.Primary}
-          maximumTrackTintColor={COLORS.Black}
-          minimumTrackTintColor={COLORS.Primary}
-          style={styles.SliderStyle}
-        /> */}
+          <View style={styles.SliderView}>
+            <Slider
+              value={milesValue}
+              minimumValue={0}
+              maximumValue={1}
+              step={0.01}
+              onValueChange={(value: number) => setMilesValue(value)}
+              thumbTintColor={COLORS.Primary}
+              maximumTrackTintColor={COLORS.White}
+              minimumTrackTintColor={COLORS.Primary}
+              style={styles.SliderStyle}
+            />
+          </View>
         </View>
       </View>
 
       <View style={CreateProfileStyles.BottomButton}>
-        {/* <View style={styles.LaterCanSaveTextView}>
-          <Text style={styles.LaterCanSaveText}>
-            You can change preferences later in Setting
-          </Text>
-        </View> */}
         <GradientButton
           Title={'Continue'}
           Disabled={false}
           Navigation={() => {
-            // navigation.navigate('LoginStack', {
-            //   screen: 'YourStudy',
-            // });
+            navigation.navigate('LoginStack', {
+              screen: 'YourStudy',
+            });
           }}
         />
       </View>
@@ -126,5 +122,11 @@ const styles = StyleSheet.create({
   },
   LaterCanSaveText: {
     ...GROUP_FONT.body3,
+  },
+  SliderView: {
+    marginVertical: hp('1.5%'),
+    width: '92%',
+    justifyContent: 'center',
+    alignSelf:'center'
   },
 });

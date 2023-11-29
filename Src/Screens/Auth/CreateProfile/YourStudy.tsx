@@ -1,95 +1,80 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import {
-  ActiveOpacity,
-  COLORS,
-  FONTS,
-  GROUP_FONT,
-  SIZES,
-} from '../../../Common/Theme';
+import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
- import CreateProfileHeader from './Components/CreateProfileHeader';
+import CustomTextInput from '../../../Components/CustomTextInput';
+import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
+import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
 const YourStudy: FC = () => {
-  let ProgressCount: number = 0.6;
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+  const KeyboardVisible = useKeyboardVisibility();
 
-  const [SchoolNameText, setSchoolNameText] = useState<string>('');
-  const [SearchSchoolModalVisible, setSearchSchoolModalVisible] =
-    useState<boolean>(false);
-
-  const openModal = () => {
-    setSearchSchoolModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setSearchSchoolModalVisible(false);
-  };
-
-  const handleSchoolSelect = (school: string) => {
-    setSchoolNameText(school);
-    closeModal();
-  };
+  const [EducationDegree, setEducationDegree] = useState<string>('');
+  const [CollegeName, setCollegeName] = useState<string>('');
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={ProgressCount} Skip={true} />
-      <View style={CreateProfileStyles.ContentView}>
-        <Text style={CreateProfileStyles.TitleText}>
-          If studying is your thing...?
-        </Text>
-      </View>
-      <View style={styles.TextInputContainerView}>
-        <View style={styles.TextInputTextView}>
-          <TouchableOpacity
-            onPress={openModal}
-            activeOpacity={1}
-            style={styles.SchoolInputStyle}>
-            <Text style={styles.SchoolInputText}>
-              {SchoolNameText.length !== 0
-                ? SchoolNameText
-                : 'Enter school name, past or current'}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.CloseButtonView}
-            activeOpacity={ActiveOpacity}>
-            <AntDesign
-              name="closecircle"
-              color={COLORS.Gray}
-              size={hp('1.8%')}
-              style={styles.IconView}
-            />
-          </TouchableOpacity>
+      <CreateProfileHeader ProgressCount={5} Skip={true} />
+
+      <View style={styles.DataViewContainer}>
+        <View style={CreateProfileStyles.ContentView}>
+          <Text style={styles.TitleText}>What is your {'\n'}education?</Text>
+          <Text style={styles.CompatibilityText}>
+            Add your education details so people know more about you.
+          </Text>
         </View>
-        <Text style={styles.AppearInProfileText}>
-          This is how it'll appear on your profile.
-        </Text>
+        <View style={styles.TextInputContainerView}>
+          {/* Degree */}
+          <View style={styles.TextViewForSpace}>
+            <Text style={styles.NameText}>My education degree is</Text>
+            <CustomTextInput
+              value={EducationDegree}
+              onChangeText={value => {
+                setEducationDegree(value);
+              }}
+              textContentType="givenName"
+              placeholder="Enter your education degree"
+              style={styles.TextInputStyle}
+              placeholderTextColor={COLORS.Gray}
+            />
+          </View>
+
+          {/* Name */}
+          <View style={styles.TextViewForSpace}>
+            <Text style={styles.NameText}>My college name is</Text>
+            <CustomTextInput
+              value={CollegeName}
+              onChangeText={value => {
+                setCollegeName(value);
+              }}
+              textContentType="givenName"
+              placeholder="Enter your college name"
+              style={styles.TextInputStyle}
+              placeholderTextColor={COLORS.Gray}
+            />
+          </View>
+        </View>
       </View>
 
-      {/* <SearchSchoolModal
-        visible={SearchSchoolModalVisible}
-        onClose={closeModal}
-        onSelect={handleSchoolSelect}
-      /> */}
-
-      <View style={CreateProfileStyles.BottomButton}>
-        <GradientButton
-          Title={'Next'}
-          Disabled={false}
-          Navigation={() => {
-            navigation.navigate('LoginStack', {
-              screen: 'AddLifestyle',
-            });
-          }}
-        />
-      </View>
+      {!KeyboardVisible && (
+        <View style={CreateProfileStyles.BottomButton}>
+          <GradientButton
+            Title={'Next'}
+            Disabled={false}
+            Navigation={() => {
+              navigation.navigate('LoginStack', {
+                screen: 'AddLifestyle',
+              });
+            }}
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -97,17 +82,14 @@ const YourStudy: FC = () => {
 export default YourStudy;
 
 const styles = StyleSheet.create({
+  DataViewContainer: {
+    marginHorizontal: hp('1.2%'),
+    marginTop: hp('1%'),
+  },
   TextInputContainerView: {
     justifyContent: 'center',
     marginVertical: hp('2%'),
-    marginHorizontal: hp('1.9%'),
-  },
-  TextInputStyle: {
-    padding: 0,
-    width: '90%',
-    color: COLORS.Black,
-    fontSize: SIZES.body4,
-    fontFamily: FONTS.Regular,
+    marginHorizontal: hp('2.5%'),
   },
   SchoolInputStyle: {
     width: '90%',
@@ -137,5 +119,39 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderBottomWidth: hp('0.15%'),
     borderBottomColor: COLORS.Black,
+  },
+  CompatibilityText: {
+    ...GROUP_FONT.h3,
+    marginVertical: hp('1%'),
+    fontFamily: FONTS.Medium,
+  },
+  TitleText: {
+    color: COLORS.Primary,
+    fontSize: hp('3.3%'),
+    fontFamily: FONTS.Bold,
+  },
+
+  TextInputStyle: {
+    padding: 0,
+    color: COLORS.Black,
+    fontSize: hp('1.7%'),
+    borderColor: COLORS.Black,
+    backgroundColor: COLORS.White,
+    height: hp('6.8%'),
+    fontFamily: FONTS.SemiBold,
+    borderRadius: SIZES.radius,
+    textAlign: 'center',
+    // paddingHorizontal: hp('1.5%')
+  },
+  TextViewForSpace: {
+    alignContent: 'center',
+    marginVertical: hp('1%'),
+  },
+  NameText: {
+    marginTop: hp('2%'),
+    marginBottom: hp('1.5%'),
+    fontSize: hp('1.8%'),
+    color: COLORS.Primary,
+    fontFamily: FONTS.Bold,
   },
 });

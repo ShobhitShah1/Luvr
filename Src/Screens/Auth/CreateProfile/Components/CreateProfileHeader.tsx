@@ -53,7 +53,7 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({ProgressCount, Skip}) => {
             right: hp('1%'),
           }}>
           {ProgressCount !== 0 && (
-            <Text style={{...GROUP_FONT.h3, textAlign: 'center'}}>
+            <Text style={{...GROUP_FONT.h3, fontSize: hp('1.9%'), textAlign: 'center'}}>
               {ProgressCount}/9
             </Text>
           )}

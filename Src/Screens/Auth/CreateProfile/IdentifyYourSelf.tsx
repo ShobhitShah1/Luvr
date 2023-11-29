@@ -22,11 +22,13 @@ import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useFieldConfig} from '../../../Utils/StorageUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
 
 const IdentifyYourSelf: FC = () => {
   //* Get Key Name. From Where You Want To Store Data
   const StoreStringName = useFieldConfig(LocalStorageFields.firstName);
   const {userData, dispatch} = useUserData();
+  const KeyboardVisible = useKeyboardVisibility();
 
   //* All States
   const [FirstName, setFirstName] = useState<string>(userData.firstName);
@@ -34,8 +36,7 @@ const IdentifyYourSelf: FC = () => {
   const [BirthDateMM, setBirthDateMM] = useState<string>('');
   const [BirthDateYYYY, setBirthDateYYYY] = useState<string>('');
   const [CityName, setCityName] = useState<string>('');
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-  const [selectedGender, setSelectedGender] = useState('');
+  const [selectedGender, setSelectedGender] = useState<string>('');
 
   const genders = ['Man', 'Woman', 'Other'];
 
@@ -43,25 +44,6 @@ const IdentifyYourSelf: FC = () => {
     setSelectedGender(gender);
   };
 
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      () => {
-        setIsKeyboardOpen(true);
-      },
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        setIsKeyboardOpen(false);
-      },
-    );
-
-    return () => {
-      keyboardDidHideListener.remove();
-      keyboardDidShowListener.remove();
-    };
-  }, []);
 
   //* Navigation
   const navigation =
@@ -208,7 +190,7 @@ const IdentifyYourSelf: FC = () => {
         </View>
       </ScrollView>
 
-      {!isKeyboardOpen && (
+      {!KeyboardVisible && (
         <View style={styles.BottomButton}>
           <GradientButton
             Title={'Continue'}

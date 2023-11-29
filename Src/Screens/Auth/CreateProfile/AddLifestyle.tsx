@@ -10,7 +10,6 @@ import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
 const AddLifestyle: FC = () => {
-  let ProgressCount: number = 0.7;
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
@@ -25,84 +24,55 @@ const AddLifestyle: FC = () => {
     }));
   }, []);
 
-  // const isCategoryMissing = useCallback(() => {
-  //   const missingCategories: string[] = [];
-  //   LifestyleData.forEach(habit => {
-  //     if (!Object.keys(selectedItems).includes(habit.id.toString())) {
-  //       missingCategories.push(habit.habit);
-  //     }
-  //   });
-  //   return missingCategories;
-  // }, [selectedItems]);
-
   const renderItem = ({
     item,
   }: {
     item: {id: number; habit: string; options: string[]};
   }) => {
     const selectedOption = selectedItems[item.id.toString()];
-    return (
-      <React.Fragment>
-        <View key={item?.id} style={styles.habitContainer}>
-          <Text style={styles.habitTitle}>{item?.habit}</Text>
-          <View style={styles.OptionScrollViewContainer}>
-            {item?.options.map((option, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.optionButton,
-                  selectedOption === option && styles.selectedOption,
-                ]}
-                onPress={() => handleOptionPress(item.id, option)}>
-                <Text
-                  style={[
-                    styles.CategoriesText,
-                    selectedOption === option && styles.SelectedCategoriesText,
-                  ]}>
-                  {option}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-        <View style={styles.BottomLine} />
-      </React.Fragment>
-    );
+    return <React.Fragment></React.Fragment>;
   };
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={ProgressCount} Skip={true} />
-      <View style={[styles.ContentView]}>
-        <Text style={CreateProfileStyles.TitleText}>
-          Let's talk lifestyle habits, UserNameHere!
-        </Text>
-        <Text style={styles.HabitsMatchText}>
-          Do their habits match yours? you go first
-        </Text>
+      <CreateProfileHeader ProgressCount={6} Skip={true} />
+
+      <View style={styles.DataViewContainer}>
+        <View style={[styles.ContentView]}>
+          <Text style={styles.TitleText}>
+            Let’s talk about your daily habits!
+          </Text>
+          <Text style={styles.HabitsMatchText}>
+            Share your daily lifestyle habits that best represent you.
+          </Text>
+        </View>
+
+        <View style={{height: '70%'}}>
+          <FlatList
+            data={LifestyleData}
+            renderItem={renderItem}
+            style={{height: '100%'}}
+            initialNumToRender={20}
+            nestedScrollEnabled={false}
+            keyExtractor={item => item.id.toString()}
+            removeClippedSubviews={true}
+          />
+        </View>
       </View>
 
-      <View style={{height: '70%'}}>
-        <FlatList
-          data={LifestyleData}
-          renderItem={renderItem}
-          style={{height: '100%'}}
-          initialNumToRender={20}
-          nestedScrollEnabled={false}
-          keyExtractor={item => item.id.toString()}
-          removeClippedSubviews={true}
+      <View style={CreateProfileStyles.BottomButton}>
+        <GradientButton
+          Title={'Next'}
+          Disabled={false}
+          Navigation={() => {
+            navigation.navigate('LoginStack', {
+              screen: 'AddLifestyle',
+            });
+          }}
         />
       </View>
 
-      {/* Missing Category To Track On Letter */}
-
-      {/* <View style={styles.checkMissingCategories}>
-        <Text style={styles.missingCategoriesText}>
-          {`Missing Categories: ${isCategoryMissing().join(', ')}`}
-        </Text>
-      </View> */}
-
-      <View style={[styles.BottomButtonWidth]}>
+      {/* <View style={[styles.BottomButtonWidth]}>
         <View style={styles.ButtonContainer}>
           <GradientButton
             Title={'Next'}
@@ -114,12 +84,21 @@ const AddLifestyle: FC = () => {
             }}
           />
         </View>
-      </View>
+      </View> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  DataViewContainer: {
+    marginHorizontal: hp('1.2%'),
+    marginTop: hp('1%'),
+  },
+  TitleText: {
+    color: COLORS.Primary,
+    fontSize: hp('3.3%'),
+    fontFamily: FONTS.Bold,
+  },
   HabitsMatchText: {
     ...GROUP_FONT.h3,
     marginTop: hp('1%'),
@@ -130,13 +109,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   ContentView: {
-    overflow: 'hidden',
-    maxWidth: '100%',
-    marginVertical: hp('1.5%'),
-    paddingBottom: hp('1.5%'),
-    paddingHorizontal: hp('1.9%'),
-    backgroundColor: COLORS.White,
-    width: '100%',
+    paddingHorizontal: hp('2.8%'),
   },
 
   habitContainer: {
@@ -156,8 +129,6 @@ const styles = StyleSheet.create({
     ...GROUP_FONT.h3,
   },
   optionButton: {
-    // display: 'flex',
-    // flexWrap: 'wrap',
     borderRadius: hp('2%'),
     marginRight: hp('0.8%'),
     borderWidth: hp('0.09%'),
@@ -187,7 +158,6 @@ const styles = StyleSheet.create({
     color: COLORS.White,
   },
   ButtonContainer: {
-    backgroundColor: COLORS.White,
     width: '90%',
     alignSelf: 'center',
     overflow: 'hidden',
@@ -197,10 +167,7 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     bottom: hp('1.5%'),
-    borderTopColor: COLORS.Placeholder,
-    backgroundColor: COLORS.White,
     overflow: 'hidden',
-    borderTopWidth: hp('0.07%'),
     paddingTop: hp('1.5%'),
   },
   OptionScrollViewContainer: {
