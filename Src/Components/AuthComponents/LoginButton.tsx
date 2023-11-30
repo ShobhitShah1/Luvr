@@ -1,11 +1,8 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {CommonSize} from '../../Common/CommonSize';
 import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 
 interface LoginButtonProps {
   Title: string;

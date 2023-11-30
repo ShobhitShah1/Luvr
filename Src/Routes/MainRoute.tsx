@@ -1,32 +1,30 @@
 /* eslint-disable react/no-unstable-nested-components */
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-
-import SplashScreen from '../Screens/Splash/SplashScreen';
 
 // ========================== AUTH SCREENS ==========================
 import {
   AddLifestyle,
   AddRecentPics,
   DistancePreference,
+  IdentifyYourSelf,
   ImLookingFor,
   LocationPermission,
   LoginScreen,
-  ManageContacts, 
-  IdentifyYourSelf, 
+  ManageContacts,
   OTPScreen,
   PhoneNumber,
   SexualOrientation,
   WelcomeScreen,
   WhatElseExtra,
   YourIntro,
-  YourStudy, 
+  YourStudy,
 } from '../Screens/Auth';
 
 // ========================== HOME SCREENS ==========================
-import HomeScreen from '../Screens/Home/HomeScreen';
 import ExploreCard from '../Screens/Explore/ExploreCard';
+import HomeScreen from '../Screens/Home/HomeScreen';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -89,7 +87,6 @@ export default function MainRoute() {
           headerShown: false,
           customAnimationOnGesture: true,
         }}>
-        <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="LoginStack" component={LoginStack} />
         <Stack.Screen name="HomeStack" component={HomeStack} />
       </Stack.Navigator>

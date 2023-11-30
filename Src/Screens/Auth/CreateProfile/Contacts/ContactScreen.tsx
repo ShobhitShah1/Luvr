@@ -2,7 +2,6 @@ import React, {memo} from 'react';
 import {SectionList, Text, View} from 'react-native';
 import {useContacts} from '../../../../Hooks/useContacts';
 import styles from './styles';
-import ContactSearch from '../Components/ContactSearch';
 
 interface Contact {
   displayName: string;
@@ -70,8 +69,6 @@ const ContactScreen = () => {
 
   return (
     <View style={styles.Container}>
-      <ContactSearch />
-
       {contacts.length !== 0 && (
         <SectionList
           bounces={false}

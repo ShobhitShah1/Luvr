@@ -6,7 +6,7 @@ import {COLORS, FONTS, GROUP_FONT} from '../../../../Common/Theme';
 interface RenderCountryDataProps {
   data: any;
   index: number;
-  onPress: (item: any, index: number) => void; // Add the onPress callback
+  onPress: (item: any, index: number) => void;
 }
 
 const RenderCountryData: FC<RenderCountryDataProps> = ({

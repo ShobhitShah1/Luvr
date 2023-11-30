@@ -1,8 +1,5 @@
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {CommonSize} from './CommonSize';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 
 export const COLORS = {
   Primary: 'rgba(255, 65, 101, 1)',
@@ -23,13 +20,6 @@ export const COLORS = {
 };
 
 export const FONTS = {
-  // Light: 'GothamRounded-Light',
-  // Regular: 'GothamRoundedBook_21018',
-  // Medium: 'GothamRounded-Medium',
-  // Bold: 'GothamRounded-Bold',
-  // SemiBold: 'OpenSans-SemiBold',
-  // ExtraBold: null,
-
   Light: 'OpenSans-Light',
   Regular: 'OpenSans-Regular',
   Medium: 'OpenSans-Medium',

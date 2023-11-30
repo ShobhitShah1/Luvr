@@ -29,8 +29,23 @@ const AddLifestyle: FC = () => {
   }: {
     item: {id: number; habit: string; options: string[]};
   }) => {
+    // console.log(item.habit, item.options);
     const selectedOption = selectedItems[item.id.toString()];
-    return <React.Fragment></React.Fragment>;
+    return (
+      <View key={item.id}>
+        <View>
+          <Text>{item.habit}</Text>
+        </View>
+        {item.options.map((res, index) => {
+          console.log(res);
+          return (
+            <TouchableOpacity key={index}>
+              <Text>{res}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    );
   };
 
   return (

@@ -5,4 +5,8 @@
 <!--        <item name="android:windowBackground">@drawable/custom_background</item>-->
         <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
     </style>
+
+    <style name="SplashScreenTheme" parent="SplashScreen_SplashTheme">
+        <item name="colorPrimaryDark">@color/status_bar_color</item>
+    </style>
 </resources>
