@@ -19,6 +19,7 @@
     "react-native-contacts": "^7.0.8",
     "react-native-deck-swiper": "^2.0.16",
     "react-native-draggable-grid": "^2.1.8",
+    "react-native-fast-image": "^8.6.3",
     "react-native-gesture-handler": "^2.13.4",
     "react-native-image-picker": "^7.0.2",
     "react-native-linear-gradient": "^2.8.3",
@@ -35,7 +36,8 @@
     "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^13.14.0",
     "react-native-tab-view": "^3.5.2",
-    "react-native-vector-icons": "^10.0.2"
+    "react-native-vector-icons": "^10.0.2",
+    "rn-tinder-card": "^1.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

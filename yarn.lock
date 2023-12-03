@@ -6199,6 +6199,22 @@ react-native-draggable-grid@^2.1.8:
   resolved "https://registry.yarnpkg.com/react-native-draggable-grid/-/react-native-draggable-grid-2.1.8.tgz#a5c86aa02fd2bc8bc3783d2b3eb7bc99103b909e"
   integrity sha512-QllU9n0nRoWdMW6DXH94SFmEgOBARxpnf+x8smmyK2j9BqFq5ZthrVHGTu9p/zYdqpasDMFeKOG6AwHkdkZvHQ==
 
+react-native-fast-image@^8.6.3:
+  version "8.6.3"
+  resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.6.3.tgz#6edc3f9190092a909d636d93eecbcc54a8822255"
+  integrity sha512-Sdw4ESidXCXOmQ9EcYguNY2swyoWmx53kym2zRsvi+VeFCHEdkO+WG1DK+6W81juot40bbfLNhkc63QnWtesNg==
+
+react-native-gesture-handler@*:
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.14.0.tgz#d6aec0d8b2e55c67557fd6107e828c0a1a248be8"
+  integrity sha512-cOmdaqbpzjWrOLUpX3hdSjsMby5wq3PIEdMq7okJeg9DmCzanysHSrktw1cXWNc/B5MAgxAn9J7Km0/4UIqKAQ==
+  dependencies:
+    "@egjs/hammerjs" "^2.0.17"
+    hoist-non-react-statics "^3.3.0"
+    invariant "^2.2.4"
+    lodash "^4.17.21"
+    prop-types "^15.7.2"
+
 react-native-gesture-handler@^2.13.4:
   version "2.13.4"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.13.4.tgz#6a99384330278c4488bcfc7f1814be3e0d7401fd"
@@ -6247,6 +6263,16 @@ react-native-permissions@^3.10.1:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-3.10.1.tgz#cb0171c8d12113869deaabbdfb979aad1a44752b"
   integrity sha512-Gc5BxxpjZn4QNUDiVeHOO0vXh3AH7ToolmwTJozqC6DsxV7NAf3ttap+8BSmzDR8WxuAM3Cror+YNiBhHJx7/w==
+
+react-native-reanimated@*:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.6.1.tgz#5add41efafac6d0befd9786e752e7f26dbe903b7"
+  integrity sha512-F4vG9Yf9PKmE3GaWtVGUpzj3SM6YY2cx1yRHCwiMd1uY7W0gU017LfcVUorboJnj0y5QZqEriEK1Usq2Y8YZqg==
+  dependencies:
+    "@babel/plugin-transform-object-assign" "^7.16.7"
+    "@babel/preset-typescript" "^7.16.7"
+    convert-source-map "^2.0.0"
+    invariant "^2.2.4"
 
 react-native-reanimated@^3.5.4:
   version "3.5.4"
@@ -6552,6 +6578,14 @@ rimraf@~2.6.2:
   integrity sha512-mwqeW5XsA2qAejG46gYdENaxXjx9onRNCfn7L0duuP4hCuTIi/QO7PDK07KJfp1d+izWPrzEJDcSqBa0OZQriA==
   dependencies:
     glob "^7.1.3"
+
+rn-tinder-card@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/rn-tinder-card/-/rn-tinder-card-1.7.0.tgz#4888ed24fc296906da5a6a229d8718323fe54f7a"
+  integrity sha512-P7UIdQRQQVUAwWARzVmwSa91RszK8d3g0Y7Bt5eDrSAJnYTVNw+6r5ihOqYXro9/7SgSi7MxsLIGRQC+Gsh67Q==
+  dependencies:
+    react-native-gesture-handler "*"
+    react-native-reanimated "*"
 
 run-parallel@^1.1.9:
   version "1.2.0"

@@ -87,7 +87,7 @@ export default function MainRoute() {
           headerShown: false,
           customAnimationOnGesture: true,
         }}>
-        <Stack.Screen name="LoginStack" component={LoginStack} />
+        {/* <Stack.Screen name="LoginStack" component={LoginStack} /> */}
         <Stack.Screen name="HomeStack" component={HomeStack} />
       </Stack.Navigator>
     </NavigationContainer>

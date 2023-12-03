@@ -1,141 +1,172 @@
-/* eslint-disable react-native/no-inline-styles */
-import React, { FC, useRef, useState } from 'react';
-import {
-  ImageBackground,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {Animated, StyleSheet, View} from 'react-native';
 import Swiper from 'react-native-deck-swiper';
+import {Easing} from 'react-native-reanimated';
+import SplashScreen from 'react-native-splash-screen';
+import {COLORS, GROUP_FONT} from '../../Common/Theme';
+import RenderSwiperCard from './Components/RenderSwiperCard';
 
-const HomeScreen: FC = () => {
-  const generateDummyData = () => {
-    const data = [];
-    for (let i = 0; i < 50; i++) {
-      const dummyPerson = {
-        id: i + 1,
-        name: `Person ${i + 1}`,
-        age: Math.floor(Math.random() * 50) + 18,
-        images: [
-          'https://media.istockphoto.com/id/1446806057/photo/young-happy-woman-student-using-laptop-watching-webinar-writing-at-home.jpg?s=1024x1024&w=is&k=20&c=ICSLSiYaIZ-Cvk9MF3iF2JmrVRmE6br6dYjCEtyjLYs=',
-          'https://cdn.pixabay.com/photo/2014/09/20/23/44/website-454460_1280.jpg',
-          'https://cdn.pixabay.com/photo/2020/09/19/19/37/landscape-5585247_1280.jpg',
-          'https://cdn.pixabay.com/photo/2015/09/30/01/48/turkey-964831_1280.jpg',
-        ],
-      };
-      data.push(dummyPerson);
-    }
-    return data;
+function* range(start: number, end: number) {
+  for (let i = start; i <= end; i++) {
+    yield i;
+  }
+}
+
+interface Card {
+  images: string[];
+}
+
+const imageArray = [
+  'https://images.unsplash.com/photo-1681896616404-6568bf13b022?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1335&q=80',
+  'https://images.unsplash.com/photo-1681871197336-0250ed2fe23d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1287&q=80',
+  'https://images.unsplash.com/photo-1682686580433-2af05ee670ad?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  'https://images.unsplash.com/photo-1700989348331-180f18e06978?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  'https://images.unsplash.com/photo-1682686580922-2e594f8bdaa7?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  'https://images.unsplash.com/photo-1699031101330-4de71e10ee8c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+];
+
+const HomeScreen = () => {
+  const [cards, setCards] = useState<Card[]>(
+    [...range(1, 50)].map(() => ({images: [...imageArray]})),
+  );
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [CurrentCardIndex, setCurrentCardIndex] = useState(0);
+
+  const [firstImageLoading, setFirstImageLoading] = useState(true);
+  const [elapsedTime, setElapsedTime] = useState(5);
+
+  const swipeRef = useRef<Swiper<Card>>(null);
+  const animatedOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    SplashScreen.hide();
+    const interval = setInterval(() => {
+      setCurrentImageIndex(prevIndex => (prevIndex + 1) % imageArray.length);
+
+      Animated.timing(animatedOpacity, {
+        toValue: 1,
+        duration: 1000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }).start();
+
+      swipeRef.current?.forceUpdate();
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [cards]);
+
+  const OnSwipeRight = (item: any) => {
+    console.log('cardIndex:', item);
   };
-
-  const dummyData = generateDummyData();
-
-  const swiper = useRef(null);
-
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
-  const [CardIndex, setCardIndex] = useState<number>(0);
-
-  const [clickPosition, setClickPosition] = useState('');
-
-  const handleCardPress = (event: any, images: any) => {
-    const cardWidth = 200; // Set your card width here
-    const touchX = event.nativeEvent.locationX; // X coordinate of the touch event
-
-    // Calculate the click position based on touchX and card width
-    const position = touchX / cardWidth;
-
-    let newSelectedImageIndex = selectedImageIndex;
-
-    if (position < 0.3 && selectedImageIndex > 0) {
-      setClickPosition('Left');
-      newSelectedImageIndex = selectedImageIndex - 1;
-    } else if (position > 0.7 && selectedImageIndex < images.length - 1) {
-      setClickPosition('Right');
-      newSelectedImageIndex = selectedImageIndex + 1;
-    }
-
-    setSelectedImageIndex(newSelectedImageIndex);
-
-    console.log('selectedImages', newSelectedImageIndex);
-  };
-
-  const renderCard = (card: any, index: number) => {
-    const imageIndex =
-      index === 0 && CardIndex === 0 && selectedImageIndex >= 0
-        ? selectedImageIndex
-        : 0;
-
-    return (
-      <ImageBackground
-        source={{uri: card.images[imageIndex]}}
-        style={styles.card}>
-        <TouchableOpacity
-          style={{flex: 1, justifyContent: 'center'}}
-          activeOpacity={1}
-          onPress={event => handleCardPress(event, card.images)}>
-          <Text style={styles.text}>{index}</Text>
-          <Text style={styles.text}>{clickPosition}</Text>
-        </TouchableOpacity>
-      </ImageBackground>
-    );
-  };
-
-  const onSwiped = (type: any, index: number) => {
-    console.log(`on swiped ${type}`);
-    console.log(`on swiped Index ${index}`);
-    setCardIndex(0);
+  const OnSwiped = (cardIndex: any) => {
+    setCurrentCardIndex(cardIndex + 1);
+    setCurrentImageIndex(0);
   };
 
   return (
     <View style={styles.container}>
       <Swiper
-        ref={swiper}
-        onSwiped={index => onSwiped('general', index)}
-        onSwipedLeft={index => onSwiped('left', index)}
-        onSwipedRight={index => onSwiped('right', index)}
-        onSwipedTop={index => onSwiped('top', index)}
-        onSwipedBottom={index => onSwiped('bottom', index)}
-        onTapCard={() => {}}
-        cards={dummyData}
-        cardIndex={CardIndex}
-        cardVerticalMargin={80}
-        renderCard={renderCard}
-        stackSize={3}
-        stackSeparation={15}
-        disableBottomSwipe
-        swipeBackCard
+        ref={swipeRef}
+        cards={cards}
+        cardIndex={CurrentCardIndex}
+        stackSize={2}
+        stackSeparation={0}
+        key={cards.length}
+        swipeBackCard={true}
+        onSwipedRight={OnSwipeRight}
+        onSwiped={OnSwiped}
+        cardVerticalMargin={0}
+        cardHorizontalMargin={0}
+        animateCardOpacity={true}
+        animateOverlayLabelsOpacity={true}
+        backgroundColor={COLORS.White}
+        renderCard={(cardIndex: any, card: any) => {
+          return (
+            <RenderSwiperCard
+              CurrentCardIndex={CurrentCardIndex}
+              cardIndex={cardIndex}
+              card={card}
+              firstImageLoading={firstImageLoading}
+              setFirstImageLoading={setFirstImageLoading}
+              currentImageIndex={currentImageIndex}
+            />
+          );
+
+          // if (CurrentCardIndex === card) {
+          //   return (
+          //     <Animated.View style={[styles.card]}>
+          //       <Text style={styles.topCardTitle}>
+          //         Image Index Is: {currentImageIndex}
+          //       </Text>
+
+          //       <FastImage
+          //         onLoadStart={() => setFirstImageLoading(true)}
+          //         onLoad={() => setFirstImageLoading(false)}
+          //         onLoadEnd={() => setFirstImageLoading(false)}
+          //         resizeMode="cover"
+          //         source={{uri: cardIndex?.images[currentImageIndex], priority:FastImage.priority.high}}
+          //         style={{width: '100%', height: '100%'}}
+          //       />
+
+          //       {firstImageLoading && (
+          //         <View
+          //           style={{
+          //             position: 'absolute',
+          //             justifyContent: 'center',
+          //             alignSelf: 'center',
+          //             top: 0,
+          //             right: 0,
+          //             bottom: 0,
+          //             left: 0,
+          //           }}>
+          //           <ActivityIndicator size="large" color={COLORS.Primary} />
+          //         </View>
+          //       )}
+          //     </Animated.View>
+          //   );
+          // }
+          // return (
+          //   <View style={[styles.card]}>
+          //     <Image
+          //       resizeMode="cover"
+          //       source={{uri: cardIndex?.images[0]}}
+          //       style={{width: '100%', height: '100%'}}
+          //     />
+          //   </View>
+          // );
+        }}
       />
     </View>
   );
 };
 
-export default HomeScreen;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
   card: {
     flex: 1,
-    borderRadius: 4,
-    borderWidth: 2,
-    // borderColor: '#E8E8E8',
     justifyContent: 'center',
-    // backgroundColor: 'red',
+    alignItems: 'center',
+    // backgroundColor: COLORS.Primary
   },
-  text: {
-    textAlign: 'center',
-    fontSize: 50,
-    backgroundColor: 'transparent',
-    fontWeight: 'bold',
-    color: 'white',
+  topCard: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    overflow: 'hidden',
   },
-  done: {
-    textAlign: 'center',
-    fontSize: 30,
-    color: 'white',
-    backgroundColor: 'transparent',
+  topCardTitle: {
+    position: 'absolute',
+    top: 50,
+    zIndex: 9999,
+    ...GROUP_FONT.h1,
+    color: COLORS.White,
   },
 });
+
+export default HomeScreen;
