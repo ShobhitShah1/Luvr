@@ -1,10 +1,20 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useRef, useState} from 'react';
-import {Animated, StyleSheet, View} from 'react-native';
+import {
+  Alert,
+  Animated,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import Swiper from 'react-native-deck-swiper';
 import {Easing} from 'react-native-reanimated';
 import SplashScreen from 'react-native-splash-screen';
 import {COLORS, GROUP_FONT} from '../../Common/Theme';
+import {CardDelay, imageArray} from '../../Config/Setting';
+import useInterval from '../../Hooks/useInterval';
 import RenderSwiperCard from './Components/RenderSwiperCard';
+import {heightPercentageToDP} from 'react-native-responsive-screen';
 
 function* range(start: number, end: number) {
   for (let i = start; i <= end; i++) {
@@ -16,16 +26,8 @@ interface Card {
   images: string[];
 }
 
-const imageArray = [
-  'https://images.unsplash.com/photo-1681896616404-6568bf13b022?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1335&q=80',
-  'https://images.unsplash.com/photo-1681871197336-0250ed2fe23d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1287&q=80',
-  'https://images.unsplash.com/photo-1682686580433-2af05ee670ad?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1700989348331-180f18e06978?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1682686580922-2e594f8bdaa7?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1699031101330-4de71e10ee8c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-];
-
 const HomeScreen = () => {
+  const {width} = useWindowDimensions();
   const [cards, setCards] = useState<Card[]>(
     [...range(1, 50)].map(() => ({images: [...imageArray]})),
   );
@@ -33,14 +35,12 @@ const HomeScreen = () => {
   const [CurrentCardIndex, setCurrentCardIndex] = useState(0);
 
   const [firstImageLoading, setFirstImageLoading] = useState(true);
-  const [elapsedTime, setElapsedTime] = useState(5);
 
   const swipeRef = useRef<Swiper<Card>>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    SplashScreen.hide();
-    const interval = setInterval(() => {
+  const {startInterval, stopInterval, clearInterval} = useInterval(
+    () => {
       setCurrentImageIndex(prevIndex => (prevIndex + 1) % imageArray.length);
 
       Animated.timing(animatedOpacity, {
@@ -51,12 +51,18 @@ const HomeScreen = () => {
       }).start();
 
       swipeRef.current?.forceUpdate();
-    }, 5000);
+    },
+    cards.length > 0 ? CardDelay : null,
+  );
+
+  useEffect(() => {
+    SplashScreen.hide();
+    startInterval();
 
     return () => {
-      clearInterval(interval);
+      clearInterval();
     };
-  }, [cards]);
+  }, [startInterval, clearInterval]);
 
   const OnSwipeRight = (item: any) => {
     console.log('cardIndex:', item);
@@ -64,6 +70,13 @@ const HomeScreen = () => {
   const OnSwiped = (cardIndex: any) => {
     setCurrentCardIndex(cardIndex + 1);
     setCurrentImageIndex(0);
+  };
+
+  const OnSwipeAll = () => {
+    Alert.alert('All cards swiped');
+    setCards([...range(1, 50)].map(() => ({images: [...imageArray]})));
+    startInterval();
+    swipeRef.current?.forceUpdate();
   };
 
   return (
@@ -74,15 +87,29 @@ const HomeScreen = () => {
         cardIndex={CurrentCardIndex}
         stackSize={2}
         stackSeparation={0}
+        horizontalThreshold={width / 2.5}
         key={cards.length}
+        secondCardZoom={0}
         swipeBackCard={true}
         onSwipedRight={OnSwipeRight}
         onSwiped={OnSwiped}
+        onSwipedAll={OnSwipeAll}
+        cardStyle={
+          {
+            // justifyContent: 'center',
+            // alignSelf: 'center',
+            // backgroundColor: COLORS.Black,
+            // width: '80%',
+            // height: '80%',
+          }
+        }
         cardVerticalMargin={0}
         cardHorizontalMargin={0}
         animateCardOpacity={true}
         animateOverlayLabelsOpacity={true}
         backgroundColor={COLORS.White}
+        disableBottomSwipe
+        stackScale={0}
         renderCard={(cardIndex: any, card: any) => {
           return (
             <RenderSwiperCard
@@ -92,51 +119,10 @@ const HomeScreen = () => {
               firstImageLoading={firstImageLoading}
               setFirstImageLoading={setFirstImageLoading}
               currentImageIndex={currentImageIndex}
+              startInterval={startInterval}
+              stopInterval={stopInterval}
             />
           );
-
-          // if (CurrentCardIndex === card) {
-          //   return (
-          //     <Animated.View style={[styles.card]}>
-          //       <Text style={styles.topCardTitle}>
-          //         Image Index Is: {currentImageIndex}
-          //       </Text>
-
-          //       <FastImage
-          //         onLoadStart={() => setFirstImageLoading(true)}
-          //         onLoad={() => setFirstImageLoading(false)}
-          //         onLoadEnd={() => setFirstImageLoading(false)}
-          //         resizeMode="cover"
-          //         source={{uri: cardIndex?.images[currentImageIndex], priority:FastImage.priority.high}}
-          //         style={{width: '100%', height: '100%'}}
-          //       />
-
-          //       {firstImageLoading && (
-          //         <View
-          //           style={{
-          //             position: 'absolute',
-          //             justifyContent: 'center',
-          //             alignSelf: 'center',
-          //             top: 0,
-          //             right: 0,
-          //             bottom: 0,
-          //             left: 0,
-          //           }}>
-          //           <ActivityIndicator size="large" color={COLORS.Primary} />
-          //         </View>
-          //       )}
-          //     </Animated.View>
-          //   );
-          // }
-          // return (
-          //   <View style={[styles.card]}>
-          //     <Image
-          //       resizeMode="cover"
-          //       source={{uri: cardIndex?.images[0]}}
-          //       style={{width: '100%', height: '100%'}}
-          //     />
-          //   </View>
-          // );
         }}
       />
     </View>
@@ -149,9 +135,8 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: COLORS.Primary
+    justifyContent: 'center',
   },
   topCard: {
     flex: 1,
@@ -167,6 +152,12 @@ const styles = StyleSheet.create({
     ...GROUP_FONT.h1,
     color: COLORS.White,
   },
+  // ContainerCardStyle: width => ({
+  //   borderRedius: SIZES.radius,
+  //   alignSelf: 'center',
+  //   width: width - hp(5),
+  //   height: hp(70),
+  // }),
 });
 
 export default HomeScreen;

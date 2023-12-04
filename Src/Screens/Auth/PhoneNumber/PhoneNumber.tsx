@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useEffect, useState} from 'react';
@@ -27,6 +28,7 @@ import CountryWithCode from '../../../Components/Data/CountryWithCode';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import RenderCountryData from '../CreateProfile/Components/RenderCountryData';
 import styles from './styles';
+
 const PhoneNumber: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
@@ -75,7 +77,6 @@ const PhoneNumber: FC = () => {
   };
 
   const handleCountryPress = (item: any, index: number) => {
-    // Handle the press action with the item's data and index
     console.log('Country pressed:', item, index);
     setDiallingCode(item.dialling_code);
     setDefaultDiallingCode(item.dialling_code);

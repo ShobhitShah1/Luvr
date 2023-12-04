@@ -3,7 +3,13 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useState} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import {
+  ActiveOpacity,
+  COLORS,
+  FONTS,
+  GROUP_FONT,
+  SIZES,
+} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import LifestyleData from '../../../Components/Data/LifestyleData';
 import CreateProfileHeader from './Components/CreateProfileHeader';
@@ -17,11 +23,33 @@ const AddLifestyle: FC = () => {
     {},
   );
 
-  const handleOptionPress = useCallback((habitId: number, option: string) => {
-    setSelectedItems(prevSelection => ({
-      ...prevSelection,
-      [habitId.toString()]: option,
-    }));
+  const handleOptionPress = useCallback((habitName: string, option: string) => {
+    setSelectedItems(prevSelection => {
+      // Copy the previous selection
+      const newSelection = {...prevSelection};
+
+      // Check if an option is already selected for this habit
+      if (newSelection[habitName.toString()] === option) {
+        // If the same option is selected again, unselect it
+        delete newSelection[habitName.toString()];
+      } else {
+        // Set the new selection for the current habit and option
+        newSelection[habitName.toString()] = option;
+
+        // Remove other options for the same habit
+        LifestyleData.forEach(item => {
+          if (item.habit === habitName) {
+            item.options.forEach(res => {
+              if (res !== option) {
+                delete newSelection[`${habitName}_${res}`];
+              }
+            });
+          }
+        });
+      }
+
+      return newSelection;
+    });
   }, []);
 
   const renderItem = ({
@@ -29,21 +57,42 @@ const AddLifestyle: FC = () => {
   }: {
     item: {id: number; habit: string; options: string[]};
   }) => {
-    // console.log(item.habit, item.options);
-    const selectedOption = selectedItems[item.id.toString()];
     return (
-      <View key={item.id}>
-        <View>
-          <Text>{item.habit}</Text>
+      <View style={styles.HabitsContainerView} key={item.id}>
+        <Text style={styles.HabitTitle}>{item.habit}</Text>
+        <View style={styles.HabitOptionContainerView}>
+          {item.options.map((res, index) => {
+            console.log(selectedItems);
+            return (
+              <TouchableOpacity
+                activeOpacity={ActiveOpacity}
+                onPress={() => handleOptionPress(item.habit, res)}
+                style={[
+                  styles.HabitOptionView,
+                  {
+                    backgroundColor:
+                      selectedItems[item.habit] === res
+                        ? COLORS.Primary
+                        : COLORS.White,
+                  },
+                ]}
+                key={index}>
+                <Text
+                  style={[
+                    styles.HabitOptionText,
+                    {
+                      color:
+                        selectedItems[item.habit] === res
+                          ? COLORS.White
+                          : '#828282',
+                    },
+                  ]}>
+                  {res}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
-        {item.options.map((res, index) => {
-          console.log(res);
-          return (
-            <TouchableOpacity key={index}>
-              <Text>{res}</Text>
-            </TouchableOpacity>
-          );
-        })}
       </View>
     );
   };
@@ -62,11 +111,11 @@ const AddLifestyle: FC = () => {
           </Text>
         </View>
 
-        <View style={{height: '70%'}}>
+        <View style={styles.FlatListView}>
           <FlatList
             data={LifestyleData}
             renderItem={renderItem}
-            style={{height: '100%'}}
+            style={styles.FlatList}
             initialNumToRender={20}
             nestedScrollEnabled={false}
             keyExtractor={item => item.id.toString()}
@@ -77,29 +126,15 @@ const AddLifestyle: FC = () => {
 
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
-          Title={'Next'}
+          Title={'Continue'}
           Disabled={false}
           Navigation={() => {
             navigation.navigate('LoginStack', {
-              screen: 'AddLifestyle',
+              screen: 'WhatElseExtra',
             });
           }}
         />
       </View>
-
-      {/* <View style={[styles.BottomButtonWidth]}>
-        <View style={styles.ButtonContainer}>
-          <GradientButton
-            Title={'Next'}
-            Disabled={false}
-            Navigation={() => {
-              navigation.navigate('LoginStack', {
-                screen: 'WhatElseExtra',
-              });
-            }}
-          />
-        </View>
-      </View> */}
     </View>
   );
 };
@@ -190,6 +225,40 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
     display: 'flex',
     flexWrap: 'wrap',
+  },
+  FlatListView: {
+    height: '70%',
+  },
+  FlatList: {
+    height: '100%',
+    paddingTop: hp('1%'),
+  },
+  HabitsContainerView: {
+    paddingHorizontal: hp('2.8%'),
+    paddingVertical: hp('1.5%'),
+  },
+
+  HabitTitle: {
+    marginBottom: hp('1.5%'),
+    fontSize: hp('1.8%'),
+    color: COLORS.Primary,
+    fontFamily: FONTS.Bold,
+  },
+  HabitOptionContainerView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  HabitOptionView: {
+    width: hp('12%'),
+    height: hp('6.5%'),
+    justifyContent: 'center',
+    borderRadius: SIZES.radius,
+    backgroundColor: COLORS.White,
+  },
+  HabitOptionText: {
+    ...GROUP_FONT.body4,
+    fontFamily: FONTS.SemiBold,
+    textAlign: 'center',
   },
 });
 

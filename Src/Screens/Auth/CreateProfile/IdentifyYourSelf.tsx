@@ -110,7 +110,7 @@ const IdentifyYourSelf: FC = () => {
                 maxLength={2}
                 textContentType="givenName"
                 placeholder="DD"
-                style={[styles.TextInputStyle, {width: hp('13%')}]}
+                style={[styles.TextInputStyle, {width: hp('12%')}]}
                 placeholderTextColor={COLORS.Gray}
               />
               <CustomTextInput
@@ -121,7 +121,7 @@ const IdentifyYourSelf: FC = () => {
                 maxLength={2}
                 textContentType="givenName"
                 placeholder="MM"
-                style={[styles.TextInputStyle, {width: hp('13%')}]}
+                style={[styles.TextInputStyle, {width: hp('12%')}]}
                 placeholderTextColor={COLORS.Gray}
               />
               <CustomTextInput
@@ -132,7 +132,7 @@ const IdentifyYourSelf: FC = () => {
                 maxLength={4}
                 textContentType="givenName"
                 placeholder="YYYY"
-                style={[styles.TextInputStyle, {width: hp('13%')}]}
+                style={[styles.TextInputStyle, {width: hp('12%')}]}
                 placeholderTextColor={COLORS.Gray}
               />
             </View>
@@ -149,7 +149,7 @@ const IdentifyYourSelf: FC = () => {
                   style={[
                     styles.GenderView,
                     {
-                      width: hp('13%'),
+                      width: hp('12%'),
                       backgroundColor:
                         selectedGender === gender
                           ? COLORS.Primary

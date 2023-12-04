@@ -65,7 +65,7 @@ const YourStudy: FC = () => {
       {!KeyboardVisible && (
         <View style={CreateProfileStyles.BottomButton}>
           <GradientButton
-            Title={'Next'}
+            Title={'Continue'}
             Disabled={false}
             Navigation={() => {
               navigation.navigate('LoginStack', {

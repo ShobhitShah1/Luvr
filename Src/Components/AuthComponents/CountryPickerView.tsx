@@ -37,7 +37,6 @@ const CountryPickerView: FC<CountryPickerProps> = ({
   value,
   setValue,
   diallingCode,
-  defaultDiallingCode,
   visible,
   setVisible,
   isLoading,
@@ -96,6 +95,7 @@ const CountryPickerView: FC<CountryPickerProps> = ({
           <View style={styles.PhoneNumberTextInput}>
             <View style={styles.TextInputView}>
               <CustomTextInput
+                autoFocus={true}
                 value={value}
                 onChangeText={setValue}
                 keyboardType="number-pad"
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     padding: 0,
     margin: 0,
     ...GROUP_FONT.h3,
-    fontFamily: FONTS.SemiBold
+    fontFamily: FONTS.SemiBold,
   },
   CancelIconView: {
     width: '15%',

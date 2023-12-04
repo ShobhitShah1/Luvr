@@ -1,16 +1,11 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useState} from 'react';
-import {
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import WhatElseExtraData from '../../../Components/Data/WhatElseExtraData';
 import CreateProfileHeader from './Components/CreateProfileHeader';
@@ -34,36 +29,35 @@ const WhatElseExtra: FC = () => {
     ({habit, selectedOption, onPress}) => {
       return (
         <React.Fragment>
-          <View key={habit.id} style={styles.habitContainer}>
+          <View key={habit.id} style={[styles.habitContainer]}>
             <Text style={styles.habitTitle}>{habit.habit}</Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                maxWidth: '100%',
-                display: 'flex',
-                flexWrap: 'wrap',
-              }}>
-              {habit.options.map((option, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.optionButton,
-                    selectedOption === option && styles.selectedOption,
-                  ]}
-                  onPress={() => onPress(habit.id, option)}>
-                  <Text
-                    style={[
-                      styles.CategoriesText,
-                      selectedOption === option &&
-                        styles.SelectedCategoriesText,
-                    ]}>
-                    {option}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+            <View style={{}}>
+              <FlatList
+                data={habit.options}
+                numColumns={3}
+                renderItem={({item, index}: any) => {
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.optionButton,
+                        selectedOption === item && styles.selectedOption,
+                      ]}
+                      onPress={() => onPress(habit.id, item)}>
+                      <Text
+                        style={[
+                          styles.CategoriesText,
+                          selectedOption === item &&
+                            styles.SelectedCategoriesText,
+                        ]}>
+                        {item}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
             </View>
           </View>
-          <View style={styles.BottomLine} />
         </React.Fragment>
       );
     },
@@ -89,53 +83,47 @@ const WhatElseExtra: FC = () => {
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={ProgressCount} Skip={true} />
-      <View style={[styles.ContentView]}>
-        <Text style={CreateProfileStyles.TitleText}>
-          What else makes you, you?
-        </Text>
-        <Text style={styles.HabitsMatchText}>
-          Don't hold back. Authenticity attracts authenticity.
-        </Text>
-      </View>
+      <CreateProfileHeader ProgressCount={7} Skip={true} />
+      <View style={styles.DataViewContainer}>
+        <View style={[styles.ContentView]}>
+          <Text style={styles.TitleText}>What's about {'\n'}you?</Text>
+          <Text style={styles.AboutYouDescription}>
+            Say something about yourself. so you can match with your magical
+            person
+          </Text>
+        </View>
 
-      <View style={{height: '70%'}}>
-        <FlatList
-          data={WhatElseExtraData}
-          renderItem={renderItem}
-          style={{height: '100%'}}
-          initialNumToRender={20}
-          nestedScrollEnabled={false}
-          keyExtractor={item => item.id.toString()}
-          removeClippedSubviews={true}
-          // getItemLayout={(_, index) => ({
-          //   length: ITEM_HEIGHT,
-          //   offset: ITEM_HEIGHT * index,
-          //   index,
-          // })}
-        />
-      </View>
+        <View style={[styles.FlatListContainerView]}>
+          <FlatList
+            data={WhatElseExtraData}
+            renderItem={renderItem}
+            style={styles.FlatListStyle}
+            initialNumToRender={20}
+            nestedScrollEnabled={false}
+            keyExtractor={item => item.id.toString()}
+            removeClippedSubviews={true}
+          />
+        </View>
 
-      {/* Missing Category To Track On Letter */}
+        {/* Missing Category To Track On Letter */}
 
-      {/* <View style={styles.checkMissingCategories}>
+        {/* <View style={styles.checkMissingCategories}>
         <Text style={styles.missingCategoriesText}>
           {`Missing Categories: ${isCategoryMissing().join(', ')}`}
         </Text>
       </View> */}
+      </View>
 
-      <View style={[styles.BottomButtonWidth]}>
-        <View style={styles.ButtonContainer}>
-          <GradientButton
-            Title={`Next`}
-            Disabled={false}
-            Navigation={() => {
-              navigation.navigate('LoginStack', {
-                screen: 'YourIntro',
-              });
-            }}
-          />
-        </View>
+      <View style={[CreateProfileStyles.BottomButton]}>
+        <GradientButton
+          Title={'Continue'}
+          Disabled={false}
+          Navigation={() => {
+            navigation.navigate('LoginStack', {
+              screen: 'YourIntro',
+            });
+          }}
+        />
       </View>
     </View>
   );
@@ -144,7 +132,16 @@ const WhatElseExtra: FC = () => {
 export default WhatElseExtra;
 
 const styles = StyleSheet.create({
-  HabitsMatchText: {
+  DataViewContainer: {
+    marginHorizontal: hp('1.2%'),
+    marginTop: hp('1%'),
+  },
+  TitleText: {
+    color: COLORS.Primary,
+    fontSize: hp('3.3%'),
+    fontFamily: FONTS.Bold,
+  },
+  AboutYouDescription: {
     ...GROUP_FONT.h3,
     marginTop: hp('1%'),
     fontFamily: FONTS.Regular,
@@ -156,49 +153,44 @@ const styles = StyleSheet.create({
   ContentView: {
     overflow: 'hidden',
     maxWidth: '100%',
-    marginVertical: hp('1.5%'),
-    paddingBottom: hp('1.5%'),
-    paddingHorizontal: hp('1.9%'),
-    backgroundColor: COLORS.White,
+    paddingHorizontal: hp('2.8%'),
     width: '100%',
   },
 
   habitContainer: {
     marginHorizontal: hp('1.9%'),
-  },
-  BottomLine: {
-    width: '90%',
-    alignSelf: 'center',
     marginVertical: hp('0.5%'),
-    marginBottom: hp('2%'),
-    justifyContent: 'center',
-    marginHorizontal: hp('1.9%'),
-    borderBottomWidth: hp('0.05%'),
-    borderBottomColor: COLORS.Gray,
   },
   habitTitle: {
-    ...GROUP_FONT.h3,
+    marginBottom: hp('1%'),
+    fontSize: hp('1.8%'),
+    color: COLORS.Primary,
+    fontFamily: FONTS.Bold,
   },
   optionButton: {
-    marginRight: hp('0.8%'),
-    paddingHorizontal: hp('1%'),
-    paddingVertical: hp('0.5%'),
+    width: hp('12%'),
+    height: hp('6.8%'),
+    justifyContent: 'center',
+    borderRadius: SIZES.radius,
+    // marginHorizontal: hp('1%'),
+    marginRight: hp('1.5%'),
     marginVertical: hp('1%'),
-    borderWidth: hp('0.1%'),
-    borderRadius: hp('2%'),
-    borderColor: COLORS.Gray,
+    backgroundColor: COLORS.White,
   },
   selectedOption: {
-    borderColor: COLORS.Primary,
+    backgroundColor: COLORS.Primary,
   },
   CategoriesText: {
+    width: '90%',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    ...GROUP_FONT.body5,
+    fontSize: hp('1.4%'),
+    fontFamily: FONTS.SemiBold,
     textAlign: 'center',
-    ...GROUP_FONT.h4,
-    color: COLORS.Gray,
   },
   SelectedCategoriesText: {
-    ...GROUP_FONT.h4,
-    color: COLORS.Gray,
+    color: COLORS.White,
   },
   checkMissingCategories: {
     marginTop: 16,
@@ -212,14 +204,20 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignSelf: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.White,
+    // backgroundColor: COLORS.White,
   },
   BottomButtonWidth: {
     width: '100%',
     bottom: hp('1.5%'),
     position: 'absolute',
-    paddingTop: hp('1.5%'),
-    borderTopWidth: hp('0.07%'),
     borderTopColor: COLORS.Placeholder,
+  },
+  FlatListContainerView: {
+    height: '72%',
+    marginHorizontal: hp('0.8%'),
+  },
+  FlatListStyle: {
+    height: '100%',
+    marginTop: hp('2%'),
   },
 });

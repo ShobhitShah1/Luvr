@@ -3,14 +3,13 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useMemo, useState} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import YourIntoData from '../../../Components/Data/YourIntoData';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
 const YourIntro: FC = () => {
-  let ProgressCount: number = 0.9;
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
@@ -49,6 +48,7 @@ const YourIntro: FC = () => {
               ]}
               onPress={() => handleOptionPress(item.id, item.name)}>
               <Text
+                numberOfLines={2}
                 style={[
                   styles.CategoriesText,
                   selectedOption === item.name && styles.SelectedCategoriesText,
@@ -83,28 +83,41 @@ const YourIntro: FC = () => {
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={ProgressCount} Skip={true} />
-      <View style={[styles.ContentView]}>
-        <Text style={CreateProfileStyles.TitleText}>What are you into?</Text>
-        <Text style={styles.YourIntoMatchText}>
-          You like what you like. Now, let everyone know.
-        </Text>
-      </View>
+      <CreateProfileHeader ProgressCount={8} Skip={true} />
+      <View style={styles.DataViewContainer}>
+        <View style={[styles.ContentView]}>
+          <Text style={styles.TitleText}>What are you into?</Text>
+          <Text style={styles.YourIntoMatchText}>
+            You like what you like. Now, let everyone know.
+          </Text>
+        </View>
 
-      <View style={[{height: '72%'}]}>
-        <FlatList
-          data={YourIntoData}
-          renderItem={renderItem}
-          style={styles.FlatListStyle}
-          contentContainerStyle={styles.ContainerContainerStyle}
-          initialNumToRender={50}
-          nestedScrollEnabled={false}
-          removeClippedSubviews={true}
-          keyExtractor={item => item.id.toString()}
+        <View style={[styles.FlatListContainer]}>
+          <FlatList
+            numColumns={3}
+            data={YourIntoData}
+            renderItem={renderItem}
+            style={styles.FlatListStyle}
+            contentContainerStyle={styles.ContainerContainerStyle}
+            initialNumToRender={50}
+            nestedScrollEnabled={false}
+            removeClippedSubviews={true}
+            keyExtractor={item => item.id.toString()}
+          />
+        </View>
+      </View>
+      <View style={[CreateProfileStyles.BottomButton]}>
+        <GradientButton
+          Title={`Next ${selectedItemsKeys?.length || 0}/5`}
+          Disabled={false}
+          Navigation={() => {
+            navigation.navigate('LoginStack', {
+              screen: 'AddRecentPics',
+            });
+          }}
         />
       </View>
-
-      <View style={[styles.BottomButtonWidth]}>
+      {/* <View style={[styles.BottomButtonWidth]}>
         <View style={styles.ButtonContainer}>
           <GradientButton
             Title={`Next ${selectedItemsKeys?.length || 0}/5`}
@@ -116,7 +129,7 @@ const YourIntro: FC = () => {
             }}
           />
         </View>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -127,11 +140,18 @@ const styles = StyleSheet.create({
   ContentView: {
     overflow: 'hidden',
     maxWidth: '100%',
-    marginVertical: hp('1.5%'),
-    paddingBottom: hp('1.5%'),
-    paddingHorizontal: hp('1.9%'),
-    backgroundColor: COLORS.White,
+    paddingHorizontal: hp('2.8%'),
     width: '100%',
+  },
+  TitleText: {
+    color: COLORS.Primary,
+    fontSize: hp('3.3%'),
+    fontFamily: FONTS.Bold,
+  },
+
+  DataViewContainer: {
+    marginHorizontal: hp('1.2%'),
+    marginTop: hp('1%'),
   },
   FlatListStyle: {
     height: '100%',
@@ -153,7 +173,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignSelf: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.White,
   },
   BottomButtonWidth: {
     width: '100%',
@@ -164,33 +183,36 @@ const styles = StyleSheet.create({
     borderTopColor: COLORS.Placeholder,
   },
 
-  // ========
-
   YourIntoScrollViewContainer: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    flexDirection: 'row',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginHorizontal: hp('1.2%'),
   },
   YourIntoButton: {
-    borderRadius: hp('2%'),
-    marginRight: hp('0.8%'),
-    borderWidth: hp('0.064%'),
-    borderColor: COLORS.Gray,
-    marginVertical: hp('0.5%'),
-    paddingHorizontal: hp('1%'),
-    paddingVertical: hp('0.5%'),
-    marginHorizontal: hp('0.5%'),
+    width: hp('12%'),
+    height: hp('6.8%'),
+    justifyContent: 'center',
+    borderRadius: SIZES.radius,
+    marginVertical: hp('1%'),
+    backgroundColor: COLORS.White,
   },
   selectedOption: {
-    borderColor: COLORS.Primary,
+    backgroundColor: COLORS.Primary,
   },
   CategoriesText: {
+    width: '85%',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    ...GROUP_FONT.body5,
+    fontSize: hp('1.4%'),
+    fontFamily: FONTS.SemiBold,
     textAlign: 'center',
-    ...GROUP_FONT.h4,
-    color: COLORS.Gray,
   },
   SelectedCategoriesText: {
-    ...GROUP_FONT.h4,
-    color: COLORS.Gray,
+    color: COLORS.White,
+  },
+  FlatListContainer: {
+    height: '76%',
+    marginTop: hp('1.5%'),
   },
 });

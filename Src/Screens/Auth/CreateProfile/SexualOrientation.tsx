@@ -118,10 +118,7 @@ const SexualOrientation: FC = () => {
 
       <View style={styles.RenderDataContainer}>
         <View style={CreateProfileStyles.ContentView}>
-          <Text
-            style={styles.TitleText}>
-            What is your sexual orientation?
-          </Text>
+          <Text style={styles.TitleText}>What is your sexual orientation?</Text>
           <Text style={styles.SelectUptoText}>Select upto 3</Text>
         </View>
 

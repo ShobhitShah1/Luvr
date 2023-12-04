@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 
 // ========================== AUTH SCREENS ==========================
@@ -44,7 +44,7 @@ export default function MainRoute() {
 
         {/* CreateProfile: Why Added Here? Its Part Of Login */}
 
-        <Stack.Screen component={IdentifyYourSelf} name="IdentifyYourSelf" /> 
+        <Stack.Screen component={IdentifyYourSelf} name="IdentifyYourSelf" />
         <Stack.Screen
           component={SexualOrientation}
           name="SexualOrientationScreen"
@@ -87,7 +87,7 @@ export default function MainRoute() {
           headerShown: false,
           customAnimationOnGesture: true,
         }}>
-        {/* <Stack.Screen name="LoginStack" component={LoginStack} /> */}
+        <Stack.Screen name="LoginStack" component={LoginStack} />
         <Stack.Screen name="HomeStack" component={HomeStack} />
       </Stack.Navigator>
     </NavigationContainer>

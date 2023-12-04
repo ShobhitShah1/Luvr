@@ -8,8 +8,15 @@ const styles = StyleSheet.create({
     zIndex: 9999,
     justifyContent: 'space-between',
   },
+  BGImageStyle: {
+    flex: 1,
+  },
   ContentView: {
     flexGrow: 1,
+  },
+  ScrollViewContainContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
   },
   AppNameTitleView: {
     paddingHorizontal: hp('3%'),

@@ -15,7 +15,7 @@ const LoginScreen: FC = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      SplashScreen.hide()
+      SplashScreen.hide();
     }, 1000);
   }, []);
 
@@ -25,12 +25,12 @@ const LoginScreen: FC = () => {
       resizeMode="cover"
       source={CommonImages.WelcomeBackground}
       style={styles.Container}
-      imageStyle={{flex: 1}}>
+      imageStyle={styles.BGImageStyle}>
       <StatusBar backgroundColor={COLORS.Black} barStyle="light-content" />
       <ScrollView
         bounces={false}
         style={styles.ContentView}
-        contentContainerStyle={{flex: 1, justifyContent: 'space-between'}}>
+        contentContainerStyle={styles.ScrollViewContainContainer}>
         <View style={styles.AppNameTitleView}>
           <Text style={styles.AppNameTitle}>Welcome to the{'\n'}App Name</Text>
         </View>
