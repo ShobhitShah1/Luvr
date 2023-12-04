@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import Feather from 'react-native-vector-icons/Feather';
+import CommonIcons from '../../../Common/CommonIcons';
 import {
   ActiveOpacity,
   COLORS,
@@ -23,12 +23,11 @@ import {
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomCheckBox from '../../../Components/CustomCheckBox';
 import GendersData from '../../../Components/Data/genders';
+import {useUserData} from '../../../Contexts/UserDataContext';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {useFieldConfig} from '../../../Utils/StorageUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useUserData} from '../../../Contexts/UserDataContext';
-import {useFieldConfig} from '../../../Utils/StorageUtils';
-import CommonIcons from '../../../Common/CommonIcons';
 
 const {width} = Dimensions.get('window');
 

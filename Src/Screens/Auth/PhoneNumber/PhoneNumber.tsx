@@ -19,7 +19,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import CommonIcons from '../../../Common/CommonIcons';
 import CountryPickerView from '../../../Components/AuthComponents/CountryPickerView';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
@@ -80,6 +79,7 @@ const PhoneNumber: FC = () => {
     console.log('Country pressed:', item, index);
     setDiallingCode(item.dialling_code);
     setDefaultDiallingCode(item.dialling_code);
+    setVisible(false);
   };
 
   const renderItem = useCallback(
@@ -153,11 +153,9 @@ const PhoneNumber: FC = () => {
               />
               <View style={styles.SelectCountryView}>
                 <View style={styles.SearchCountryView}>
-                  <AntDesign
-                    name="search1"
-                    size={20}
-                    color={'rgba(130, 130, 130, 1)'}
-                    style={styles.SearchIcon}
+                  <Image
+                    source={CommonIcons.Search}
+                    style={styles.SearchIconStyle}
                   />
                   <CustomTextInput
                     value={SearchText}

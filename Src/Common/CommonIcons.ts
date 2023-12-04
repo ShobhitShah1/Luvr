@@ -8,6 +8,8 @@ const CheckMark = require('../../Assets/Icons/CheckMark.png');
 const NoImage = require('../../Assets/Icons/NoImage.png');
 const AddImage = require('../../Assets/Icons/AddImage.png');
 const DeleteImage = require('../../Assets/Icons/DeleteImage.png');
+const Check = require('../../Assets/Icons/Check.png');
+const Search = require('../../Assets/Icons/Search.png');
 
 export default {
   Back,
@@ -20,4 +22,6 @@ export default {
   NoImage,
   AddImage,
   DeleteImage,
+  Check,
+  Search,
 };

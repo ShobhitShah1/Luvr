@@ -129,6 +129,13 @@ const styles = StyleSheet.create({
     color: COLORS.Black,
     textAlign: 'center',
   },
+  SearchIconStyle: {
+    width: 18,
+    height: 18,
+    marginRight: 8,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
 });
 
 export default styles;

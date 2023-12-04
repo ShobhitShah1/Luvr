@@ -4,7 +4,6 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import {COLORS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -45,13 +44,7 @@ const LocationPermission: FC = () => {
           }
         />
         <Text style={styles.HowIsLocationUsedText}>
-          How is my location used?{' '}
-          <AntDesign
-            name="arrowdown"
-            color={COLORS.Black}
-            size={wp('5%')}
-            style={styles.IconStyle}
-          />
+          How is my location used?
         </Text>
       </View>
     </View>
