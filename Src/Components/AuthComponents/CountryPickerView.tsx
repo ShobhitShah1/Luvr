@@ -3,6 +3,7 @@ import {FC, useEffect} from 'react';
 import {
   ActivityIndicator,
   Image,
+  Keyboard,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,19 +12,25 @@ import {
 import {getCountry} from 'react-native-localize';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../Common/CommonIcons';
-import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../Common/Theme';
+import {
+  ActiveOpacity,
+  COLORS,
+  FONTS,
+  GROUP_FONT,
+  SIZES,
+} from '../../Common/Theme';
 import CustomTextInput from '../CustomTextInput';
 import CountryWithCode from '../Data/CountryWithCode';
 
-interface CountryData {
-  name: string;
-  dialling_code: string;
-  code: string;
-}
+// interface CountryData {
+//   name: string;
+//   dialling_code: string;
+//   code: string;
+// }
 
 interface CountryPickerProps {
-  value: string | null;
-  setValue: React.Dispatch<React.SetStateAction<string | null>>;
+  value: string | undefined;
+  setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
   diallingCode: string | null;
   defaultDiallingCode: string | null;
   visible: boolean;
@@ -49,8 +56,7 @@ const CountryPickerView: FC<CountryPickerProps> = ({
       try {
         setIsLoading(true);
         const deviceCountryCode = getCountry();
-        const countriesData: CountryData[] = CountryWithCode;
-        const country = countriesData.find(c => c.code === deviceCountryCode);
+        const country = CountryWithCode.find(c => c.code === deviceCountryCode);
         if (country) {
           setDiallingCode(country.dialling_code);
           setDefaultDiallingCode(country.dialling_code);
@@ -63,7 +69,18 @@ const CountryPickerView: FC<CountryPickerProps> = ({
     };
 
     fetchCountryCode();
-  }, []);
+  }, [setIsLoading, setDefaultDiallingCode, setDiallingCode]);
+
+  const OnRequestOpenCodeModal = () => {
+    setVisible(!visible);
+    if (Keyboard.isVisible()) {
+      Keyboard.dismiss();
+    }
+  };
+
+  const OnCancelNumberPress = () => {
+    setValue('');
+  };
 
   return (
     <View style={styles.Container}>
@@ -77,9 +94,7 @@ const CountryPickerView: FC<CountryPickerProps> = ({
       ) : (
         <View style={styles.CountyCodeAndNameContainer}>
           <TouchableOpacity
-            onPress={() => {
-              setVisible(!visible);
-            }}
+            onPress={OnRequestOpenCodeModal}
             style={styles.CountryCodeAndIconView}>
             <Text style={styles.CountryNameText}>{diallingCode || '+00'}</Text>
             <Image
@@ -105,12 +120,15 @@ const CountryPickerView: FC<CountryPickerProps> = ({
               />
             </View>
 
-            <View style={styles.CancelIconView}>
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              onPress={OnCancelNumberPress}
+              style={styles.CancelIconView}>
               <Image
                 source={CommonIcons.CancelPhoneNumber}
                 style={styles.CancelIcon}
               />
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
       )}
@@ -169,7 +187,7 @@ const styles = StyleSheet.create({
     color: COLORS.Black,
   },
   SapLine: {
-    height: '110%',
+    height: '100%',
     alignSelf: 'center',
     marginLeft: hp('0.8%'),
     marginRight: hp('0.8%'),
@@ -183,7 +201,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   TextInputView: {
-    width: '82%',
+    width: '86%',
     marginLeft: hp('0.5%'),
     justifyContent: 'center',
   },
@@ -194,13 +212,12 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.SemiBold,
   },
   CancelIconView: {
-    width: '15%',
+    width: '10%',
     justifyContent: 'center',
-    alignItems: 'center',
   },
   CancelIcon: {
-    width: hp('2.5%'),
-    height: hp('2.5%'),
+    width: hp('2.8%'),
+    height: hp('2.8%'),
     justifyContent: 'center',
     alignSelf: 'flex-end',
   },

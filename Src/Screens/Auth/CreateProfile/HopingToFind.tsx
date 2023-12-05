@@ -10,25 +10,27 @@ import {
 import React, {FC, useCallback, useState} from 'react';
 import CreateProfileStyles from './styles';
 import CreateProfileHeader from './Components/CreateProfileHeader';
-import {ActiveOpacity, COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
+import {
+  ActiveOpacity,
+  COLORS,
+  FONTS,
+  GROUP_FONT,
+  SIZES,
+} from '../../../Common/Theme';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import LookingFor from '../../../Components/Data/LookingFor';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useNavigation} from '@react-navigation/native';
-import {useUserData} from '../../../Contexts/UserDataContext';
-import {useFieldConfig} from '../../../Utils/StorageUtils';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CommonIcons from '../../../Common/CommonIcons';
 const {width} = Dimensions.get('window');
 
-const ImLookingFor: FC = () => {
-  let ProgressCount: number = 0.4;
+const HopingToFind: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
-  const {userData, dispatch} = useUserData();
-  const StoreStringName = useFieldConfig(LocalStorageFields.sexualOrientation);
+  // const {userData, dispatch} = useUserData();
+  // const StoreStringName = useFieldConfig(LocalStorageFields.sexualOrientation);
 
   const [SelectedLookingForIndex, setSelectedLookingForIndex] = useState<
     string[]
@@ -121,7 +123,7 @@ const ImLookingFor: FC = () => {
   );
 };
 
-export default ImLookingFor;
+export default HopingToFind;
 
 const styles = StyleSheet.create({
   CompatibilityText: {

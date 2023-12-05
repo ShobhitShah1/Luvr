@@ -62,7 +62,7 @@ const DistancePreference: FC = () => {
           Disabled={false}
           Navigation={() => {
             navigation.navigate('LoginStack', {
-              screen: 'YourStudy',
+              screen: 'YourEducation',
             });
           }}
         />

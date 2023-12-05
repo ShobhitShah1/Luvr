@@ -1,85 +1,75 @@
-/* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useState} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
+import {
+  ActiveOpacity,
+  COLORS,
+  FONTS,
+  GROUP_FONT,
+  SIZES,
+} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import WhatElseExtraData from '../../../Components/Data/WhatElseExtraData';
+import WhatAboutYouData from '../../../Components/Data/WhatElseExtraData';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
-interface HabitItemProps {
-  habit: {id: number; habit: string; options: string[]};
-  selectedOption?: string;
-  onPress: (habitId: number, option: string) => void;
-}
-
-const WhatElseExtra: FC = () => {
-  let ProgressCount: number = 0.8;
+const WhatAboutYou: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
     {},
   );
-  const HabitItem: FC<HabitItemProps> = React.memo(
-    ({habit, selectedOption, onPress}) => {
-      return (
-        <React.Fragment>
-          <View key={habit.id} style={[styles.habitContainer]}>
-            <Text style={styles.habitTitle}>{habit.habit}</Text>
-            <View style={{}}>
-              <FlatList
-                data={habit.options}
-                numColumns={3}
-                renderItem={({item, index}: any) => {
-                  return (
-                    <TouchableOpacity
-                      key={index}
-                      style={[
-                        styles.optionButton,
-                        selectedOption === item && styles.selectedOption,
-                      ]}
-                      onPress={() => onPress(habit.id, item)}>
-                      <Text
-                        style={[
-                          styles.CategoriesText,
-                          selectedOption === item &&
-                            styles.SelectedCategoriesText,
-                        ]}>
-                        {item}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                }}
-              />
-            </View>
-          </View>
-        </React.Fragment>
-      );
+
+  const handleOptionPress = useCallback(
+    (habitId: number, option: string) => {
+      setSelectedItems(prevSelection => ({
+        ...prevSelection,
+        [habitId.toString()]: option,
+      }));
     },
+    [setSelectedItems],
   );
-  const handleOptionPress = useCallback((habitId: number, option: string) => {
-    setSelectedItems(prevSelection => ({
-      ...prevSelection,
-      [habitId.toString()]: option,
-    }));
-  }, []);
 
   const renderItem = ({
     item,
   }: {
     item: {id: number; habit: string; options: string[]};
-  }) => (
-    <HabitItem
-      habit={item}
-      selectedOption={selectedItems[item.id.toString()]}
-      onPress={handleOptionPress}
-    />
-  );
+  }) => {
+    return (
+      <View key={item.id} style={styles.habitContainer}>
+        <Text style={styles.habitTitle}>{item.habit}</Text>
+        <FlatList
+          numColumns={3}
+          data={item.options}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(option, index) => index.toString()}
+          renderItem={({item: option, index}) => (
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              key={index}
+              style={[
+                styles.optionButton,
+                selectedItems[item.id.toString()] === option &&
+                  styles.selectedOption,
+              ]}
+              onPress={() => handleOptionPress(item.id, option)}>
+              <Text
+                style={[
+                  styles.CategoriesText,
+                  selectedItems[item.id.toString()] === option &&
+                    styles.SelectedCategoriesText,
+                ]}>
+                {option}
+              </Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+    );
+  };
 
   return (
     <View style={CreateProfileStyles.Container}>
@@ -95,23 +85,16 @@ const WhatElseExtra: FC = () => {
 
         <View style={[styles.FlatListContainerView]}>
           <FlatList
-            data={WhatElseExtraData}
+            data={WhatAboutYouData}
             renderItem={renderItem}
-            style={styles.FlatListStyle}
             initialNumToRender={20}
             nestedScrollEnabled={false}
-            keyExtractor={item => item.id.toString()}
             removeClippedSubviews={true}
+            style={styles.FlatListStyle}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={item => item.id.toString()}
           />
         </View>
-
-        {/* Missing Category To Track On Letter */}
-
-        {/* <View style={styles.checkMissingCategories}>
-        <Text style={styles.missingCategoriesText}>
-          {`Missing Categories: ${isCategoryMissing().join(', ')}`}
-        </Text>
-      </View> */}
       </View>
 
       <View style={[CreateProfileStyles.BottomButton]}>
@@ -129,7 +112,7 @@ const WhatElseExtra: FC = () => {
   );
 };
 
-export default WhatElseExtra;
+export default WhatAboutYou;
 
 const styles = StyleSheet.create({
   DataViewContainer: {
@@ -158,8 +141,8 @@ const styles = StyleSheet.create({
   },
 
   habitContainer: {
-    marginHorizontal: hp('1.9%'),
-    marginVertical: hp('0.5%'),
+    paddingHorizontal: hp('2.5%'),
+    paddingVertical: hp('1.5%'),
   },
   habitTitle: {
     marginBottom: hp('1%'),
@@ -172,8 +155,7 @@ const styles = StyleSheet.create({
     height: hp('6.8%'),
     justifyContent: 'center',
     borderRadius: SIZES.radius,
-    // marginHorizontal: hp('1%'),
-    marginRight: hp('1.5%'),
+    marginRight: hp('2.2%'),
     marginVertical: hp('1%'),
     backgroundColor: COLORS.White,
   },

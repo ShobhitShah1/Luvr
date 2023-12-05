@@ -107,7 +107,7 @@ const SexualOrientation: FC = () => {
   const OnNextButtonClick = () => {
     handleInputChange(StoreStringName, SelectedGenderIndex);
     navigation.navigate('LoginStack', {
-      screen: 'ImLookingFor',
+      screen: 'HopingToFind',
     });
   };
 

@@ -1,5 +1,4 @@
-/* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useRef, useState} from 'react';
+import React, {FC, useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Animated,
@@ -14,7 +13,6 @@ import {COLORS, GROUP_FONT} from '../../Common/Theme';
 import {CardDelay, imageArray} from '../../Config/Setting';
 import useInterval from '../../Hooks/useInterval';
 import RenderSwiperCard from './Components/RenderSwiperCard';
-import {heightPercentageToDP} from 'react-native-responsive-screen';
 
 function* range(start: number, end: number) {
   for (let i = start; i <= end; i++) {
@@ -26,7 +24,7 @@ interface Card {
   images: string[];
 }
 
-const HomeScreen = () => {
+const HomeScreen: FC = () => {
   const {width} = useWindowDimensions();
   const [cards, setCards] = useState<Card[]>(
     [...range(1, 50)].map(() => ({images: [...imageArray]})),
@@ -94,15 +92,6 @@ const HomeScreen = () => {
         onSwipedRight={OnSwipeRight}
         onSwiped={OnSwiped}
         onSwipedAll={OnSwipeAll}
-        cardStyle={
-          {
-            // justifyContent: 'center',
-            // alignSelf: 'center',
-            // backgroundColor: COLORS.Black,
-            // width: '80%',
-            // height: '80%',
-          }
-        }
         cardVerticalMargin={0}
         cardHorizontalMargin={0}
         animateCardOpacity={true}
@@ -152,12 +141,6 @@ const styles = StyleSheet.create({
     ...GROUP_FONT.h1,
     color: COLORS.White,
   },
-  // ContainerCardStyle: width => ({
-  //   borderRedius: SIZES.radius,
-  //   alignSelf: 'center',
-  //   width: width - hp(5),
-  //   height: hp(70),
-  // }),
 });
 
 export default HomeScreen;

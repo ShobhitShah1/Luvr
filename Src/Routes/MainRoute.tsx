@@ -1,15 +1,15 @@
 /* eslint-disable react/no-unstable-nested-components */
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React from 'react';
+import React, {useEffect} from 'react';
 
 // ========================== AUTH SCREENS ==========================
 import {
-  AddLifestyle,
+  AddDailyHabits,
   AddRecentPics,
   DistancePreference,
+  HopingToFind,
   IdentifyYourSelf,
-  ImLookingFor,
   LocationPermission,
   LoginScreen,
   ManageContacts,
@@ -17,17 +17,22 @@ import {
   PhoneNumber,
   SexualOrientation,
   WelcomeScreen,
-  WhatElseExtra,
+  WhatAboutYou,
+  YourEducation,
   YourIntro,
-  YourStudy,
 } from '../Screens/Auth';
 
 // ========================== HOME SCREENS ==========================
-import ExploreCard from '../Screens/Explore/ExploreCard';
 import HomeScreen from '../Screens/Home/HomeScreen';
+import ExploreCard from '../Screens/Explore/ExploreCard';
+import SplashScreen from 'react-native-splash-screen';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
+
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
 
   const LoginStack = () => {
     return (
@@ -49,14 +54,14 @@ export default function MainRoute() {
           component={SexualOrientation}
           name="SexualOrientationScreen"
         />
-        <Stack.Screen component={ImLookingFor} name="ImLookingFor" />
+        <Stack.Screen component={HopingToFind} name="HopingToFind" />
         <Stack.Screen
           component={DistancePreference}
           name="DistancePreference"
         />
-        <Stack.Screen component={YourStudy} name="YourStudy" />
-        <Stack.Screen component={AddLifestyle} name="AddLifestyle" />
-        <Stack.Screen component={WhatElseExtra} name="WhatElseExtra" />
+        <Stack.Screen component={YourEducation} name="YourEducation" />
+        <Stack.Screen component={AddDailyHabits} name="AddDailyHabits" />
+        <Stack.Screen component={WhatAboutYou} name="WhatAboutYou" />
         <Stack.Screen component={YourIntro} name="YourIntro" />
         <Stack.Screen component={AddRecentPics} name="AddRecentPics" />
         <Stack.Screen

@@ -5,7 +5,7 @@ import {COLORS, GROUP_FONT} from '../../Common/Theme';
 
 interface OTPInputProps {
   otp: string[];
-  setOtp: any;
+  setOtp: React.Dispatch<React.SetStateAction<string[]>>;
   length: number;
   inputContainerStyle?: object;
   inputStyle?: object;
@@ -20,7 +20,6 @@ const OTPInput: React.FC<OTPInputProps> = ({
   inputStyle,
   onOtpFilled,
 }) => {
-  // const [otp, setOtp] = useState<string[]>(Array(length).fill(''));
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const inputRefs = useRef<TextInput[]>(Array(length).fill(null));
 
@@ -29,7 +28,7 @@ const OTPInput: React.FC<OTPInputProps> = ({
     if (filledOtp.length === length && onOtpFilled) {
       onOtpFilled(filledOtp);
     }
-  }, [otp]);
+  }, [otp, onOtpFilled, length]);
 
   const handleInputChange = (index: number, value: string) => {
     const newOtp = [...otp];
@@ -62,6 +61,7 @@ const OTPInput: React.FC<OTPInputProps> = ({
         if (index > 0) {
           newOtp[index] = '';
 
+          // Using setTimeout to focus on the previous input after updating OTP
           setTimeout(() => {
             inputRefs.current[index - 1]?.focus();
           }, 0);
@@ -78,6 +78,7 @@ const OTPInput: React.FC<OTPInputProps> = ({
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
       () => {
+        // Focus on the first input when the keyboard hides
         inputRefs.current[0]?.focus();
       },
     );
@@ -91,9 +92,10 @@ const OTPInput: React.FC<OTPInputProps> = ({
     <View style={[styles.container, inputContainerStyle]}>
       {otp.map((digit, index) => (
         <TextInput
+          autoFocus={index === 0}
           key={index.toString()}
           placeholder="0"
-          autoComplete='one-time-code'
+          autoComplete="one-time-code"
           placeholderTextColor={'rgba(130, 130, 130, 1)'}
           ref={ref => (inputRefs.current[index] = ref as TextInput)}
           style={[
@@ -125,7 +127,6 @@ const styles = StyleSheet.create({
   container: {
     marginTop: hp('4%'),
     marginHorizontal: hp('2.8%'),
-    // backgroundColor:'red',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -140,4 +141,5 @@ const styles = StyleSheet.create({
     color: COLORS.White,
   },
 });
+
 export default OTPInput;

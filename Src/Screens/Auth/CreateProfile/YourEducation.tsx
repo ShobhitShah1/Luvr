@@ -10,7 +10,7 @@ import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
-const YourStudy: FC = () => {
+const YourEducation: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const KeyboardVisible = useKeyboardVisibility();
@@ -69,7 +69,7 @@ const YourStudy: FC = () => {
             Disabled={false}
             Navigation={() => {
               navigation.navigate('LoginStack', {
-                screen: 'AddLifestyle',
+                screen: 'AddDailyHabits',
               });
             }}
           />
@@ -79,7 +79,7 @@ const YourStudy: FC = () => {
   );
 };
 
-export default YourStudy;
+export default YourEducation;
 
 const styles = StyleSheet.create({
   DataViewContainer: {

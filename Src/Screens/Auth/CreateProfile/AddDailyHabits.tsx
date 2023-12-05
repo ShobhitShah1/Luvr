@@ -15,7 +15,7 @@ import LifestyleData from '../../../Components/Data/LifestyleData';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
-const AddLifestyle: FC = () => {
+const AddDailyHabits: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
@@ -25,18 +25,13 @@ const AddLifestyle: FC = () => {
 
   const handleOptionPress = useCallback((habitName: string, option: string) => {
     setSelectedItems(prevSelection => {
-      // Copy the previous selection
       const newSelection = {...prevSelection};
 
-      // Check if an option is already selected for this habit
       if (newSelection[habitName.toString()] === option) {
-        // If the same option is selected again, unselect it
         delete newSelection[habitName.toString()];
       } else {
-        // Set the new selection for the current habit and option
         newSelection[habitName.toString()] = option;
 
-        // Remove other options for the same habit
         LifestyleData.forEach(item => {
           if (item.habit === habitName) {
             item.options.forEach(res => {
@@ -53,45 +48,40 @@ const AddLifestyle: FC = () => {
   }, []);
 
   const renderItem = ({
-    item,
+    item: {id, habit, options},
   }: {
     item: {id: number; habit: string; options: string[]};
   }) => {
     return (
-      <View style={styles.HabitsContainerView} key={item.id}>
-        <Text style={styles.HabitTitle}>{item.habit}</Text>
+      <View style={styles.HabitsContainerView} key={id}>
+        <Text style={styles.HabitTitle}>{habit}</Text>
         <View style={styles.HabitOptionContainerView}>
-          {item.options.map((res, index) => {
-            console.log(selectedItems);
-            return (
-              <TouchableOpacity
-                activeOpacity={ActiveOpacity}
-                onPress={() => handleOptionPress(item.habit, res)}
+          {options.map((res, index) => (
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              onPress={() => handleOptionPress(habit, res)}
+              style={[
+                styles.HabitOptionView,
+                {
+                  backgroundColor:
+                    selectedItems[habit] === res
+                      ? COLORS.Primary
+                      : COLORS.White,
+                },
+              ]}
+              key={index}>
+              <Text
                 style={[
-                  styles.HabitOptionView,
+                  styles.HabitOptionText,
                   {
-                    backgroundColor:
-                      selectedItems[item.habit] === res
-                        ? COLORS.Primary
-                        : COLORS.White,
+                    color:
+                      selectedItems[habit] === res ? COLORS.White : '#828282',
                   },
-                ]}
-                key={index}>
-                <Text
-                  style={[
-                    styles.HabitOptionText,
-                    {
-                      color:
-                        selectedItems[item.habit] === res
-                          ? COLORS.White
-                          : '#828282',
-                    },
-                  ]}>
-                  {res}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+                ]}>
+                {res}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
     );
@@ -130,7 +120,7 @@ const AddLifestyle: FC = () => {
           Disabled={false}
           Navigation={() => {
             navigation.navigate('LoginStack', {
-              screen: 'WhatElseExtra',
+              screen: 'WhatAboutYou',
             });
           }}
         />
@@ -262,4 +252,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddLifestyle;
+export default AddDailyHabits;

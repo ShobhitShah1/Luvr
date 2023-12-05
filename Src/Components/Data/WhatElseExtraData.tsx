@@ -1,4 +1,4 @@
-const WhatElseExtraData = [
+const WhatAboutYouData = [
   {
     id: 0,
     habit: "What's your communication style?",
@@ -46,4 +46,4 @@ const WhatElseExtraData = [
   },
 ];
 
-export default WhatElseExtraData;
+export default WhatAboutYouData;

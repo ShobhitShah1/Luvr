@@ -32,14 +32,16 @@ const PhoneNumber: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const isFocused = useIsFocused();
-  // const TextInputRef = useRef();
+
   const [visible, setVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [diallingCode, setDiallingCode] = useState<string | null>(null);
   const [defaultDiallingCode, setDefaultDiallingCode] = useState<string | null>(
     null,
   );
-  const [StorePhoneNumber, setStorePhoneNumber] = useState<string | null>('');
+  const [StorePhoneNumber, setStorePhoneNumber] = useState<string | undefined>(
+    '',
+  );
   const [SearchText, setSearchText] = useState<string | undefined>('');
   const [FilteredCountries, setFilteredCountries] = useState(CountryWithCode);
   const opacity = useSharedValue(0);
@@ -58,7 +60,7 @@ const PhoneNumber: FC = () => {
   });
 
   useEffect(() => {
-    if (isFocused === true) {
+    if (isFocused === true && PhoneNumber.length !== 0) {
       GetPermission();
     }
   }, [isFocused]);

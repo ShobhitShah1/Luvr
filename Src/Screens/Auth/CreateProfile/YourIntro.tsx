@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useMemo, useState} from 'react';
@@ -62,23 +63,6 @@ const YourIntro: FC = () => {
     [selectedItems, handleOptionPress],
   );
 
-  // const renderItem = (
-  //   {item}: {item: {id: number; name: string}},
-  //   index: number,
-  // ) => {
-  //   const selectedOption = selectedItems[item.id.toString()];
-  //   return (
-  //     <View style={styles.YourIntoScrollViewContainer}>
-  //       <TouchableOpacity
-  //         key={index}
-  //         style={[styles.YourIntoButton]}
-  //         onPress={() => {}}>
-  //         <Text style={[styles.CategoriesText]}>{item.name}</Text>
-  //       </TouchableOpacity>
-  //     </View>
-  //   );
-  // };
-
   const selectedItemsKeys = Object.keys(selectedItems);
 
   return (
@@ -97,12 +81,13 @@ const YourIntro: FC = () => {
             numColumns={3}
             data={YourIntoData}
             renderItem={renderItem}
-            style={styles.FlatListStyle}
-            contentContainerStyle={styles.ContainerContainerStyle}
             initialNumToRender={50}
             nestedScrollEnabled={false}
+            style={styles.FlatListStyle}
             removeClippedSubviews={true}
+            showsVerticalScrollIndicator={false}
             keyExtractor={item => item.id.toString()}
+            contentContainerStyle={styles.ContainerContainerStyle}
           />
         </View>
       </View>
@@ -117,19 +102,6 @@ const YourIntro: FC = () => {
           }}
         />
       </View>
-      {/* <View style={[styles.BottomButtonWidth]}>
-        <View style={styles.ButtonContainer}>
-          <GradientButton
-            Title={`Next ${selectedItemsKeys?.length || 0}/5`}
-            Disabled={false}
-            Navigation={() => {
-              navigation.navigate('LoginStack', {
-                screen: 'AddRecentPics',
-              });
-            }}
-          />
-        </View>
-      </View> */}
     </View>
   );
 };
@@ -186,7 +158,7 @@ const styles = StyleSheet.create({
   YourIntoScrollViewContainer: {
     justifyContent: 'center',
     alignSelf: 'center',
-    marginHorizontal: hp('1.2%'),
+    marginHorizontal: hp('1.5%'),
   },
   YourIntoButton: {
     width: hp('12%'),
@@ -212,7 +184,7 @@ const styles = StyleSheet.create({
     color: COLORS.White,
   },
   FlatListContainer: {
-    height: '76%',
+    height: '78%',
     marginTop: hp('1.5%'),
   },
 });

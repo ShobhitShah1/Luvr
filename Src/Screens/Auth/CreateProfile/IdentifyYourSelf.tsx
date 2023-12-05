@@ -1,7 +1,6 @@
-/* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useEffect, useState} from 'react';
+import React, {FC, useCallback, useState} from 'react';
 import {
   Keyboard,
   ScrollView,
@@ -18,11 +17,11 @@ import {COLORS, FONTS, SIZES} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
 import {useUserData} from '../../../Contexts/UserDataContext';
+import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useFieldConfig} from '../../../Utils/StorageUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
 
 const IdentifyYourSelf: FC = () => {
   //* Get Key Name. From Where You Want To Store Data
@@ -43,7 +42,6 @@ const IdentifyYourSelf: FC = () => {
   const handleGenderSelection = (gender: string) => {
     setSelectedGender(gender);
   };
-
 
   //* Navigation
   const navigation =

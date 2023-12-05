@@ -39,30 +39,30 @@ const useCameraGalleryPermissions = () => {
     gallery: undefined,
   });
 
-  useEffect(() => {
-    const checkCurrentPermissions = async () => {
-      try {
-        const cameraStatus = await check(getCameraPermission());
-        const galleryStatus = await check(getGalleryPermission());
-        console.log(cameraStatus, galleryStatus);
-        setPermissions({
-          camera: cameraStatus,
-          gallery: galleryStatus,
-        });
+  // useEffect(() => {
+  //   const checkCurrentPermissions = async () => {
+  //     try {
+  //       const cameraStatus = await check(getCameraPermission());
+  //       const galleryStatus = await check(getGalleryPermission());
+  //       console.log(cameraStatus, galleryStatus);
+  //       setPermissions({
+  //         camera: cameraStatus,
+  //         gallery: galleryStatus,
+  //       });
 
-        if (
-          cameraStatus !== RESULTS.GRANTED ||
-          galleryStatus !== RESULTS.GRANTED
-        ) {
-          showAlert();
-        }
-      } catch (error) {
-        console.error('Permission check error: ', error);
-      }
-    };
+  //       if (
+  //         cameraStatus !== RESULTS.GRANTED ||
+  //         galleryStatus !== RESULTS.GRANTED
+  //       ) {
+  //         showAlert();
+  //       }
+  //     } catch (error) {
+  //       console.error('Permission check error: ', error);
+  //     }
+  //   };
 
-    checkCurrentPermissions();
-  }, []);
+  //   checkCurrentPermissions();
+  // }, []);
 
   const requestCameraPermission = async () => {
     try {
