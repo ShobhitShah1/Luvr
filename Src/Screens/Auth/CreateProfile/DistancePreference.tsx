@@ -1,8 +1,8 @@
-import Slider from 'react-native-slider';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+// import Slider from 'azir-slider';
 import React, {FC, useState} from 'react';
-import {Alert, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
@@ -12,11 +12,10 @@ import CreateProfileStyles from './styles';
 const DistancePreference: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const [milesValue, setMilesValue] = useState<number>(0.75);
+  const [milesValue, setMilesValue] = useState<number>(75);
 
-  const calculateMiles = (value: number): number => {
-    const maxMiles = 100;
-    return Math.round(value * maxMiles);
+  const OnChangeKM = (value: number) => {
+    setMilesValue(value);
   };
 
   return (
@@ -36,22 +35,24 @@ const DistancePreference: FC = () => {
         <View style={styles.SliderContainerView}>
           <View style={styles.DistancePrefView}>
             <Text style={styles.SliderInfoText}>Distance Preference</Text>
-            <Text style={styles.SliderValue}>{`${calculateMiles(
-              milesValue,
-            )} KM`}</Text>
+            <Text style={styles.SliderValue}>{`${milesValue} KM`}</Text>
           </View>
           <View style={styles.SliderView}>
-            <Slider
-              value={milesValue}
+            {/* <Slider
+              step={1}
               minimumValue={0}
-              maximumValue={1}
-              step={0.01}
-              onValueChange={(value: number) => setMilesValue(value)}
-              thumbTintColor={COLORS.Primary}
-              maximumTrackTintColor={COLORS.White}
-              minimumTrackTintColor={COLORS.Primary}
+              maximumValue={100}
+              value={milesValue}
+              onStart={OnChangeKM}
+              onChange={OnChangeKM}
+              onComplete={OnChangeKM}
+              thumbColor={COLORS.Primary}
+              trackColor={COLORS.White}
+              progressTrackColor={COLORS.Primary}
               style={styles.SliderStyle}
-            />
+              trackSize={6}
+              thumbSize={21}
+            /> */}
           </View>
         </View>
       </View>
@@ -127,6 +128,6 @@ const styles = StyleSheet.create({
     marginVertical: hp('1.5%'),
     width: '92%',
     justifyContent: 'center',
-    alignSelf:'center'
+    alignSelf: 'center',
   },
 });

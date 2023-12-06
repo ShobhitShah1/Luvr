@@ -1,6 +1,15 @@
-import {useEffect, useState} from 'react';
-import {Alert, Linking, Platform} from 'react-native';
-import {PERMISSIONS, RESULTS, check, request} from 'react-native-permissions';
+import {useState} from 'react';
+import {Alert, Linking, NativeModules, Platform} from 'react-native';
+import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
+
+const {CheckVersion} = NativeModules;
+
+type Permission = any;
+
+interface Permissions {
+  camera?: string;
+  gallery?: string;
+}
 
 const getCameraPermission = () => {
   return Platform.OS === 'android'
@@ -8,10 +17,19 @@ const getCameraPermission = () => {
     : PERMISSIONS.IOS.CAMERA;
 };
 
-const getGalleryPermission = () => {
-  return Platform.OS === 'android'
-    ? PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
-    : PERMISSIONS.IOS.PHOTO_LIBRARY;
+const getGalleryPermission = (): Promise<Permission> => {
+  return new Promise(resolve => {
+    CheckVersion.getCurrentVersion((isTiramisu: boolean) => {
+      console.log(`Is TIRAMISU: ${isTiramisu}`);
+      const permission =
+        Platform.OS === 'android'
+          ? isTiramisu
+            ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
+            : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
+          : PERMISSIONS.IOS.PHOTO_LIBRARY;
+      resolve(permission);
+    });
+  });
 };
 
 const openAppSettings = () => {
@@ -34,43 +52,15 @@ const showAlert = () => {
 };
 
 const useCameraGalleryPermissions = () => {
-  const [permissions, setPermissions] = useState<Object>({
+  const [permissions, setPermissions] = useState<Permissions>({
     camera: undefined,
     gallery: undefined,
   });
 
-  // useEffect(() => {
-  //   const checkCurrentPermissions = async () => {
-  //     try {
-  //       const cameraStatus = await check(getCameraPermission());
-  //       const galleryStatus = await check(getGalleryPermission());
-  //       console.log(cameraStatus, galleryStatus);
-  //       setPermissions({
-  //         camera: cameraStatus,
-  //         gallery: galleryStatus,
-  //       });
-
-  //       if (
-  //         cameraStatus !== RESULTS.GRANTED ||
-  //         galleryStatus !== RESULTS.GRANTED
-  //       ) {
-  //         showAlert();
-  //       }
-  //     } catch (error) {
-  //       console.error('Permission check error: ', error);
-  //     }
-  //   };
-
-  //   checkCurrentPermissions();
-  // }, []);
-
   const requestCameraPermission = async () => {
     try {
-      const status = await request(
-        Platform.OS === 'android'
-          ? PERMISSIONS.ANDROID.CAMERA
-          : PERMISSIONS.IOS.CAMERA,
-      );
+      console.log(getCameraPermission());
+      const status = await request(getCameraPermission());
       setPermissions(prevPermissions => ({
         ...prevPermissions,
         camera: status,
@@ -86,7 +76,10 @@ const useCameraGalleryPermissions = () => {
 
   const requestGalleryPermission = async () => {
     try {
-      const status = await request(getGalleryPermission());
+      const permission: Permission = await getGalleryPermission();
+
+      const status = await request(permission);
+      console.log('status:', status);
       setPermissions(prevPermissions => ({
         ...prevPermissions,
         gallery: status,

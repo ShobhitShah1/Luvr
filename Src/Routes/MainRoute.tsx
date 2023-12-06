@@ -41,7 +41,8 @@ export default function MainRoute() {
           headerShown: false,
           animation: 'none',
           statusBarAnimation: 'fade',
-        }}>
+        }}
+        initialRouteName="AddRecentPics">
         <Stack.Screen component={LoginScreen} name="Login" />
         <Stack.Screen component={WelcomeScreen} name="Welcome" />
         <Stack.Screen component={PhoneNumber} name="PhoneNumber" />

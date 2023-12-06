@@ -32,7 +32,6 @@ import CreateProfileStyles from './styles';
 const {width} = Dimensions.get('window');
 
 const SexualOrientation: FC = () => {
-  let ProgressCount: number = 0.3;
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 

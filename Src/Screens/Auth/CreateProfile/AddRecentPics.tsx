@@ -1,10 +1,8 @@
-/* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable react-native/no-inline-styles */
-import {BlurView} from '@react-native-community/blur';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
 import {
   FlatList,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,40 +10,31 @@ import {
   View,
 } from 'react-native';
 import * as ImagePicker from 'react-native-image-picker';
-import Animated from 'react-native-reanimated';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import CommonIcons from '../../../Common/CommonIcons';
-import {
-  ActiveOpacity,
-  COLORS,
-  FONTS,
-  GROUP_FONT,
-  SIZES,
-} from '../../../Common/Theme';
+import {ActiveOpacity, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import {TotalProfilePicCanUplaod} from '../../../Config/Setting';
+import {TotalProfilePicCanUpload} from '../../../Config/Setting';
+import useCameraGalleryPermissions from '../../../Hooks/useCameraGalleryPermissions';
 import {
   addUrlToItem,
   deleteUrlFromItem,
   sortByUrl,
 } from '../../../Utils/ImagePickerUtils';
+import AddUserPhoto from './Components/AddUserPhoto';
 import ChooseFromModal from './Components/ChooseFromModal';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import useCameraGalleryPermissions from '../../../Hooks/useCameraGalleryPermissions';
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 const AddRecentPics: FC = () => {
   const navigation =
-    useNavigation<NativeStackNavigationProp<{HomeStack: {}}>>();
+    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
   const {requestCameraPermission, requestGalleryPermission, permissions} =
     useCameraGalleryPermissions();
 
   const [ChooseModalVisible, setChooseModalVisible] = useState<boolean>(false);
   const [data, setData] = useState(
-    Array.from({length: TotalProfilePicCanUplaod}, (_, index) => ({
+    Array.from({length: TotalProfilePicCanUpload}, (_, index) => ({
       name: '',
       type: '',
       key: String(index),
@@ -65,7 +54,7 @@ const AddRecentPics: FC = () => {
       const res = await ImagePicker.launchImageLibrary({
         mediaType: 'photo',
         selectionLimit:
-          TotalProfilePicCanUplaod -
+          TotalProfilePicCanUpload -
           data.filter(item => item.url !== '').length,
       });
 
@@ -90,18 +79,10 @@ const AddRecentPics: FC = () => {
   };
 
   //* Manage Camera Image Pick
-  const HandleCameraImagePicker = async (
-    Key: string,
-    isCamera: boolean = false,
-  ) => {
-    console.log('Key', Key);
+  const HandleCameraImagePicker = async () => {
     try {
-      const mediaType = isCamera ? 'photo' : 'mixed'; // Use 'mixed' for camera
-      const res = await ImagePicker.launchImageLibrary({
-        mediaType,
-        selectionLimit:
-          TotalProfilePicCanUplaod -
-          data.filter(item => item.url !== '').length,
+      const res = await ImagePicker.launchCamera({
+        mediaType: 'photo',
       });
 
       const newImages =
@@ -117,7 +98,6 @@ const AddRecentPics: FC = () => {
           item.url === '' ? newImages.shift() || item : item,
         );
         setData(newData);
-        console.log('Selected Images:', newData);
       }
     } catch (error) {
       console.log('Image Picker Error:', error);
@@ -128,8 +108,7 @@ const AddRecentPics: FC = () => {
   const HandleOnImagePress = (item: {key: string; url: string}) => {
     console.log('item', item);
     if (item.url.length === 0) {
-      // OnToggleModal();
-      // HandleGalleryImagePicker(item.key);
+      OnToggleModal();
     } else {
       const newPics = data.map(deleteUrlFromItem(item)).sort(sortByUrl);
       setData(newPics);
@@ -160,87 +139,44 @@ const AddRecentPics: FC = () => {
     );
   };
 
-  //* Box Style HasImage And Dont Have View
-  const AddUserPhoto = ({picture}: any) => {
-    const hasPicture = !!picture.url;
-
-    return (
-      <View style={styles.item} key={picture?.url}>
-        {picture?.url ? (
-          <Animated.View style={styles.UserImageContainer}>
-            <Image
-              source={{uri: picture?.url}}
-              resizeMode="cover"
-              style={styles.ImageHasImageView}
-            />
-          </Animated.View>
-        ) : (
-          <Animated.View style={styles.UserImageContainer}>
-            <Image
-              source={CommonIcons.NoImage}
-              resizeMode="cover"
-              style={styles.NoImageView}
-            />
-          </Animated.View>
-        )}
-
-        <View style={[styles.BlurViewContainer(hasPicture)]}>
-          <BlurView
-            blurType="light"
-            blurAmount={1}
-            style={styles.BlurView}
-            overlayColor="transparent"
-            reducedTransparencyFallbackColor="rgba(255,255,255,.2)">
-            <View
-              style={{
-                backgroundColor: 'transparent',
-              }}>
-              {!hasPicture ? (
-                <View style={[styles.ImageAddAndDeleteView]}>
-                  <Image
-                    resizeMode="cover"
-                    style={[styles.AddPhotoImageViewImages]}
-                    source={CommonIcons.AddImage}
-                  />
-                  <Text style={styles.ImageAddAndDeleteText(hasPicture)}>
-                    Add Photo
-                  </Text>
-                </View>
-              ) : (
-                <View style={[styles.ImageAddAndDeleteView]}>
-                  <Image
-                    resizeMode="cover"
-                    style={[styles.DeletePhotoImageViewImages]}
-                    source={CommonIcons.DeleteImage}
-                  />
-                  <Text style={styles.ImageAddAndDeleteText(hasPicture)}>
-                    Delete Photo
-                  </Text>
-                </View>
-              )}
-            </View>
-          </BlurView>
-        </View>
-      </View>
-    );
-  };
-
-  //* Handle User Selection With Permisstion
+  //* Handle User Selection With Permission
   const HandleUserSelection = async (option: string) => {
-    if (option === 'Camera') {
-      if (permissions?.camera === 'granted') {
-        await HandleCameraImagePicker('1', true);
-        setChooseModalVisible(false);
+    try {
+      if (option === 'Camera') {
+        if (permissions.camera === 'granted') {
+          console.log('Camera permission granted. Opening camera...');
+          await HandleCameraImagePicker();
+          setChooseModalVisible(false);
+        } else {
+          console.log('Requesting camera permission...');
+          await requestCameraPermission();
+          if (permissions.camera === 'granted') {
+            console.log('Camera permission granted. Opening camera...');
+            await HandleCameraImagePicker();
+            setChooseModalVisible(false);
+          } else {
+            console.log('Camera permission denied.');
+          }
+        }
       } else {
-        requestCameraPermission();
+        if (permissions?.gallery === 'granted') {
+          console.log('Gallery permission granted. Opening gallery...');
+          await HandleGalleryImagePicker('1');
+          setChooseModalVisible(false);
+        } else {
+          console.log('Requesting gallery permission...');
+          await requestGalleryPermission();
+          if (permissions?.gallery === 'granted') {
+            console.log('Gallery permission granted. Opening gallery...');
+            await HandleGalleryImagePicker('1');
+            setChooseModalVisible(false);
+          } else {
+            console.log('Gallery permission denied.');
+          }
+        }
       }
-    } else {
-      if (permissions?.gallery === 'granted') {
-        await HandleGalleryImagePicker('1');
-        setChooseModalVisible(false);
-      } else {
-        requestGalleryPermission();
-      }
+    } catch (error) {
+      console.error('Error handling user selection:', error);
     }
   };
 
@@ -282,11 +218,11 @@ const AddRecentPics: FC = () => {
 
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
-          Title={'Next'}
+          Title={'Continue'}
           Disabled={false}
           Navigation={() => {
-            navigation.navigate('HomeStack', {
-              screen: 'Home',
+            navigation.navigate('LoginStack', {
+              screen: 'LocationPermission',
             });
           }}
         />
@@ -304,79 +240,8 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Regular,
   },
   DataViewContainer: {
-    marginHorizontal: hp('1.2%'),
     marginTop: hp('1%'),
-  },
-  DraggableStyle: {
-    width: '100%',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  item: {
-    width: hp('19%'),
-    height: hp('19%'),
-    borderRadius: hp('1.5%'),
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: hp('0.5%'),
-    marginVertical: hp('0.5%'),
-    backgroundColor: COLORS.White,
-    overflow: 'hidden',
-  },
-  ImageHasImageView: {
-    width: '100%',
-    height: '100%',
-  },
-  NoImageView: {
-    justifyContent: 'center',
-    alignSelf: 'center',
-    width: '30%',
-    height: '30%',
-    overflow: 'hidden',
-    bottom: 15,
-  },
-  item_text: {
-    ...GROUP_FONT.h4,
-  },
-  UserImageContainer: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-    borderRadius: hp('1.5%'),
-    justifyContent: 'center',
-  },
-  IconView: {
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  ImageAddAndDeleteView: {
-    flexDirection: 'row',
-  },
-  ImageAddAndDeleteText: (hasPicture: any) => ({
-    ...GROUP_FONT.h3,
-    color: !hasPicture ? COLORS.Black : COLORS.White,
-  }),
-  DeletePhotoImageViewImages: {
-    justifyContent: 'center',
-    alignSelf: 'center',
-    width: 18,
-    height: 18,
-    tintColor: COLORS.White,
-  },
-  AddPhotoImageViewImages: {
-    justifyContent: 'center',
-    alignSelf: 'center',
-    width: 18,
-    height: 18,
-    tintColor: COLORS.Black,
-    marginHorizontal: 5,
-  },
-  AddImageView: {
-    backgroundColor: COLORS.Gray,
+    marginHorizontal: hp('1.2%'),
   },
   FlatListWrapper: {
     height: '65%',
@@ -389,24 +254,6 @@ const styles = StyleSheet.create({
   contentContainerStyle: {
     alignSelf: 'center',
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  BlurViewContainer: hasPicture => ({
-    flex: 1,
-    bottom: 10,
-    width: '85%',
-    height: 35,
-    overflow: 'hidden',
-    alignSelf: 'center',
-    position: 'absolute',
-    justifyContent: 'center',
-    borderWidth: hp('0.13%'),
-    borderRadius: SIZES.radius,
-    borderColor: hasPicture ? COLORS.White : COLORS.Black,
-    alignItems: 'center',
-  }),
-  BlurView: {
-    borderWidth: 1,
     justifyContent: 'center',
   },
 });

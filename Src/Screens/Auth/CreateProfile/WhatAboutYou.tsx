@@ -41,32 +41,35 @@ const WhatAboutYou: FC = () => {
     return (
       <View key={item.id} style={styles.habitContainer}>
         <Text style={styles.habitTitle}>{item.habit}</Text>
-        <FlatList
-          numColumns={3}
-          data={item.options}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(option, index) => index.toString()}
-          renderItem={({item: option, index}) => (
-            <TouchableOpacity
-              activeOpacity={ActiveOpacity}
-              key={index}
-              style={[
-                styles.optionButton,
-                selectedItems[item.id.toString()] === option &&
-                  styles.selectedOption,
-              ]}
-              onPress={() => handleOptionPress(item.id, option)}>
-              <Text
+        <View style={styles.HabitFlatListView}>
+          <FlatList
+            numColumns={3}
+            data={item.options}
+            style={styles.HabitFlatListStyle}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(option, index) => index.toString()}
+            renderItem={({item: option, index}) => (
+              <TouchableOpacity
+                activeOpacity={ActiveOpacity}
+                key={index}
                 style={[
-                  styles.CategoriesText,
+                  styles.optionButton,
                   selectedItems[item.id.toString()] === option &&
-                    styles.SelectedCategoriesText,
-                ]}>
-                {option}
-              </Text>
-            </TouchableOpacity>
-          )}
-        />
+                    styles.selectedOption,
+                ]}
+                onPress={() => handleOptionPress(item.id, option)}>
+                <Text
+                  style={[
+                    styles.CategoriesText,
+                    selectedItems[item.id.toString()] === option &&
+                      styles.SelectedCategoriesText,
+                  ]}>
+                  {option}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
       </View>
     );
   };
@@ -141,6 +144,7 @@ const styles = StyleSheet.create({
   },
 
   habitContainer: {
+    width: '100%',
     paddingHorizontal: hp('2.5%'),
     paddingVertical: hp('1.5%'),
   },
@@ -150,13 +154,22 @@ const styles = StyleSheet.create({
     color: COLORS.Primary,
     fontFamily: FONTS.Bold,
   },
+  HabitFlatListView: {
+    flex: 1,
+    alignSelf: 'center',
+  },
+  HabitFlatListStyle: {
+    width: '100%',
+    alignSelf: 'center',
+  },
   optionButton: {
     width: hp('12%'),
     height: hp('6.8%'),
     justifyContent: 'center',
-    borderRadius: SIZES.radius,
-    marginRight: hp('2.2%'),
     marginVertical: hp('1%'),
+    marginHorizontal: hp('1.3%'), // 1.1
+    overflow: 'hidden',
+    borderRadius: SIZES.radius,
     backgroundColor: COLORS.White,
   },
   selectedOption: {
@@ -186,7 +199,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignSelf: 'center',
     justifyContent: 'center',
-    // backgroundColor: COLORS.White,
   },
   BottomButtonWidth: {
     width: '100%',

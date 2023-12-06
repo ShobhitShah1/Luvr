@@ -126,14 +126,15 @@ const styles = StyleSheet.create({
     marginTop: hp('1%'),
   },
   FlatListStyle: {
+    width: '100%',
     height: '100%',
-    marginHorizontal: hp('1%'),
+    overflow: 'hidden',
     bottom: hp('0.5%'),
   },
   ContainerContainerStyle: {
-    flexDirection: 'row',
-    display: 'flex',
-    flexWrap: 'wrap',
+    width: '90%',
+    alignSelf: 'center',
+    alignItems: 'center',
   },
   YourIntoMatchText: {
     ...GROUP_FONT.h3,
@@ -156,9 +157,9 @@ const styles = StyleSheet.create({
   },
 
   YourIntoScrollViewContainer: {
-    justifyContent: 'center',
     alignSelf: 'center',
-    marginHorizontal: hp('1.5%'),
+    justifyContent: 'center',
+    paddingHorizontal: hp('1.5%'),
   },
   YourIntoButton: {
     width: hp('12%'),

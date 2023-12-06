@@ -9,4 +9,4 @@ export const imageArray = [
   'https://images.unsplash.com/photo-1699031101330-4de71e10ee8c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
 ];
 
-export const TotalProfilePicCanUplaod = 4;
+export const TotalProfilePicCanUpload = 4;
