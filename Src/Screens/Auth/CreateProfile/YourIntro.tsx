@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
     fontSize: hp('3.3%'),
     fontFamily: FONTS.Bold,
   },
-
   DataViewContainer: {
+    height: '85%',
     marginHorizontal: hp('1.2%'),
     marginTop: hp('1%'),
   },
@@ -129,7 +129,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     overflow: 'hidden',
-    bottom: hp('0.5%'),
   },
   ContainerContainerStyle: {
     width: '90%',
@@ -159,7 +158,7 @@ const styles = StyleSheet.create({
   YourIntoScrollViewContainer: {
     alignSelf: 'center',
     justifyContent: 'center',
-    paddingHorizontal: hp('1.5%'),
+    paddingHorizontal: hp('0.5%'),
   },
   YourIntoButton: {
     width: hp('12%'),

@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     height: hp('6.8%'),
     justifyContent: 'center',
     marginVertical: hp('1%'),
-    marginHorizontal: hp('1.3%'), // 1.1
+    marginHorizontal: hp('0.5%'), // 1.1
     overflow: 'hidden',
     borderRadius: SIZES.radius,
     backgroundColor: COLORS.White,

@@ -10,6 +10,13 @@ const AddImage = require('../../Assets/Icons/AddImage.png');
 const DeleteImage = require('../../Assets/Icons/DeleteImage.png');
 const Check = require('../../Assets/Icons/Check.png');
 const Search = require('../../Assets/Icons/Search.png');
+const CloseModal = require('../../Assets/Icons/CloseModal.png');
+
+// Home
+const HomeTab = require('../../Assets/Icons/home_icon_select.png');
+const FindMatchTab = require('../../Assets/Icons/find_matches_icon_unselect.png');
+const MessageTab = require('../../Assets/Icons/message_icon_unselect.png');
+const ProfileTab = require('../../Assets/Icons/profile_icon_unselect.png');
 
 export default {
   Back,
@@ -24,4 +31,11 @@ export default {
   DeleteImage,
   Check,
   Search,
+  CloseModal,
+
+  //Home
+  HomeTab,
+  FindMatchTab,
+  MessageTab,
+  ProfileTab,
 };

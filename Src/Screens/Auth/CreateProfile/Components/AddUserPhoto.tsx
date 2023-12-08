@@ -81,8 +81,8 @@ export default AddUserPhoto;
 const styles = StyleSheet.create({
   item: {
     overflow: 'hidden',
-    width: hp('19.5%'),
-    height: hp('19.5%'),
+    width: hp('18%'),
+    height: hp('18%'),
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: hp('1.5%'),

@@ -11,6 +11,7 @@ import {
   SIZES,
 } from '../../../../Common/Theme';
 import {BlurView} from '@react-native-community/blur';
+import CommonIcons from '../../../../Common/CommonIcons';
 
 interface ChooseFromModalProps {
   isModalVisible: boolean;
@@ -56,42 +57,61 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({
       <View style={styles.ModalView}>
         <View style={styles.TopViewContainer}>
           <View style={styles.TopTitleViewContainer}>
-            <Text style={styles.TitleText}>Select Any Option..</Text>
+            <Text style={styles.TitleText}>Add photos from</Text>
             <Text style={styles.DescriptionText}>
-              You can select any option to upload pics.
+              Select source for upload photos
             </Text>
           </View>
 
-          <TouchableOpacity style={styles.CloseButton} onPress={() => {}}>
-            <Text style={styles.CloseText}>Close</Text>
+          <TouchableOpacity style={styles.CloseButton} onPress={toggleModal}>
+            <Image
+              source={CommonIcons.CloseModal}
+              style={styles.CloseButtonIcon}
+            />
           </TouchableOpacity>
         </View>
 
         <View style={styles.ButtonContainerView}>
-          {/* Camera */}
-          <TouchableOpacity
-            onPress={() => OnOptionPress('Camera')}
-            activeOpacity={ActiveOpacity}
-            style={styles.ButtonView}>
-            <Image
-              resizeMode="contain"
-              source={CommonImages.Camera_Icon}
-              style={styles.IconView}
-            />
-            <Text style={styles.SelectText}>Select Image Camera</Text>
-          </TouchableOpacity>
-
           {/* Gallery */}
           <TouchableOpacity
             onPress={() => OnOptionPress('Gallery')}
             activeOpacity={ActiveOpacity}
-            style={styles.ButtonView}>
+            style={[
+              styles.ButtonView,
+              {
+                backgroundColor: 'rgba(255, 155, 82, 1)',
+              },
+            ]}>
             <Image
               resizeMode="contain"
               source={CommonImages.Gallery_Icon}
               style={styles.IconView}
             />
-            <Text style={styles.SelectText}>Select Image Gallery</Text>
+            <View style={styles.TextView}>
+              <Text style={styles.Title}>Upload from</Text>
+              <Text style={styles.Pick}>Gallery</Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* Camera */}
+          <TouchableOpacity
+            onPress={() => OnOptionPress('Camera')}
+            activeOpacity={ActiveOpacity}
+            style={[
+              styles.ButtonView,
+              {
+                backgroundColor: 'rgba(95, 197, 255, 1)',
+              },
+            ]}>
+            <Image
+              resizeMode="contain"
+              source={CommonImages.Camera_Icon}
+              style={styles.IconView}
+            />
+            <View style={styles.TextView}>
+              <Text style={styles.Title}>Capture from</Text>
+              <Text style={styles.Pick}>Camera</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -107,8 +127,8 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   ModalView: {
-    width: '90%',
-    bottom: 20,
+    width: '85%',
+    bottom: hp('4%'),
     alignSelf: 'center',
     justifyContent: 'center',
     borderRadius: SIZES.radius,
@@ -118,7 +138,7 @@ const styles = StyleSheet.create({
 
   TopViewContainer: {
     width: '100%',
-    paddingHorizontal: hp('4%'),
+    paddingHorizontal: hp('2.7%'),
     marginBottom: hp('3%'),
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -135,19 +155,21 @@ const styles = StyleSheet.create({
   },
   CloseButton: {
     width: '20%',
-    backgroundColor: 'red',
+    alignItems: 'flex-end',
+    alignSelf: 'flex-start',
   },
-  CloseText: {
-    ...GROUP_FONT.h3,
-    textAlign: 'center',
+  CloseButtonIcon: {
+    justifyContent: 'center',
+    width: hp('3%'),
+    height: hp('3%'),
   },
 
   ButtonContainerView: {
     borderRadius: SIZES.radius,
   },
   ButtonView: {
-    width: '90%',
-    height: hp(7),
+    width: '80%',
+    height: hp('7.5%'),
     overflow: 'hidden',
     alignSelf: 'center',
     marginVertical: hp(1),
@@ -157,17 +179,30 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.Primary,
   },
   IconView: {
-    width: hp('3.5%'),
-    height: hp('3.5%'),
+    width: hp('4.5%'),
+    height: hp('4.5%'),
     alignSelf: 'center',
     tintColor: COLORS.White,
     justifyContent: 'center',
   },
-  SelectText: {
+
+  TextView: {
+    justifyContent: 'center',
+    // alignSelf:'center',
+    marginHorizontal: hp('1.6%'),
+  },
+  Title: {
+    ...GROUP_FONT.h4,
+    color: COLORS.White,
+    // alignSelf: 'center',
+    // justifyContent: 'center',
+    marginHorizontal: hp('1%'),
+  },
+  Pick: {
     ...GROUP_FONT.h3,
     color: COLORS.White,
-    alignSelf: 'center',
-    justifyContent: 'center',
+    // alignSelf: 'center',
+    // justifyContent: 'center',
     marginHorizontal: hp('1%'),
   },
   blurContainer: {

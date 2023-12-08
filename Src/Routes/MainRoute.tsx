@@ -20,12 +20,14 @@ import {
   WhatAboutYou,
   YourEducation,
   YourIntro,
+  AvoidContacts,
 } from '../Screens/Auth';
 
 // ========================== HOME SCREENS ==========================
 import HomeScreen from '../Screens/Home/HomeScreen';
 import ExploreCard from '../Screens/Explore/ExploreCard';
 import SplashScreen from 'react-native-splash-screen';
+import BottomTab from './BottomTab';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -41,8 +43,7 @@ export default function MainRoute() {
           headerShown: false,
           animation: 'none',
           statusBarAnimation: 'fade',
-        }}
-        initialRouteName="AddRecentPics">
+        }}>
         <Stack.Screen component={LoginScreen} name="Login" />
         <Stack.Screen component={WelcomeScreen} name="Welcome" />
         <Stack.Screen component={PhoneNumber} name="PhoneNumber" />
@@ -69,22 +70,11 @@ export default function MainRoute() {
           component={LocationPermission}
           name="LocationPermission"
         />
+        <Stack.Screen component={AvoidContacts} name="AvoidContacts" />
         <Stack.Screen component={ManageContacts} name="ManageContacts" />
       </Stack.Navigator>
     );
-  };
-
-  const HomeStack = () => {
-    return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}>
-        <Stack.Screen component={HomeScreen} name="Home" />
-        <Stack.Screen component={ExploreCard} name="Explore" />
-      </Stack.Navigator>
-    );
-  };
+  }; 
 
   return (
     <NavigationContainer>
@@ -93,8 +83,8 @@ export default function MainRoute() {
           headerShown: false,
           customAnimationOnGesture: true,
         }}>
-        <Stack.Screen name="LoginStack" component={LoginStack} />
-        <Stack.Screen name="HomeStack" component={HomeStack} />
+        {/* <Stack.Screen name="LoginStack" component={LoginStack} /> */}
+        <Stack.Screen name="BottomTab" component={BottomTab} />
       </Stack.Navigator>
     </NavigationContainer>
   );

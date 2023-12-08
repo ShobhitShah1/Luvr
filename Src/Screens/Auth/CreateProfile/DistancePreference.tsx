@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-// import Slider from 'azir-slider';
+import Slider from 'azir-slider';
 import React, {FC, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -38,7 +38,7 @@ const DistancePreference: FC = () => {
             <Text style={styles.SliderValue}>{`${milesValue} KM`}</Text>
           </View>
           <View style={styles.SliderView}>
-            {/* <Slider
+            <Slider
               step={1}
               minimumValue={0}
               maximumValue={100}
@@ -52,7 +52,7 @@ const DistancePreference: FC = () => {
               style={styles.SliderStyle}
               trackSize={6}
               thumbSize={21}
-            /> */}
+            />
           </View>
         </View>
       </View>

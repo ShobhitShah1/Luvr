@@ -17,6 +17,7 @@ export const COLORS = {
   DisableText: 'rgb(109, 114, 120)',
   Placeholder: 'rgba(97,106,118,255)',
   LightGray: 'rgb(218,218,218)',
+  TabBarUnFocused: 'rgba(198, 198, 198, 1)',
 };
 
 export const FONTS = {
