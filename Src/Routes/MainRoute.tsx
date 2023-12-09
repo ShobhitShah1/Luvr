@@ -7,6 +7,7 @@ import React, {useEffect} from 'react';
 import {
   AddDailyHabits,
   AddRecentPics,
+  AvoidContacts,
   DistancePreference,
   HopingToFind,
   IdentifyYourSelf,
@@ -20,13 +21,11 @@ import {
   WhatAboutYou,
   YourEducation,
   YourIntro,
-  AvoidContacts,
 } from '../Screens/Auth';
 
 // ========================== HOME SCREENS ==========================
-import HomeScreen from '../Screens/Home/HomeScreen';
-import ExploreCard from '../Screens/Explore/ExploreCard';
 import SplashScreen from 'react-native-splash-screen';
+import CategoryDetailCardsScreen from '../Screens/Home/ExploreCards/CategoryDetailCardsScreen';
 import BottomTab from './BottomTab';
 
 export default function MainRoute() {
@@ -74,7 +73,7 @@ export default function MainRoute() {
         <Stack.Screen component={ManageContacts} name="ManageContacts" />
       </Stack.Navigator>
     );
-  }; 
+  };
 
   return (
     <NavigationContainer>
@@ -85,6 +84,10 @@ export default function MainRoute() {
         }}>
         {/* <Stack.Screen name="LoginStack" component={LoginStack} /> */}
         <Stack.Screen name="BottomTab" component={BottomTab} />
+        <Stack.Screen
+          name="CategoryDetailCards"
+          component={CategoryDetailCardsScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,118 +1,65 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
 import {Image, StyleSheet} from 'react-native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {COLORS} from '../Common/Theme';
+import CommonIcons from '../Common/CommonIcons';
 import {
   ChatRoomScreen,
   ExploreCard,
   HomeScreen,
   ProfileScreen,
 } from '../Screens/Home/index';
-import CommonIcons from '../Common/CommonIcons';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {COLORS} from '../Common/Theme';
 
-const BottomTab = () => {
+const BottomTab: React.FC = () => {
   const Tab = createBottomTabNavigator();
+
+  interface TabScreen {
+    name: string;
+    component: React.ComponentType<any>;
+    icon: any;
+  }
+
+  const getTabBarIcon = (icon: any, focused: boolean) => (
+    <Image
+      source={icon}
+      style={[
+        styles.TabBarIcon,
+        {
+          tintColor: focused ? COLORS.Primary : COLORS.TabBarUnFocused,
+        },
+      ]}
+    />
+  );
+
+  const tabScreens: TabScreen[] = [
+    {name: 'Home', component: HomeScreen, icon: CommonIcons.HomeTab},
+    {
+      name: 'ExploreCard',
+      component: ExploreCard,
+      icon: CommonIcons.FindMatchTab,
+    },
+    {name: 'ChatRoom', component: ChatRoomScreen, icon: CommonIcons.MessageTab},
+    {name: 'Profile', component: ProfileScreen, icon: CommonIcons.ProfileTab},
+  ];
 
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarStyle: {
-          height: hp(7),
-        },
+        tabBarStyle: styles.TabBarStyle,
+        headerShown: false,
       }}>
-      <Tab.Screen
-        options={{
-          tabBarShowLabel: false,
-          tabBarIcon: ({color, size, focused}) => {
-            console.log(focused);
-            return (
-              <Image
-                source={CommonIcons.HomeTab}
-                style={[
-                  styles.TabBarIcon,
-                  {
-                    tintColor: focused
-                      ? COLORS.Primary
-                      : COLORS.TabBarUnFocused,
-                  },
-                ]}
-              />
-            );
-          },
-        }}
-        component={HomeScreen}
-        name="Home"
-      />
-      <Tab.Screen
-        options={{
-          tabBarShowLabel: false,
-          tabBarIcon: ({color, size, focused}) => {
-            console.log(focused);
-            return (
-              <Image
-                source={CommonIcons.FindMatchTab}
-                style={[
-                  styles.TabBarIcon,
-                  {
-                    tintColor: focused
-                      ? COLORS.Primary
-                      : COLORS.TabBarUnFocused,
-                  },
-                ]}
-              />
-            );
-          },
-        }}
-        component={ExploreCard}
-        name="ExploreCard"
-      />
-      <Tab.Screen
-        options={{
-          tabBarShowLabel: false,
-          tabBarIcon: ({color, size, focused}) => {
-            console.log(focused);
-            return (
-              <Image
-                source={CommonIcons.MessageTab}
-                style={[
-                  styles.TabBarIcon,
-                  {
-                    tintColor: focused
-                      ? COLORS.Primary
-                      : COLORS.TabBarUnFocused,
-                  },
-                ]}
-              />
-            );
-          },
-        }}
-        component={ChatRoomScreen}
-        name="ChatRoom"
-      />
-      <Tab.Screen
-        options={{
-          tabBarShowLabel: false,
-          tabBarIcon: ({color, size, focused}) => {
-            console.log(focused);
-            return (
-              <Image
-                source={CommonIcons.ProfileTab}
-                style={[
-                  styles.TabBarIcon,
-                  {
-                    tintColor: focused
-                      ? COLORS.Primary
-                      : COLORS.TabBarUnFocused,
-                  },
-                ]}
-              />
-            );
-          },
-        }}
-        component={ProfileScreen}
-        name="Profile"
-      />
+      {tabScreens.map(tab => (
+        <Tab.Screen
+          key={tab.name}
+          name={tab.name}
+          component={tab.component}
+          options={{
+            tabBarShowLabel: false,
+            tabBarIcon: ({focused}) => getTabBarIcon(tab.icon, focused),
+          }}
+        />
+      ))}
     </Tab.Navigator>
   );
 };
@@ -126,5 +73,10 @@ const styles = StyleSheet.create({
     height: hp('3.2%'),
     alignSelf: 'center',
     justifyContent: 'center',
+  },
+  TabBarStyle: {
+    height: hp(7),
+    marginLeft: hp('-1.5%'),
+    marginRight: hp('-1.5%')
   },
 });

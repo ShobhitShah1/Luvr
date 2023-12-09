@@ -18,6 +18,7 @@ export const COLORS = {
   Placeholder: 'rgba(97,106,118,255)',
   LightGray: 'rgb(218,218,218)',
   TabBarUnFocused: 'rgba(198, 198, 198, 1)',
+  GradientViewForCards: ['rgba(217, 217, 217, 0)', 'rgba(0, 0, 0, 0.4)'],
 };
 
 export const FONTS = {
