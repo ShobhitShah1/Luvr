@@ -1,50 +1,51 @@
-import React, {FC} from 'react';
-import {
-  Image,
-  ImageBackground,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import LinearGradient from 'react-native-linear-gradient';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useNavigation} from '@react-navigation/native';
-import {COLORS, FONTS, GROUP_FONT} from '../../../../Common/Theme';
-import CommonImages from '../../../../Common/CommonImages';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import React, {FC} from 'react';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import FastImage from 'react-native-fast-image';
+import LinearGradient from 'react-native-linear-gradient';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
+import CommonImages from '../../../../Common/CommonImages';
+import {ActiveOpacity, COLORS, FONTS} from '../../../../Common/Theme';
 
 interface RenderlookingViewProps {
   item: {
     id: number;
-    title: string;
-    image: any;
+    name: string;
+    age: number;
+    images: string[];
+    location: string;
+    bio: string;
+    interestedIn: string[];
+    lookingFor: string;
+    like: string[];
+    education: string;
   };
   index: number;
-  isCategory: boolean;
-  isLocation: boolean;
 }
 
-const CategoryRenderCard: FC<RenderlookingViewProps> = ({
-  item,
-  index,
-  isCategory,
-  isLocation,
-}) => {
-  const navigation = useNavigation();
+const CategoryRenderCard: FC<RenderlookingViewProps> = ({item, index}) => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<{ExploreCardDetail: {}}>>();
   const marginHorizontal = index === 1 || index === 3 ? '4%' : 0;
+
+  const OnPressCard = () => {
+    navigation.navigate('ExploreCardDetail', {props: item});
+  };
 
   return (
     <TouchableOpacity
       activeOpacity={1}
-      onPress={() => {}}
+      onPress={OnPressCard}
       style={[styles.container, {marginHorizontal}]}>
-      <ImageBackground
-        source={item.image}
+      <FastImage
+        source={{
+          uri: item.images[0],
+          priority: FastImage.priority.high,
+        }}
         resizeMode="cover"
-        style={styles.imageView}
-        imageStyle={styles.imageStyle}>
+        style={styles.imageView}>
         <LinearGradient
           colors={COLORS.GradientViewForCards}
           locations={[0, 1]}
@@ -52,25 +53,29 @@ const CategoryRenderCard: FC<RenderlookingViewProps> = ({
           <View style={styles.DetailContainerView}>
             <View style={styles.UserInfoView}>
               <Text numberOfLines={2} style={styles.TitleText}>
-                {'Rubina'}, {'21'}
+                {item.name}, {item.age}
               </Text>
-              {isLocation && (
+              {item.location && (
                 <View style={styles.LocationView}>
                   <Image
                     style={styles.LocationIcon}
                     source={CommonIcons.Location}
                   />
-                  <Text style={styles.LocationText}>Surat</Text>
+                  <Text numberOfLines={1} style={styles.LocationText}>
+                    {item.location}
+                  </Text>
                 </View>
               )}
             </View>
 
-            <TouchableOpacity style={styles.LikeCardView}>
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              style={styles.LikeCardView}>
               <Image source={CommonImages.LikeCard} style={styles.LikeCard} />
             </TouchableOpacity>
           </View>
         </LinearGradient>
-      </ImageBackground>
+      </FastImage>
     </TouchableOpacity>
   );
 };
@@ -119,7 +124,7 @@ const styles = StyleSheet.create({
     marginHorizontal: hp('2%'),
   },
   LocationView: {
-    width: '100%',
+    width: '85%',
     overflow: 'hidden',
     flexDirection: 'row',
     alignItems: 'center',
@@ -130,7 +135,11 @@ const styles = StyleSheet.create({
     height: hp('2%'),
   },
   LocationText: {
-    marginLeft: hp('0.5%')
+    width: '80%',
+    marginLeft: hp('0.5%'),
+    fontFamily: FONTS.Bold,
+    fontSize: hp('1.5%'),
+    color: COLORS.White,
   },
   LikeCardView: {
     width: '25%',

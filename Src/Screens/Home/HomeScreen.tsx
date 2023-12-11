@@ -29,11 +29,17 @@ const HomeScreen = () => {
         />
         <FlatList
           numColumns={2}
-          style={styles.FlatListStyle}
+          style={[styles.FlatListStyle]}
           data={HomeLookingForData}
           keyExtractor={item => item.id.toString()}
           renderItem={({item, index}) => {
-            return <RenderForYou item={item} index={index} />;
+            return (
+              <RenderForYou
+                item={item}
+                index={index}
+                isFullWidth={index === 0 || index % 3 === 2}
+              />
+            );
           }}
           ListHeaderComponent={
             <CategoryHeaderView

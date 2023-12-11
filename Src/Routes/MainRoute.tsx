@@ -26,6 +26,7 @@ import {
 // ========================== HOME SCREENS ==========================
 import SplashScreen from 'react-native-splash-screen';
 import CategoryDetailCardsScreen from '../Screens/Home/ExploreCards/CategoryDetailCardsScreen';
+import ExploreCardDetailScreen from '../Screens/Home/ExploreCards/ExploreCardDetailScreen';
 import BottomTab from './BottomTab';
 
 export default function MainRoute() {
@@ -87,6 +88,10 @@ export default function MainRoute() {
         <Stack.Screen
           name="CategoryDetailCards"
           component={CategoryDetailCardsScreen}
+        />
+        <Stack.Screen
+          name="ExploreCardDetail"
+          component={ExploreCardDetailScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -1,14 +1,14 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import React from 'react';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import CommonIcons from '../../../../Common/CommonIcons';
 import {
   ActiveOpacity,
   COLORS,
   GROUP_FONT,
   SIZES,
 } from '../../../../Common/Theme';
-import CommonIcons from '../../../../Common/CommonIcons';
-import {useNavigation} from '@react-navigation/native';
 
 const CategoryDetailHeader = () => {
   const navigation = useNavigation();

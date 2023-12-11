@@ -11,6 +11,7 @@ interface RenderlookingViewProps {
     image: any;
   };
   index: number;
+  isFullWidth: boolean;
 }
 
 const RenderForYou: FC<RenderlookingViewProps> = ({item, index}) => {
