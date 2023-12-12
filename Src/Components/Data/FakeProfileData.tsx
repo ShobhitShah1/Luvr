@@ -5,7 +5,7 @@ const FakeProfileData = [
     age: 28,
     gender: 'male',
     location: 'City A',
-    interests: ['hiking', 'reading', 'traveling'],
+    interests: ['Hiking', 'Reading', 'Traveling'],
     profile_picture: 'https://loremflickr.com/640/360',
   },
   {
@@ -14,7 +14,7 @@ const FakeProfileData = [
     age: 25,
     gender: 'female',
     location: 'City B',
-    interests: ['painting', 'music', 'cooking'],
+    interests: ['Painting', 'Music', 'Cooking'],
     profile_picture: 'https://picsum.photos/640/360',
   },
   {
@@ -23,7 +23,7 @@ const FakeProfileData = [
     age: 30,
     gender: 'male',
     location: 'City C',
-    interests: ['sports', 'movies', 'gaming'],
+    interests: ['Sports', 'Movies', 'Gaming'],
     profile_picture: 'https://loremflickr.com/640/360',
   },
   {
@@ -32,7 +32,7 @@ const FakeProfileData = [
     age: 22,
     gender: 'female',
     location: 'City D',
-    interests: ['photography', 'yoga', 'dancing'],
+    interests: ['Photography', 'Yoga', 'Dancing'],
     profile_picture: 'https://picsum.photos/640/360',
   },
   {
@@ -41,7 +41,7 @@ const FakeProfileData = [
     age: 26,
     gender: 'male',
     location: 'City E',
-    interests: ['technology', 'coding', 'travel'],
+    interests: ['Technology', 'Coding', 'Travel'],
     profile_picture: 'https://loremflickr.com/640/360',
   },
 ];

@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React from 'react';
+import React, { FC } from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
@@ -10,7 +10,15 @@ import {
   SIZES,
 } from '../../../../Common/Theme';
 
-const CategoryDetailHeader = () => {
+interface CategoryHeaderProps {
+  item: {
+    id: number;
+    title: string;
+    image: any;
+  };
+}
+
+const CategoryDetailHeader: FC<CategoryHeaderProps> = ({item}) => {
   const navigation = useNavigation();
   return (
     <View style={styles.Container}>
@@ -28,7 +36,7 @@ const CategoryDetailHeader = () => {
           />
         </TouchableOpacity>
         <View style={styles.CategoryNameView}>
-          <Text style={styles.CategoryNameText}>New friends</Text>
+          <Text style={styles.CategoryNameText}>{item.title}</Text>
         </View>
         <View />
       </View>

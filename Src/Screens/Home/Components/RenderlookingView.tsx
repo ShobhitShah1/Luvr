@@ -22,14 +22,15 @@ interface RenderlookingViewProps {
 }
 
 const RenderlookingView: FC<RenderlookingViewProps> = ({item, index}) => {
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<{CategoryDetailCards: {}}>>();
   const marginHorizontal = index === 1 || index === 3 ? '3%' : 0;
 
   return (
     <TouchableOpacity
       activeOpacity={1}
       onPress={() => {
-        navigation.navigate('CategoryDetailCards');
+        navigation.navigate('CategoryDetailCards', {item});
       }}
       style={[styles.container, {marginHorizontal}]}>
       <ImageBackground

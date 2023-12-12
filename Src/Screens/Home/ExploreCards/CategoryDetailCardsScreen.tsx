@@ -1,14 +1,27 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {FlatList, View} from 'react-native';
 import FakeUserCard from '../../../Components/Data/FakeUserCard';
 import CategoryDetailHeader from './Components/CategoryDetailHeader';
 import CategoryRenderCard from './Components/CategoryRenderCard';
 import styles from './styles';
 
-const CategoryDetailCardsScreen = () => {
+interface CategoryDetailCardsProps {
+  route: {
+    params: {
+      item: {
+        id: number;
+        title: string;
+        image: any;
+      };
+    };
+  };
+}
+
+const CategoryDetailCardsScreen: FC<CategoryDetailCardsProps> = ({route}) => {
+  const {item} = route.params;
   return (
     <View style={styles.Container}>
-      <CategoryDetailHeader />
+      <CategoryDetailHeader item={item} />
 
       <View>
         <FlatList
@@ -16,15 +29,7 @@ const CategoryDetailCardsScreen = () => {
           style={styles.FlatListStyle}
           data={FakeUserCard}
           renderItem={({item, index}) => {
-            console.log('item', item);
-            return (
-              <CategoryRenderCard
-                item={item}
-                index={index}
-                // isCategory={false}
-                // isLocation={true}
-              />
-            );
+            return <CategoryRenderCard item={item} index={index} />;
           }}
         />
       </View>

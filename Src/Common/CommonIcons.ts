@@ -12,6 +12,19 @@ const Check = require('../../Assets/Icons/Check.png');
 const Search = require('../../Assets/Icons/Search.png');
 const CloseModal = require('../../Assets/Icons/CloseModal.png');
 const Location = require('../../Assets/Icons/Location.png');
+const Verification_Icon = require('../../Assets/Icons/verified_icon.png');
+const about_me_icon = require('../../Assets/Icons/about_me_icon.png');
+const birthday_icon = require('../../Assets/Icons/birthday_icon.png');
+const education_icon = require('../../Assets/Icons/education_icon.png');
+const i_like_icon = require('../../Assets/Icons/i_like_icon.png');
+const interested_in_icon = require('../../Assets/Icons/interested_in_icon.png');
+const location_icon = require('../../Assets/Icons/location_icon.png');
+const looking_for_icon = require('../../Assets/Icons/looking_for_icon.png');
+const block_profile_icon = require('../../Assets/Icons/block_profile_icon.png');
+const dislike_button = require('../../Assets/Icons/dislike_button.png');
+const like_button = require('../../Assets/Icons/like_button.png');
+const message_button = require('../../Assets/Icons/message_button.png');
+const report_profile_icon = require('../../Assets/Icons/report_profile_icon.png');
 
 // Home
 const HomeTab = require('../../Assets/Icons/home_icon_select.png');
@@ -38,6 +51,19 @@ export default {
   Search,
   CloseModal,
   Location,
+  Verification_Icon,
+  about_me_icon,
+  birthday_icon,
+  education_icon,
+  i_like_icon,
+  interested_in_icon,
+  location_icon,
+  looking_for_icon,
+  block_profile_icon,
+  dislike_button,
+  like_button,
+  message_button,
+  report_profile_icon,
 
   //Home
   HomeTab,
