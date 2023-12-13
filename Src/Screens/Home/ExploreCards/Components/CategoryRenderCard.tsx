@@ -8,7 +8,7 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
 import CommonImages from '../../../../Common/CommonImages';
 import {ActiveOpacity, COLORS, FONTS} from '../../../../Common/Theme';
-import { CardDetailType } from '../../../../Types/CardDetailType';
+import {CardDetailType} from '../../../../Types/CardDetailType';
 
 interface RenderlookingViewProps {
   item: CardDetailType;

@@ -38,13 +38,13 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
 }) => {
   //* Press In Stop Timer For Image Looping
   const handlePressIn = () => {
-    // stopInterval();
+    stopInterval();
     console.log('Press In');
   };
 
   //* Press Out Start Timer For Image Looping
   const handlePressOut = () => {
-    // startInterval();
+    startInterval();
     console.log('Press Out');
   };
 
@@ -57,7 +57,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
   //* Image Loaded Start Timer
   const ImageLoaded = () => {
     setFirstImageLoading(false);
-    // startInterval();
+    startInterval();
   };
 
   //* Check Card Right And Left Side
@@ -113,7 +113,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
               onLoadEnd={ImageLoaded}
               resizeMode="cover"
               source={{
-                uri: cardIndex.images[0], // cardIndex.images[currentImageIndex]
+                uri: cardIndex?.images && cardIndex?.images[currentImageIndex],
                 priority: FastImage.priority.high,
               }}
               style={styles.ImageStyle}

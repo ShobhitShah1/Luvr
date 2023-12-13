@@ -24,7 +24,7 @@ interface RenderlookingViewProps {
 const RenderlookingView: FC<RenderlookingViewProps> = ({item, index}) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{CategoryDetailCards: {}}>>();
-  const marginHorizontal = index === 1 || index === 3 ? '3%' : 0;
+  const marginHorizontal = index % 2 === 0 ? 0 : '3%';
 
   return (
     <TouchableOpacity

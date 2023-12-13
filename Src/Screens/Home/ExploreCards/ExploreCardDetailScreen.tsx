@@ -1,7 +1,6 @@
 import {RouteProp, useRoute} from '@react-navigation/native';
 import React from 'react';
 import {
-  Dimensions,
   Image,
   ScrollView,
   StyleSheet,
@@ -10,19 +9,19 @@ import {
   View,
 } from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
+import CommonIcons from '../../../Common/CommonIcons';
+import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import {CardDetailType} from '../../../Types/CardDetailType';
 import DetailCardHeader from './Components/DetailCardHeader';
-import CommonIcons from '../../../Common/CommonIcons';
 
 type DetailCardRouteParams = {
   props: CardDetailType;
 };
 
-const screenWidth = Dimensions.get('window').width;
+// const screenWidth = Dimensions.get('window').width;
 
 const ExploreCardDetailScreen = () => {
-  const carouselWidth = screenWidth * 0.9;
+  // const carouselWidth = screenWidth * 0.9;
   const CardDetail =
     useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
 
@@ -96,11 +95,11 @@ const ExploreCardDetailScreen = () => {
               </Text>
             </View>
             <View style={styles.MultipleBoxFlexView}>
-              {item.interestedIn.map((item, index) => {
+              {item.interestedIn.map((interestedInItem, index) => {
                 return (
                   <View style={styles.MultipleBoxView}>
                     <Text style={styles.MultipleDetailText} key={index}>
-                      {item}
+                      {interestedInItem}
                     </Text>
                   </View>
                 );
@@ -151,11 +150,11 @@ const ExploreCardDetailScreen = () => {
               </Text>
             </View>
             <View style={styles.MultipleBoxFlexView}>
-              {item.like.map((item, index) => {
+              {item.like.map((ILikeItem, index) => {
                 return (
-                  <View style={styles.MultipleBoxView}>
+                  <View key={index} style={styles.MultipleBoxView}>
                     <Text style={styles.MultipleDetailText} key={index}>
-                      {item}
+                      {ILikeItem}
                     </Text>
                   </View>
                 );
@@ -166,7 +165,9 @@ const ExploreCardDetailScreen = () => {
           {/* Block And Report Profile */}
           <View style={styles.BlockAndReportProfileView}>
             {/* Block Profile */}
-            <TouchableOpacity style={styles.BlockAndReportButtonView}>
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              style={styles.BlockAndReportButtonView}>
               <Image
                 resizeMode="contain"
                 style={styles.BlockAndReportIcon}
@@ -176,7 +177,9 @@ const ExploreCardDetailScreen = () => {
             </TouchableOpacity>
 
             {/* Report Profile */}
-            <TouchableOpacity style={styles.BlockAndReportButtonView}>
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              style={styles.BlockAndReportButtonView}>
               <Image
                 resizeMode="contain"
                 style={styles.BlockAndReportIcon}
@@ -189,7 +192,9 @@ const ExploreCardDetailScreen = () => {
           {/* Like And Reject View */}
           <View style={styles.LikeAndRejectView}>
             {/* Reject Button */}
-            <TouchableOpacity style={styles.LikeAndRejectButtonView}>
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              style={styles.LikeAndRejectButtonView}>
               <Image
                 resizeMode="contain"
                 style={styles.DislikeButton}
@@ -198,7 +203,9 @@ const ExploreCardDetailScreen = () => {
             </TouchableOpacity>
 
             {/* Like Button */}
-            <TouchableOpacity style={styles.LikeAndRejectButtonView}>
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              style={styles.LikeAndRejectButtonView}>
               <Image
                 resizeMode="contain"
                 style={styles.LikeButton}

@@ -21,6 +21,16 @@ export const HomeLookingForData = [
     title: 'Party partner',
     image: CommonImages.WelcomeBackground,
   },
+  {
+    id: 5,
+    title: 'Sort term relationship',
+    image: CommonImages.WelcomeBackground,
+  },
+  {
+    id: 6,
+    title: 'Help',
+    image: CommonImages.WelcomeBackground,
+  },
 ];
 
 export default HomeLookingForData;

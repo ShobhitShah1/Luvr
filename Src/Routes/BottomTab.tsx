@@ -77,6 +77,6 @@ const styles = StyleSheet.create({
   TabBarStyle: {
     height: hp(7),
     marginLeft: hp('-1.5%'),
-    marginRight: hp('-1.5%')
+    marginRight: hp('-1.5%'),
   },
 });

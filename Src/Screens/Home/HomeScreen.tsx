@@ -1,13 +1,21 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import styles from './styles';
-import {FlatList, ScrollView, View} from 'react-native';
-import BottomTabHeader from './Components/BottomTabHeader';
-import RenderlookingView from './Components/RenderlookingView';
+import {FlatList, ImageBackground, ScrollView, Text, View} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import {COLORS} from '../../Common/Theme';
 import HomeLookingForData from '../../Components/Data/HomeData/HomeLookingForData';
+import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
-import RenderForYou from './Components/RenderForYou';
+import RenderlookingView from './Components/RenderlookingView';
+import styles from './styles';
 
 const HomeScreen = () => {
+  const mainFlexDirection = HomeLookingForData.some(
+    (_, index) => index % 3 === 0,
+  )
+    ? 'column'
+    : 'row';
+
   return (
     <View style={styles.Container}>
       <BottomTabHeader />
@@ -28,17 +36,31 @@ const HomeScreen = () => {
           }
         />
         <FlatList
-          numColumns={2}
           style={[styles.FlatListStyle]}
           data={HomeLookingForData}
           keyExtractor={item => item.id.toString()}
           renderItem={({item, index}) => {
+            const numColumns = index % 3 === 0 ? 1 : 2;
+
             return (
-              <RenderForYou
-                item={item}
-                index={index}
-                isFullWidth={index === 0 || index % 3 === 2}
-              />
+              <View
+                style={[
+                  styles.container,
+                  {width: numColumns === 1 ? '100%' : '47%'},
+                ]}>
+                <ImageBackground
+                  source={item.image}
+                  resizeMode="cover"
+                  style={styles.imageView}
+                  imageStyle={styles.imageStyle}>
+                  <LinearGradient
+                    colors={COLORS.GradientViewForCards}
+                    locations={[0, 1]}
+                    style={styles.gradient}>
+                    <Text style={styles.TitleText}>{item.title}</Text>
+                  </LinearGradient>
+                </ImageBackground>
+              </View>
             );
           }}
           ListHeaderComponent={

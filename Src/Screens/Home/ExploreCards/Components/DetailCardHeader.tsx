@@ -2,9 +2,9 @@ import {RouteProp, useRoute} from '@react-navigation/native';
 import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../../Common/Theme';
-import {CardDetailType} from '../../../../Types/CardDetailType';
 import CommonIcons from '../../../../Common/CommonIcons';
+import {COLORS, FONTS} from '../../../../Common/Theme';
+import {CardDetailType} from '../../../../Types/CardDetailType';
 
 type DetailCardRouteParams = {
   props: CardDetailType;
@@ -15,7 +15,6 @@ const DetailCardHeader = () => {
     useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
 
   const item = CardDetail.params.props || {};
-  console.log(item.name);
 
   return (
     <View style={styles.Container}>
@@ -24,7 +23,11 @@ const DetailCardHeader = () => {
           <Text style={styles.HeaderText}>
             {item.name}, {item.age}
           </Text>
-          <Image style={styles.VerifyIcon} source={CommonIcons.Verification_Icon} />
+          <Image
+            resizeMode="contain"
+            style={styles.VerifyIcon}
+            source={CommonIcons.Verification_Icon}
+          />
         </View>
       </View>
     </View>
@@ -58,7 +61,7 @@ const styles = StyleSheet.create({
   VerifyIcon: {
     width: hp('2%'),
     height: hp('2%'),
-    alignSelf:'center',
+    alignSelf: 'center',
     alignItems: 'center',
     marginHorizontal: hp('0.7%'),
   },
