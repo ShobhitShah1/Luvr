@@ -2,8 +2,8 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC} from 'react';
 import {
-  Dimensions,
   Image,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
-import {COLORS, FONTS, GROUP_FONT} from '../../../../Common/Theme';
- 
+import {COLORS, GROUP_FONT} from '../../../../Common/Theme';
+
 interface CreateProfileProps {
   ProgressCount: number;
   Skip: boolean;
@@ -22,56 +22,36 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({ProgressCount, Skip}) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
+  const handleSkipPress = () => {
+    navigation.navigate('LoginStack', {
+      screens: '',
+    });
+  };
+
   return (
-    <View
-      style={{
-        width: '100%',
-        margin: hp('1%'),
-        paddingHorizontal: hp('1.5%'),
-        justifyContent: 'center',
-        alignSelf: 'center',
-      }}>
-      <View style={styles.CancelButtonAndTitleText}>
+    <View style={styles.headerContainer}>
+      <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.Secondary} />
+      <View style={styles.buttonAndTitleContainer}>
         <TouchableOpacity
-          style={{
-            width: '33.33%',
-            justifyContent: 'center',
-            alignSelf: 'center',
-          }}
+          style={styles.backButtonView}
           onPress={() => navigation.goBack()}>
           <Image
             resizeMode="contain"
             source={CommonIcons.TinderBack}
-            style={styles.CancelButton}
+            style={styles.cancelButton}
           />
         </TouchableOpacity>
 
-        <View
-          style={{
-            width: '33.33%',
-            justifyContent: 'center',
-            right: hp('1%'),
-          }}>
+        <View style={styles.pageCountView}>
           {ProgressCount !== 0 && (
-            <Text style={{...GROUP_FONT.h3, fontSize: hp('1.9%'), textAlign: 'center'}}>
-              {ProgressCount}/9
-            </Text>
+            <Text style={styles.pageCount}>{ProgressCount}/9</Text>
           )}
         </View>
 
-        <View
-          style={{
-            width: '33.33%',
-            justifyContent: 'center',
-          }}>
+        <View style={styles.skipButton}>
           {Skip && (
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('LoginStack', {
-                  screens: '',
-                })
-              }>
-              <Text style={styles.SkipText}>Skip</Text>
+            <TouchableOpacity onPress={handleSkipPress}>
+              <Text style={styles.skipText}>Skip</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -83,38 +63,46 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({ProgressCount, Skip}) => {
 export default CreateProfileHeader;
 
 const styles = StyleSheet.create({
-  CancelButtonAndTitleText: {
+  headerContainer: {
+    width: '100%',
+    margin: hp('1%'),
+    paddingHorizontal: hp('1.5%'),
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  buttonAndTitleContainer: {
     width: '100%',
     margin: hp('1.5%'),
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  CancelButton: {
+  cancelButton: {
     width: hp('3.5%'),
     height: hp('3.5%'),
   },
-  TitleContainer: {
-    marginTop: hp('2.7%'),
-  },
-  TitleText: {
-    fontSize: hp('2.7%'),
-    color: COLORS.Black,
-    fontFamily: FONTS.Bold,
-  },
-  Container: {
-    flex: 1,
-  },
-  BottomButton: {
-    width: '90%',
+  pageCountView: {
+    width: '33.33%',
     justifyContent: 'center',
-    alignSelf: 'center',
-    position: 'absolute',
-    bottom: hp('1.5%'),
+    right: hp('1%'),
   },
-  SkipText: {
+  pageCount: {
+    ...GROUP_FONT.h3,
+    fontSize: hp('1.9%'),
+    textAlign: 'center',
+  },
+  skipText: {
     ...GROUP_FONT.h3,
     color: COLORS.Gray,
     textAlign: 'right',
     marginRight: hp('4%'),
+  },
+  backButtonView: {
+    width: '33.33%',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  skipButton: {
+    width: '33.33%',
+    justifyContent: 'center',
   },
 });

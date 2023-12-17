@@ -25,6 +25,8 @@ const dislike_button = require('../../Assets/Icons/dislike_button.png');
 const like_button = require('../../Assets/Icons/like_button.png');
 const message_button = require('../../Assets/Icons/message_button.png');
 const report_profile_icon = require('../../Assets/Icons/report_profile_icon.png');
+const add_contact = require('../../Assets/Icons/add_contact_icon.png');
+const more_option = require('../../Assets/Icons/more_option_icon.png');
 
 // Home
 const HomeTab = require('../../Assets/Icons/home_icon_select.png');
@@ -64,14 +66,16 @@ export default {
   like_button,
   message_button,
   report_profile_icon,
+  add_contact,
+  more_option,
 
-  //Home
+  //* Home
   HomeTab,
   FindMatchTab,
   MessageTab,
   ProfileTab,
 
-  // Bottom Tab Header
+  //* Bottom Tab Header
   Setting,
   Notification,
 };

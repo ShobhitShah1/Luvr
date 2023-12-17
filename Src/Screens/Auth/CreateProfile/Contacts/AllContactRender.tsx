@@ -1,7 +1,8 @@
 import React, {memo} from 'react';
-import {SectionList, Text, View} from 'react-native';
+import {FlatList, Text, View} from 'react-native';
 import {useContacts} from '../../../../Hooks/useContacts';
 import styles from './styles';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 interface Contact {
   displayName: string;
@@ -13,7 +14,12 @@ interface Section {
   data: Contact[];
 }
 
-const ContactItem = memo(({item, index}: any) => (
+interface ContactItemProps {
+  item: Contact;
+  index: number;
+}
+
+const ContactItem = memo(({item, index}: ContactItemProps) => (
   <View
     style={[
       styles.ContactView,
@@ -28,15 +34,19 @@ const ContactItem = memo(({item, index}: any) => (
   </View>
 ));
 
-const RenderHeader = (value: any) => {
-  return (
-    <View style={styles.SectionHeaderView}>
-      <Text style={styles.SectionHeaderText}>{value?.title}</Text>
-    </View>
-  );
-};
+const RenderHeader = ({title}: {title: string}) => (
+  <View
+    style={[
+      styles.SectionHeaderView,
+      {
+        paddingTop: title === 'A' ? hp('1%') : hp('4%'),
+      },
+    ]}>
+    <Text style={styles.SectionHeaderText}>{title}</Text>
+  </View>
+);
 
-const ContactScreen = () => {
+const AllContactRender = () => {
   const {contacts} = useContacts();
   const contactsWithNumbers = contacts.filter(
     contact => contact.phoneNumbers.length > 0,
@@ -70,16 +80,20 @@ const ContactScreen = () => {
   return (
     <View style={styles.Container}>
       {contacts.length !== 0 && (
-        <SectionList
-          bounces={false}
-          sections={sections}
-          maxToRenderPerBatch={30}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({item, index}) => (
-            <ContactItem item={item} index={index} />
-          )}
-          renderSectionHeader={({section: {title}}) => (
-            <RenderHeader title={title} />
+        <FlatList
+          data={sections}
+          keyExtractor={item => item.title}
+          renderItem={({item}) => (
+            <React.Fragment>
+              <RenderHeader title={item.title} />
+              <FlatList
+                data={item.data}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item, index}) => (
+                  <ContactItem item={item} index={index} />
+                )}
+              />
+            </React.Fragment>
           )}
         />
       )}
@@ -87,4 +101,4 @@ const ContactScreen = () => {
   );
 };
 
-export default ContactScreen;
+export default AllContactRender;

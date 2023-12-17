@@ -1,9 +1,17 @@
 import {useEffect, useState} from 'react';
 import Contacts from 'react-native-contacts';
-import {PERMISSIONS, RESULTS, check, request} from 'react-native-permissions';
+import {
+  PERMISSIONS,
+  RESULTS,
+  check,
+  request,
+  openSettings,
+} from 'react-native-permissions';
+import {Alert} from 'react-native';
 
 export const useContacts = () => {
   const [contacts, setContacts] = useState<any[]>([]);
+  const [permissionState, setPermissionState] = useState<string>('');
 
   const fetchContacts = () => {
     Contacts.getAll()
@@ -18,35 +26,59 @@ export const useContacts = () => {
   const checkPermission = async () => {
     try {
       const result = await check(PERMISSIONS.ANDROID.READ_CONTACTS);
+      setPermissionState(result);
+
       if (result === RESULTS.GRANTED) {
         fetchContacts();
         Contacts.getCount().then(count => {
           console.log(`Search ${count} contacts`);
         });
+      } else if (result === RESULTS.UNAVAILABLE) {
+        console.info('Contacts permission is not available on this device');
       } else {
-        console.error('Contacts permission denied');
+        console.info('Contacts permission denied');
+        showAlert();
       }
     } catch (error) {
-      console.error('Permission error: ', error);
+      console.info('Permission error: ', error);
+    }
+  };
+
+  const showAlert = () => {
+    Alert.alert(
+      'Permission Denied',
+      'To access your contacts, please go to settings and enable the Contacts permission.',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'OK', onPress: () => openSettings()},
+      ],
+      {cancelable: false},
+    );
+  };
+
+  const requestPermission = async () => {
+    try {
+      const status = await request(PERMISSIONS.ANDROID.READ_CONTACTS);
+      setPermissionState(status);
+
+      if (status === RESULTS.GRANTED) {
+        checkPermission();
+      } else {
+        console.info('Contacts permission denied');
+        showAlert();
+      }
+    } catch (error) {
+      console.info('Permission error: ', error);
     }
   };
 
   useEffect(() => {
-    const askPermission = async () => {
-      try {
-        const status = await request(PERMISSIONS.ANDROID.READ_CONTACTS);
-        if (status === RESULTS.GRANTED) {
-          checkPermission();
-        } else {
-          console.error('Contacts permission denied');
-        }
-      } catch (error) {
-        console.error('Permission error: ', error);
-      }
-    };
-
-    askPermission();
+    // requestPermission();
   }, []);
 
-  return {contacts};
+  return {contacts, permissionState, requestPermission};
 };

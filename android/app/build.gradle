@@ -1,8 +1,5 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
-// apply plugin: 'com.google.gms.google-services'
-//apply plugin: 'com.google.firebase.firebase-perf'
-//apply plugin: 'com.google.firebase.crashlytics
     
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -104,12 +101,8 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-//            firebaseCrashlytics {
-//                nativeSymbolUploadEnabled true
-//                unstrippedNativeLibsDir 'build/intermediates/merged_native_libs/release/out/lib'
-//            }
             ndk {
-                abiFilters "x86", "armeabi-v7a" //this will help you to shrink your app size in release build
+                abiFilters "x86", "armeabi-v7a"
             }
         }
     }

@@ -26,7 +26,7 @@ const LoginScreen: FC = () => {
       source={CommonImages.WelcomeBackground}
       style={styles.Container}
       imageStyle={styles.BGImageStyle}>
-      <StatusBar backgroundColor={COLORS.Black} barStyle="light-content" />
+      <StatusBar backgroundColor={'#843841'} barStyle="light-content" />
       <ScrollView
         bounces={false}
         style={styles.ContentView}

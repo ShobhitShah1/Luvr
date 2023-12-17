@@ -3,9 +3,8 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS, GROUP_FONT} from '../../../../Common/Theme';
 
 const styles = StyleSheet.create({
-  // Contact Screen
   Container: {
-    backgroundColor: COLORS.White,
+    flexGrow: 1,
   },
   ContactView: {
     top: hp('2%'),
@@ -27,7 +26,6 @@ const styles = StyleSheet.create({
   SectionHeaderView: {
     marginHorizontal: hp('1.9%'),
     paddingTop: hp('4%'),
-    //   backgroundColor:'red'
   },
   SectionHeaderText: {
     ...GROUP_FONT.h3,

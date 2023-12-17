@@ -10,12 +10,6 @@ import RenderlookingView from './Components/RenderlookingView';
 import styles from './styles';
 
 const HomeScreen = () => {
-  const mainFlexDirection = HomeLookingForData.some(
-    (_, index) => index % 3 === 0,
-  )
-    ? 'column'
-    : 'row';
-
   return (
     <View style={styles.Container}>
       <BottomTabHeader />

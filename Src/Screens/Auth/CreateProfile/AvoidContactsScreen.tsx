@@ -3,19 +3,19 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import CommonImages from '../../../../Common/CommonImages';
+import CommonImages from '../../../Common/CommonImages';
 import {
   ActiveOpacity,
   COLORS,
   FONTS,
   GROUP_FONT,
-} from '../../../../Common/Theme';
-import GradientButton from '../../../../Components/AuthComponents/GradientButton';
-import CreateProfileStyles from '../styles';
+} from '../../../Common/Theme';
+import GradientButton from '../../../Components/AuthComponents/GradientButton';
+import CreateProfileStyles from './styles';
 
 const AvoidContactsScreen: FC = () => {
   const navigation =
-    useNavigation<NativeStackNavigationProp<{BottomTab: {}}>>();
+    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   return (
     <View style={styles.container}>
       <View style={styles.MiddleImageView}>
@@ -40,8 +40,8 @@ const AvoidContactsScreen: FC = () => {
           Title={'Continue'}
           Disabled={false}
           Navigation={() => {
-            navigation.navigate('BottomTab', {
-              screen: 'Home',
+            navigation.navigate('LoginStack', {
+              screen: 'ManageContacts',
             });
           }}
         />
