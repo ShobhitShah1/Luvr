@@ -67,6 +67,8 @@ const AddDailyHabits: FC = () => {
                     selectedItems[habit] === res
                       ? COLORS.Primary
                       : COLORS.White,
+                  borderWidth: 2,
+                  borderColor: COLORS.White,
                 },
               ]}
               key={index}>

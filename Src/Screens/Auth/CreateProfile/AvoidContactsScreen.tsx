@@ -15,7 +15,7 @@ import CreateProfileStyles from './styles';
 
 const AvoidContactsScreen: FC = () => {
   const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+    useNavigation<NativeStackNavigationProp<{BottomTab: {}}>>();
   return (
     <View style={styles.container}>
       <View style={styles.MiddleImageView}>
@@ -40,8 +40,8 @@ const AvoidContactsScreen: FC = () => {
           Title={'Continue'}
           Disabled={false}
           Navigation={() => {
-            navigation.navigate('LoginStack', {
-              screen: 'ManageContacts',
+            navigation.navigate('BottomTab', {
+              screen: 'Home',
             });
           }}
         />

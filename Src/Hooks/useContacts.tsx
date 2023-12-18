@@ -13,9 +13,14 @@ export const useContacts = () => {
   const [contacts, setContacts] = useState<any[]>([]);
   const [permissionState, setPermissionState] = useState<string>('');
 
+  useEffect(() => {
+    checkPermission();
+  }, []);
+
   const fetchContacts = () => {
     Contacts.getAll()
       .then(fetchedContacts => {
+        console.log('fetchedContacts:', fetchedContacts);
         setContacts(fetchedContacts);
       })
       .catch(error => {

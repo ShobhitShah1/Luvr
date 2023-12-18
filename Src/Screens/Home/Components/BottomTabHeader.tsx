@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StatusBar, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
 import {COLORS, FONTS} from '../../../Common/Theme';
@@ -7,6 +7,7 @@ import {COLORS, FONTS} from '../../../Common/Theme';
 const BottomTabHeader: FC = () => {
   return (
     <View style={styles.Container}>
+      <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.White} />
       <View style={styles.ContentView}>
         <View style={styles.TitleTextView}>
           <Text style={styles.TitleText}>App Name</Text>

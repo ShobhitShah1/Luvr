@@ -1,9 +1,10 @@
 import React, {FC} from 'react';
-import {FlatList, View} from 'react-native';
+import {FlatList, StatusBar, View} from 'react-native';
 import FakeUserCard from '../../../Components/Data/FakeUserCard';
 import CategoryDetailHeader from './Components/CategoryDetailHeader';
 import CategoryRenderCard from './Components/CategoryRenderCard';
 import styles from './styles';
+import { COLORS } from '../../../Common/Theme';
 
 interface CategoryDetailCardsProps {
   route: {
@@ -22,6 +23,7 @@ const CategoryDetailCardsScreen: FC<CategoryDetailCardsProps> = ({route}) => {
   return (
     <View style={styles.Container}>
       <CategoryDetailHeader item={item} />
+      <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.Secondary} />
 
       <View>
         <FlatList

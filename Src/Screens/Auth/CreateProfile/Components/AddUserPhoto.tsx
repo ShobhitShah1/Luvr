@@ -81,13 +81,13 @@ export default AddUserPhoto;
 const styles = StyleSheet.create({
   item: {
     overflow: 'hidden',
-    width: hp('18%'),
-    height: hp('18%'),
+    width: hp('19%'),
+    height: hp('19%'),
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: hp('1.5%'),
-    marginHorizontal: hp('0.5%'),
-    marginVertical: hp('0.5%'),
+    marginHorizontal: hp('0.6%'),
+    marginVertical: hp('0.3%'),
     backgroundColor: COLORS.White,
   },
   ImageHasImageView: {

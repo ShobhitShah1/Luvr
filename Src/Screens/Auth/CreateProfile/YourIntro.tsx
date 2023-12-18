@@ -4,7 +4,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useMemo, useState} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
+import {ActiveOpacity, COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import YourIntoData from '../../../Components/Data/YourIntoData';
 import CreateProfileHeader from './Components/CreateProfileHeader';
@@ -42,6 +42,7 @@ const YourIntro: FC = () => {
         return (
           <View style={styles.YourIntoScrollViewContainer}>
             <TouchableOpacity
+              activeOpacity={ActiveOpacity}
               key={index}
               style={[
                 styles.YourIntoButton,
@@ -121,8 +122,9 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Bold,
   },
   DataViewContainer: {
-    height: '85%',
-    marginHorizontal: hp('1.2%'),
+    height: '90%',
+    alignSelf:'center',
+    // marginHorizontal: hp('1.2%'),
     marginTop: hp('1%'),
   },
   FlatListStyle: {
@@ -133,7 +135,7 @@ const styles = StyleSheet.create({
   ContainerContainerStyle: {
     width: '90%',
     alignSelf: 'center',
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   YourIntoMatchText: {
     ...GROUP_FONT.h3,
@@ -156,9 +158,10 @@ const styles = StyleSheet.create({
   },
 
   YourIntoScrollViewContainer: {
+    // marginRight: hp('4%'), // 1.1
+    paddingRight: 18,
     alignSelf: 'center',
     justifyContent: 'center',
-    paddingHorizontal: hp('0.5%'),
   },
   YourIntoButton: {
     width: hp('12%'),
@@ -170,13 +173,16 @@ const styles = StyleSheet.create({
   },
   selectedOption: {
     backgroundColor: COLORS.Primary,
+    borderWidth: 2,
+    borderColor: COLORS.White
   },
   CategoriesText: {
     width: '85%',
     justifyContent: 'center',
     alignSelf: 'center',
-    ...GROUP_FONT.body5,
-    fontSize: hp('1.4%'),
+    ...GROUP_FONT.body4,
+    fontSize: hp('1.5%'),
+    color: 'rgba(130, 130, 130, 1)',
     fontFamily: FONTS.SemiBold,
     textAlign: 'center',
   },
@@ -184,7 +190,7 @@ const styles = StyleSheet.create({
     color: COLORS.White,
   },
   FlatListContainer: {
-    height: '78%',
+    height: '75%',
     marginTop: hp('1.5%'),
   },
 });

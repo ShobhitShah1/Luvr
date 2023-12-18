@@ -3,6 +3,7 @@ import React from 'react';
 import {
   Image,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -13,6 +14,7 @@ import CommonIcons from '../../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import {CardDetailType} from '../../../Types/CardDetailType';
 import DetailCardHeader from './Components/DetailCardHeader';
+import CommonImages from '../../../Common/CommonImages';
 
 type DetailCardRouteParams = {
   props: CardDetailType;
@@ -31,12 +33,29 @@ const ExploreCardDetailScreen = () => {
   return (
     <View style={styles.Container}>
       <DetailCardHeader />
+      <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.White} />
 
       <View style={styles.ContentView}>
         <ScrollView
           bounces={false}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.ScrollViewContentContainerStyle}>
+          <View
+            style={{
+              width: '100%',
+              height: 350,
+              borderRadius: 25,
+              overflow: 'hidden',
+              marginVertical: 10,
+              marginTop: 15,
+            }}>
+            <Image
+              resizeMode="cover"
+              style={{width: '100%', height: 350}}
+              source={CommonImages.WelcomeBackground}
+            />
+          </View>
+
           {/* About Me */}
           <View style={styles.DetailBoxContainerView}>
             <View style={styles.TitleAndIconView}>
@@ -254,8 +273,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   DetailIconsView: {
-    width: hp('2.8%'),
-    height: hp('2.8%'),
+    width: hp('2.6%'),
+    height: hp('2.6%'),
   },
   TitleText: {
     ...GROUP_FONT.h3,
@@ -265,10 +284,10 @@ const styles = StyleSheet.create({
   DetailText: {
     fontFamily: FONTS.Regular,
     fontSize: hp('1.8%'),
-    width: '92.5%',
+    width: '91.5%',
     alignSelf: 'flex-end',
     justifyContent: 'center',
-    paddingVertical: hp('0.5%'),
+    paddingVertical: hp('0.8%'),
     color: 'rgba(130, 130, 130, 1)',
   },
   MultipleBoxFlexView: {
@@ -299,6 +318,7 @@ const styles = StyleSheet.create({
   },
   BlockAndReportButtonView: {
     width: '47%',
+    overflow: 'hidden',
     height: hp('7.5%'),
     marginVertical: hp('2%'),
     borderRadius: hp('5%'),
@@ -306,19 +326,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: hp('0.4%'),
+    borderWidth: 2,
     borderColor: COLORS.Black,
     paddingHorizontal: hp('1%'),
     marginHorizontal: hp('0.5%'),
   },
   BlockAndReportIcon: {
-    width: hp('2.8%'),
-    height: hp('2.8%'),
+    width: hp('2.5%'),
+    height: hp('2.5%'),
   },
   BlockAndReportText: {
     fontFamily: FONTS.Bold,
     color: COLORS.Black,
-    fontSize: hp('2.1%'),
+    fontSize: hp('1.9%'),
     marginHorizontal: hp('0.8%'),
   },
   LikeAndRejectView: {

@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {FlatList, ImageBackground, ScrollView, Text, View} from 'react-native';
+import {FlatList, ImageBackground, ScrollView, StatusBar, Text, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {COLORS} from '../../Common/Theme';
 import HomeLookingForData from '../../Components/Data/HomeData/HomeLookingForData';
@@ -12,6 +12,7 @@ import styles from './styles';
 const HomeScreen = () => {
   return (
     <View style={styles.Container}>
+      
       <BottomTabHeader />
 
       <ScrollView bounces={false}>
@@ -29,7 +30,7 @@ const HomeScreen = () => {
             />
           }
         />
-        <FlatList
+        {/* <FlatList
           style={[styles.FlatListStyle]}
           data={HomeLookingForData}
           keyExtractor={item => item.id.toString()}
@@ -63,7 +64,7 @@ const HomeScreen = () => {
               Description="Based on your profile"
             />
           }
-        />
+        /> */}
       </ScrollView>
     </View>
   );

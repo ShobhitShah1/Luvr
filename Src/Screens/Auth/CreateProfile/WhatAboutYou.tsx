@@ -59,6 +59,7 @@ const WhatAboutYou: FC = () => {
                 ]}
                 onPress={() => handleOptionPress(item.id, option)}>
                 <Text
+                  numberOfLines={2}
                   style={[
                     styles.CategoriesText,
                     selectedItems[item.id.toString()] === option &&
@@ -155,36 +156,39 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Bold,
   },
   HabitFlatListView: {
-    flex: 1,
-    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   HabitFlatListStyle: {
-    width: '100%',
-    alignSelf: 'center',
+    justifyContent: 'space-between',
   },
   optionButton: {
     width: hp('12%'),
     height: hp('6.8%'),
     justifyContent: 'center',
     marginVertical: hp('1%'),
-    marginHorizontal: hp('0.5%'), // 1.1
+    marginRight: 15, // 1.1
+    // marginRight: hp('1.5%'), // 1.1
     overflow: 'hidden',
     borderRadius: SIZES.radius,
     backgroundColor: COLORS.White,
   },
   selectedOption: {
     backgroundColor: COLORS.Primary,
+    borderWidth: 2,
+    borderColor: COLORS.White,
   },
   CategoriesText: {
-    width: '90%',
-    justifyContent: 'center',
+    width: '85%',
     alignSelf: 'center',
-    ...GROUP_FONT.body5,
+    ...GROUP_FONT.body4,
+    color: 'rgba(130, 130, 130, 1)',
     fontSize: hp('1.4%'),
     fontFamily: FONTS.SemiBold,
     textAlign: 'center',
   },
   SelectedCategoriesText: {
+    width: '85%',
     color: COLORS.White,
   },
   checkMissingCategories: {
@@ -208,7 +212,7 @@ const styles = StyleSheet.create({
   },
   FlatListContainerView: {
     height: '72%',
-    marginHorizontal: hp('0.8%'),
+    // marginHorizontal: hp('0.8%'),
   },
   FlatListStyle: {
     height: '100%',

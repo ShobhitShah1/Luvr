@@ -47,7 +47,9 @@ const RenderHeader = ({title}: {title: string}) => (
 );
 
 const AllContactRender = () => {
+
   const {contacts} = useContacts();
+  console.log('contacts:', contacts);
   const contactsWithNumbers = contacts.filter(
     contact => contact.phoneNumbers.length > 0,
   );

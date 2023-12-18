@@ -1,21 +1,15 @@
-import React, {FC, useEffect, useLayoutEffect, useState} from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {FC, useEffect, useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {RESULTS} from 'react-native-permissions';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
 import {ContactTabData} from '../../../Components/Data/ContactTabData';
+import {useContacts} from '../../../Hooks/useContacts';
 import ContactHeader from './Components/ContactHeader';
 import ContactSearch from './Components/ContactSearch';
 import ContactTabButton from './Components/ContactTabButton';
 import AllContactRender from './Contacts/AllContactRender';
 import Blocked from './Contacts/Blocked';
-import {useContacts} from '../../../Hooks/useContacts';
-import {RESULTS} from 'react-native-permissions';
 
 const ManageContacts: FC = () => {
   const {contacts, permissionState, requestPermission} = useContacts();
@@ -25,11 +19,6 @@ const ManageContacts: FC = () => {
     useState<string>(permissionState);
 
   useEffect(() => {
-    console.log(
-      'permissionState:',
-      permissionState === RESULTS.GRANTED,
-      SelectedContactTab,
-    );
     setContactPermission(permissionState);
   }, [permissionState, contacts]);
 

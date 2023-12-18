@@ -115,30 +115,6 @@ const AddRecentPics: FC = () => {
     }
   };
 
-  //* Render Image Box's
-  const renderImageView = ({item}: any) => {
-    return (
-      <TouchableOpacity
-        activeOpacity={ActiveOpacity}
-        onPress={() => {
-          HandleOnImagePress(item);
-        }}
-        style={styles.AddUserPhotoView}>
-        <AddUserPhoto
-          onDelete={() => {
-            const newPics = data.map(deleteUrlFromItem(item)).sort(sortByUrl);
-            setData(newPics);
-          }}
-          onAdd={() => {
-            const newPics = data.map(addUrlToItem(item)).sort(sortByUrl);
-            setData(newPics);
-          }}
-          picture={item}
-        />
-      </TouchableOpacity>
-    );
-  };
-
   //* Handle User Selection With Permission
   const HandleUserSelection = async (option: string) => {
     try {
@@ -178,6 +154,30 @@ const AddRecentPics: FC = () => {
     } catch (error) {
       console.error('Error handling user selection:', error);
     }
+  };
+
+  //* Render Image Box's
+  const renderImageView = ({item}: any) => {
+    return (
+      <TouchableOpacity
+        activeOpacity={ActiveOpacity}
+        onPress={() => {
+          HandleOnImagePress(item);
+        }}
+        style={styles.AddUserPhotoView}>
+        <AddUserPhoto
+          onDelete={() => {
+            const newPics = data.map(deleteUrlFromItem(item)).sort(sortByUrl);
+            setData(newPics);
+          }}
+          onAdd={() => {
+            const newPics = data.map(addUrlToItem(item)).sort(sortByUrl);
+            setData(newPics);
+          }}
+          picture={item}
+        />
+      </TouchableOpacity>
+    );
   };
 
   return (
@@ -240,8 +240,9 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Regular,
   },
   DataViewContainer: {
-    marginTop: hp('1%'),
-    marginHorizontal: hp('1.2%'),
+    width: '90%',
+    alignSelf:'center',
+    marginTop: hp('1%')
   },
   FlatListWrapper: {
     height: '65%',
@@ -249,11 +250,8 @@ const styles = StyleSheet.create({
   },
   AddUserPhotoView: {
     marginVertical: hp('0.5%'),
-    marginHorizontal: hp('0.5%'),
   },
   contentContainerStyle: {
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignSelf:'center'
   },
 });
