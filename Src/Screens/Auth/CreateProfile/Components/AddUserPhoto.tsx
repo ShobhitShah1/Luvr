@@ -43,9 +43,9 @@ const AddUserPhoto: React.FC<AddUserPhotoProps> = ({picture}) => {
           blurType="light"
           blurAmount={1}
           style={styles.BlurView}
-          overlayColor="transparent"
-          reducedTransparencyFallbackColor="transparent">
-          <View style={styles.AddAndDeleteContainerView}>
+          overlayColor="#ffffff0"
+          reducedTransparencyFallbackColor="#ffffff0">
+          <View style={[styles.AddAndDeleteContainerView]}>
             <View style={styles.FlexView}>
               <Image
                 resizeMode="cover"
@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: hp('1.5%'),
-    marginHorizontal: hp('0.6%'),
     marginVertical: hp('0.3%'),
     backgroundColor: COLORS.White,
   },

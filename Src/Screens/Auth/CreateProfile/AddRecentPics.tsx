@@ -14,7 +14,6 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {ActiveOpacity, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import {TotalProfilePicCanUpload} from '../../../Config/Setting';
-import useCameraGalleryPermissions from '../../../Hooks/useCameraGalleryPermissions';
 import {
   addUrlToItem,
   deleteUrlFromItem,
@@ -24,13 +23,15 @@ import AddUserPhoto from './Components/AddUserPhoto';
 import ChooseFromModal from './Components/ChooseFromModal';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import {useCameraPermission} from '../../../Hooks/useCameraPermission';
+import {useGalleryPermission} from '../../../Hooks/useGalleryPermission';
 
 const AddRecentPics: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
-  const {requestCameraPermission, requestGalleryPermission, permissions} =
-    useCameraGalleryPermissions();
+  const {requestCameraPermission} = useCameraPermission();
+  const {requestGalleryPermission} = useGalleryPermission();
 
   const [ChooseModalVisible, setChooseModalVisible] = useState<boolean>(false);
   const [data, setData] = useState(
@@ -115,41 +116,25 @@ const AddRecentPics: FC = () => {
     }
   };
 
-  //* Handle User Selection With Permission
-  const HandleUserSelection = async (option: string) => {
+  const HandleUserSelection = async (selectedOption: string) => {
     try {
-      if (option === 'Camera') {
-        if (permissions.camera === 'granted') {
-          console.log('Camera permission granted. Opening camera...');
+      const permissionStatus =
+        selectedOption === 'Camera'
+          ? await requestCameraPermission()
+          : await requestGalleryPermission();
+
+      if (permissionStatus) {
+        console.log(
+          `${selectedOption} permission granted. Opening ${selectedOption.toLowerCase()}...`,
+        );
+
+        if (selectedOption === 'Camera') {
           await HandleCameraImagePicker();
-          setChooseModalVisible(false);
         } else {
-          console.log('Requesting camera permission...');
-          await requestCameraPermission();
-          if (permissions.camera === 'granted') {
-            console.log('Camera permission granted. Opening camera...');
-            await HandleCameraImagePicker();
-            setChooseModalVisible(false);
-          } else {
-            console.log('Camera permission denied.');
-          }
-        }
-      } else {
-        if (permissions?.gallery === 'granted') {
-          console.log('Gallery permission granted. Opening gallery...');
           await HandleGalleryImagePicker('1');
-          setChooseModalVisible(false);
-        } else {
-          console.log('Requesting gallery permission...');
-          await requestGalleryPermission();
-          if (permissions?.gallery === 'granted') {
-            console.log('Gallery permission granted. Opening gallery...');
-            await HandleGalleryImagePicker('1');
-            setChooseModalVisible(false);
-          } else {
-            console.log('Gallery permission denied.');
-          }
         }
+
+        setChooseModalVisible(false);
       }
     } catch (error) {
       console.error('Error handling user selection:', error);
@@ -185,7 +170,7 @@ const AddRecentPics: FC = () => {
       <CreateProfileHeader ProgressCount={9} Skip={false} />
 
       <View style={styles.DataViewContainer}>
-        <View style={[CreateProfileStyles.ContentView]}>
+        <View style={{}}>
           <Text style={CreateProfileStyles.TitleText}>
             Add your recent pics
           </Text>
@@ -199,6 +184,7 @@ const AddRecentPics: FC = () => {
           <FlatList
             data={data}
             numColumns={2}
+            columnWrapperStyle={{justifyContent: 'space-between'}}
             bounces={false}
             renderItem={renderImageView}
             removeClippedSubviews={true}
@@ -240,9 +226,9 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Regular,
   },
   DataViewContainer: {
-    width: '90%',
-    alignSelf:'center',
-    marginTop: hp('1%')
+    width: '84%',
+    alignSelf: 'center',
+    marginTop: hp('1%'),
   },
   FlatListWrapper: {
     height: '65%',
@@ -251,7 +237,5 @@ const styles = StyleSheet.create({
   AddUserPhotoView: {
     marginVertical: hp('0.5%'),
   },
-  contentContainerStyle: {
-    alignSelf:'center'
-  },
+  contentContainerStyle: {},
 });

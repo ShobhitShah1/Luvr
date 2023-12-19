@@ -4,7 +4,13 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useMemo, useState} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {ActiveOpacity, COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
+import {
+  ActiveOpacity,
+  COLORS,
+  FONTS,
+  GROUP_FONT,
+  SIZES,
+} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import YourIntoData from '../../../Components/Data/YourIntoData';
 import CreateProfileHeader from './Components/CreateProfileHeader';
@@ -80,6 +86,7 @@ const YourIntro: FC = () => {
         <View style={[styles.FlatListContainer]}>
           <FlatList
             numColumns={3}
+            columnWrapperStyle={{justifyContent: 'space-between'}}
             data={YourIntoData}
             renderItem={renderItem}
             initialNumToRender={50}
@@ -111,10 +118,9 @@ export default YourIntro;
 
 const styles = StyleSheet.create({
   ContentView: {
-    overflow: 'hidden',
-    maxWidth: '100%',
-    paddingHorizontal: hp('2.8%'),
     width: '100%',
+    overflow: 'hidden',
+    // paddingHorizontal: hp('2.8%'),
   },
   TitleText: {
     color: COLORS.Primary,
@@ -123,19 +129,14 @@ const styles = StyleSheet.create({
   },
   DataViewContainer: {
     height: '90%',
-    alignSelf:'center',
-    // marginHorizontal: hp('1.2%'),
-    marginTop: hp('1%'),
-  },
-  FlatListStyle: {
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-  },
-  ContainerContainerStyle: {
-    width: '90%',
+    width: '84%',
     alignSelf: 'center',
-    // alignItems: 'center',
+    marginTop: hp('1%'),
+    // marginHorizontal: hp('5%'),
+  },
+  FlatListStyle: {},
+  ContainerContainerStyle: {
+    width: '100%',
   },
   YourIntoMatchText: {
     ...GROUP_FONT.h3,
@@ -156,13 +157,7 @@ const styles = StyleSheet.create({
     borderTopWidth: hp('0.07%'),
     borderTopColor: COLORS.Placeholder,
   },
-
-  YourIntoScrollViewContainer: {
-    // marginRight: hp('4%'), // 1.1
-    paddingRight: 18,
-    alignSelf: 'center',
-    justifyContent: 'center',
-  },
+  YourIntoScrollViewContainer: {},
   YourIntoButton: {
     width: hp('12%'),
     height: hp('6.8%'),
@@ -174,7 +169,7 @@ const styles = StyleSheet.create({
   selectedOption: {
     backgroundColor: COLORS.Primary,
     borderWidth: 2,
-    borderColor: COLORS.White
+    borderColor: COLORS.White,
   },
   CategoriesText: {
     width: '85%',
@@ -190,7 +185,7 @@ const styles = StyleSheet.create({
     color: COLORS.White,
   },
   FlatListContainer: {
-    height: '75%',
+    height: '72%',
     marginTop: hp('1.5%'),
   },
 });

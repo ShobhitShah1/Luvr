@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unstable-nested-components */
+/* eslint-disable react-native/no-inline-styles */
 import React, {FC, useEffect, useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {RESULTS} from 'react-native-permissions';
@@ -85,9 +87,7 @@ const ManageContacts: FC = () => {
         </View>
 
         {/* Content View */}
-        <View style={{flexGrow: 1, marginBottom: hp('46%')}}>
-          {renderContent()}
-        </View>
+        <View style={{marginBottom: hp('50%')}}>{renderContent()}</View>
       </View>
     </View>
   );

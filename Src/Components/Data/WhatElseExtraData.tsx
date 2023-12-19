@@ -10,7 +10,7 @@ const WhatAboutYouData = [
     options: [
       'Words of Affirmation',
       'Acts of Service',
-      'Receiving Gifts',
+      // 'Receiving Gifts',
       'Quality Time',
       'Physical Touch',
     ],
@@ -23,7 +23,7 @@ const WhatAboutYouData = [
       'Some College',
       "Bachelor's Degree",
       "Master's Degree",
-      'Doctorate',
+      // 'Doctorate',
     ],
   },
   {

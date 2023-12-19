@@ -2,7 +2,10 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useState} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 import {
   ActiveOpacity,
   COLORS,
@@ -45,6 +48,7 @@ const WhatAboutYou: FC = () => {
           <FlatList
             numColumns={3}
             data={item.options}
+            columnWrapperStyle={{justifyContent: 'space-between'}}
             style={styles.HabitFlatListStyle}
             showsVerticalScrollIndicator={false}
             keyExtractor={(option, index) => index.toString()}
@@ -145,8 +149,8 @@ const styles = StyleSheet.create({
   },
 
   habitContainer: {
-    width: '100%',
-    paddingHorizontal: hp('2.5%'),
+    width: '90%',
+    alignSelf: 'center',
     paddingVertical: hp('1.5%'),
   },
   habitTitle: {
@@ -155,21 +159,16 @@ const styles = StyleSheet.create({
     color: COLORS.Primary,
     fontFamily: FONTS.Bold,
   },
-  HabitFlatListView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
+  HabitFlatListView: {},
   HabitFlatListStyle: {
-    justifyContent: 'space-between',
+    overflow: 'hidden',
   },
   optionButton: {
     width: hp('12%'),
+    overflow: 'hidden',
     height: hp('6.8%'),
     justifyContent: 'center',
     marginVertical: hp('1%'),
-    marginRight: 15, // 1.1
-    // marginRight: hp('1.5%'), // 1.1
-    overflow: 'hidden',
     borderRadius: SIZES.radius,
     backgroundColor: COLORS.White,
   },

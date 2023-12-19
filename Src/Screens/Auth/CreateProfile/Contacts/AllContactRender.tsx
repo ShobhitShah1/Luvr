@@ -1,8 +1,10 @@
 import React, {memo} from 'react';
-import {FlatList, Text, View} from 'react-native';
+import {FlatList, Image, Text, View} from 'react-native';
 import {useContacts} from '../../../../Hooks/useContacts';
 import styles from './styles';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import CommonIcons from '../../../../Common/CommonIcons';
+import {COLORS} from '../../../../Common/Theme';
 
 interface Contact {
   displayName: string;
@@ -20,17 +22,23 @@ interface ContactItemProps {
 }
 
 const ContactItem = memo(({item, index}: ContactItemProps) => (
-  <View
-    style={[
-      styles.ContactView,
-      {
-        borderTopWidth: index === 0 ? 0 : 0.3,
-      },
-    ]}>
-    <Text style={styles.ContactDisplayName}>{item?.displayName}</Text>
-    <Text style={styles.ContactDisplayNumber}>
-      {item?.phoneNumbers[0]?.number}
-    </Text>
+  <View key={index} style={[styles.ContactView]}>
+    <View style={styles.NumberAndNameContainerView}>
+      <Text style={styles.ContactDisplayName}>{item?.displayName}</Text>
+      <Text style={styles.ContactDisplayNumber}>
+        {item?.phoneNumbers[0]?.number}
+      </Text>
+    </View>
+    <View style={styles.CheckBoxView}>
+      <View style={styles.CheckBox}>
+        <Image
+          resizeMode="contain"
+          tintColor={COLORS.White}
+          source={CommonIcons.Check}
+          style={styles.CheckImage}
+        />
+      </View>
+    </View>
   </View>
 ));
 
@@ -47,7 +55,6 @@ const RenderHeader = ({title}: {title: string}) => (
 );
 
 const AllContactRender = () => {
-
   const {contacts} = useContacts();
   console.log('contacts:', contacts);
   const contactsWithNumbers = contacts.filter(

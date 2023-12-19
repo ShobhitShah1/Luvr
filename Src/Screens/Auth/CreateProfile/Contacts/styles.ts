@@ -8,11 +8,35 @@ const styles = StyleSheet.create({
   },
   ContactView: {
     top: hp('2%'),
-    borderColor: COLORS.Gray,
-    borderTopWidth: 0.3,
-    marginHorizontal: hp('1.9%'),
-    paddingVertical: hp('1.9%'),
-    borderBottomWidth: 0.3,
+    width: '100%',
+    borderRadius: 20,
+    marginVertical: 5,
+    paddingHorizontal: hp('1.9%'),
+    paddingVertical: hp('1.6%'),
+    backgroundColor: COLORS.White,
+    flexDirection: 'row',
+  },
+  NumberAndNameContainerView: {
+    width: '80%',
+  },
+  CheckBoxView: {
+    width: '20%',
+    justifyContent: 'center',
+  },
+  CheckBox: {
+    width: 25,
+    height: 25,
+    // borderWidth: 3,
+    borderRadius: 50,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.Primary,
+    borderColor: 'rgba(130, 130, 130, 1)',
+  },
+  CheckImage: {
+    width: 13,
+    height: 13,
+    alignSelf: 'center',
   },
   ContactDisplayName: {
     ...GROUP_FONT.h4,
@@ -29,6 +53,7 @@ const styles = StyleSheet.create({
   },
   SectionHeaderText: {
     ...GROUP_FONT.h3,
+    color: 'rgba(130, 130, 130, 1)',
     fontSize: hp('2.1%'),
   },
 });
