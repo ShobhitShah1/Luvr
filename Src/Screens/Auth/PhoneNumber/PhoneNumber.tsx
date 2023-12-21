@@ -4,6 +4,7 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Image,
   KeyboardAvoidingView,
@@ -28,6 +29,8 @@ import CountryWithCode from '../../../Components/Data/CountryWithCode';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import RenderCountryData from '../CreateProfile/Components/RenderCountryData';
 import styles from './styles';
+import {post} from '../../../utils/apiUtils';
+import ApiConfig from '../../../Config/ApiConfig';
 
 const PhoneNumber: FC = () => {
   const navigation =
@@ -114,6 +117,49 @@ const PhoneNumber: FC = () => {
     );
   };
 
+  const onNextClick = () => {
+    if (PhoneNumber.length > 10) {
+      Alert.alert('Error', 'Please check your phone number');
+    } else {
+      handleSendOtp();
+    }
+  };
+
+  //* API Calls
+  const handleSendOtp = async () => {
+
+
+    navigation.navigate('LoginStack', {
+      screen: 'OTP',
+      params: {
+        number: StorePhoneNumber,
+      },
+    });
+
+
+    // try {
+    //   // Make a POST request to your OTP API using the base URL from ApiConfig
+    //   const response = await post(ApiConfig.OTP_BASE_URL, {
+    //     PhoneNumber,
+    //   });
+
+    //   // Handle the response from the OTP API (customize as needed)
+    //   console.log('OTP API Response:', response);
+
+      // navigation.navigate('LoginStack', {
+      //   screen: 'OTP',
+      //   params: {
+      //     number: StorePhoneNumber,
+      //   },
+      // });
+
+    //   // Alert.alert('OTP Sent', 'Please check your phone for the OTP.');
+    // } catch (error) {
+    //   console.error('Error sending OTP:', error);
+    //   Alert.alert('Error', 'Failed to send OTP. Please try again.');
+    // }
+  };
+
   return (
     <View style={styles.Container}>
       <CreateProfileHeader ProgressCount={0} Skip={true} />
@@ -195,14 +241,7 @@ const PhoneNumber: FC = () => {
           <GradientButton
             Title={'CONTINUE'}
             Disabled={StorePhoneNumber?.length === 0 ? true : false}
-            Navigation={() => {
-              navigation.navigate('LoginStack', {
-                screen: 'OTP',
-                params: {
-                  number: StorePhoneNumber,
-                },
-              });
-            }}
+            Navigation={onNextClick}
           />
         </View>
       </ScrollView>

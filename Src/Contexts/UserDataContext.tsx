@@ -2,10 +2,35 @@ import React, {createContext, useContext, useReducer, ReactNode} from 'react';
 import {UserField, LocalStorageFields} from '../Types/LocalStorageFields';
 
 interface UserData {
-  [LocalStorageFields.firstName]: string;
-  [LocalStorageFields.dob]: string;
+  [LocalStorageFields.eventName]: string;
+  [LocalStorageFields.loginType]: string;
+  [LocalStorageFields.userFrom]: string;
+  [LocalStorageFields.mobileNo]: string;
+  [LocalStorageFields.identity]: string;
+  [LocalStorageFields.profileImage]: string;
+  [LocalStorageFields.fullName]: string;
+  [LocalStorageFields.birthdate]: string;
   [LocalStorageFields.gender]: string;
-  [LocalStorageFields.sexualOrientation]: string[];
+  [LocalStorageFields.city]: string;
+  [LocalStorageFields.orientation]: string[];
+  [LocalStorageFields.isOrientationVisible]: boolean;
+  [LocalStorageFields.hoping]: string;
+  [LocalStorageFields.educationDegree]: string;
+  [LocalStorageFields.collegeName]: string;
+  [LocalStorageFields.habitsExercise]: string;
+  [LocalStorageFields.habitsSmoke]: string;
+  [LocalStorageFields.habitsMovies]: string;
+  [LocalStorageFields.habitsDrink]: string;
+  [LocalStorageFields.magicalPersonCommunicationStr]: string;
+  [LocalStorageFields.magicalPersonReceivedLove]: string;
+  [LocalStorageFields.magicalPersonEducationLevel]: string;
+  [LocalStorageFields.magicalPersonStarSign]: string;
+  [LocalStorageFields.likesInto]: string[];
+  [LocalStorageFields.isBlockContact]: boolean;
+  [LocalStorageFields.latitude]: number;
+  [LocalStorageFields.longitude]: number;
+  [LocalStorageFields.radius]: number;
+  [LocalStorageFields.recentPik]: string[];
 }
 
 interface UserDataContextProps {
