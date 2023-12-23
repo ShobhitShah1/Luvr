@@ -3,6 +3,7 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useState} from 'react';
 import {
+  Alert,
   Dimensions,
   FlatList,
   Image,
@@ -24,8 +25,8 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomCheckBox from '../../../Components/CustomCheckBox';
 import GendersData from '../../../Components/Data/genders';
 import {useUserData} from '../../../Contexts/UserDataContext';
+import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useFieldConfig} from '../../../Utils/StorageUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
@@ -34,18 +35,18 @@ const {width} = Dimensions.get('window');
 const SexualOrientation: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+  const handleInputChange = useHandleInputChangeSignUp();
 
-  const {userData, dispatch} = useUserData();
-  const StoreStringName = useFieldConfig(LocalStorageFields.sexualOrientation);
+  const {userData} = useUserData();
 
   const initialSexualOrientation: {id: number; name: string}[] = userData
-    .sexualOrientation?.length
-    ? userData.sexualOrientation
+    .orientation?.length
+    ? userData.orientation
     : [];
 
   const [ShowOnProfile, setShowOnProfile] = useState<boolean>(false);
-  const [SelectedGenderIndex, setSelectedGenderIndex] = useState<Object[]>(
-    initialSexualOrientation,
+  const [SelectedGenderIndex, setSelectedGenderIndex] = useState<string[]>(
+    initialSexualOrientation.map(item => item?.name),
   );
 
   const toggleCheckMark = useCallback(() => {
@@ -53,21 +54,21 @@ const SexualOrientation: FC = () => {
   }, []);
 
   const onPressGenders = useCallback(
-    (item: string) => {
-      if (SelectedGenderIndex.includes(item)) {
-        setSelectedGenderIndex(prev => prev.filter(i => i !== item));
-      } else if (SelectedGenderIndex.length < 4) {
-        setSelectedGenderIndex(prev => [...prev, item]);
+    (item: {id: number; name: string}) => {
+      const {name} = item;
+      if (SelectedGenderIndex.includes(name)) {
+        setSelectedGenderIndex(prev =>
+          prev.filter(selectedName => selectedName !== name),
+        );
+      } else if (SelectedGenderIndex.length < 3) {
+        setSelectedGenderIndex(prev => [...prev, name]);
       }
     },
     [SelectedGenderIndex],
   );
 
-  const isGenderSelected = (item: string) => SelectedGenderIndex.includes(item);
-
-  const handleInputChange = (field: any, value: any) => {
-    dispatch({type: 'UPDATE_FIELD', field, value});
-  };
+  const isGenderSelected = (item: string) =>
+    SelectedGenderIndex.includes(item?.name);
 
   const renderItem = ({item, index}: {item: any; index: number}) => (
     <TouchableOpacity
@@ -104,10 +105,16 @@ const SexualOrientation: FC = () => {
   );
 
   const OnNextButtonClick = () => {
-    handleInputChange(StoreStringName, SelectedGenderIndex);
-    navigation.navigate('LoginStack', {
-      screen: 'HopingToFind',
-    });
+    const orientations = SelectedGenderIndex.map(gender => gender);
+    if (orientations.length !== 0) {
+      handleInputChange(LocalStorageFields.orientation, orientations);
+      handleInputChange(LocalStorageFields.isOrientationVisible, ShowOnProfile);
+      navigation.navigate('LoginStack', {
+        screen: 'HopingToFind',
+      });
+    } else {
+      Alert.alert('Error', 'Please select your sexual orientation');
+    }
   };
 
   return (

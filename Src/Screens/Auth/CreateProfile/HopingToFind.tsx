@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dimensions,
   FlatList,
   Image,
@@ -23,18 +24,25 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useNavigation} from '@react-navigation/native';
 import CommonIcons from '../../../Common/CommonIcons';
+import {useUserData} from '../../../Contexts/UserDataContext';
+import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 const {width} = Dimensions.get('window');
 
 const HopingToFind: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
-  // const {userData, dispatch} = useUserData();
+  const {userData, dispatch} = useUserData();
+  const handleInputChange = useHandleInputChangeSignUp();
+
   // const StoreStringName = useFieldConfig(LocalStorageFields.sexualOrientation);
 
   const [SelectedLookingForIndex, setSelectedLookingForIndex] = useState<
     string[]
   >([]);
+
+  console.log('SelectedLookingForIndex', SelectedLookingForIndex);
 
   const onPressLookingFor = useCallback(
     (item: string) => {
@@ -86,6 +94,20 @@ const HopingToFind: FC = () => {
     </TouchableOpacity>
   );
 
+  const onPressNext = () => {
+    if (SelectedLookingForIndex.length !== 0) {
+      handleInputChange(
+        LocalStorageFields.hoping,
+        SelectedLookingForIndex[0]?.Title,
+      );
+      navigation.navigate('LoginStack', {
+        screen: 'DistancePreference',
+      });
+    } else {
+      Alert.alert('Error', 'Please select your hoping');
+    }
+  };
+
   return (
     <View style={CreateProfileStyles.Container}>
       <CreateProfileHeader ProgressCount={3} Skip={false} />
@@ -112,11 +134,7 @@ const HopingToFind: FC = () => {
         <GradientButton
           Title={'Continue'}
           Disabled={SelectedLookingForIndex.length !== 0 ? false : true}
-          Navigation={() => {
-            navigation.navigate('LoginStack', {
-              screen: 'DistancePreference',
-            });
-          }}
+          Navigation={() => onPressNext()}
         />
       </View>
     </View>

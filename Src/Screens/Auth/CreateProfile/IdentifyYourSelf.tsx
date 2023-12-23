@@ -147,29 +147,28 @@ const IdentifyYourSelf: FC = () => {
                     setBirthDateDD(value);
                   }}
                   maxLength={2}
-                  textContentType="givenName"
                   placeholder="DD"
                   style={[styles.TextInputStyle, {width: hp('12%')}]}
                   placeholderTextColor={COLORS.Gray}
                 />
                 <CustomTextInput
                   value={BirthDateMM}
+                  keyboardType={'number-pad'}
                   onChangeText={value => {
                     setBirthDateMM(value);
                   }}
                   maxLength={2}
-                  textContentType="givenName"
                   placeholder="MM"
                   style={[styles.TextInputStyle, {width: hp('12%')}]}
                   placeholderTextColor={COLORS.Gray}
                 />
                 <CustomTextInput
                   value={BirthDateYYYY}
+                  keyboardType={'number-pad'}
                   onChangeText={value => {
                     setBirthDateYYYY(value);
                   }}
                   maxLength={4}
-                  textContentType="givenName"
                   placeholder="YYYY"
                   style={[styles.TextInputStyle, {width: hp('12%')}]}
                   placeholderTextColor={COLORS.Gray}

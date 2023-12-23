@@ -8,14 +8,26 @@ import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 
 const DistancePreference: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const [milesValue, setMilesValue] = useState<number>(75);
-
+  const handleInputChange = useHandleInputChangeSignUp();
   const OnChangeKM = (value: number) => {
     setMilesValue(value);
+  };
+
+  const onNextPress = () => {
+    // handleInputChange(
+    //   LocalStorageFields.,
+    //   SelectedLookingForIndex[0]?.Title,
+    // );
+    navigation.navigate('LoginStack', {
+      screen: 'YourEducation',
+    });
   };
 
   return (
@@ -61,11 +73,7 @@ const DistancePreference: FC = () => {
         <GradientButton
           Title={'Continue'}
           Disabled={false}
-          Navigation={() => {
-            navigation.navigate('LoginStack', {
-              screen: 'YourEducation',
-            });
-          }}
+          Navigation={() => onNextPress()}
         />
       </View>
     </View>
