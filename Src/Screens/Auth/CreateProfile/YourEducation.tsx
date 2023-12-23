@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {Alert, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
@@ -9,15 +9,28 @@ import CustomTextInput from '../../../Components/CustomTextInput';
 import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 
 const YourEducation: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const KeyboardVisible = useKeyboardVisibility();
-
+  const handleInputChange = useHandleInputChangeSignUp();
   const [EducationDegree, setEducationDegree] = useState<string>('');
   const [CollegeName, setCollegeName] = useState<string>('');
 
+  const onNextPress = () => {
+    if (EducationDegree && CollegeName) {
+      handleInputChange(LocalStorageFields.educationDegree, EducationDegree);
+      handleInputChange(LocalStorageFields.collegeName, CollegeName);
+      navigation.navigate('LoginStack', {
+        screen: 'AddDailyHabits',
+      });
+    } else {
+      Alert.alert('Error', 'Please fill all details');
+    }
+  };
   return (
     <View style={CreateProfileStyles.Container}>
       <CreateProfileHeader ProgressCount={5} Skip={true} />
@@ -67,11 +80,7 @@ const YourEducation: FC = () => {
           <GradientButton
             Title={'Continue'}
             Disabled={false}
-            Navigation={() => {
-              navigation.navigate('LoginStack', {
-                screen: 'AddDailyHabits',
-              });
-            }}
+            Navigation={() => onNextPress()}
           />
         </View>
       )}

@@ -29,3 +29,5 @@ export interface UserDataType {
   radius: number;
   recentPik: string[];
 }
+
+export default UserDataType;

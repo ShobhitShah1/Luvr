@@ -1,4 +1,5 @@
-import {LocalStorageFields} from '../types/LocalStorageFields';
+
+import {LocalStorageFields} from '../Types/LocalStorageFields';
 import {UserDataType} from '../Types/UserDataType';
 
 const transformUserDataForApi = (

@@ -17,11 +17,19 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import WhatAboutYouData from '../../../Components/Data/WhatElseExtraData';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import {transformUserDataForApi} from '../../../Services/dataTransformService';
+import {UserDataType} from '../../../Types/UserDataType';
+import {useUserData} from '../../../Contexts/UserDataContext';
+import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
 
 const WhatAboutYou: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+  const {userData, dispatch} = useUserData();
+  const handleInputChange = useHandleInputChangeSignUp();
 
+  const data = transformUserDataForApi(userData);
+  // console.log('data', data);
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
     {},
   );
@@ -39,7 +47,7 @@ const WhatAboutYou: FC = () => {
   const renderItem = ({
     item,
   }: {
-    item: {id: number; habit: string; options: string[]};
+    item: {id: number; key: string; habit: string; options: string[]};
   }) => {
     return (
       <View key={item.id} style={styles.habitContainer}>
@@ -58,15 +66,15 @@ const WhatAboutYou: FC = () => {
                 key={index}
                 style={[
                   styles.optionButton,
-                  selectedItems[item.id.toString()] === option &&
+                  selectedItems[item.key.toString()] === option &&
                     styles.selectedOption,
                 ]}
-                onPress={() => handleOptionPress(item.id, option)}>
+                onPress={() => handleOptionPress(item.key, option)}>
                 <Text
                   numberOfLines={2}
                   style={[
                     styles.CategoriesText,
-                    selectedItems[item.id.toString()] === option &&
+                    selectedItems[item.key.toString()] === option &&
                       styles.SelectedCategoriesText,
                   ]}>
                   {option}
@@ -77,6 +85,16 @@ const WhatAboutYou: FC = () => {
         </View>
       </View>
     );
+  };
+
+  const onNextPress = () => {
+    if (true) {
+      console.log('selectedItems', selectedItems);
+      navigation.navigate('LoginStack', {
+        screen: 'YourIntro',
+      });
+    } else {
+    }
   };
 
   return (
@@ -109,11 +127,7 @@ const WhatAboutYou: FC = () => {
         <GradientButton
           Title={'Continue'}
           Disabled={false}
-          Navigation={() => {
-            navigation.navigate('LoginStack', {
-              screen: 'YourIntro',
-            });
-          }}
+          Navigation={() => onNextPress()}
         />
       </View>
     </View>
@@ -151,7 +165,7 @@ const styles = StyleSheet.create({
   habitContainer: {
     width: '90%',
     alignSelf: 'center',
-    paddingVertical: hp('1.5%'),
+    paddingTop: hp('1.5%'),
   },
   habitTitle: {
     marginBottom: hp('1%'),

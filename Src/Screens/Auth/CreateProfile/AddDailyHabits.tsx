@@ -1,7 +1,15 @@
+/* eslint-disable react-native/no-inline-styles */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useState} from 'react';
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {
   ActiveOpacity,
@@ -14,10 +22,14 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import LifestyleData from '../../../Components/Data/LifestyleData';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
 
 const AddDailyHabits: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+
+  const handleInputChange = useHandleInputChangeSignUp();
 
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
     {},
@@ -48,9 +60,9 @@ const AddDailyHabits: FC = () => {
   }, []);
 
   const renderItem = ({
-    item: {id, habit, options},
+    item: {id, habit, options, key},
   }: {
-    item: {id: number; habit: string; options: string[]};
+    item: {id: number; key: string; habit: string; options: string[]};
   }) => {
     return (
       <View style={styles.HabitsContainerView} key={id}>
@@ -59,14 +71,12 @@ const AddDailyHabits: FC = () => {
           {options.map((res, index) => (
             <TouchableOpacity
               activeOpacity={ActiveOpacity}
-              onPress={() => handleOptionPress(habit, res)}
+              onPress={() => handleOptionPress(key, res)}
               style={[
                 styles.HabitOptionView,
                 {
                   backgroundColor:
-                    selectedItems[habit] === res
-                      ? COLORS.Primary
-                      : COLORS.White,
+                    selectedItems[key] === res ? COLORS.Primary : COLORS.White,
                   borderWidth: 2,
                   borderColor: COLORS.White,
                 },
@@ -77,7 +87,7 @@ const AddDailyHabits: FC = () => {
                   styles.HabitOptionText,
                   {
                     color:
-                      selectedItems[habit] === res ? COLORS.White : '#828282',
+                      selectedItems[key] === res ? COLORS.White : '#828282',
                   },
                 ]}>
                 {res}
@@ -87,6 +97,34 @@ const AddDailyHabits: FC = () => {
         </View>
       </View>
     );
+  };
+
+  const onPressNext = () => {
+    // Define an array of required habits
+    const requiredHabits = ['drink', 'exercise', 'movies', 'smoke'];
+
+    // Check if all required habits are selected
+    const allHabitsSelected = requiredHabits.every(habit =>
+      selectedItems.hasOwnProperty(habit),
+    );
+
+    if (allHabitsSelected) {
+      handleInputChange(LocalStorageFields.habitsDrink, selectedItems.drink);
+      handleInputChange(
+        LocalStorageFields.habitsExercise,
+        selectedItems.exercise,
+      );
+      handleInputChange(LocalStorageFields.habitsMovies, selectedItems.movies);
+      handleInputChange(LocalStorageFields.habitsSmoke, selectedItems.smoke);
+
+      // Continue with navigation logic if needed
+      navigation.navigate('LoginStack', {
+        screen: 'WhatAboutYou',
+      });
+    } else {
+      // Not all required habits are selected, show an alert or handle accordingly
+      Alert.alert('Error', 'Please select all required habits');
+    }
   };
 
   return (
@@ -120,11 +158,7 @@ const AddDailyHabits: FC = () => {
         <GradientButton
           Title={'Continue'}
           Disabled={false}
-          Navigation={() => {
-            navigation.navigate('LoginStack', {
-              screen: 'WhatAboutYou',
-            });
-          }}
+          Navigation={() => onPressNext()}
         />
       </View>
     </View>

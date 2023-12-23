@@ -6,7 +6,6 @@ import {
   Alert,
   Keyboard,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -30,6 +29,7 @@ const IdentifyYourSelf: FC = () => {
   //* Get Key Name. From Where You Want To Store Data
   const {userData, dispatch} = useUserData();
   const KeyboardVisible = useKeyboardVisibility();
+  // const UserData = transformUserDataForApi(userData);
   console.log(userData);
 
   //* All States
