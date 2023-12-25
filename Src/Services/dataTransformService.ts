@@ -6,9 +6,9 @@ const transformUserDataForApi = (
   userData: UserDataType,
 ): Record<string, any> => {
   return {
-    eventName: userData[LocalStorageFields.eventName],
+    eventName: userData[LocalStorageFields.eventName] || 'app_user_register',
     login_type: userData[LocalStorageFields.loginType],
-    user_from: userData[LocalStorageFields.userFrom],
+    user_from: userData[LocalStorageFields.userFrom] || 'app',
     mobile_no: userData[LocalStorageFields.mobileNo],
     identity: userData[LocalStorageFields.identity],
     profile_image: userData[LocalStorageFields.profileImage],
@@ -38,8 +38,8 @@ const transformUserDataForApi = (
     },
     likes_into: userData[LocalStorageFields.likesInto],
     is_block_contact: userData[LocalStorageFields.isBlockContact],
-    latitude: userData[LocalStorageFields.latitude],
-    longitude: userData[LocalStorageFields.longitude],
+    latitude: userData[LocalStorageFields.latitude] || '-73.987308',
+    longitude: userData[LocalStorageFields.longitude] || '40.757979',
     radius: userData[LocalStorageFields.radius],
     recent_pik: userData[LocalStorageFields.recentPik],
   };

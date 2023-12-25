@@ -2,7 +2,14 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useMemo, useState} from 'react';
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {
   ActiveOpacity,
@@ -15,51 +22,56 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import YourIntoData from '../../../Components/Data/YourIntoData';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {postUserData} from '../../../Services/ApiService';
+import {transformUserDataForApi} from '../../../Services/dataTransformService';
+import {useUserData} from '../../../Contexts/UserDataContext';
+import {checkInternetConnection, postFormData} from '../../../utils/apiUtils';
+import useInternetConnection from '../../../Hooks/useInternetConnection';
+import UserService from '../../../Services/AuthService';
 
 const YourIntro: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
-    {},
-  );
+  const handleInputChange = useHandleInputChangeSignUp();
+  const {userData} = useUserData();
+  const transformedUserData = transformUserDataForApi(userData);
+
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleOptionPress = useCallback((YourIntoID: number, name: string) => {
     setSelectedItems(prevSelection => {
-      if (prevSelection[YourIntoID.toString()] === name) {
-        const {[YourIntoID.toString()]: removedItem, ...rest} = prevSelection;
-        return rest;
+      if (prevSelection.includes(name)) {
+        return prevSelection.filter(item => item !== name);
       }
 
-      if (Object.keys(prevSelection).length >= 5) {
+      if (prevSelection.length >= 5) {
         return prevSelection;
       }
 
-      return {
-        ...prevSelection,
-        [YourIntoID.toString()]: name,
-      };
+      return [...prevSelection, name];
     });
   }, []);
 
   const renderItem = useMemo(
     () =>
-      ({item}: {item: {id: number; name: string}}, index: number) => {
-        const selectedOption = selectedItems[item.id.toString()];
+      ({item}: {item: {id: number; name: string}}) => {
+        const selectedOption = selectedItems.includes(item.name);
         return (
           <View style={styles.YourIntoScrollViewContainer}>
             <TouchableOpacity
               activeOpacity={ActiveOpacity}
-              key={index}
               style={[
                 styles.YourIntoButton,
-                selectedOption === item.name && styles.selectedOption,
+                selectedOption && styles.selectedOption,
               ]}
               onPress={() => handleOptionPress(item.id, item.name)}>
               <Text
                 numberOfLines={2}
                 style={[
                   styles.CategoriesText,
-                  selectedOption === item.name && styles.SelectedCategoriesText,
+                  selectedOption && styles.SelectedCategoriesText,
                 ]}>
                 {item.name}
               </Text>
@@ -70,7 +82,92 @@ const YourIntro: FC = () => {
     [selectedItems, handleOptionPress],
   );
 
-  const selectedItemsKeys = Object.keys(selectedItems);
+  const onPressNext = async () => {
+    if (selectedItems.length === 5) {
+      console.log('selectedItems', selectedItems);
+      handleInputChange(LocalStorageFields.likesInto, selectedItems);
+      handleInputChange(LocalStorageFields.eventName, 'app_user_register');
+      handleInputChange(LocalStorageFields.loginType, 'non_social');
+
+      try {
+        const userDataForApi = transformUserDataForApi(userData);
+
+        const APIResponse = await UserService.UserRegister(userDataForApi);
+
+        console.log('APIResponse', APIResponse);
+
+
+
+        // const axios = require('axios');
+        // let data = JSON.stringify({
+        //   eventName: 'app_user_register',
+        //   login_type: 'non_social',
+        //   user_from: 'app',
+        //   mobile_no: '9876543211',
+        //   identity: 'identity',
+        //   profile_image: '',
+        //   Full_name: '',
+        //   birthdate: '',
+        //   gender: '',
+        //   city: '',
+        //   orientation: ['orientation1', 'orientation2'],
+        //   is_orientation_visible: true,
+        //   hoping: 'hoping',
+        //   education: {
+        //     digree: '',
+        //     college_name: '',
+        //   },
+        //   habits: {
+        //     exercise: 'daily',
+        //     smoke: 'daily',
+        //     movies: 'daily',
+        //     drink: 'daily',
+        //   },
+        //   magical_person: {
+        //     communication_stry: 'introvert',
+        //     recived_love: 'introvert',
+        //     education_level: '',
+        //     star_sign: 'scorpio',
+        //   },
+        //   likes_into: ['', ''],
+        //   is_block_contact: false,
+        //   latitude: 0,
+        //   longitude: 0,
+        //   radius: 0,
+        //   recent_pik: [],
+        // });
+
+        // let config = {
+        //   method: 'post',
+        //   maxBodyLength: Infinity,
+        //   url: 'https://nirvanatechlabs.in/dating/data',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     app_secret: '_d_a_t_i_n_g_',
+        //   },
+        //   data: data,
+        // };
+
+        // axios
+        //   .request(config)
+        //   .then(response => {
+        //     console.log(JSON.stringify(response.data));
+        //   })
+        //   .catch(error => {
+        //     console.log(error);
+        //   });
+
+
+
+
+      } catch (error) {
+        console.error('Error posting user data:', error);
+        // Handle errors or show an alert to the user
+      }
+    } else {
+      Alert.alert('Error', 'Please select exactly 5 items before proceeding.');
+    }
+  };
 
   return (
     <View style={CreateProfileStyles.Container}>
@@ -101,13 +198,9 @@ const YourIntro: FC = () => {
       </View>
       <View style={[CreateProfileStyles.BottomButton]}>
         <GradientButton
-          Title={`Next ${selectedItemsKeys?.length || 0}/5`}
+          Title={`Next ${selectedItems.length}/5`}
           Disabled={false}
-          Navigation={() => {
-            navigation.navigate('LoginStack', {
-              screen: 'AddRecentPics',
-            });
-          }}
+          Navigation={onPressNext}
         />
       </View>
     </View>

@@ -1,5 +1,8 @@
 import {AxiosError} from 'axios';
 import {get, post, postFormData} from '../utils/apiUtils';
+import {transformUserDataForApi} from './dataTransformService';
+import ApiConfig from '../Config/ApiConfig';
+import UserDataType from '../Types/UserDataType';
 
 // Set your authentication token if applicable
 // setAuthToken('YOUR_AUTH_TOKEN');
@@ -13,12 +16,14 @@ export const fetchUserData = async (): Promise<void> => {
   }
 };
 
-export const postUserData = async (userData: UserData): Promise<void> => {
+export const postUserData = async (userData: UserDataType): Promise<void> => {
   try {
-    const response = await post<ResponseData>('/user', userData);
-    console.log('Post User Response:', response);
+    const transformedData = transformUserDataForApi(userData);
+    console.log('transformedData', transformedData);
+    // await post('/user', transformedData, ApiConfig.BASE_URL);
   } catch (error) {
-    handleApiError(error);
+    // Handle errors if needed
+    console.error('Error posting user data:', error);
   }
 };
 

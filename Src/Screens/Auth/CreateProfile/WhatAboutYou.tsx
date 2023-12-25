@@ -1,7 +1,14 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useState} from 'react';
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -21,15 +28,13 @@ import {transformUserDataForApi} from '../../../Services/dataTransformService';
 import {UserDataType} from '../../../Types/UserDataType';
 import {useUserData} from '../../../Contexts/UserDataContext';
 import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 
 const WhatAboutYou: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const {userData, dispatch} = useUserData();
-  const handleInputChange = useHandleInputChangeSignUp();
 
-  const data = transformUserDataForApi(userData);
-  // console.log('data', data);
+  const handleInputChange = useHandleInputChangeSignUp();
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
     {},
   );
@@ -88,12 +93,40 @@ const WhatAboutYou: FC = () => {
   };
 
   const onNextPress = () => {
-    if (true) {
+    const YourIntoFills = [
+      'communication_stry',
+      'education_level',
+      'recived_love',
+      'star_sign',
+    ];
+
+    // Check if all required habits are selected
+    const allIntoSelected = YourIntoFills.every(into =>
+      selectedItems.hasOwnProperty(into),
+    );
+    if (allIntoSelected) {
       console.log('selectedItems', selectedItems);
+      handleInputChange(
+        LocalStorageFields.magicalPersonCommunicationStr,
+        selectedItems.communication_stry,
+      );
+      handleInputChange(
+        LocalStorageFields.magicalPersonEducationLevel,
+        selectedItems.education_level,
+      );
+      handleInputChange(
+        LocalStorageFields.magicalPersonReceivedLove,
+        selectedItems.recived_love,
+      );
+      handleInputChange(
+        LocalStorageFields.magicalPersonStarSign,
+        selectedItems.star_sign,
+      );
       navigation.navigate('LoginStack', {
         screen: 'YourIntro',
       });
     } else {
+      Alert.alert('Error', 'Please select all required options');
     }
   };
 

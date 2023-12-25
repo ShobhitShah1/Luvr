@@ -20,7 +20,6 @@ const WhatAboutYouData = [
   {
     id: 2,
     habit: 'What is your education level?',
-    
     key: 'education_level',
     options: [
       'High School',
