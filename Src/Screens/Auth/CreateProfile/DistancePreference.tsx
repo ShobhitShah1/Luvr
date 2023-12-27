@@ -21,10 +21,7 @@ const DistancePreference: FC = () => {
   };
 
   const onNextPress = () => {
-    // handleInputChange(
-    //   LocalStorageFields.,
-    //   SelectedLookingForIndex[0]?.Title,
-    // );
+    handleInputChange(LocalStorageFields.radius, milesValue);
     navigation.navigate('LoginStack', {
       screen: 'YourEducation',
     });

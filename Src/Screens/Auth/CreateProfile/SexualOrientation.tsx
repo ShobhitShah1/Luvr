@@ -39,14 +39,15 @@ const SexualOrientation: FC = () => {
 
   const {userData} = useUserData();
 
-  const initialSexualOrientation: {id: number; name: string}[] = userData
-    .orientation?.length
-    ? userData.orientation
-    : [];
+  const initialSexualOrientation: string[] =
+    userData.orientation.length !== 0 ? userData.orientation : [];
 
-  const [ShowOnProfile, setShowOnProfile] = useState<boolean>(false);
+  console.log('initialSexualOrientation', initialSexualOrientation);
+  const [ShowOnProfile, setShowOnProfile] = useState<boolean>(
+    userData.isOrientationVisible,
+  );
   const [SelectedGenderIndex, setSelectedGenderIndex] = useState<string[]>(
-    initialSexualOrientation.map(item => item?.name),
+    initialSexualOrientation,
   );
 
   const toggleCheckMark = useCallback(() => {
@@ -119,7 +120,15 @@ const SexualOrientation: FC = () => {
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={2} Skip={true} />
+      <CreateProfileHeader
+        ProgressCount={2}
+        Skip={true}
+        handleSkipPress={() => {
+          navigation.navigate('LoginStack', {
+            screen: 'HopingToFind',
+          });
+        }}
+      />
 
       <View style={styles.RenderDataContainer}>
         <View style={CreateProfileStyles.ContentView}>

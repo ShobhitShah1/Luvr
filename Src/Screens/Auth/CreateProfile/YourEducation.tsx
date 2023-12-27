@@ -11,14 +11,18 @@ import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {useUserData} from '../../../Contexts/UserDataContext';
 
 const YourEducation: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const KeyboardVisible = useKeyboardVisibility();
+  const {userData} = useUserData();
   const handleInputChange = useHandleInputChangeSignUp();
-  const [EducationDegree, setEducationDegree] = useState<string>('');
-  const [CollegeName, setCollegeName] = useState<string>('');
+  const [EducationDegree, setEducationDegree] = useState<string>(
+    userData.educationDegree,
+  );
+  const [CollegeName, setCollegeName] = useState<string>(userData.collegeName);
 
   const onNextPress = () => {
     if (EducationDegree && CollegeName) {
@@ -33,7 +37,15 @@ const YourEducation: FC = () => {
   };
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={5} Skip={true} />
+      <CreateProfileHeader
+        ProgressCount={5}
+        Skip={true}
+        handleSkipPress={() => {
+          navigation.navigate('LoginStack', {
+            screen: 'AddDailyHabits',
+          });
+        }}
+      />
 
       <View style={styles.DataViewContainer}>
         <View style={CreateProfileStyles.ContentView}>

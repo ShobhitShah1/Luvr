@@ -14,7 +14,7 @@ export const useGalleryPermission = () => {
 
       const result = await check(permission);
 
-      if (result === RESULTS.GRANTED) {
+      if (Platform.OS === 'ios' ? result === RESULTS.GRANTED : true) {
         setGalleryPermission(true);
         return true;
       } else {

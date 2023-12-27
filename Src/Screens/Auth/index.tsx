@@ -2,7 +2,6 @@ export {default as LoginScreen} from './Login/LoginScreen';
 export {default as OTPScreen} from './OTP/OTPScreen';
 export {default as IdentifyYourSelf} from './CreateProfile/IdentifyYourSelf';
 export {default as PhoneNumber} from './PhoneNumber/PhoneNumber';
-export {default as WelcomeScreen} from './Welcome/WelcomeScreen';
 export {default as SexualOrientation} from './CreateProfile/SexualOrientation';
 export {default as HopingToFind} from './CreateProfile/HopingToFind';
 export {default as DistancePreference} from './CreateProfile/DistancePreference';

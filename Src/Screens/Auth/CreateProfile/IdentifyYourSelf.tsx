@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useState} from 'react';
+import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
 import {
   Alert,
+  BackHandler,
   Keyboard,
-  KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
   Text,
@@ -29,8 +29,12 @@ const IdentifyYourSelf: FC = () => {
   //* Get Key Name. From Where You Want To Store Data
   const {userData, dispatch} = useUserData();
   const KeyboardVisible = useKeyboardVisibility();
-  // const UserData = transformUserDataForApi(userData);
-  console.log(userData);
+
+  //* Ref's
+  const ScrollViewRef = useRef<ScrollView>(null);
+  const dayInputRef = useRef(null);
+  const monthInputRef = useRef(null);
+  const yearInputRef = useRef(null);
 
   //* All States
   const [FirstName, setFirstName] = useState<string>(userData.fullName);
@@ -42,9 +46,27 @@ const IdentifyYourSelf: FC = () => {
 
   const genders = ['Man', 'Woman', 'Other'];
 
+  useEffect(() => {
+    const handleBackPress = () => {
+      return true;
+    };
+
+    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+    };
+  }, []);
+
   //* Navigation
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+
+  const handleTextChange = (value: string, nextInputRef: any) => {
+    if (value.length === 2) {
+      nextInputRef.current.focus();
+    }
+  };
 
   //* On Next Click This Will Call And Store Data
   const handleInputChange = useCallback(
@@ -63,7 +85,7 @@ const IdentifyYourSelf: FC = () => {
   const OnLetsGoButtonPress = useCallback(() => {
     Keyboard.dismiss();
 
-    // Check if required fields are filled
+    //* Check if required fields are filled
     if (
       !FirstName ||
       !BirthDateDD ||
@@ -72,7 +94,7 @@ const IdentifyYourSelf: FC = () => {
       !selectedGender ||
       !CityName
     ) {
-      // Show an alert with a proper message
+      //* Show an alert with a proper message
       Alert.alert(
         'Incomplete Information',
         'Please fill in all required fields.',
@@ -105,135 +127,151 @@ const IdentifyYourSelf: FC = () => {
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={1} Skip={false} />
-      <KeyboardAvoidingView style={{flex: 1}}>
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="interactive"
-          automaticallyAdjustKeyboardInsets
-          style={[styles.ContentView]}
-          showsVerticalScrollIndicator={false}>
-          <Text style={styles.TitleText}>Identify your{'\n'}real self</Text>
-          <Text style={styles.subTitleText}>
-            Introduce yourself fill out the details{'\n'}so people know about
-            you.
-          </Text>
+      <CreateProfileHeader ProgressCount={1} Skip={false} hideBack={true} />
 
-          <View style={styles.AllInputContainerView}>
-            {/* Name */}
-            <View style={styles.TextViewForSpace}>
-              <Text style={styles.NameText}>My name is</Text>
+      <ScrollView
+        ref={ScrollViewRef}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        automaticallyAdjustKeyboardInsets
+        style={[styles.ContentView]}
+        showsVerticalScrollIndicator={false}>
+        <Text style={styles.TitleText}>Identify your{'\n'}real self</Text>
+        <Text style={styles.subTitleText}>
+          Introduce yourself fill out the details{'\n'}so people know about you.
+        </Text>
+
+        <View style={styles.AllInputContainerView}>
+          {/* Name */}
+          <View style={styles.TextViewForSpace}>
+            <Text style={styles.NameText}>My name is</Text>
+            <CustomTextInput
+              value={FirstName}
+              onChangeText={value => {
+                setFirstName(value);
+              }}
+              textContentType="givenName"
+              placeholder="Enter your name"
+              style={styles.TextInputStyle}
+              placeholderTextColor={COLORS.Gray}
+            />
+          </View>
+
+          {/* Birthday */}
+          <View style={styles.TextViewForSpace}>
+            <Text style={styles.NameText}>My birthday is</Text>
+            <View style={styles.BirthdayInputView}>
               <CustomTextInput
-                value={FirstName}
+                ref={dayInputRef}
+                editable={true}
+                keyboardType={'number-pad'}
+                value={BirthDateDD}
                 onChangeText={value => {
-                  setFirstName(value);
+                  setBirthDateDD(value);
+                  handleTextChange(value, monthInputRef);
                 }}
-                textContentType="givenName"
-                placeholder="Enter your name"
-                style={styles.TextInputStyle}
+                maxLength={2}
+                placeholder="DD"
+                style={[styles.TextInputStyle, {width: hp('12%')}]}
                 placeholderTextColor={COLORS.Gray}
               />
-            </View>
-
-            {/* Birthday */}
-            <View style={styles.TextViewForSpace}>
-              <Text style={styles.NameText}>My birthday is</Text>
-              <View style={styles.BirthdayInputView}>
-                <CustomTextInput
-                  editable={true}
-                  keyboardType={'number-pad'}
-                  value={BirthDateDD}
-                  onChangeText={value => {
-                    setBirthDateDD(value);
-                  }}
-                  maxLength={2}
-                  placeholder="DD"
-                  style={[styles.TextInputStyle, {width: hp('12%')}]}
-                  placeholderTextColor={COLORS.Gray}
-                />
-                <CustomTextInput
-                  value={BirthDateMM}
-                  keyboardType={'number-pad'}
-                  onChangeText={value => {
-                    setBirthDateMM(value);
-                  }}
-                  maxLength={2}
-                  placeholder="MM"
-                  style={[styles.TextInputStyle, {width: hp('12%')}]}
-                  placeholderTextColor={COLORS.Gray}
-                />
-                <CustomTextInput
-                  value={BirthDateYYYY}
-                  keyboardType={'number-pad'}
-                  onChangeText={value => {
-                    setBirthDateYYYY(value);
-                  }}
-                  maxLength={4}
-                  placeholder="YYYY"
-                  style={[styles.TextInputStyle, {width: hp('12%')}]}
-                  placeholderTextColor={COLORS.Gray}
-                />
-              </View>
-            </View>
-
-            {/* Im */}
-            <View style={styles.TextViewForSpace}>
-              <Text style={styles.NameText}>I am a</Text>
-              <View style={styles.BirthdayInputView}>
-                {genders.map((gender, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => handleGenderSelection(gender)}
-                    style={[
-                      styles.GenderView,
-                      {
-                        width: hp('12%'),
-                        backgroundColor:
-                          selectedGender === gender
-                            ? COLORS.Primary
-                            : COLORS.White,
-                      },
-                    ]}>
-                    <Text
-                      style={[
-                        styles.GenderText,
-                        {
-                          color:
-                            selectedGender === gender
-                              ? COLORS.White
-                              : COLORS.Gray,
-                        },
-                      ]}>
-                      {gender}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-
-            {/* From */}
-            <View style={styles.TextViewForSpace}>
-              <Text style={styles.NameText}>I am from</Text>
               <CustomTextInput
-                value={CityName}
+                ref={monthInputRef}
+                value={BirthDateMM}
+                keyboardType={'number-pad'}
                 onChangeText={value => {
-                  setCityName(value);
+                  setBirthDateMM(value);
+                  handleTextChange(value, yearInputRef);
                 }}
-                textContentType="givenName"
-                placeholder="Enter your city name"
-                style={styles.TextInputStyle}
+                maxLength={2}
+                placeholder="MM"
+                style={[styles.TextInputStyle, {width: hp('12%')}]}
+                placeholderTextColor={COLORS.Gray}
+              />
+              <CustomTextInput
+                ref={yearInputRef}
+                value={BirthDateYYYY}
+                keyboardType={'number-pad'}
+                onChangeText={value => {
+                  setBirthDateYYYY(value);
+                }}
+                maxLength={4}
+                placeholder="YYYY"
+                style={[styles.TextInputStyle, {width: hp('12%')}]}
                 placeholderTextColor={COLORS.Gray}
               />
             </View>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+
+          {/* Im */}
+          <View style={styles.TextViewForSpace}>
+            <Text style={styles.NameText}>I am a</Text>
+            <View style={styles.BirthdayInputView}>
+              {genders.map((gender, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleGenderSelection(gender)}
+                  style={[
+                    styles.GenderView,
+                    {
+                      width: hp('12%'),
+                      backgroundColor:
+                        selectedGender === gender
+                          ? COLORS.Primary
+                          : COLORS.White,
+                    },
+                  ]}>
+                  <Text
+                    style={[
+                      styles.GenderText,
+                      {
+                        color:
+                          selectedGender === gender
+                            ? COLORS.White
+                            : COLORS.Gray,
+                      },
+                    ]}>
+                    {gender}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* From */}
+          <View style={styles.TextViewForSpace}>
+            <Text style={styles.NameText}>I am from</Text>
+            <CustomTextInput
+              value={CityName}
+              onChangeText={value => {
+                setCityName(value);
+              }}
+              onPressIn={() => {
+                ScrollViewRef.current?.scrollToEnd({animated: true});
+              }}
+              textContentType="givenName"
+              placeholder="Enter your city name"
+              style={styles.TextInputStyle}
+              placeholderTextColor={COLORS.Gray}
+            />
+          </View>
+        </View>
+      </ScrollView>
+
       {!KeyboardVisible && (
         <View style={styles.BottomButton}>
           <GradientButton
             Title={'Continue'}
-            // Disabled={FirstName.length === 0 ? true : false}
-            Disabled={false}
+            Disabled={
+              !FirstName ||
+              !BirthDateDD ||
+              !BirthDateMM ||
+              !BirthDateYYYY ||
+              !selectedGender ||
+              !CityName
+                ? true
+                : false
+            }
             Navigation={() => OnLetsGoButtonPress()}
           />
         </View>

@@ -17,7 +17,6 @@ import {
   OTPScreen,
   PhoneNumber,
   SexualOrientation,
-  WelcomeScreen,
   WhatAboutYou,
   YourEducation,
   YourIntro,
@@ -28,8 +27,6 @@ import SplashScreen from 'react-native-splash-screen';
 import CategoryDetailCardsScreen from '../Screens/Home/ExploreCards/CategoryDetailCardsScreen';
 import ExploreCardDetailScreen from '../Screens/Home/ExploreCards/ExploreCardDetailScreen';
 import BottomTab from './BottomTab';
-import { StatusBar } from 'react-native';
-import { COLORS } from '../Common/Theme';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -48,11 +45,8 @@ export default function MainRoute() {
             statusBarAnimation: 'fade',
           }}>
           <Stack.Screen component={LoginScreen} name="Login" />
-          <Stack.Screen component={WelcomeScreen} name="Welcome" />
           <Stack.Screen component={PhoneNumber} name="PhoneNumber" />
           <Stack.Screen component={OTPScreen} name="OTP" />
-
-          {/* CreateProfile: Why Added Here? Its Part Of Login */}
 
           <Stack.Screen component={IdentifyYourSelf} name="IdentifyYourSelf" />
           <Stack.Screen

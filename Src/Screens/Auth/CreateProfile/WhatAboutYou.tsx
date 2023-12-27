@@ -9,10 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {
   ActiveOpacity,
   COLORS,
@@ -22,22 +19,28 @@ import {
 } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import WhatAboutYouData from '../../../Components/Data/WhatElseExtraData';
-import CreateProfileHeader from './Components/CreateProfileHeader';
-import CreateProfileStyles from './styles';
-import {transformUserDataForApi} from '../../../Services/dataTransformService';
-import {UserDataType} from '../../../Types/UserDataType';
 import {useUserData} from '../../../Contexts/UserDataContext';
 import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import CreateProfileHeader from './Components/CreateProfileHeader';
+import CreateProfileStyles from './styles';
 
 const WhatAboutYou: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+  const {userData} = useUserData();
 
   const handleInputChange = useHandleInputChangeSignUp();
-  const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
-    {},
+  console.log(
+    'userData.magicalPersonCommunicationStr::',
+    userData.magicalPersonCommunicationStr,
   );
+  const [selectedItems, setSelectedItems] = useState<Record<string, string>>({
+    communication_stry: userData.magicalPersonCommunicationStr,
+    education_level: userData.magicalPersonEducationLevel,
+    recived_love: userData.magicalPersonReceivedLove,
+    star_sign: userData.magicalPersonStarSign,
+  });
 
   const handleOptionPress = useCallback(
     (habitId: number, option: string) => {
@@ -74,7 +77,7 @@ const WhatAboutYou: FC = () => {
                   selectedItems[item.key.toString()] === option &&
                     styles.selectedOption,
                 ]}
-                onPress={() => handleOptionPress(item.key, option)}>
+                onPress={() => handleOptionPress(item?.key, option)}>
                 <Text
                   numberOfLines={2}
                   style={[
@@ -100,12 +103,13 @@ const WhatAboutYou: FC = () => {
       'star_sign',
     ];
 
-    // Check if all required habits are selected
     const allIntoSelected = YourIntoFills.every(into =>
       selectedItems.hasOwnProperty(into),
     );
+
     if (allIntoSelected) {
       console.log('selectedItems', selectedItems);
+
       handleInputChange(
         LocalStorageFields.magicalPersonCommunicationStr,
         selectedItems.communication_stry,
@@ -132,7 +136,15 @@ const WhatAboutYou: FC = () => {
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={7} Skip={true} />
+      <CreateProfileHeader
+        ProgressCount={7}
+        Skip={true}
+        handleSkipPress={() => {
+          navigation.navigate('LoginStack', {
+            screen: 'YourIntro',
+          });
+        }}
+      />
       <View style={styles.DataViewContainer}>
         <View style={[styles.ContentView]}>
           <Text style={styles.TitleText}>What's about {'\n'}you?</Text>

@@ -10,9 +10,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.Secondary,
   },
   SubContainerView: {
-    marginHorizontal: hp('2.7%'),
-    // marginVertical: hp('1.5%'),
     paddingBottom: hp('1%'),
+    marginHorizontal: hp('2.7%'),
   },
   NumberContainer: {
     justifyContent: 'center',
@@ -55,10 +54,10 @@ const styles = StyleSheet.create({
   },
   UserNumberTextView: {
     width: '65%',
-    justifyContent: 'center',
     alignSelf: 'center',
     top: CommonSize(-3.5),
     height: CommonSize(45),
+    justifyContent: 'center',
     borderBottomWidth: CommonSize(2),
     borderBottomColor: COLORS.Black,
   },
@@ -92,19 +91,21 @@ const styles = StyleSheet.create({
   },
   CountyListView: {
     height: '75%',
-    paddingHorizontal: hp('2%'),
+    alignItems: 'center',
     paddingVertical: hp('1%'),
+    paddingHorizontal: hp('2%'),
   },
   SelectCountryView: {
-    padding: hp('2%'),
     height: '25%',
+    padding: hp('2%'),
   },
   SearchCountryView: {
     width: '95%',
     height: hp('5%'),
     alignSelf: 'center',
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
+    alignContent: 'center',
     borderRadius: SIZES.radius,
     paddingHorizontal: hp('2%'),
     backgroundColor: 'rgba(234, 234, 234, 1)',
@@ -121,8 +122,8 @@ const styles = StyleSheet.create({
   },
   ListEmptyView: {
     flex: 1,
-    justifyContent: 'center',
     alignSelf: 'center',
+    justifyContent: 'center',
   },
   ListEmptyText: {
     ...GROUP_FONT.h3,

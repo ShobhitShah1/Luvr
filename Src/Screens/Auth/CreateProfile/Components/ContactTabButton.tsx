@@ -1,7 +1,8 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {FC} from 'react';
-import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../../Common/Theme';
+/* eslint-disable react-native/no-inline-styles */
+import React, {FC, memo} from 'react';
+import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../../Common/Theme';
 
 interface ContactTabButtonProps {
   label: string;
@@ -38,7 +39,7 @@ const ContactTabButton: FC<ContactTabButtonProps> = ({
   );
 };
 
-export default ContactTabButton;
+export default memo(ContactTabButton);
 
 const styles = StyleSheet.create({
   TabBarButtonView: {

@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import React, {FC, useEffect, useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {RESULTS} from 'react-native-permissions';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
@@ -26,29 +26,12 @@ const ManageContacts: FC = () => {
 
   const RenderPermissionButton = () => {
     return (
-      <View
-        style={{
-          marginTop: hp('20%'),
-          alignItems: 'center',
-        }}>
+      <View style={styles.ImportButtonView}>
         <TouchableOpacity
           activeOpacity={ActiveOpacity}
           onPress={requestPermission}
-          style={{
-            width: '55%',
-            height: hp('6%'),
-            justifyContent: 'center',
-            borderRadius: hp('3%'),
-            backgroundColor: COLORS.Primary,
-          }}>
-          <Text
-            style={{
-              textAlign: 'center',
-              ...GROUP_FONT.h4,
-              color: COLORS.White,
-            }}>
-            Import Contact
-          </Text>
+          style={styles.ImportButton}>
+          <Text style={styles.ImportButtonText}>Import Contact</Text>
         </TouchableOpacity>
       </View>
     );
@@ -69,7 +52,7 @@ const ManageContacts: FC = () => {
       <View style={styles.ContentView}>
         {/* Top Tab Bar View */}
         <View style={styles.TabBarContainer}>
-          {ContactTabData.map((res, index) => {
+          {ContactTabData.map((res) => {
             return (
               <ContactTabButton
                 key={res.id}
@@ -114,5 +97,21 @@ const styles = StyleSheet.create({
   SearchBarContainer: {
     alignItems: 'center',
     paddingVertical: hp('3%'),
+  },
+  ImportButtonView: {
+    marginTop: hp('20%'),
+    alignItems: 'center',
+  },
+  ImportButton: {
+    width: '55%',
+    height: hp('6%'),
+    justifyContent: 'center',
+    borderRadius: hp('3%'),
+    backgroundColor: COLORS.Primary,
+  },
+  ImportButtonText: {
+    textAlign: 'center',
+    ...GROUP_FONT.h4,
+    color: COLORS.White,
   },
 });

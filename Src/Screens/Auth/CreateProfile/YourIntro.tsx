@@ -20,25 +20,25 @@ import {
 } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import YourIntoData from '../../../Components/Data/YourIntoData';
+import {useUserData} from '../../../Contexts/UserDataContext';
+import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
+import UserService from '../../../Services/AuthService';
+import {transformUserDataForApi} from '../../../Services/dataTransformService';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {postUserData} from '../../../Services/ApiService';
-import {transformUserDataForApi} from '../../../Services/dataTransformService';
-import {useUserData} from '../../../Contexts/UserDataContext';
-import {checkInternetConnection, postFormData} from '../../../utils/apiUtils';
-import useInternetConnection from '../../../Hooks/useInternetConnection';
-import UserService from '../../../Services/AuthService';
+import {useCustomToast} from '../../../Utils/toastUtils';
 
 const YourIntro: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const handleInputChange = useHandleInputChangeSignUp();
   const {userData} = useUserData();
-  const transformedUserData = transformUserDataForApi(userData);
-
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const {showToast} = useCustomToast();
+  const [IsAPILoading, setIsAPILoading] = useState<boolean>(false);
+  const [selectedItems, setSelectedItems] = useState<string[]>(
+    userData.likesInto,
+  );
 
   const handleOptionPress = useCallback((YourIntoID: number, name: string) => {
     setSelectedItems(prevSelection => {
@@ -83,95 +83,63 @@ const YourIntro: FC = () => {
   );
 
   const onPressNext = async () => {
-    if (selectedItems.length === 5) {
-      console.log('selectedItems', selectedItems);
-      handleInputChange(LocalStorageFields.likesInto, selectedItems);
-      handleInputChange(LocalStorageFields.eventName, 'app_user_register');
-      handleInputChange(LocalStorageFields.loginType, 'non_social');
+    setIsAPILoading(true);
+    try {
+      if (selectedItems.length === 5) {
+        console.log('selectedItems', selectedItems);
+        handleInputChange(LocalStorageFields.likesInto, selectedItems);
+        handleInputChange(LocalStorageFields.eventName, 'app_user_register');
+        handleInputChange(LocalStorageFields.loginType, 'non_social');
 
-      try {
         const userDataForApi = transformUserDataForApi(userData);
+        console.log('userDataForApi', userDataForApi);
 
         const APIResponse = await UserService.UserRegister(userDataForApi);
-
         console.log('APIResponse', APIResponse);
 
-
-
-        // const axios = require('axios');
-        // let data = JSON.stringify({
-        //   eventName: 'app_user_register',
-        //   login_type: 'non_social',
-        //   user_from: 'app',
-        //   mobile_no: '9876543211',
-        //   identity: 'identity',
-        //   profile_image: '',
-        //   Full_name: '',
-        //   birthdate: '',
-        //   gender: '',
-        //   city: '',
-        //   orientation: ['orientation1', 'orientation2'],
-        //   is_orientation_visible: true,
-        //   hoping: 'hoping',
-        //   education: {
-        //     digree: '',
-        //     college_name: '',
-        //   },
-        //   habits: {
-        //     exercise: 'daily',
-        //     smoke: 'daily',
-        //     movies: 'daily',
-        //     drink: 'daily',
-        //   },
-        //   magical_person: {
-        //     communication_stry: 'introvert',
-        //     recived_love: 'introvert',
-        //     education_level: '',
-        //     star_sign: 'scorpio',
-        //   },
-        //   likes_into: ['', ''],
-        //   is_block_contact: false,
-        //   latitude: 0,
-        //   longitude: 0,
-        //   radius: 0,
-        //   recent_pik: [],
-        // });
-
-        // let config = {
-        //   method: 'post',
-        //   maxBodyLength: Infinity,
-        //   url: 'https://nirvanatechlabs.in/dating/data',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //     app_secret: '_d_a_t_i_n_g_',
-        //   },
-        //   data: data,
-        // };
-
-        // axios
-        //   .request(config)
-        //   .then(response => {
-        //     console.log(JSON.stringify(response.data));
-        //   })
-        //   .catch(error => {
-        //     console.log(error);
-        //   });
-
-
-
-
-      } catch (error) {
-        console.error('Error posting user data:', error);
-        // Handle errors or show an alert to the user
+        if (APIResponse && APIResponse.code === 200) {
+          showToast(
+            'Registration Successful',
+            'Thank you for registering! You can now proceed.',
+            'success',
+          );
+          navigation.replace('LoginStack', {
+            screen: 'AddRecentPics',
+          });
+        } else {
+          const errorMessage =
+            APIResponse && APIResponse.error
+              ? APIResponse.error
+              : 'Unknown error occurred during registration.';
+          throw new Error(errorMessage);
+        }
+      } else {
+        throw new Error('Please select exactly 5 items before proceeding.');
       }
-    } else {
-      Alert.alert('Error', 'Please select exactly 5 items before proceeding.');
+    } catch (error) {
+      console.error('Error during registration:', error);
+
+      showToast(
+        'Registration Error',
+        `Failed to complete registration. ${error?.message}`,
+        'error',
+      );
+    } finally {
+      setIsAPILoading(false);
     }
   };
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={8} Skip={true} />
+      <CreateProfileHeader
+        ProgressCount={8}
+        Skip={true}
+        handleSkipPress={() => {
+          navigation.navigate('LoginStack', {
+            screen: 'AddRecentPics',
+          });
+        }}
+      />
       <View style={styles.DataViewContainer}>
         <View style={[styles.ContentView]}>
           <Text style={styles.TitleText}>What are you into?</Text>
@@ -198,6 +166,7 @@ const YourIntro: FC = () => {
       </View>
       <View style={[CreateProfileStyles.BottomButton]}>
         <GradientButton
+          isLoading={IsAPILoading}
           Title={`Next ${selectedItems.length}/5`}
           Disabled={false}
           Navigation={onPressNext}

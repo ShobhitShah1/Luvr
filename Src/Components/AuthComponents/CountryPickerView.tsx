@@ -22,12 +22,6 @@ import {
 import CustomTextInput from '../CustomTextInput';
 import CountryWithCode from '../Data/CountryWithCode';
 
-// interface CountryData {
-//   name: string;
-//   dialling_code: string;
-//   code: string;
-// }
-
 interface CountryPickerProps {
   value: string | undefined;
   setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -112,7 +106,10 @@ const CountryPickerView: FC<CountryPickerProps> = ({
               <CustomTextInput
                 autoFocus={true}
                 value={value}
-                onChangeText={setValue}
+                onChangeText={number => {
+                  const numericText = number.replace(/[^0-9]/g, '');
+                  setValue(numericText);
+                }}
                 keyboardType="number-pad"
                 style={styles.TextInput}
                 placeholderTextColor={COLORS.Gray}

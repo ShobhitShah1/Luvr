@@ -1,5 +1,3 @@
-// userActions.ts
-
 import {LocalStorageFields} from '../../Types/LocalStorageFields';
 
 export const UPDATE_FIELD = 'UPDATE_FIELD';

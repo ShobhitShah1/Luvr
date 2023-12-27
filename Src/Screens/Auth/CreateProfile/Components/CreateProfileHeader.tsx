@@ -16,17 +16,18 @@ import {COLORS, GROUP_FONT} from '../../../../Common/Theme';
 interface CreateProfileProps {
   ProgressCount: number;
   Skip: boolean;
+  handleSkipPress?: () => void;
+  hideBack?: boolean;
 }
 
-const CreateProfileHeader: FC<CreateProfileProps> = ({ProgressCount, Skip}) => {
+const CreateProfileHeader: FC<CreateProfileProps> = ({
+  ProgressCount,
+  Skip,
+  handleSkipPress,
+  hideBack,
+}) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-
-  const handleSkipPress = () => {
-    navigation.navigate('LoginStack', {
-      screens: '',
-    });
-  };
 
   return (
     <View style={styles.headerContainer}>
@@ -35,11 +36,13 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({ProgressCount, Skip}) => {
         <TouchableOpacity
           style={styles.backButtonView}
           onPress={() => navigation.goBack()}>
-          <Image
-            resizeMode="contain"
-            source={CommonIcons.TinderBack}
-            style={styles.cancelButton}
-          />
+          {!hideBack && (
+            <Image
+              resizeMode="contain"
+              source={CommonIcons.TinderBack}
+              style={styles.cancelButton}
+            />
+          )}
         </TouchableOpacity>
 
         <View style={styles.pageCountView}>
@@ -100,6 +103,7 @@ const styles = StyleSheet.create({
     width: '33.33%',
     justifyContent: 'center',
     alignSelf: 'center',
+    height: hp('3.5%'),
   },
   skipButton: {
     width: '33.33%',

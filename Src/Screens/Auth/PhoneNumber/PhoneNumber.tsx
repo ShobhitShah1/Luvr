@@ -26,27 +26,27 @@ import CountryPickerView from '../../../Components/AuthComponents/CountryPickerV
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
 import CountryWithCode from '../../../Components/Data/CountryWithCode';
+import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import RenderCountryData from '../CreateProfile/Components/RenderCountryData';
 import styles from './styles';
-import {post} from '../../../utils/apiUtils';
+import axios from 'axios';
 import ApiConfig from '../../../Config/ApiConfig';
+// import Toast from '../../../Components/Toast';
 
 const PhoneNumber: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const isFocused = useIsFocused();
-  // const userData = useSelector(state => state.user);
-  // console.log('userData', userData);
+  const {showToast} = useCustomToast();
+  const [IsAPILoading, setIsAPILoading] = useState(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [diallingCode, setDiallingCode] = useState<string | null>(null);
   const [defaultDiallingCode, setDefaultDiallingCode] = useState<string | null>(
     null,
   );
-  const [StorePhoneNumber, setStorePhoneNumber] = useState<string | undefined>(
-    '',
-  );
+  const [StorePhoneNumber, setStorePhoneNumber] = useState<string>('');
   const [SearchText, setSearchText] = useState<string | undefined>('');
   const [FilteredCountries, setFilteredCountries] = useState(CountryWithCode);
   const opacity = useSharedValue(0);
@@ -118,8 +118,16 @@ const PhoneNumber: FC = () => {
   };
 
   const onNextClick = () => {
-    if (PhoneNumber.length > 10) {
-      Alert.alert('Error', 'Please check your phone number');
+    if (
+      StorePhoneNumber?.length < 10 ||
+      StorePhoneNumber?.length > 12 ||
+      !StorePhoneNumber.match('[0-9]{10}')
+    ) {
+      showToast(
+        'Invalid Phone Number',
+        'Please check your phone number',
+        'error',
+      );
     } else {
       handleSendOtp();
     }
@@ -127,42 +135,51 @@ const PhoneNumber: FC = () => {
 
   //* API Calls
   const handleSendOtp = async () => {
+    setIsAPILoading(true);
 
+    try {
+      const url = `${ApiConfig.OTP_BASE_URL}${
+        diallingCode || defaultDiallingCode
+      }${StorePhoneNumber}/AUTOGEN3/OTP1`;
 
-    navigation.navigate('LoginStack', {
-      screen: 'OTP',
-      params: {
-        number: StorePhoneNumber,
-      },
-    });
+      const response = await axios.get(url);
 
+      if (response.data?.Status === 'Success') {
+        showToast(
+          'OTP Sent Successfully',
+          'Please check your device for OTP',
+          'success',
+        );
 
-    // try {
-    //   // Make a POST request to your OTP API using the base URL from ApiConfig
-    //   const response = await post(ApiConfig.OTP_BASE_URL, {
-    //     PhoneNumber,
-    //   });
-
-    //   // Handle the response from the OTP API (customize as needed)
-    //   console.log('OTP API Response:', response);
-
-      // navigation.navigate('LoginStack', {
-      //   screen: 'OTP',
-      //   params: {
-      //     number: StorePhoneNumber,
-      //   },
-      // });
-
-    //   // Alert.alert('OTP Sent', 'Please check your phone for the OTP.');
-    // } catch (error) {
-    //   console.error('Error sending OTP:', error);
-    //   Alert.alert('Error', 'Failed to send OTP. Please try again.');
-    // }
+        navigation.navigate('LoginStack', {
+          screen: 'OTP',
+          params: {
+            number: `${diallingCode || defaultDiallingCode}${StorePhoneNumber}`,
+          },
+        });
+      } else {
+        showToast(
+          'Server Error',
+          'Something went wrong, try again later',
+          'error',
+        );
+      }
+    } catch (error) {
+      showToast(
+        'Error',
+        'Failed to send otp OTP. Please check your network connection and try again.',
+        'error',
+      );
+      console.error('Error sending OTP:', error);
+      Alert.alert('Error', 'Failed to send OTP. Please try again.');
+    } finally {
+      setIsAPILoading(false);
+    }
   };
 
   return (
     <View style={styles.Container}>
-      <CreateProfileHeader ProgressCount={0} Skip={true} />
+      <CreateProfileHeader ProgressCount={0} Skip={false} />
       <ScrollView
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets={true}
@@ -180,11 +197,11 @@ const PhoneNumber: FC = () => {
         <View style={styles.PhoneNumberView}>
           <CountryPickerView
             value={StorePhoneNumber}
-            setValue={setStorePhoneNumber}
             visible={visible}
             setVisible={setVisible}
             isLoading={isLoading}
             setIsLoading={setIsLoading}
+            setValue={setStorePhoneNumber}
             diallingCode={diallingCode}
             defaultDiallingCode={defaultDiallingCode}
             setDiallingCode={setDiallingCode}
@@ -240,8 +257,9 @@ const PhoneNumber: FC = () => {
         <View style={{marginVertical: visible ? 0 : hp('4%')}}>
           <GradientButton
             Title={'CONTINUE'}
-            Disabled={StorePhoneNumber?.length === 0 ? true : false}
+            isLoading={IsAPILoading}
             Navigation={onNextClick}
+            Disabled={StorePhoneNumber?.length === 0 ? true : false}
           />
         </View>
       </ScrollView>

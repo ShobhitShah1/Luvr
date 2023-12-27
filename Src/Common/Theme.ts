@@ -41,11 +41,11 @@ export const SIZES = {
   h1: hp('3.5%'),
   h2: hp('2.5%'),
   h3: hp('1.8%'),
-  h4: hp('1.6%'),
+  h4: 13, //hp('1.6%'),
   body1: hp('3.5%'),
   body2: hp('2.5%'),
   body3: 16,
-  body4: hp('1.6%'),
+  body4: 13, //hp('1.6%'),
   body5: 12,
 };
 

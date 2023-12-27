@@ -7,9 +7,9 @@ const UserService = {
   UserRegister,
 };
 
-function UserRegister(params: object) {
-  console.log('params', params);
-  return fetchWrapper.post(baseUrl + 'data', params);
+async function UserRegister(params: object) {
+  const postDataResponse = await fetchWrapper.post(baseUrl + 'data', params);
+  return postDataResponse;
 }
 
 export default UserService;

@@ -1,4 +1,3 @@
-
 import {LocalStorageFields} from '../Types/LocalStorageFields';
 import {UserDataType} from '../Types/UserDataType';
 
@@ -38,8 +37,8 @@ const transformUserDataForApi = (
     },
     likes_into: userData[LocalStorageFields.likesInto],
     is_block_contact: userData[LocalStorageFields.isBlockContact],
-    latitude: userData[LocalStorageFields.latitude] || '-73.987308',
-    longitude: userData[LocalStorageFields.longitude] || '40.757979',
+    latitude: userData[LocalStorageFields.latitude] || 0,
+    longitude: userData[LocalStorageFields.longitude] || 0,
     radius: userData[LocalStorageFields.radius],
     recent_pik: userData[LocalStorageFields.recentPik],
   };

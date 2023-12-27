@@ -1,24 +1,20 @@
-import {useEffect, useState} from 'react';
+import { useState } from 'react';
+import { Alert } from 'react-native';
 import Contacts from 'react-native-contacts';
 import {
   PERMISSIONS,
   RESULTS,
   check,
-  request,
   openSettings,
+  request,
 } from 'react-native-permissions';
-import {Alert} from 'react-native';
 
 export const useContacts = () => {
   const [contacts, setContacts] = useState<any[]>([]);
   const [permissionState, setPermissionState] = useState<string>('');
 
-  useEffect(() => {
-    checkPermission();
-  }, []);
-
   const fetchContacts = () => {
-    Contacts.getAll()
+    Contacts.getAllWithoutPhotos()
       .then(fetchedContacts => {
         console.log('fetchedContacts:', fetchedContacts);
         setContacts(fetchedContacts);
@@ -80,10 +76,6 @@ export const useContacts = () => {
       console.info('Permission error: ', error);
     }
   };
-
-  useEffect(() => {
-    // requestPermission();
-  }, []);
 
   return {contacts, permissionState, requestPermission};
 };

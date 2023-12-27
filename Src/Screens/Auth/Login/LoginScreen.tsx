@@ -2,12 +2,11 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useEffect} from 'react';
 import {ImageBackground, ScrollView, StatusBar, Text, View} from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 import CommonImages from '../../../Common/CommonImages';
 import CommonLogos from '../../../Common/CommonLogos';
-import {COLORS} from '../../../Common/Theme';
 import LoginButton from '../../../Components/AuthComponents/LoginButton';
 import styles from './styles';
-import SplashScreen from 'react-native-splash-screen';
 
 const LoginScreen: FC = () => {
   const navigation =
@@ -21,8 +20,8 @@ const LoginScreen: FC = () => {
 
   return (
     <ImageBackground
-      resizeMethod="auto"
       resizeMode="cover"
+      resizeMethod="resize"
       source={CommonImages.WelcomeBackground}
       style={styles.Container}
       imageStyle={styles.BGImageStyle}>

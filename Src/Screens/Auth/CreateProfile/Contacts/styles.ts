@@ -56,6 +56,15 @@ const styles = StyleSheet.create({
     color: 'rgba(130, 130, 130, 1)',
     fontSize: hp('2.1%'),
   },
+  ListEmptyView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  ListEmptyText: {
+    ...GROUP_FONT.h2,
+    color: COLORS.Black,
+    fontSize: 14,
+  },
 });
 
 export default styles;

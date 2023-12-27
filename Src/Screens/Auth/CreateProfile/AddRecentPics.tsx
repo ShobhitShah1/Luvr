@@ -25,6 +25,7 @@ import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 import {useCameraPermission} from '../../../Hooks/useCameraPermission';
 import {useGalleryPermission} from '../../../Hooks/useGalleryPermission';
+import axios from 'axios';
 
 const AddRecentPics: FC = () => {
   const navigation =
@@ -61,7 +62,7 @@ const AddRecentPics: FC = () => {
 
       const newImages =
         res?.assets?.map((image, index) => ({
-          name: `Selected Image ${index + 1}`,
+          name: image.fileName,
           type: image.type || '',
           key: `${Date.now()}-${index}`,
           url: image.uri || '',
@@ -88,7 +89,7 @@ const AddRecentPics: FC = () => {
 
       const newImages =
         res?.assets?.map((image, index) => ({
-          name: `Selected Image ${index + 1}`,
+          name: image.fileName,
           type: image.type || '',
           key: `${Date.now()}-${index}`,
           url: image.uri || '',
@@ -122,7 +123,7 @@ const AddRecentPics: FC = () => {
         selectedOption === 'Camera'
           ? await requestCameraPermission()
           : await requestGalleryPermission();
-
+      console.log('permissionStatus', permissionStatus);
       if (permissionStatus) {
         console.log(
           `${selectedOption} permission granted. Opening ${selectedOption.toLowerCase()}...`,
@@ -163,6 +164,13 @@ const AddRecentPics: FC = () => {
         />
       </TouchableOpacity>
     );
+  };
+
+  const onNextPress = () => {
+    console.log('DATA:', data);
+    navigation.navigate('LoginStack', {
+      screen: 'LocationPermission',
+    });
   };
 
   return (
@@ -206,11 +214,7 @@ const AddRecentPics: FC = () => {
         <GradientButton
           Title={'Continue'}
           Disabled={false}
-          Navigation={() => {
-            navigation.navigate('LoginStack', {
-              screen: 'LocationPermission',
-            });
-          }}
+          Navigation={onNextPress}
         />
       </View>
     </View>

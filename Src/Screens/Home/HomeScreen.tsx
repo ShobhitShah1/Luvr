@@ -1,8 +1,5 @@
-/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {FlatList, ImageBackground, ScrollView, StatusBar, Text, View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import {COLORS} from '../../Common/Theme';
+import {FlatList, ScrollView, View} from 'react-native';
 import HomeLookingForData from '../../Components/Data/HomeData/HomeLookingForData';
 import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
@@ -12,7 +9,6 @@ import styles from './styles';
 const HomeScreen = () => {
   return (
     <View style={styles.Container}>
-      
       <BottomTabHeader />
 
       <ScrollView bounces={false}>

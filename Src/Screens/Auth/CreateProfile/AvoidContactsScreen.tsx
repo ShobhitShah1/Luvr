@@ -38,13 +38,15 @@ const AvoidContactsScreen: FC = () => {
             navigation.navigate('LoginStack', {
               screen: 'ManageContacts',
             });
-            // navigation.navigate('BottomTab', {
-            //   screen: 'Home',
-            // });
           }}
         />
 
         <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('BottomTab', {
+              screen: 'Home',
+            });
+          }}
           activeOpacity={ActiveOpacity}
           style={styles.CancelView}>
           <Text style={styles.CancelText}>Cancel</Text>

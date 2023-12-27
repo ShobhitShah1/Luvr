@@ -1,16 +1,35 @@
-import React, {FC} from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { FC } from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonImages from '../../../Common/CommonImages';
-import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import { COLORS, FONTS } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import { useLocationPermission } from '../../../Hooks/useLocationPermission';
 import CreateProfileStyles from './styles';
 
 const LocationPermission: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+  const {locationPermission, requestLocationPermission} = useLocationPermission();
+
+  const onNextPress = async () => {
+    if (locationPermission) {
+      navigateToAvoidContacts();
+    } else {
+      const requestPermission = await requestLocationPermission();
+      if (requestPermission) {
+        navigateToAvoidContacts();
+      }
+    }
+  };
+
+  const navigateToAvoidContacts = () => {
+    navigation.navigate('LoginStack', {
+      screen: 'AvoidContacts',
+    });
+  };
   return (
     <View style={styles.container}>
       <View style={styles.MiddleImageView}>
@@ -29,11 +48,7 @@ const LocationPermission: FC = () => {
         <GradientButton
           Title={'Allow'}
           Disabled={false}
-          Navigation={() => {
-            navigation.navigate('LoginStack', {
-              screen: 'AvoidContacts',
-            });
-          }}
+          Navigation={onNextPress}
         />
       </View>
     </View>

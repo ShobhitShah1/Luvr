@@ -40,7 +40,9 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({
 
   return (
     <Modal
+      hasBackdrop
       testID={'modal'}
+      backdropColor="transparent"
       animationIn={'slideInUp'}
       animationInTiming={300}
       animationOutTiming={300}
@@ -152,6 +154,8 @@ const styles = StyleSheet.create({
   },
   DescriptionText: {
     ...GROUP_FONT.body3,
+    fontSize: 13,
+    top: 3,
   },
   CloseButton: {
     width: '20%',
@@ -160,8 +164,10 @@ const styles = StyleSheet.create({
   },
   CloseButtonIcon: {
     justifyContent: 'center',
-    width: hp('3%'),
-    height: hp('3%'),
+    width: 23,
+    height: 23,
+    // width: hp('3%'),
+    // height: hp('3%'),
   },
 
   ButtonContainerView: {
@@ -194,15 +200,13 @@ const styles = StyleSheet.create({
   Title: {
     ...GROUP_FONT.h4,
     color: COLORS.White,
-    // alignSelf: 'center',
-    // justifyContent: 'center',
+    fontSize: 13,
     marginHorizontal: hp('1%'),
   },
   Pick: {
     ...GROUP_FONT.h3,
     color: COLORS.White,
-    // alignSelf: 'center',
-    // justifyContent: 'center',
+    fontSize: 12,
     marginHorizontal: hp('1%'),
   },
   blurContainer: {

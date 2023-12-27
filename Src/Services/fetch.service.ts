@@ -159,7 +159,7 @@ async function getLoc(url: string, config?: AxiosRequestConfig): Promise<any> {
   return makeRequest(url, 'get', undefined, config);
 }
 
-function makeRequest(
+async function makeRequest(
   url: string,
   method: string,
   params?: Record<string, any>,
@@ -193,15 +193,10 @@ function initToken() {
 
 function handleResponse(response: AxiosResponse<any>) {
   if (true) {
-    console.log('Response:', response.data.data);
+    console.log('Response:', response.data);
   }
 
-  if (
-    response &&
-    response.status === 200 &&
-    response.data &&
-    response.data.status
-  ) {
+  if (response && response.data?.code === 200) {
     return response.data;
   } else {
     return handleError({response});

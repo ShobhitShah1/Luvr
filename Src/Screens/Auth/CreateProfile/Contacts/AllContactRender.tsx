@@ -86,26 +86,34 @@ const AllContactRender = () => {
     }))
     .filter(section => section.data.length > 0);
 
+  const ListEmptyComponent = () => {
+    return (
+      <View style={styles.ListEmptyView}>
+        <Text style={styles.ListEmptyText}>No Contact Found</Text>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.Container}>
-      {contacts.length !== 0 && (
-        <FlatList
-          data={sections}
-          keyExtractor={item => item.title}
-          renderItem={({item}) => (
-            <React.Fragment>
-              <RenderHeader title={item.title} />
-              <FlatList
-                data={item.data}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({item, index}) => (
-                  <ContactItem item={item} index={index} />
-                )}
-              />
-            </React.Fragment>
-          )}
-        />
-      )}
+      <FlatList
+        data={sections}
+        keyExtractor={item => item.title}
+        renderItem={({item}) => (
+          <React.Fragment>
+            <RenderHeader title={item.title} />
+            <FlatList
+              data={item.data}
+              contentContainerStyle={{flex: contacts.length === 0 ? 1 : 0}}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({item, index}) => (
+                <ContactItem item={item} index={index} />
+              )}
+              ListEmptyComponent={<ListEmptyComponent />}
+            />
+          </React.Fragment>
+        )}
+      />
     </View>
   );
 };

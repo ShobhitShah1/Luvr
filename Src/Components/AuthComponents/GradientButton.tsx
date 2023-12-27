@@ -1,5 +1,11 @@
 import React, {FC} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {CommonSize} from '../../Common/CommonSize';
 import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
@@ -12,32 +18,45 @@ interface ButtonProps {
   Title: string;
   Navigation: () => void;
   Disabled: boolean;
+  isLoading: boolean;
 }
 
-const GradientButton: FC<ButtonProps> = ({ Title, Navigation, Disabled }) => {
+const GradientButton: FC<ButtonProps> = ({
+  Title,
+  Navigation,
+  Disabled,
+  isLoading,
+}) => {
   return (
     <TouchableOpacity
-      disabled={Disabled}
+      disabled={isLoading || Disabled}
       activeOpacity={ActiveOpacity}
       onPress={Navigation}
       style={styles.CreateAccountButton}>
       <View
-        // colors={Disabled ? COLORS.DisableButtonGradient : COLORS.ButtonGradient}
-        // start={{x: 0, y: 1}}
-        // end={{x: 1, y: 0}}
         style={[
           styles.GradientViewStyle,
           {
-            backgroundColor: Disabled ? COLORS.DisableButtonBackground : COLORS.Primary,
+            backgroundColor: Disabled
+              ? COLORS.DisableButtonBackground
+              : COLORS.Primary,
           },
         ]}>
-        <Text
-          style={[
-            styles.NewAccountText,
-            {color: Disabled ? COLORS.Black : COLORS.White},
-          ]}>
-          {Title}
-        </Text>
+        {isLoading ? (
+          <ActivityIndicator
+            color={COLORS.White}
+            style={styles.LoaderView}
+            size={25}
+          />
+        ) : (
+          <Text
+            style={[
+              styles.NewAccountText,
+              {color: Disabled ? COLORS.Black : COLORS.White},
+            ]}>
+            {Title}
+          </Text>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -64,6 +83,10 @@ const styles = StyleSheet.create({
     fontSize: hp('1.8%'),
     // fontSize: CommonSize(14),
     fontFamily: FONTS.Bold,
+  },
+  LoaderView: {
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
   TouchButtonStyle: {},
 });

@@ -1,12 +1,15 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import axios from 'axios';
 import React, {FC, useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import OtpInput from '../../../Components/AuthComponents/OtpInput';
+import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import styles from './styles';
+import ApiConfig from '../../../Config/ApiConfig';
 
 interface RouteParams {
   number: string;
@@ -16,7 +19,10 @@ const OTPScreen: FC = () => {
   const route = useRoute();
   const OTPInputs: number = 4;
   const {number} = route.params as RouteParams;
+  const {showToast} = useCustomToast();
+
   const [otp, setOtp] = useState<string[]>(Array(OTPInputs).fill(''));
+  const [IsAPILoading, setIsAPILoading] = useState(false);
 
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
@@ -46,9 +52,57 @@ const OTPScreen: FC = () => {
   //   autoFillFromSMS(receivedSMS);
   // }, []);
 
+  const VerifyClick = () => {
+    if (otp.length === 4) {
+      verifyOtp();
+    } else {
+      showToast('Invalid OTP', 'Please Verify OTP', 'error');
+    }
+  };
+
+  const verifyOtp = async () => {
+    setIsAPILoading(true);
+    try {
+      const OTP = otp.join('');
+      console.log('OTP', OTP);
+      const otpVerificationUrl = `${ApiConfig.OTP_BASE_URL}VERIFY3/${number}/${OTP}`;
+      console.log('otpVerificationUrl', otpVerificationUrl);
+      const response = await axios.get(otpVerificationUrl);
+
+      console.log('OTP Verification Response:', JSON.stringify(response.data));
+
+      if (response.data?.Status === 'Success') {
+        showToast(
+          'OTP verified Successfully',
+          'Your OTP has been successfully verified. You can now proceed.',
+          'success',
+        );
+        navigation.replace('LoginStack', {
+          screen: 'IdentifyYourSelf',
+        });
+      } else {
+        showToast(
+          'OTP Verification Failed',
+          'The OTP entered is incorrect. Please try again.',
+          'error',
+        );
+      }
+    } catch (error) {
+      // Handle network or other errors
+      showToast(
+        'Error',
+        'Failed to verify OTP. Please check your network connection and try again.',
+        'error',
+      );
+      console.error('Error verifying OTP:', error);
+    } finally {
+      setIsAPILoading(false);
+    }
+  };
+
   return (
     <View style={styles.Container}>
-      <CreateProfileHeader ProgressCount={0} Skip={true} />
+      <CreateProfileHeader ProgressCount={0} Skip={false} />
 
       <View style={{paddingHorizontal: heightPercentageToDP('1.7%')}}>
         <View style={styles.CodeAndNumberView}>
@@ -64,7 +118,7 @@ const OTPScreen: FC = () => {
           setOtp={setOtp}
           length={OTPInputs}
           onOtpFilled={() => {
-            console.log(`Code Fill ${otp}`);
+            // console.log(`Code Fill ${otp}`);
           }}
         />
 
@@ -76,13 +130,10 @@ const OTPScreen: FC = () => {
 
       <View style={[styles.VerifyOTPButtonView, {}]}>
         <GradientButton
-          Disabled={DisableButton}
           Title={'Continue'}
-          Navigation={() => {
-            navigation.navigate('LoginStack', {
-              screen: 'IdentifyYourSelf',
-            });
-          }}
+          isLoading={IsAPILoading}
+          Disabled={DisableButton}
+          Navigation={VerifyClick}
         />
       </View>
     </View>

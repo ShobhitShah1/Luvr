@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useState} from 'react';
+import React, {FC, useCallback, useEffect, useState} from 'react';
 import {
   Alert,
   FlatList,
@@ -24,16 +24,42 @@ import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
+import {useUserData} from '../../../Contexts/UserDataContext';
 
 const AddDailyHabits: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+  const requiredHabits = ['drink', 'exercise', 'movies', 'smoke'];
 
+  const {userData} = useUserData();
   const handleInputChange = useHandleInputChangeSignUp();
 
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
-    {},
+    requiredHabits.reduce((acc, habit) => {
+      acc[habit] =
+        userData?.[
+          LocalStorageFields[
+            `habits${habit.charAt(0).toUpperCase() + habit.slice(1)}`
+          ]
+        ] || '';
+      return acc;
+    }, {}),
   );
+
+  useEffect(() => {
+    setSelectedItems(prevSelectedItems => ({
+      ...prevSelectedItems,
+      ...requiredHabits.reduce((acc, habit) => {
+        acc[habit] =
+          userData?.[
+            LocalStorageFields[
+              `habits${habit.charAt(0).toUpperCase() + habit.slice(1)}`
+            ]
+          ] || '';
+        return acc;
+      }, {}),
+    }));
+  }, [userData]);
 
   const handleOptionPress = useCallback((habitName: string, option: string) => {
     setSelectedItems(prevSelection => {
@@ -100,22 +126,20 @@ const AddDailyHabits: FC = () => {
   };
 
   const onPressNext = () => {
-    // Define an array of required habits
-    const requiredHabits = ['drink', 'exercise', 'movies', 'smoke'];
-
     // Check if all required habits are selected
     const allHabitsSelected = requiredHabits.every(habit =>
       selectedItems.hasOwnProperty(habit),
     );
 
     if (allHabitsSelected) {
-      handleInputChange(LocalStorageFields.habitsDrink, selectedItems.drink);
-      handleInputChange(
-        LocalStorageFields.habitsExercise,
-        selectedItems.exercise,
-      );
-      handleInputChange(LocalStorageFields.habitsMovies, selectedItems.movies);
-      handleInputChange(LocalStorageFields.habitsSmoke, selectedItems.smoke);
+      requiredHabits.forEach(habit => {
+        handleInputChange(
+          LocalStorageFields[
+            `habits${habit.charAt(0).toUpperCase() + habit.slice(1)}`
+          ],
+          selectedItems[habit],
+        );
+      });
 
       // Continue with navigation logic if needed
       navigation.navigate('LoginStack', {
@@ -129,7 +153,15 @@ const AddDailyHabits: FC = () => {
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={6} Skip={true} />
+      <CreateProfileHeader
+        ProgressCount={6}
+        Skip={true}
+        handleSkipPress={() => {
+          navigation.navigate('LoginStack', {
+            screen: 'WhatAboutYou',
+          });
+        }}
+      />
 
       <View style={styles.DataViewContainer}>
         <View style={[styles.ContentView]}>

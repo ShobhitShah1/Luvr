@@ -35,35 +35,37 @@ const HopingToFind: FC = () => {
 
   const {userData, dispatch} = useUserData();
   const handleInputChange = useHandleInputChangeSignUp();
-
   // const StoreStringName = useFieldConfig(LocalStorageFields.sexualOrientation);
 
-  const [SelectedLookingForIndex, setSelectedLookingForIndex] = useState<
-    string[]
-  >([]);
+  const [SelectedLookingForIndex, setSelectedLookingForIndex] =
+    useState<string>(userData.hoping);
+
+  console.log(
+    'userData.hoping',
+    userData.hoping,
+    'SelectedLookingForIndex',
+    SelectedLookingForIndex,
+  );
 
   console.log('SelectedLookingForIndex', SelectedLookingForIndex);
 
   const onPressLookingFor = useCallback(
     (item: string) => {
       //* Check if the selected item is already in the array
-      const isSelected = SelectedLookingForIndex.includes(item);
+      const isSelected = SelectedLookingForIndex === item;
 
       //* If the selected item is already in the array, unselect it
       if (isSelected) {
-        setSelectedLookingForIndex([]);
+        setSelectedLookingForIndex('');
       } else {
         //* If the selected item is not in the array, select it and unselect the previous one
-        setSelectedLookingForIndex([item]);
+        setSelectedLookingForIndex(item);
       }
 
       console.log('SelectedLookingForIndex', SelectedLookingForIndex);
     },
     [SelectedLookingForIndex],
   );
-
-  const isGenderSelected = (item: string) =>
-    SelectedLookingForIndex.includes(item);
 
   const renderItem = ({item, index}: {item: any; index: number}) => (
     <TouchableOpacity
@@ -77,12 +79,13 @@ const HopingToFind: FC = () => {
           style={[
             styles.LookingForText,
             {
-              fontFamily: isGenderSelected(item) ? FONTS.Bold : FONTS.Medium,
+              fontFamily:
+                SelectedLookingForIndex === item ? FONTS.Bold : FONTS.Medium,
             },
           ]}>
           {item.Title}
         </Text>
-        {isGenderSelected(item) && (
+        {SelectedLookingForIndex === item && (
           <Image
             resizeMethod="auto"
             resizeMode="contain"
@@ -95,11 +98,8 @@ const HopingToFind: FC = () => {
   );
 
   const onPressNext = () => {
-    if (SelectedLookingForIndex.length !== 0) {
-      handleInputChange(
-        LocalStorageFields.hoping,
-        SelectedLookingForIndex[0]?.Title,
-      );
+    if (SelectedLookingForIndex) {
+      handleInputChange(LocalStorageFields.hoping, SelectedLookingForIndex);
       navigation.navigate('LoginStack', {
         screen: 'DistancePreference',
       });
@@ -133,7 +133,7 @@ const HopingToFind: FC = () => {
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
           Title={'Continue'}
-          Disabled={SelectedLookingForIndex.length !== 0 ? false : true}
+          Disabled={SelectedLookingForIndex ? false : true}
           Navigation={() => onPressNext()}
         />
       </View>
