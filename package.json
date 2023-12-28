@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@codler/react-native-keyboard-aware-scroll-view": "^2.0.1",
+    "@react-native-async-storage/async-storage": "^1.21.0",
     "@react-native-community/blur": "^4.3.2",
     "@react-native-community/netinfo": "^11.2.1",
     "@react-navigation/bottom-tabs": "^6.5.11",
@@ -18,12 +19,12 @@
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.16",
     "axios": "^1.6.0",
-    "azir-slider": "^1.0.1",
     "react": "18.2.0",
     "react-native": "0.72.0",
     "react-native-contacts": "^7.0.8",
     "react-native-deck-swiper": "^2.0.16",
     "react-native-fast-image": "^8.6.3",
+    "react-native-geolocation-service": "^5.3.1",
     "react-native-gesture-handler": "^2.13.4",
     "react-native-image-picker": "^7.0.2",
     "react-native-linear-gradient": "^2.8.3",
@@ -39,7 +40,10 @@
     "react-native-screens": "^3.27.0",
     "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^13.14.0",
-    "react-native-toast-notifications": "^3.4.0"
+    "react-native-toast-notifications": "^3.4.0",
+    "react-redux": "^9.0.4",
+    "redux": "^5.0.1",
+    "redux-persist": "^6.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

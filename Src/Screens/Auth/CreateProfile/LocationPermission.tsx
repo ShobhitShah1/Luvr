@@ -1,18 +1,19 @@
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { FC } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import React, {FC} from 'react';
+import {Image, StyleSheet, Text, View} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonImages from '../../../Common/CommonImages';
-import { COLORS, FONTS } from '../../../Common/Theme';
+import {COLORS, FONTS} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import { useLocationPermission } from '../../../Hooks/useLocationPermission';
+import {useLocationPermission} from '../../../Hooks/useLocationPermission';
 import CreateProfileStyles from './styles';
 
 const LocationPermission: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const {locationPermission, requestLocationPermission} = useLocationPermission();
+  const {locationPermission, requestLocationPermission} =
+    useLocationPermission();
 
   const onNextPress = async () => {
     if (locationPermission) {
@@ -26,8 +27,8 @@ const LocationPermission: FC = () => {
   };
 
   const navigateToAvoidContacts = () => {
-    navigation.navigate('LoginStack', {
-      screen: 'AvoidContacts',
+    navigation.replace('LoginStack', {
+      screen: 'IdentifyYourSelf',
     });
   };
   return (
@@ -47,6 +48,7 @@ const LocationPermission: FC = () => {
       <View style={[CreateProfileStyles.BottomButton]}>
         <GradientButton
           Title={'Allow'}
+          isLoading={false}
           Disabled={false}
           Navigation={onNextPress}
         />

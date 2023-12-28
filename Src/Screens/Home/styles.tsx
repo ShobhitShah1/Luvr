@@ -1,6 +1,9 @@
-import {StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 import {COLORS, GROUP_FONT} from '../../Common/Theme';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+const {width} = Dimensions.get('screen');
+
+const smallWidth = width / 2.7;
 
 const styles = StyleSheet.create({
   Container: {
@@ -33,14 +36,43 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 0.5,
     justifyContent: 'flex-end',
-    // borderRadius: hp('5%'),
   },
   TitleText: {
     width: '100%',
+    bottom: hp('2%'),
     ...GROUP_FONT.h2,
     color: COLORS.White,
     marginHorizontal: hp('2%'),
-    bottom: hp('2%'),
+  },
+  item1Inner: {
+    flex: 1,
+    // justifyContent: 'flex-end',
+  },
+  row: {
+    width: '100%',
+    flexDirection: 'row',
+    overflow: 'hidden',
+  },
+  LeftMargin: {
+    marginLeft: '3%',
+  },
+  item2: {
+    width: '98%',
+    height: smallWidth,
+    marginVertical: 5,
+    overflow: 'hidden',
+    borderRadius: hp('3%'),
+  },
+  fill: {
+    height: '100%',
+    width: '100%',
+  },
+  VerticalImageViewText: {
+    position: 'absolute',
+    bottom: 15,
+    left: 15,
+    ...GROUP_FONT.h2,
+    color: COLORS.White,
   },
 });
 

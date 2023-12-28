@@ -7,18 +7,21 @@ export type UserAction =
   | {
       type: typeof UPDATE_FIELD;
       field: keyof typeof LocalStorageFields;
-      value: string;
+      value: any;
     }
   | {type: typeof RESET};
 
 export const updateField = (
   field: keyof typeof LocalStorageFields,
-  value: string,
-) => ({
-  type: UPDATE_FIELD,
-  field,
-  value,
-});
+  value: any,
+) => {
+  console.log('updateField:', field, value);
+  return {
+    type: UPDATE_FIELD,
+    field,
+    value,
+  };
+};
 
 export const resetUserData = () => ({
   type: RESET,

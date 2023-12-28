@@ -1,30 +1,38 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import Slider from 'azir-slider';
+// import Slider from 'azir-slider';
 import React, {FC, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useDispatch, useSelector} from 'react-redux';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
+import {updateField} from '../../../Redux/Action/userActions';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import CustomSlider from '../../../Components/CustomSlider';
 
 const DistancePreference: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const [milesValue, setMilesValue] = useState<number>(75);
-  const handleInputChange = useHandleInputChangeSignUp();
+  const userData = useSelector((state: any) => state.user);
+  const dispatch = useDispatch();
+  const [milesValue, setMilesValue] = useState<number>(
+    userData.radius ? userData.radius : 75,
+  );
   const OnChangeKM = (value: number) => {
-    setMilesValue(value);
+    const roundedValue = parseFloat((value * 100).toFixed(2));
+    setMilesValue(roundedValue);
   };
 
   const onNextPress = () => {
-    handleInputChange(LocalStorageFields.radius, milesValue);
     navigation.navigate('LoginStack', {
       screen: 'YourEducation',
     });
+    setTimeout(() => {
+      dispatch(updateField(LocalStorageFields.radius, milesValue));
+    }, 0);
   };
 
   return (
@@ -47,7 +55,8 @@ const DistancePreference: FC = () => {
             <Text style={styles.SliderValue}>{`${milesValue} KM`}</Text>
           </View>
           <View style={styles.SliderView}>
-            <Slider
+            <CustomSlider onProgressChange={OnChangeKM} />
+            {/* <Slider
               step={1}
               minimumValue={0}
               maximumValue={100}
@@ -61,7 +70,7 @@ const DistancePreference: FC = () => {
               style={styles.SliderStyle}
               trackSize={6}
               thumbSize={21}
-            />
+            /> */}
           </View>
         </View>
       </View>
@@ -69,6 +78,7 @@ const DistancePreference: FC = () => {
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
           Title={'Continue'}
+          isLoading={false}
           Disabled={false}
           Navigation={() => onNextPress()}
         />
@@ -112,6 +122,7 @@ const styles = StyleSheet.create({
     height: hp('5%'),
     justifyContent: 'center',
     alignSelf: 'center',
+    top: 50,
   },
   SliderInfoText: {
     ...GROUP_FONT.h3,
@@ -130,7 +141,7 @@ const styles = StyleSheet.create({
     ...GROUP_FONT.body3,
   },
   SliderView: {
-    marginVertical: hp('1.5%'),
+    marginVertical: hp('3.5%'),
     width: '92%',
     justifyContent: 'center',
     alignSelf: 'center',

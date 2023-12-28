@@ -2,6 +2,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import axios from 'axios';
 import React, {FC, useCallback, useEffect, useState} from 'react';
 import {
   Alert,
@@ -21,35 +22,47 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useDispatch, useSelector} from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
 import CountryPickerView from '../../../Components/AuthComponents/CountryPickerView';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
 import CountryWithCode from '../../../Components/Data/CountryWithCode';
+import ApiConfig from '../../../Config/ApiConfig';
+import {updateField} from '../../../Redux/Action/userActions';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import RenderCountryData from '../CreateProfile/Components/RenderCountryData';
 import styles from './styles';
-import axios from 'axios';
-import ApiConfig from '../../../Config/ApiConfig';
-// import Toast from '../../../Components/Toast';
 
 const PhoneNumber: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const isFocused = useIsFocused();
+
+  const userData = useSelector((state: any) => state?.user);
+  const dispatch = useDispatch();
   const {showToast} = useCustomToast();
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [diallingCode, setDiallingCode] = useState<string | null>(null);
-  const [defaultDiallingCode, setDefaultDiallingCode] = useState<string | null>(
-    null,
+  const [diallingCode, setDiallingCode] = useState<string | null>(
+    userData.phoneNumberCountryCode,
   );
-  const [StorePhoneNumber, setStorePhoneNumber] = useState<string>('');
+  const [defaultDiallingCode, setDefaultDiallingCode] = useState<string | null>(
+    userData.phoneNumberCountryCode,
+  );
+  const [StorePhoneNumber, setStorePhoneNumber] = useState<string>(
+    userData.phoneNumberWithoutCode,
+  );
   const [SearchText, setSearchText] = useState<string | undefined>('');
   const [FilteredCountries, setFilteredCountries] = useState(CountryWithCode);
+
   const opacity = useSharedValue(0);
+  const PhoneNumberString: String = `${
+    diallingCode || defaultDiallingCode
+  }${StorePhoneNumber}`;
 
   useEffect(() => {
     opacity.value = withTiming(visible ? 1 : 0, {
@@ -119,24 +132,23 @@ const PhoneNumber: FC = () => {
 
   const onNextClick = () => {
     if (
-      StorePhoneNumber?.length < 10 ||
-      StorePhoneNumber?.length > 12 ||
-      !StorePhoneNumber.match('[0-9]{10}')
+      StorePhoneNumber?.length >= 10 &&
+      StorePhoneNumber?.length <= 12 &&
+      StorePhoneNumber.match('[0-9]{10}')
     ) {
+      handleSendOtp();
+    } else {
       showToast(
         'Invalid Phone Number',
         'Please check your phone number',
         'error',
       );
-    } else {
-      handleSendOtp();
     }
   };
 
   //* API Calls
   const handleSendOtp = async () => {
     setIsAPILoading(true);
-
     try {
       const url = `${ApiConfig.OTP_BASE_URL}${
         diallingCode || defaultDiallingCode
@@ -154,9 +166,25 @@ const PhoneNumber: FC = () => {
         navigation.navigate('LoginStack', {
           screen: 'OTP',
           params: {
-            number: `${diallingCode || defaultDiallingCode}${StorePhoneNumber}`,
+            number: PhoneNumberString,
           },
         });
+
+        setTimeout(() => {
+          dispatch(updateField(LocalStorageFields.mobileNo, PhoneNumberString));
+          dispatch(
+            updateField(
+              LocalStorageFields.phoneNumberCountryCode,
+              `${diallingCode || defaultDiallingCode}`,
+            ),
+          );
+          dispatch(
+            updateField(
+              LocalStorageFields.phoneNumberWithoutCode,
+              StorePhoneNumber,
+            ),
+          );
+        }, 0);
       } else {
         showToast(
           'Server Error',

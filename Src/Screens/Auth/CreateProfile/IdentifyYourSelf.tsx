@@ -24,12 +24,14 @@ import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import {useDispatch, useSelector} from 'react-redux';
+import {updateField} from '../../../Redux/Action/userActions';
 
 const IdentifyYourSelf: FC = () => {
   //* Get Key Name. From Where You Want To Store Data
-  const {userData, dispatch} = useUserData();
   const KeyboardVisible = useKeyboardVisibility();
-
+  const userData = useSelector((state: any) => state.user);
+  const dispatch = useDispatch();
   //* Ref's
   const ScrollViewRef = useRef<ScrollView>(null);
   const dayInputRef = useRef(null);
@@ -38,9 +40,15 @@ const IdentifyYourSelf: FC = () => {
 
   //* All States
   const [FirstName, setFirstName] = useState<string>(userData.fullName);
-  const [BirthDateDD, setBirthDateDD] = useState<string>('');
-  const [BirthDateMM, setBirthDateMM] = useState<string>('');
-  const [BirthDateYYYY, setBirthDateYYYY] = useState<string>('');
+  const [BirthDateDD, setBirthDateDD] = useState<string>(
+    userData.birthdate ? String(userData.birthdate).split('/')[0] : '',
+  );
+  const [BirthDateMM, setBirthDateMM] = useState<string>(
+    userData.birthdate ? String(userData.birthdate).split('/')[1] : '',
+  );
+  const [BirthDateYYYY, setBirthDateYYYY] = useState<string>(
+    userData.birthdate ? String(userData.birthdate).split('/')[2] : '',
+  );
   const [CityName, setCityName] = useState<string>(userData.city);
   const [selectedGender, setSelectedGender] = useState<string>(userData.gender);
 
@@ -69,17 +77,26 @@ const IdentifyYourSelf: FC = () => {
   };
 
   //* On Next Click This Will Call And Store Data
-  const handleInputChange = useCallback(
-    (field: string, value: string | boolean) => {
-      dispatch({type: 'UPDATE_FIELD', field, value});
-    },
-    [dispatch],
-  );
+  // const handleInputChange = useCallback(
+  //   (field: string, value: string | boolean) => {
+  //     dispatch({type: 'UPDATE_FIELD', field, value});
+  //   },
+  //   [dispatch],
+  // );
 
   const handleGenderSelection = (gender: string) => {
     setSelectedGender(gender);
-    handleInputChange(LocalStorageFields.gender, gender);
   };
+
+  console.log(
+    String(`${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`).split('/')[0],
+  );
+  console.log(
+    String(`${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`).split('/')[1],
+  );
+  console.log(
+    String(`${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`).split('/')[2],
+  );
 
   //* Modal Button Navigate To Screen
   const OnLetsGoButtonPress = useCallback(() => {
@@ -102,16 +119,26 @@ const IdentifyYourSelf: FC = () => {
       return;
     }
 
-    // If all required fields are filled, update the context and navigate
-    handleInputChange(LocalStorageFields.fullName, FirstName);
-    handleInputChange(
-      LocalStorageFields.birthdate,
-      `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`,
+    //* If all required fields are filled, update the context and navigate
+    dispatch(updateField(LocalStorageFields.fullName, FirstName));
+    dispatch(
+      updateField(
+        LocalStorageFields.birthdate,
+        `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`,
+      ),
     );
-    handleInputChange(LocalStorageFields.gender, selectedGender);
-    handleInputChange(LocalStorageFields.city, CityName);
+    dispatch(updateField(LocalStorageFields.gender, selectedGender));
+    dispatch(updateField(LocalStorageFields.city, CityName));
 
-    // Use navigation.navigate callback to update context after navigation
+    // handleInputChange(LocalStorageFields.fullName, FirstName);
+    // handleInputChange(
+    // LocalStorageFields.birthdate,
+    // `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`,
+    // );
+    // handleInputChange(LocalStorageFields.gender, selectedGender);
+    // handleInputChange(LocalStorageFields.city, CityName);
+
+    //* Use navigation.navigate callback to update context after navigation
     navigation.navigate('LoginStack', {
       screen: 'SexualOrientationScreen',
     });
@@ -261,6 +288,7 @@ const IdentifyYourSelf: FC = () => {
       {!KeyboardVisible && (
         <View style={styles.BottomButton}>
           <GradientButton
+            isLoading={false}
             Title={'Continue'}
             Disabled={
               !FirstName ||

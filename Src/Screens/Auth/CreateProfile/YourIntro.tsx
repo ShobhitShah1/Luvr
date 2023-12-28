@@ -1,16 +1,10 @@
 /* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useMemo, useState} from 'react';
-import {
-  Alert,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {FC, useCallback, useEffect, useMemo, useState} from 'react';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   ActiveOpacity,
   COLORS,
@@ -20,25 +14,28 @@ import {
 } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import YourIntoData from '../../../Components/Data/YourIntoData';
-import {useUserData} from '../../../Contexts/UserDataContext';
-import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
+import {updateField} from '../../../Redux/Action/userActions';
 import UserService from '../../../Services/AuthService';
 import {transformUserDataForApi} from '../../../Services/dataTransformService';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import {useCustomToast} from '../../../Utils/toastUtils';
 
 const YourIntro: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const handleInputChange = useHandleInputChangeSignUp();
-  const {userData} = useUserData();
+  const userData = useSelector((state: any) => state?.user);
+  const dispatch = useDispatch();
   const {showToast} = useCustomToast();
   const [IsAPILoading, setIsAPILoading] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<string[]>(
     userData.likesInto,
   );
+
+  useEffect(() => {
+    console.log('YourIntro Screen User Data Redux:', userData);
+  }, []);
 
   const handleOptionPress = useCallback((YourIntoID: number, name: string) => {
     setSelectedItems(prevSelection => {
@@ -86,33 +83,15 @@ const YourIntro: FC = () => {
     setIsAPILoading(true);
     try {
       if (selectedItems.length === 5) {
-        console.log('selectedItems', selectedItems);
-        handleInputChange(LocalStorageFields.likesInto, selectedItems);
-        handleInputChange(LocalStorageFields.eventName, 'app_user_register');
-        handleInputChange(LocalStorageFields.loginType, 'non_social');
+        dispatch(updateField(LocalStorageFields.likesInto, selectedItems));
+        dispatch(
+          updateField(LocalStorageFields.eventName, 'app_user_register'),
+        );
+        dispatch(updateField(LocalStorageFields.loginType, 'non_social'));
 
-        const userDataForApi = transformUserDataForApi(userData);
-        console.log('userDataForApi', userDataForApi);
-
-        const APIResponse = await UserService.UserRegister(userDataForApi);
-        console.log('APIResponse', APIResponse);
-
-        if (APIResponse && APIResponse.code === 200) {
-          showToast(
-            'Registration Successful',
-            'Thank you for registering! You can now proceed.',
-            'success',
-          );
-          navigation.replace('LoginStack', {
-            screen: 'AddRecentPics',
-          });
-        } else {
-          const errorMessage =
-            APIResponse && APIResponse.error
-              ? APIResponse.error
-              : 'Unknown error occurred during registration.';
-          throw new Error(errorMessage);
-        }
+        setTimeout(() => {
+          CallUpdateProfileAPI();
+        }, 500);
       } else {
         throw new Error('Please select exactly 5 items before proceeding.');
       }
@@ -129,15 +108,49 @@ const YourIntro: FC = () => {
     }
   };
 
+  const CallUpdateProfileAPI = async () => {
+    try {
+      const userDataForApi = transformUserDataForApi(userData);
+      console.log('userDataForApi', userDataForApi);
+
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      console.log('APIResponse', APIResponse);
+
+      if (APIResponse && APIResponse.code === 200) {
+        showToast(
+          'Registration Successful',
+          'Thank you for registering! You can now proceed.',
+          'success',
+        );
+        navigation.replace('LoginStack', {
+          screen: 'AddRecentPics',
+        });
+      } else {
+        const errorMessage =
+          APIResponse && APIResponse.error
+            ? APIResponse.error
+            : 'Unknown error occurred during registration.';
+        throw new Error(errorMessage);
+      }
+    } catch (error) {
+      showToast(
+        'Registration Error',
+        `Failed to complete registration. ${error?.message}`,
+        'error',
+      );
+    }
+  };
+
   return (
     <View style={CreateProfileStyles.Container}>
       <CreateProfileHeader
         ProgressCount={8}
         Skip={true}
         handleSkipPress={() => {
-          navigation.navigate('LoginStack', {
-            screen: 'AddRecentPics',
-          });
+          onPressNext();
+          // navigation.navigate('LoginStack', {
+          //   screen: 'AddRecentPics',
+          // });
         }}
       />
       <View style={styles.DataViewContainer}>

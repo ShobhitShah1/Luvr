@@ -10,7 +10,11 @@ import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import styles from './styles';
 import ApiConfig from '../../../Config/ApiConfig';
-
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {store} from '../../../Redux/Store/store';
+import {updateField} from '../../../Redux/Action/userActions';
+import {useDispatch, useSelector} from 'react-redux';
+import {useLocationPermission} from '../../../Hooks/useLocationPermission';
 interface RouteParams {
   number: string;
 }
@@ -20,7 +24,8 @@ const OTPScreen: FC = () => {
   const OTPInputs: number = 4;
   const {number} = route.params as RouteParams;
   const {showToast} = useCustomToast();
-
+  const dispatch = useDispatch();
+  const {locationPermission} = useLocationPermission();
   const [otp, setOtp] = useState<string[]>(Array(OTPInputs).fill(''));
   const [IsAPILoading, setIsAPILoading] = useState(false);
 
@@ -37,21 +42,6 @@ const OTPScreen: FC = () => {
     }
   }, [otp]);
 
-  // Function to auto-fill OTP based on received SMS
-  // const autoFillFromSMS = (sms: string) => {
-  //   // Extract OTP from the SMS using a regular expression or any other method
-  //   const extractedOtp = sms.match(/\d{4}/)?.[0] || ''; // Assumes a 6-digit OTP, adjust as needed
-
-  //   // Update the OTP state
-  //   setOtp(extractedOtp.split(''));
-  // };
-
-  // Example usage of auto-fill function (you should replace this with your actual SMS retrieval logic)
-  // useEffect(() => {
-  //   const receivedSMS = 'Your OTP is 8965'; // Replace with the actual received SMS
-  //   autoFillFromSMS(receivedSMS);
-  // }, []);
-
   const VerifyClick = () => {
     if (otp.length === 4) {
       verifyOtp();
@@ -62,11 +52,10 @@ const OTPScreen: FC = () => {
 
   const verifyOtp = async () => {
     setIsAPILoading(true);
+
     try {
       const OTP = otp.join('');
-      console.log('OTP', OTP);
       const otpVerificationUrl = `${ApiConfig.OTP_BASE_URL}VERIFY3/${number}/${OTP}`;
-      console.log('otpVerificationUrl', otpVerificationUrl);
       const response = await axios.get(otpVerificationUrl);
 
       console.log('OTP Verification Response:', JSON.stringify(response.data));
@@ -77,9 +66,15 @@ const OTPScreen: FC = () => {
           'Your OTP has been successfully verified. You can now proceed.',
           'success',
         );
-        navigation.replace('LoginStack', {
-          screen: 'IdentifyYourSelf',
-        });
+
+        const screenToNavigate = locationPermission
+          ? 'IdentifyYourSelf'
+          : 'LocationPermission';
+        navigation.replace('LoginStack', {screen: screenToNavigate});
+
+        setTimeout(() => {
+          dispatch(updateField(LocalStorageFields.OTP, otp.join('')));
+        }, 0);
       } else {
         showToast(
           'OTP Verification Failed',
@@ -88,7 +83,6 @@ const OTPScreen: FC = () => {
         );
       }
     } catch (error) {
-      // Handle network or other errors
       showToast(
         'Error',
         'Failed to verify OTP. Please check your network connection and try again.',

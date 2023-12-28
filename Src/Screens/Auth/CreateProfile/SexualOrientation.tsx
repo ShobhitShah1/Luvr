@@ -13,6 +13,7 @@ import {
   View,
 } from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useDispatch, useSelector} from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
 import {
   ActiveOpacity,
@@ -24,8 +25,7 @@ import {
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomCheckBox from '../../../Components/CustomCheckBox';
 import GendersData from '../../../Components/Data/genders';
-import {useUserData} from '../../../Contexts/UserDataContext';
-import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
+import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
@@ -35,14 +35,12 @@ const {width} = Dimensions.get('window');
 const SexualOrientation: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const handleInputChange = useHandleInputChangeSignUp();
-
-  const {userData} = useUserData();
+  const userData = useSelector((state: any) => state.user);
+  const dispatch = useDispatch();
 
   const initialSexualOrientation: string[] =
     userData.orientation.length !== 0 ? userData.orientation : [];
 
-  console.log('initialSexualOrientation', initialSexualOrientation);
   const [ShowOnProfile, setShowOnProfile] = useState<boolean>(
     userData.isOrientationVisible,
   );
@@ -108,11 +106,19 @@ const SexualOrientation: FC = () => {
   const OnNextButtonClick = () => {
     const orientations = SelectedGenderIndex.map(gender => gender);
     if (orientations.length !== 0) {
-      handleInputChange(LocalStorageFields.orientation, orientations);
-      handleInputChange(LocalStorageFields.isOrientationVisible, ShowOnProfile);
       navigation.navigate('LoginStack', {
         screen: 'HopingToFind',
       });
+      setTimeout(() => {
+        try {
+          dispatch(updateField(LocalStorageFields.orientation, orientations));
+          dispatch(
+            updateField(LocalStorageFields.isOrientationVisible, ShowOnProfile),
+          );
+        } catch (error) {
+          console.log('err', error);
+        }
+      }, 0);
     } else {
       Alert.alert('Error', 'Please select your sexual orientation');
     }
@@ -160,6 +166,7 @@ const SexualOrientation: FC = () => {
             </Text> */}
           </View>
           <GradientButton
+            isLoading={false}
             Title={'Continue'}
             Disabled={SelectedGenderIndex.length !== 0 ? false : true}
             Navigation={OnNextButtonClick}

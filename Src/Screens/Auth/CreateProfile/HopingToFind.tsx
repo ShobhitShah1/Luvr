@@ -1,3 +1,6 @@
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import React, {FC, useCallback, useState} from 'react';
 import {
   Alert,
   Dimensions,
@@ -8,9 +11,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {FC, useCallback, useState} from 'react';
-import CreateProfileStyles from './styles';
-import CreateProfileHeader from './Components/CreateProfileHeader';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useDispatch, useSelector} from 'react-redux';
+import CommonIcons from '../../../Common/CommonIcons';
 import {
   ActiveOpacity,
   COLORS,
@@ -18,45 +21,46 @@ import {
   GROUP_FONT,
   SIZES,
 } from '../../../Common/Theme';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import LookingFor from '../../../Components/Data/LookingFor';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {useNavigation} from '@react-navigation/native';
-import CommonIcons from '../../../Common/CommonIcons';
-import {useUserData} from '../../../Contexts/UserDataContext';
-import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
+import LookingFor from '../../../Components/Data/LookingFor';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import CreateProfileHeader from './Components/CreateProfileHeader';
+import CreateProfileStyles from './styles';
+import {updateField} from '../../../Redux/Action/userActions';
+
+interface ItemProps {
+  id: number;
+  Title: string;
+  Emoji: string;
+  Icon: string;
+}
+
 const {width} = Dimensions.get('window');
 
 const HopingToFind: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
-  const {userData, dispatch} = useUserData();
-  const handleInputChange = useHandleInputChangeSignUp();
-  // const StoreStringName = useFieldConfig(LocalStorageFields.sexualOrientation);
-
+  const userData = useSelector((state: any) => state.user);
+  const dispatch = useDispatch();
   const [SelectedLookingForIndex, setSelectedLookingForIndex] =
-    useState<string>(userData.hoping);
-
-  console.log(
-    'userData.hoping',
-    userData.hoping,
-    'SelectedLookingForIndex',
-    SelectedLookingForIndex,
-  );
+    useState<ItemProps>(userData.hoping ? userData.hoping : {});
 
   console.log('SelectedLookingForIndex', SelectedLookingForIndex);
 
   const onPressLookingFor = useCallback(
-    (item: string) => {
+    (item: ItemProps) => {
       //* Check if the selected item is already in the array
-      const isSelected = SelectedLookingForIndex === item;
+      const isSelected = SelectedLookingForIndex.Title === item?.Title;
 
       //* If the selected item is already in the array, unselect it
       if (isSelected) {
-        setSelectedLookingForIndex('');
+        setSelectedLookingForIndex({
+          id: -1,
+          Title: '',
+          Emoji: '',
+          Icon: '',
+        });
       } else {
         //* If the selected item is not in the array, select it and unselect the previous one
         setSelectedLookingForIndex(item);
@@ -67,42 +71,48 @@ const HopingToFind: FC = () => {
     [SelectedLookingForIndex],
   );
 
-  const renderItem = ({item, index}: {item: any; index: number}) => (
-    <TouchableOpacity
-      activeOpacity={ActiveOpacity}
-      onPress={() => onPressLookingFor(item)}
-      style={styles.LookingForListView}
-      key={index}>
-      <View style={styles.TextView}>
-        <Text
-          numberOfLines={2}
-          style={[
-            styles.LookingForText,
-            {
-              fontFamily:
-                SelectedLookingForIndex === item ? FONTS.Bold : FONTS.Medium,
-            },
-          ]}>
-          {item.Title}
-        </Text>
-        {SelectedLookingForIndex === item && (
-          <Image
-            resizeMethod="auto"
-            resizeMode="contain"
-            source={CommonIcons.CheckMark}
-            style={{width: hp('2.5%'), height: hp('2.5%')}}
-          />
-        )}
-      </View>
-    </TouchableOpacity>
-  );
+  const renderItem = ({item, index}: {item: any; index: number}) => {
+    const Selected = SelectedLookingForIndex?.Title === item?.Title;
+    return (
+      <TouchableOpacity
+        activeOpacity={ActiveOpacity}
+        onPress={() => onPressLookingFor(item)}
+        style={styles.LookingForListView}
+        key={index}>
+        <View style={styles.TextView}>
+          <Text
+            numberOfLines={2}
+            style={[
+              styles.LookingForText,
+              {
+                fontFamily: Selected ? FONTS.Bold : FONTS.Medium,
+              },
+            ]}>
+            {item.Title}
+          </Text>
+          {Selected && (
+            <Image
+              resizeMethod="auto"
+              resizeMode="contain"
+              source={CommonIcons.CheckMark}
+              style={{width: hp('2.5%'), height: hp('2.5%')}}
+            />
+          )}
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   const onPressNext = () => {
     if (SelectedLookingForIndex) {
-      handleInputChange(LocalStorageFields.hoping, SelectedLookingForIndex);
       navigation.navigate('LoginStack', {
         screen: 'DistancePreference',
       });
+      setTimeout(() => {
+        dispatch(
+          updateField(LocalStorageFields.hoping, SelectedLookingForIndex),
+        );
+      }, 0);
     } else {
       Alert.alert('Error', 'Please select your hoping');
     }
@@ -132,6 +142,7 @@ const HopingToFind: FC = () => {
 
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
+          isLoading={false}
           Title={'Continue'}
           Disabled={SelectedLookingForIndex ? false : true}
           Navigation={() => onPressNext()}

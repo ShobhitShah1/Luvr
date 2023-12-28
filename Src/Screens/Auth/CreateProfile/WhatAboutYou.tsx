@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   ActiveOpacity,
   COLORS,
@@ -19,8 +20,7 @@ import {
 } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import WhatAboutYouData from '../../../Components/Data/WhatElseExtraData';
-import {useUserData} from '../../../Contexts/UserDataContext';
-import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
+import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
@@ -28,14 +28,9 @@ import CreateProfileStyles from './styles';
 const WhatAboutYou: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const {userData} = useUserData();
-
-  const handleInputChange = useHandleInputChangeSignUp();
-  console.log(
-    'userData.magicalPersonCommunicationStr::',
-    userData.magicalPersonCommunicationStr,
-  );
-  const [selectedItems, setSelectedItems] = useState<Record<string, string>>({
+  const userData = useSelector((state: any) => state?.user);
+  const dispatch = useDispatch();
+  const [selectedItems, setSelectedItems] = useState<Record<string, String>>({
     communication_stry: userData.magicalPersonCommunicationStr,
     education_level: userData.magicalPersonEducationLevel,
     recived_love: userData.magicalPersonReceivedLove,
@@ -109,26 +104,35 @@ const WhatAboutYou: FC = () => {
 
     if (allIntoSelected) {
       console.log('selectedItems', selectedItems);
-
-      handleInputChange(
-        LocalStorageFields.magicalPersonCommunicationStr,
-        selectedItems.communication_stry,
-      );
-      handleInputChange(
-        LocalStorageFields.magicalPersonEducationLevel,
-        selectedItems.education_level,
-      );
-      handleInputChange(
-        LocalStorageFields.magicalPersonReceivedLove,
-        selectedItems.recived_love,
-      );
-      handleInputChange(
-        LocalStorageFields.magicalPersonStarSign,
-        selectedItems.star_sign,
-      );
       navigation.navigate('LoginStack', {
         screen: 'YourIntro',
       });
+      setTimeout(() => {
+        dispatch(
+          updateField(
+            LocalStorageFields.magicalPersonCommunicationStr,
+            selectedItems.communication_stry,
+          ),
+        );
+        dispatch(
+          updateField(
+            LocalStorageFields.magicalPersonEducationLevel,
+            selectedItems.education_level,
+          ),
+        );
+        dispatch(
+          updateField(
+            LocalStorageFields.magicalPersonReceivedLove,
+            selectedItems.recived_love,
+          ),
+        );
+        dispatch(
+          updateField(
+            LocalStorageFields.magicalPersonStarSign,
+            selectedItems.star_sign,
+          ),
+        );
+      }, 0);
     } else {
       Alert.alert('Error', 'Please select all required options');
     }

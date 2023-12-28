@@ -28,15 +28,9 @@ export const LocalStorageFields = {
   longitude: 'longitude',
   radius: 'radius',
   recentPik: 'recentPik',
+  OTP: 'otp',
+  phoneNumberWithoutCode: 'phoneNumberWithoutCode',
+  phoneNumberCountryCode: 'phoneNumberCountryCode',
 } as const;
 
 export type UserField = keyof typeof LocalStorageFields;
-
-// export const LocalStorageFields = {
-//   firstName: 'firstName',
-//   dob: 'dob',
-//   gender: 'gender',
-//   sexualOrientation: 'sexualOrientation',
-// } as const;
-
-// export type UserField = keyof typeof LocalStorageFields;

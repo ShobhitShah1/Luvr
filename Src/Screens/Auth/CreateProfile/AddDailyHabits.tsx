@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   ActiveOpacity,
   COLORS,
@@ -20,19 +21,18 @@ import {
 } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import LifestyleData from '../../../Components/Data/LifestyleData';
+import {updateField} from '../../../Redux/Action/userActions';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
-import {useUserData} from '../../../Contexts/UserDataContext';
 
 const AddDailyHabits: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const requiredHabits = ['drink', 'exercise', 'movies', 'smoke'];
 
-  const {userData} = useUserData();
-  const handleInputChange = useHandleInputChangeSignUp();
+  const userData = useSelector((state: any) => state?.user);
+  const dispatch = useDispatch();
 
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
     requiredHabits.reduce((acc, habit) => {
@@ -132,19 +132,23 @@ const AddDailyHabits: FC = () => {
     );
 
     if (allHabitsSelected) {
-      requiredHabits.forEach(habit => {
-        handleInputChange(
-          LocalStorageFields[
-            `habits${habit.charAt(0).toUpperCase() + habit.slice(1)}`
-          ],
-          selectedItems[habit],
-        );
-      });
-
       // Continue with navigation logic if needed
       navigation.navigate('LoginStack', {
         screen: 'WhatAboutYou',
       });
+
+      setTimeout(() => {
+        requiredHabits.forEach(habit => {
+          dispatch(
+            updateField(
+              LocalStorageFields[
+                `habits${habit.charAt(0).toUpperCase() + habit.slice(1)}`
+              ],
+              selectedItems[habit],
+            ),
+          );
+        });
+      }, 0);
     } else {
       // Not all required habits are selected, show an alert or handle accordingly
       Alert.alert('Error', 'Please select all required habits');

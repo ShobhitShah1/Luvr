@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import {Platform, Linking, Alert} from 'react-native';
+import {Platform, Linking, Alert, BackHandler} from 'react-native';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
 export const useLocationPermission = () => {
@@ -57,12 +57,13 @@ export const useLocationPermission = () => {
 
   const showAlertAndNavigateToSettings = () => {
     Alert.alert(
-      'Permission Denied',
-      'To use location services, you need to grant location permission in device settings.',
+      'Location Permission',
+      '{AppName} needs access to your location for a better user experience. This allows us to show you potential matches in your area and enhance your overall app experience.',
       [
         {
           text: 'Cancel',
           style: 'cancel',
+          onPress: () => BackHandler.exitApp(),
         },
         {
           text: 'Open Settings',

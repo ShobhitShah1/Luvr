@@ -3,22 +3,22 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
 import {Alert, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useDispatch, useSelector} from 'react-redux';
 import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
 import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
+import {updateField} from '../../../Redux/Action/userActions';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import useHandleInputChangeSignUp from '../../../Hooks/useHandleInputChangeSignUp';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useUserData} from '../../../Contexts/UserDataContext';
 
 const YourEducation: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const KeyboardVisible = useKeyboardVisibility();
-  const {userData} = useUserData();
-  const handleInputChange = useHandleInputChangeSignUp();
+  const userData = useSelector((state: any) => state?.user);
+  const dispatch = useDispatch();
   const [EducationDegree, setEducationDegree] = useState<string>(
     userData.educationDegree,
   );
@@ -26,11 +26,16 @@ const YourEducation: FC = () => {
 
   const onNextPress = () => {
     if (EducationDegree && CollegeName) {
-      handleInputChange(LocalStorageFields.educationDegree, EducationDegree);
-      handleInputChange(LocalStorageFields.collegeName, CollegeName);
       navigation.navigate('LoginStack', {
         screen: 'AddDailyHabits',
       });
+
+      setTimeout(() => {
+        dispatch(
+          updateField(LocalStorageFields.educationDegree, EducationDegree),
+        );
+        dispatch(updateField(LocalStorageFields.collegeName, CollegeName));
+      }, 0);
     } else {
       Alert.alert('Error', 'Please fill all details');
     }

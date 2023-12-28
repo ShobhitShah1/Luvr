@@ -1,8 +1,10 @@
+/* eslint-disable react-native/no-inline-styles */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
 import {
   FlatList,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,6 +16,8 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {ActiveOpacity, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import {TotalProfilePicCanUpload} from '../../../Config/Setting';
+import {useCameraPermission} from '../../../Hooks/useCameraPermission';
+import {useGalleryPermission} from '../../../Hooks/useGalleryPermission';
 import {
   addUrlToItem,
   deleteUrlFromItem,
@@ -23,14 +27,13 @@ import AddUserPhoto from './Components/AddUserPhoto';
 import ChooseFromModal from './Components/ChooseFromModal';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import {useCameraPermission} from '../../../Hooks/useCameraPermission';
-import {useGalleryPermission} from '../../../Hooks/useGalleryPermission';
 import axios from 'axios';
+import {useCustomToast} from '../../../Utils/toastUtils';
 
 const AddRecentPics: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-
+  const {showToast} = useCustomToast();
   const {requestCameraPermission} = useCameraPermission();
   const {requestGalleryPermission} = useGalleryPermission();
 
@@ -168,9 +171,73 @@ const AddRecentPics: FC = () => {
 
   const onNextPress = () => {
     console.log('DATA:', data);
-    navigation.navigate('LoginStack', {
-      screen: 'LocationPermission',
-    });
+    const validImages = data.filter(image => image.url);
+    uploadImagesSequentially(validImages)
+      .then(uploadedResults => {
+        console.log('All images uploaded successfully:', uploadedResults);
+        // Do something with the uploaded results, if needed
+        showToast('Image Uploaded', 'Cant Navigate To Next Screen', 'success');
+
+        // setTimeout(() => {
+        //   navigation.navigate('BottomTab', {
+        //     screen: 'Home',
+        //   });
+        // }, 500);
+      })
+      .catch(error => {
+        console.error('Error during image upload:', error);
+        // Handle error as needed
+      });
+  };
+
+  const uploadImage = async (ImageData: any) => {
+    const {uri, type, fileName} = ImageData;
+    const formData = new FormData();
+
+    if (uri && type && fileName) {
+      formData.append('photo', {
+        uri: Platform.OS === 'android' ? uri : uri.replace('file://', ''),
+        type,
+        name: fileName,
+      });
+    }
+
+    try {
+      // const response = await axios.post('YOUR_UPLOAD_ENDPOINT', formData, {
+      //   onUploadProgress: progressEvent => {
+      //     const progress = Math.round(
+      //       (progressEvent.loaded / progressEvent?.total) * 100,
+      //     );
+      //     console.log(`Uploading: ${progress}%`);
+      //     // You can update the progress in your state or perform any other actions.
+      //   },
+      // });
+      // console.log('Upload successful:', response.data);
+      // return response.data; // Return any relevant data from the response
+      const response = true;
+      return response; // Return any relevant data from the response
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error; // Rethrow the error to be caught by the caller
+    }
+  };
+
+  const uploadImagesSequentially = async (images: any, index = 0) => {
+    console.log('images', images?.length);
+    if (index < images.length) {
+      const image = images[index];
+      try {
+        const result = await uploadImage(image);
+        //* Perform any actions with the result if needed
+        console.log(`Processing result for image ${index + 1}:`, result);
+
+        //* Proceed to the next image
+        await uploadImagesSequentially(images, index + 1);
+      } catch (error) {
+        console.error(`Failed to upload image ${index + 1}:`, error);
+        // Handle error as needed, e.g., break out of the loop or show a message
+      }
+    }
   };
 
   return (
@@ -212,8 +279,9 @@ const AddRecentPics: FC = () => {
 
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
-          Title={'Continue'}
           Disabled={false}
+          isLoading={false}
+          Title={'Continue'}
           Navigation={onNextPress}
         />
       </View>

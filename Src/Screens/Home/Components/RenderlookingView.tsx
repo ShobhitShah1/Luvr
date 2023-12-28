@@ -34,7 +34,7 @@ const RenderlookingView: FC<RenderlookingViewProps> = ({item, index}) => {
       }}
       style={[styles.container, {marginHorizontal}]}>
       <ImageBackground
-        source={item.image}
+        source={item?.image}
         resizeMode="cover"
         style={styles.imageView}
         imageStyle={styles.imageStyle}>
@@ -42,7 +42,7 @@ const RenderlookingView: FC<RenderlookingViewProps> = ({item, index}) => {
           colors={COLORS.GradientViewForCards}
           locations={[0, 1]}
           style={styles.gradient}>
-          <Text style={styles.TitleText}>{item.title}</Text>
+          <Text style={styles.TitleText}>{item?.title}</Text>
         </LinearGradient>
       </ImageBackground>
     </TouchableOpacity>

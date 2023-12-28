@@ -1,36 +1,37 @@
-import React, {createContext, useContext, useReducer, ReactNode} from 'react';
-import {UserField, LocalStorageFields} from '../Types/LocalStorageFields';
+import React, {ReactNode, createContext, useContext, useReducer} from 'react';
+import {LocalStorageFields, UserField} from '../Types/LocalStorageFields';
 
 interface UserData {
-  [LocalStorageFields.eventName]: string;
-  [LocalStorageFields.loginType]: string;
-  [LocalStorageFields.userFrom]: string;
-  [LocalStorageFields.mobileNo]: string;
-  [LocalStorageFields.identity]: string;
-  [LocalStorageFields.profileImage]: string;
-  [LocalStorageFields.fullName]: string;
-  [LocalStorageFields.birthdate]: string;
-  [LocalStorageFields.gender]: string;
-  [LocalStorageFields.city]: string;
-  [LocalStorageFields.orientation]: string[];
+  [LocalStorageFields.eventName]: String;
+  [LocalStorageFields.loginType]: String;
+  [LocalStorageFields.userFrom]: String;
+  [LocalStorageFields.mobileNo]: String;
+  [LocalStorageFields.identity]: String;
+  [LocalStorageFields.profileImage]: String;
+  [LocalStorageFields.fullName]: String;
+  [LocalStorageFields.birthdate]: String;
+  [LocalStorageFields.gender]: String;
+  [LocalStorageFields.city]: String;
+  [LocalStorageFields.orientation]: String[];
   [LocalStorageFields.isOrientationVisible]: boolean;
-  [LocalStorageFields.hoping]: string;
-  [LocalStorageFields.educationDegree]: string;
-  [LocalStorageFields.collegeName]: string;
-  [LocalStorageFields.habitsExercise]: string;
-  [LocalStorageFields.habitsSmoke]: string;
-  [LocalStorageFields.habitsMovies]: string;
-  [LocalStorageFields.habitsDrink]: string;
-  [LocalStorageFields.magicalPersonCommunicationStr]: string;
-  [LocalStorageFields.magicalPersonReceivedLove]: string;
-  [LocalStorageFields.magicalPersonEducationLevel]: string;
-  [LocalStorageFields.magicalPersonStarSign]: string;
-  [LocalStorageFields.likesInto]: string[];
+  [LocalStorageFields.hoping]: String;
+  [LocalStorageFields.educationDegree]: String;
+  [LocalStorageFields.collegeName]: String;
+  [LocalStorageFields.habitsExercise]: String;
+  [LocalStorageFields.habitsSmoke]: String;
+  [LocalStorageFields.habitsMovies]: String;
+  [LocalStorageFields.habitsDrink]: String;
+  [LocalStorageFields.magicalPersonCommunicationStr]: String;
+  [LocalStorageFields.magicalPersonReceivedLove]: String;
+  [LocalStorageFields.magicalPersonEducationLevel]: String;
+  [LocalStorageFields.magicalPersonStarSign]: String;
+  [LocalStorageFields.likesInto]: String[];
   [LocalStorageFields.isBlockContact]: boolean;
   [LocalStorageFields.latitude]: number;
   [LocalStorageFields.longitude]: number;
   [LocalStorageFields.radius]: number;
-  [LocalStorageFields.recentPik]: string[];
+  [LocalStorageFields.recentPik]: String[];
+  [LocalStorageFields.OTP]: number;
 }
 
 interface UserDataContextProps {
@@ -39,7 +40,7 @@ interface UserDataContextProps {
 }
 
 type UserAction =
-  | {type: 'UPDATE_FIELD'; field: UserField; value: string}
+  | {type: 'UPDATE_FIELD'; field: UserField; value: String}
   | {type: 'RESET'};
 
 const initialState: UserData = Object.keys(LocalStorageFields).reduce(

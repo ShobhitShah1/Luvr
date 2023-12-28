@@ -45,13 +45,14 @@ const CountryPickerView: FC<CountryPickerProps> = ({
   setDiallingCode,
   setDefaultDiallingCode,
 }) => {
+  console.log('diallingCode', diallingCode);
   useEffect(() => {
     const fetchCountryCode = async () => {
       try {
         setIsLoading(true);
         const deviceCountryCode = getCountry();
         const country = CountryWithCode.find(c => c.code === deviceCountryCode);
-        if (country) {
+        if (country && !diallingCode) {
           setDiallingCode(country.dialling_code);
           setDefaultDiallingCode(country.dialling_code);
         }

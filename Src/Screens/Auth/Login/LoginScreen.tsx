@@ -1,8 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useEffect} from 'react';
+import React, {FC} from 'react';
 import {ImageBackground, ScrollView, StatusBar, Text, View} from 'react-native';
-import SplashScreen from 'react-native-splash-screen';
 import CommonImages from '../../../Common/CommonImages';
 import CommonLogos from '../../../Common/CommonLogos';
 import LoginButton from '../../../Components/AuthComponents/LoginButton';
@@ -11,13 +10,6 @@ import styles from './styles';
 const LoginScreen: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-
-  useEffect(() => {
-    setTimeout(() => {
-      SplashScreen.hide();
-    }, 1000);
-  }, []);
-
   return (
     <ImageBackground
       resizeMode="cover"

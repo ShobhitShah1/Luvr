@@ -1,5 +1,6 @@
+/* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
-import {FlatList, ScrollView, View} from 'react-native';
+import {FlatList, ImageBackground, ScrollView, Text, View} from 'react-native';
 import HomeLookingForData from '../../Components/Data/HomeData/HomeLookingForData';
 import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
@@ -7,6 +8,69 @@ import RenderlookingView from './Components/RenderlookingView';
 import styles from './styles';
 
 const HomeScreen = () => {
+  const modifyData = (arr: any) => {
+    let finalData = [];
+    let type1 = true;
+
+    let i = 0;
+    while (i < arr.length) {
+      let data = [];
+
+      for (let j = 0; j < (type1 ? 2 : 1) && i < arr.length; j++) {
+        data.push(arr[i]);
+        i += 1;
+      }
+
+      finalData.push({
+        id: Math.random().toString(),
+        data,
+        type: type1 ? 1 : 2,
+      });
+
+      type1 = !type1;
+    }
+
+    return finalData;
+  };
+  const DataToRenderForYou = modifyData(HomeLookingForData);
+
+  const renderForYouView = ({item, index}: any) => {
+    console.log('item', item?.type);
+    if (item.type === 1) {
+      return <HorizontalViewForYou item={item} index={index} />;
+    }
+    if (item.type === 2 && item.data.length === 1) {
+      return <VerticalViewForYou item={item} />;
+    }
+  };
+
+  const HorizontalViewForYou = ({item, index}: any) => (
+    <View style={styles.row}>
+      <RenderlookingView item={item.data[0]} index={index} />
+      <View style={styles.LeftMargin} />
+      <RenderlookingView item={item.data[1]} index={index} />
+    </View>
+  );
+
+  const VerticalViewForYou = ({item}: any) => (
+    <View key={item.data[0].id} style={styles.item2}>
+      <VerticalImageView data={item.data[0]} />
+    </View>
+  );
+
+  const VerticalImageView = ({data}: any) => {
+    console.log('data?.image', data?.image);
+    return (
+      <ImageBackground
+        source={data?.image}
+        resizeMode="cover"
+        style={styles.item1Inner}>
+        {/* <Image source={data?.image} resizeMode="cover" style={styles.fill} /> */}
+        <Text style={styles.VerticalImageViewText}>{data?.title}</Text>
+      </ImageBackground>
+    );
+  };
+
   return (
     <View style={styles.Container}>
       <BottomTabHeader />
@@ -26,41 +90,18 @@ const HomeScreen = () => {
             />
           }
         />
-        {/* <FlatList
+        <FlatList
           style={[styles.FlatListStyle]}
-          data={HomeLookingForData}
+          data={DataToRenderForYou}
+          renderItem={renderForYouView}
           keyExtractor={item => item.id.toString()}
-          renderItem={({item, index}) => {
-            const numColumns = index % 3 === 0 ? 1 : 2;
-
-            return (
-              <View
-                style={[
-                  styles.container,
-                  {width: numColumns === 1 ? '100%' : '47%'},
-                ]}>
-                <ImageBackground
-                  source={item.image}
-                  resizeMode="cover"
-                  style={styles.imageView}
-                  imageStyle={styles.imageStyle}>
-                  <LinearGradient
-                    colors={COLORS.GradientViewForCards}
-                    locations={[0, 1]}
-                    style={styles.gradient}>
-                    <Text style={styles.TitleText}>{item.title}</Text>
-                  </LinearGradient>
-                </ImageBackground>
-              </View>
-            );
-          }}
           ListHeaderComponent={
             <CategoryHeaderView
               Title="For you"
               Description="Based on your profile"
             />
           }
-        /> */}
+        />
       </ScrollView>
     </View>
   );

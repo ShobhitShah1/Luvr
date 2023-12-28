@@ -1,10 +1,21 @@
 import {createStore, combineReducers} from 'redux';
+import {persistReducer, persistStore} from 'redux-persist';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Use @react-native-async-storage/async-storage for React Native
+
 import userReducer from '../Reducer/userReducer';
 
 const rootReducer = combineReducers({
   user: userReducer,
 });
 
-const store = createStore(rootReducer);
+const persistConfig = {
+  key: 'root',
+  storage: AsyncStorage,
+};
 
-export default store;
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+const store = createStore(persistedReducer);
+const persistor = persistStore(store);
+
+export {store, persistor};
