@@ -38,7 +38,7 @@ import styles from './styles';
 
 const PhoneNumber: FC = () => {
   const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+    useNavigation<NativeStackNavigationProp<{NumberVerification: {}}>>();
   const isFocused = useIsFocused();
 
   const userData = useSelector((state: any) => state?.user);
@@ -162,28 +162,28 @@ const PhoneNumber: FC = () => {
           'Please check your device for OTP',
           'success',
         );
-
-        navigation.navigate('LoginStack', {
-          screen: 'OTP',
-          params: {
-            number: PhoneNumberString,
-          },
-        });
-
-        setTimeout(() => {
-          dispatch(updateField(LocalStorageFields.mobileNo, PhoneNumberString));
+        await Promise.all([
+          dispatch(updateField(LocalStorageFields.mobileNo, PhoneNumberString)),
           dispatch(
             updateField(
               LocalStorageFields.phoneNumberCountryCode,
               `${diallingCode || defaultDiallingCode}`,
             ),
-          );
+          ),
           dispatch(
             updateField(
               LocalStorageFields.phoneNumberWithoutCode,
               StorePhoneNumber,
             ),
-          );
+          ),
+        ]);
+        setTimeout(() => {
+          navigation.navigate('NumberVerification', {
+            screen: 'OTP',
+            params: {
+              number: PhoneNumberString,
+            },
+          });
         }, 0);
       } else {
         showToast(

@@ -9,7 +9,7 @@ import styles from './styles';
 
 const LoginScreen: FC = () => {
   const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+    useNavigation<NativeStackNavigationProp<{NumberVerification: {}}>>();
   return (
     <ImageBackground
       resizeMode="cover"
@@ -37,7 +37,7 @@ const LoginScreen: FC = () => {
               Title="LOGIN WITH PHONE NUMBER"
               Icon={CommonLogos.EmailLoginLogo}
               onPress={() => {
-                navigation.navigate('LoginStack', {
+                navigation.navigate('NumberVerification', {
                   screen: 'PhoneNumber',
                 });
               }}
@@ -46,7 +46,7 @@ const LoginScreen: FC = () => {
               Title="LOGIN WITH GOOGLE"
               Icon={CommonLogos.GoogleLogo}
               onPress={() => {
-                navigation.navigate('LoginStack', {
+                navigation.navigate('NumberVerification', {
                   screen: 'PhoneNumber',
                 });
               }}
@@ -55,7 +55,7 @@ const LoginScreen: FC = () => {
               Title="LOGIN WITH FACEBOOK"
               Icon={CommonLogos.FacebookLogo}
               onPress={() => {
-                navigation.navigate('LoginStack', {
+                navigation.navigate('NumberVerification', {
                   screen: 'PhoneNumber',
                 });
               }}

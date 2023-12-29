@@ -1,13 +1,9 @@
-import {useState, useEffect} from 'react';
-import {Platform, Linking, Alert, BackHandler} from 'react-native';
-import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import {useState} from 'react';
+import {Alert, BackHandler, Linking, Platform} from 'react-native';
+import {PERMISSIONS, RESULTS, check, request} from 'react-native-permissions';
 
 export const useLocationPermission = () => {
   const [locationPermission, setLocationPermission] = useState(false);
-
-  useEffect(() => {
-    checkLocationPermission();
-  }, []);
 
   const checkLocationPermission = async () => {
     try {
@@ -17,12 +13,14 @@ export const useLocationPermission = () => {
           : PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
 
       const result = await check(permission);
-      console.log('result', result);
+      console.log('📍 Location Permission Status:', result);
       if (result === RESULTS.GRANTED) {
         setLocationPermission(true);
       }
+      return result === RESULTS.GRANTED;
     } catch (error) {
       console.error('Error checking location permission:', error);
+      return false;
     }
   };
 
@@ -39,7 +37,10 @@ export const useLocationPermission = () => {
         return true;
       } else {
         const requestPermission = await request(permission);
-        console.log('requestPermission', requestPermission);
+        console.log(
+          '📍 Location Permission Request Status:',
+          requestPermission,
+        );
         const isPermissionGranted = requestPermission === RESULTS.GRANTED;
         setLocationPermission(isPermissionGranted);
 
@@ -76,6 +77,7 @@ export const useLocationPermission = () => {
   return {
     locationPermission,
     requestLocationPermission,
+    checkLocationPermission,
     showAlertAndNavigateToSettings,
   };
 };

@@ -54,17 +54,17 @@ const IdentifyYourSelf: FC = () => {
 
   const genders = ['Man', 'Woman', 'Other'];
 
-  useEffect(() => {
-    const handleBackPress = () => {
-      return true;
-    };
+  // useEffect(() => {
+  //   const handleBackPress = () => {
+  //     return true;
+  //   };
 
-    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+  //   BackHandler.addEventListener('hardwareBackPress', handleBackPress);
 
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
-    };
-  }, []);
+  //   return () => {
+  //     BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+  //   };
+  // }, []);
 
   //* Navigation
   const navigation =
@@ -88,16 +88,6 @@ const IdentifyYourSelf: FC = () => {
     setSelectedGender(gender);
   };
 
-  console.log(
-    String(`${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`).split('/')[0],
-  );
-  console.log(
-    String(`${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`).split('/')[1],
-  );
-  console.log(
-    String(`${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`).split('/')[2],
-  );
-
   //* Modal Button Navigate To Screen
   const OnLetsGoButtonPress = useCallback(() => {
     Keyboard.dismiss();
@@ -120,15 +110,17 @@ const IdentifyYourSelf: FC = () => {
     }
 
     //* If all required fields are filled, update the context and navigate
-    dispatch(updateField(LocalStorageFields.fullName, FirstName));
-    dispatch(
-      updateField(
-        LocalStorageFields.birthdate,
-        `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`,
-      ),
-    );
-    dispatch(updateField(LocalStorageFields.gender, selectedGender));
-    dispatch(updateField(LocalStorageFields.city, CityName));
+    setTimeout(() => {
+      dispatch(updateField(LocalStorageFields.fullName, FirstName));
+      dispatch(
+        updateField(
+          LocalStorageFields.birthdate,
+          `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`,
+        ),
+      );
+      dispatch(updateField(LocalStorageFields.gender, selectedGender));
+      dispatch(updateField(LocalStorageFields.city, CityName));
+    }, 0);
 
     // handleInputChange(LocalStorageFields.fullName, FirstName);
     // handleInputChange(

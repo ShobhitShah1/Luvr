@@ -25,14 +25,17 @@ import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import {useCustomToast} from '../../../Utils/toastUtils';
 
 const AddDailyHabits: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const requiredHabits = ['drink', 'exercise', 'movies', 'smoke'];
-
+  const {showToast} = useCustomToast();
   const userData = useSelector((state: any) => state?.user);
   const dispatch = useDispatch();
+  const [IsSendRequestLoading, setIsSendRequestLoading] =
+    useState<boolean>(false);
 
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
     requiredHabits.reduce((acc, habit) => {
@@ -125,33 +128,42 @@ const AddDailyHabits: FC = () => {
     );
   };
 
-  const onPressNext = () => {
-    // Check if all required habits are selected
-    const allHabitsSelected = requiredHabits.every(habit =>
-      selectedItems.hasOwnProperty(habit),
-    );
+  const onPressNext = async () => {
+    setIsSendRequestLoading(true);
+    try {
+      const allHabitsSelected = requiredHabits.every(habit =>
+        selectedItems.hasOwnProperty(habit),
+      );
 
-    if (allHabitsSelected) {
-      // Continue with navigation logic if needed
-      navigation.navigate('LoginStack', {
-        screen: 'WhatAboutYou',
-      });
-
-      setTimeout(() => {
-        requiredHabits.forEach(habit => {
-          dispatch(
-            updateField(
-              LocalStorageFields[
-                `habits${habit.charAt(0).toUpperCase() + habit.slice(1)}`
-              ],
-              selectedItems[habit],
-            ),
-          );
-        });
-      }, 0);
-    } else {
-      // Not all required habits are selected, show an alert or handle accordingly
-      Alert.alert('Error', 'Please select all required habits');
+      if (allHabitsSelected) {
+        await Promise.all([
+          requiredHabits.forEach(habit => {
+            dispatch(
+              updateField(
+                LocalStorageFields[
+                  `habits${habit.charAt(0).toUpperCase() + habit.slice(1)}`
+                ],
+                selectedItems[habit],
+              ),
+            );
+          }),
+        ]);
+        setTimeout(() => {
+          navigation.navigate('LoginStack', {
+            screen: 'WhatAboutYou',
+          });
+        }, 0);
+      } else {
+        showToast(
+          'Validation Error',
+          'Please select all required habits',
+          'error',
+        );
+      }
+    } catch (error) {
+      console.log('Catch Error On Next Press Daily Habits:', error);
+    } finally {
+      setIsSendRequestLoading(false);
     }
   };
 
@@ -194,6 +206,7 @@ const AddDailyHabits: FC = () => {
         <GradientButton
           Title={'Continue'}
           Disabled={false}
+          isLoading={IsSendRequestLoading}
           Navigation={() => onPressNext()}
         />
       </View>

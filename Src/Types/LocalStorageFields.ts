@@ -28,7 +28,10 @@ export const LocalStorageFields = {
   longitude: 'longitude',
   radius: 'radius',
   recentPik: 'recentPik',
-  OTP: 'otp',
+  isImageUploaded: 'isImageUploaded',
+  OTP: 'OTP',
+  isVerified: 'isVerified',
+  Token: 'Token',
   phoneNumberWithoutCode: 'phoneNumberWithoutCode',
   phoneNumberCountryCode: 'phoneNumberCountryCode',
 } as const;

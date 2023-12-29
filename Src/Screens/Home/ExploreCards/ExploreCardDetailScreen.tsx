@@ -29,7 +29,6 @@ const ExploreCardDetailScreen = () => {
     useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
 
   const item = CardDetail.params.props || {};
-  console.log('ExploreCardDetailScreen:', item);
 
   return (
     <View style={styles.Container}>
@@ -41,15 +40,7 @@ const ExploreCardDetailScreen = () => {
           bounces={false}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.ScrollViewContentContainerStyle}>
-          <View
-            style={{
-              width: '100%',
-              height: 350,
-              borderRadius: 25,
-              overflow: 'hidden',
-              marginVertical: 10,
-              marginTop: 15,
-            }}>
+          <View style={styles.ProfileImageView}>
             <Image
               resizeMode="cover"
               style={{width: '100%', height: 350}}
@@ -117,7 +108,7 @@ const ExploreCardDetailScreen = () => {
             <View style={styles.MultipleBoxFlexView}>
               {item.interestedIn.map((interestedInItem, index) => {
                 return (
-                  <View style={styles.MultipleBoxView}>
+                  <View key={index} style={styles.MultipleBoxView}>
                     <Text style={styles.MultipleDetailText} key={index}>
                       {interestedInItem}
                     </Text>
@@ -260,6 +251,14 @@ const styles = StyleSheet.create({
     width: '90%',
     alignSelf: 'center',
     paddingBottom: hp('10%'),
+  },
+  ProfileImageView: {
+    width: '100%',
+    height: 350,
+    borderRadius: 25,
+    overflow: 'hidden',
+    marginVertical: 10,
+    marginTop: 15,
   },
   DetailBoxContainerView: {
     width: '100%',

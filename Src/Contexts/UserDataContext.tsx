@@ -1,58 +1,36 @@
 import React, {ReactNode, createContext, useContext, useReducer} from 'react';
 import {LocalStorageFields, UserField} from '../Types/LocalStorageFields';
+import UserDataType from '../Types/UserDataType';
 
-interface UserData {
-  [LocalStorageFields.eventName]: String;
-  [LocalStorageFields.loginType]: String;
-  [LocalStorageFields.userFrom]: String;
-  [LocalStorageFields.mobileNo]: String;
-  [LocalStorageFields.identity]: String;
-  [LocalStorageFields.profileImage]: String;
-  [LocalStorageFields.fullName]: String;
-  [LocalStorageFields.birthdate]: String;
-  [LocalStorageFields.gender]: String;
-  [LocalStorageFields.city]: String;
-  [LocalStorageFields.orientation]: String[];
-  [LocalStorageFields.isOrientationVisible]: boolean;
-  [LocalStorageFields.hoping]: String;
-  [LocalStorageFields.educationDegree]: String;
-  [LocalStorageFields.collegeName]: String;
-  [LocalStorageFields.habitsExercise]: String;
-  [LocalStorageFields.habitsSmoke]: String;
-  [LocalStorageFields.habitsMovies]: String;
-  [LocalStorageFields.habitsDrink]: String;
-  [LocalStorageFields.magicalPersonCommunicationStr]: String;
-  [LocalStorageFields.magicalPersonReceivedLove]: String;
-  [LocalStorageFields.magicalPersonEducationLevel]: String;
-  [LocalStorageFields.magicalPersonStarSign]: String;
-  [LocalStorageFields.likesInto]: String[];
-  [LocalStorageFields.isBlockContact]: boolean;
-  [LocalStorageFields.latitude]: number;
-  [LocalStorageFields.longitude]: number;
-  [LocalStorageFields.radius]: number;
-  [LocalStorageFields.recentPik]: String[];
-  [LocalStorageFields.OTP]: number;
-}
+/**
+
+** Data Will Store In React Native Context
+
+** This Will Help To Track Data While App Open
+
+*! On App Close This Will Not Work
+
+**/
 
 interface UserDataContextProps {
-  userData: UserData;
+  userData: UserDataType;
   dispatch: React.Dispatch<UserAction>;
 }
 
 type UserAction =
-  | {type: 'UPDATE_FIELD'; field: UserField; value: String}
+  | {type: 'UPDATE_FIELD'; field: UserField; value: string}
   | {type: 'RESET'};
 
-const initialState: UserData = Object.keys(LocalStorageFields).reduce(
+const initialState: UserDataType = Object.keys(LocalStorageFields).reduce(
   (acc, field) => ({...acc, [field]: ''}),
-  {} as UserData,
+  {} as UserDataType,
 );
 
 const UserDataContext = createContext<UserDataContextProps | undefined>(
   undefined,
 );
 
-const userReducer = (state: UserData, action: UserAction): UserData => {
+const userReducer = (state: UserDataType, action: UserAction): UserDataType => {
   switch (action.type) {
     case 'UPDATE_FIELD':
       return {...state, [action.field]: action.value};

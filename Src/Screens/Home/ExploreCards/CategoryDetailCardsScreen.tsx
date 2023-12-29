@@ -1,28 +1,27 @@
+import {useRoute} from '@react-navigation/native';
 import React, {FC} from 'react';
 import {FlatList, StatusBar, View} from 'react-native';
+import {COLORS} from '../../../Common/Theme';
 import FakeUserCard from '../../../Components/Data/FakeUserCard';
 import CategoryDetailHeader from './Components/CategoryDetailHeader';
 import CategoryRenderCard from './Components/CategoryRenderCard';
 import styles from './styles';
-import { COLORS } from '../../../Common/Theme';
 
 interface CategoryDetailCardsProps {
-  route: {
-    params: {
-      item: {
-        id: number;
-        title: string;
-        image: any;
-      };
+  params: {
+    item: {
+      id: number;
+      title: string;
+      image: any;
     };
   };
 }
 
-const CategoryDetailCardsScreen: FC<CategoryDetailCardsProps> = ({route}) => {
-  const {item} = route.params;
+const CategoryDetailCardsScreen: FC = () => {
+  const {params} = useRoute<CategoryDetailCardsProps>();
   return (
     <View style={styles.Container}>
-      <CategoryDetailHeader item={item} />
+      <CategoryDetailHeader item={params?.item} />
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.Secondary} />
 
       <View>

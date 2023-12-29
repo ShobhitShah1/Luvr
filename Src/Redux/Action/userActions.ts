@@ -15,7 +15,6 @@ export const updateField = (
   field: keyof typeof LocalStorageFields,
   value: any,
 ) => {
-  console.log('updateField:', field, value);
   return {
     type: UPDATE_FIELD,
     field,

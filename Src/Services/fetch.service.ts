@@ -1,4 +1,5 @@
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
+import {store} from '../Redux/Store/store';
 
 interface FetchWrapper {
   get: (
@@ -130,9 +131,9 @@ async function uploadHandler(
       formData.append(key, params[key]);
     }
 
-    const user = 'store.getState().UserReducer.user';
-    const token = user && user?.accessToken;
+    const token = store.getState().user.Token;
 
+    console.log('TOKEN:', token);
     const xhr = new XMLHttpRequest();
     xhr.open('POST', url);
     xhr.setRequestHeader('Authorization', `Basic ${token}`);
@@ -166,11 +167,22 @@ async function makeRequest(
   config?: AxiosRequestConfig,
 ): Promise<any> {
   handleLogs(url, params);
+
+  // Retrieve token from Redux store
+  const token = store.getState().user?.Token;
+
+  // Set the token in the headers
+  const headers = {
+    ...commonConfig.headers,
+    Authorization: `Bearer ${token}`,
+  };
+
   const mergedConfig: AxiosRequestConfig = {
     ...commonConfig,
     method,
     url,
     data: params,
+    headers,
     ...config,
   };
 

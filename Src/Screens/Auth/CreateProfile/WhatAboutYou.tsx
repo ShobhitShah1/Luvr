@@ -24,18 +24,26 @@ import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import {useCustomToast} from '../../../Utils/toastUtils';
 
 const WhatAboutYou: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const userData = useSelector((state: any) => state?.user);
   const dispatch = useDispatch();
+  const {showToast} = useCustomToast();
   const [selectedItems, setSelectedItems] = useState<Record<string, String>>({
     communication_stry: userData.magicalPersonCommunicationStr,
     education_level: userData.magicalPersonEducationLevel,
     recived_love: userData.magicalPersonReceivedLove,
     star_sign: userData.magicalPersonStarSign,
   });
+  console.log(
+    'userData.magicalPersonCommunicationStr',
+    userData.magicalPersonCommunicationStr,
+  );
+  const [IsSendRequestLoading, setIsSendRequestLoading] =
+    useState<boolean>(false);
 
   const handleOptionPress = useCallback(
     (habitId: number, option: string) => {
@@ -90,7 +98,14 @@ const WhatAboutYou: FC = () => {
     );
   };
 
-  const onNextPress = () => {
+  const fieldsToUpdate = [
+    LocalStorageFields.magicalPersonCommunicationStr,
+    LocalStorageFields.magicalPersonEducationLevel,
+    LocalStorageFields.magicalPersonReceivedLove,
+    LocalStorageFields.magicalPersonStarSign,
+  ];
+
+  const onNextPress = async () => {
     const YourIntoFills = [
       'communication_stry',
       'education_level',
@@ -102,39 +117,53 @@ const WhatAboutYou: FC = () => {
       selectedItems.hasOwnProperty(into),
     );
 
+    setIsSendRequestLoading(true);
+    console.log('IsSendRequestLoading:', IsSendRequestLoading);
+
     if (allIntoSelected) {
       console.log('selectedItems', selectedItems);
-      navigation.navigate('LoginStack', {
-        screen: 'YourIntro',
-      });
-      setTimeout(() => {
-        dispatch(
-          updateField(
-            LocalStorageFields.magicalPersonCommunicationStr,
-            selectedItems.communication_stry,
+      setTimeout(async () => {
+        await Promise.all([
+          dispatch(
+            updateField(
+              LocalStorageFields.magicalPersonCommunicationStr,
+              selectedItems.communication_stry,
+            ),
           ),
-        );
-        dispatch(
-          updateField(
-            LocalStorageFields.magicalPersonEducationLevel,
-            selectedItems.education_level,
+          dispatch(
+            updateField(
+              LocalStorageFields.magicalPersonEducationLevel,
+              selectedItems.education_level,
+            ),
           ),
-        );
-        dispatch(
-          updateField(
-            LocalStorageFields.magicalPersonReceivedLove,
-            selectedItems.recived_love,
+          dispatch(
+            updateField(
+              LocalStorageFields.magicalPersonReceivedLove,
+              selectedItems.recived_love,
+            ),
           ),
-        );
-        dispatch(
-          updateField(
-            LocalStorageFields.magicalPersonStarSign,
-            selectedItems.star_sign,
+          dispatch(
+            updateField(
+              LocalStorageFields.magicalPersonStarSign,
+              selectedItems.star_sign,
+            ),
           ),
-        );
+        ]);
+
+        setIsSendRequestLoading(false);
+        if (!IsSendRequestLoading) {
+          navigation.navigate('LoginStack', {
+            screen: 'YourIntro',
+          });
+        }
       }, 0);
     } else {
-      Alert.alert('Error', 'Please select all required options');
+      setIsSendRequestLoading(false);
+      showToast(
+        'Validation Error',
+        'Please select all required options',
+        'error',
+      );
     }
   };
 
@@ -176,7 +205,11 @@ const WhatAboutYou: FC = () => {
         <GradientButton
           Title={'Continue'}
           Disabled={false}
-          Navigation={() => onNextPress()}
+          isLoading={IsSendRequestLoading}
+          Navigation={() => {
+            setIsSendRequestLoading(true);
+            onNextPress();
+          }}
         />
       </View>
     </View>

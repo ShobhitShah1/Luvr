@@ -4,17 +4,16 @@ import axios from 'axios';
 import React, {FC, useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
+import {useDispatch} from 'react-redux';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import OtpInput from '../../../Components/AuthComponents/OtpInput';
+import ApiConfig from '../../../Config/ApiConfig';
+import {useLocationPermission} from '../../../Hooks/useLocationPermission';
+import {updateField} from '../../../Redux/Action/userActions';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import styles from './styles';
-import ApiConfig from '../../../Config/ApiConfig';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {store} from '../../../Redux/Store/store';
-import {updateField} from '../../../Redux/Action/userActions';
-import {useDispatch, useSelector} from 'react-redux';
-import {useLocationPermission} from '../../../Hooks/useLocationPermission';
 interface RouteParams {
   number: string;
 }
@@ -45,6 +44,11 @@ const OTPScreen: FC = () => {
   const VerifyClick = () => {
     if (otp.length === 4) {
       verifyOtp();
+
+      setTimeout(() => {
+        dispatch(updateField(LocalStorageFields.OTP, otp.join('')));
+        dispatch(updateField(LocalStorageFields.isVerified, true));
+      }, 0);
     } else {
       showToast('Invalid OTP', 'Please Verify OTP', 'error');
     }
@@ -67,13 +71,17 @@ const OTPScreen: FC = () => {
           'success',
         );
 
-        const screenToNavigate = locationPermission
-          ? 'IdentifyYourSelf'
-          : 'LocationPermission';
-        navigation.replace('LoginStack', {screen: screenToNavigate});
+        await Promise.all([
+          dispatch(updateField(LocalStorageFields.OTP, otp.join(''))),
+          dispatch(updateField(LocalStorageFields.isVerified, true)),
+        ]);
 
         setTimeout(() => {
-          dispatch(updateField(LocalStorageFields.OTP, otp.join('')));
+          locationPermission
+            ? navigation.replace('LoginStack', {screen: 'IdentifyYourSelf'})
+            : navigation.replace('LocationStack', {
+                screen: 'LocationPermission',
+              });
         }, 0);
       } else {
         showToast(

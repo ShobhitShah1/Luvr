@@ -1,38 +1,65 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC} from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StatusBar, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonImages from '../../../Common/CommonImages';
 import {COLORS, FONTS} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import {useLocationPermission} from '../../../Hooks/useLocationPermission';
 import CreateProfileStyles from './styles';
+import Geolocation from 'react-native-geolocation-service';
+import {useCustomToast} from '../../../Utils/toastUtils';
+import {updateField} from '../../../Redux/Action/userActions';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {useDispatch} from 'react-redux';
 
 const LocationPermission: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+  const {showToast} = useCustomToast();
+  const dispatch = useDispatch();
   const {locationPermission, requestLocationPermission} =
     useLocationPermission();
 
   const onNextPress = async () => {
     if (locationPermission) {
-      navigateToAvoidContacts();
+      navigateToNextScreen();
     } else {
       const requestPermission = await requestLocationPermission();
       if (requestPermission) {
-        navigateToAvoidContacts();
+        navigateToNextScreen();
       }
     }
   };
 
-  const navigateToAvoidContacts = () => {
-    navigation.replace('LoginStack', {
-      screen: 'IdentifyYourSelf',
-    });
+  const navigateToNextScreen = () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        console.log(position);
+        dispatch(
+          updateField(LocalStorageFields.longitude, position.coords.longitude),
+        );
+        dispatch(
+          updateField(LocalStorageFields.latitude, position.coords.latitude),
+        );
+      },
+      error => {
+        console.log(error.code, error.message);
+        showToast(String(error.code), String(error.message), 'error');
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+    setTimeout(() => {
+      navigation.replace('LoginStack', {
+        screen: 'IdentifyYourSelf',
+      });
+    }, 0);
   };
+
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor={COLORS.Secondary} barStyle={'dark-content'} />
       <View style={styles.MiddleImageView}>
         <Image source={CommonImages.Location} style={styles.LocationImage} />
       </View>

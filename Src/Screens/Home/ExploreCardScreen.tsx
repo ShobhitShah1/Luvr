@@ -18,44 +18,67 @@ import {CardDelay, imageArray} from '../../Config/Setting';
 import useInterval from '../../Hooks/useInterval';
 import BottomTabHeader from './Components/BottomTabHeader';
 import RenderSwiperCard from './Components/RenderSwiperCard';
-
-function* range(start: number, end: number) {
-  for (let i = start; i <= end; i++) {
-    yield i;
-  }
-}
-
-interface Card {
-  images: string[];
-}
+import UserService from '../../Services/AuthService';
+import {useSelector} from 'react-redux';
+import {useCustomToast} from '../../Utils/toastUtils';
+import {SwiperCard} from '../../Types/SwiperCard';
 
 const ExploreCardScreen: FC = () => {
   const {width} = useWindowDimensions();
-  const [cards, setCards] = useState<Card[]>(
-    [...range(1, 50)].map(() => ({images: [...imageArray]})),
-  );
+  const [cards, setCards] = useState<SwiperCard[]>();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [CurrentCardIndex, setCurrentCardIndex] = useState(0);
 
   const [firstImageLoading, setFirstImageLoading] = useState(true);
 
-  const swipeRef = useRef<Swiper<Card>>(null);
+  const swipeRef = useRef<Swiper<SwiperCard>>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
+  const userData = useSelector((state: any) => state?.user);
+  const {showToast} = useCustomToast();
+
+  useEffect(() => {
+    FetchAPIData();
+  }, []);
+
+  const FetchAPIData = async () => {
+    const userDataForApi = {
+      eventName: 'list_neighbour',
+      latitude: 20.7665,
+      longitude: 72.969704,
+      // latitude: userData.latitude,
+      // longitude: userData.longitude,
+      radius: userData.radius,
+    };
+
+    const APIResponse = await UserService.UserRegister(userDataForApi);
+    console.log('APIResponse', APIResponse);
+
+    if (APIResponse?.code === 200) {
+      setCards(APIResponse.data);
+    } else {
+      showToast('Something went wrong', error?.message, 'error');
+    }
+  };
 
   const {startInterval, stopInterval, clearInterval} = useInterval(
     () => {
-      setCurrentImageIndex(prevIndex => (prevIndex + 1) % imageArray.length);
+      if (cards) {
+        setCurrentImageIndex(
+          prevIndex =>
+            (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik?.length ?? 0,
+        );
 
-      Animated.timing(animatedOpacity, {
-        toValue: 1,
-        duration: 1000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }).start();
+        Animated.timing(animatedOpacity, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }).start();
 
-      swipeRef.current?.forceUpdate();
+        swipeRef.current?.forceUpdate();
+      }
     },
-    cards.length > 0 ? CardDelay : null,
+    cards && cards?.length > 0 ? CardDelay : null,
   );
 
   useEffect(() => {
@@ -76,7 +99,7 @@ const ExploreCardScreen: FC = () => {
 
   const OnSwipeAll = () => {
     Alert.alert('All cards swiped');
-    setCards([...range(1, 50)].map(() => ({images: [...imageArray]})));
+    // setCards([...range(1, 50)].map(() => ({images: [...imageArray]})));
     startInterval();
     swipeRef.current?.forceUpdate();
   };
@@ -96,12 +119,12 @@ const ExploreCardScreen: FC = () => {
       <View style={styles.SwiperContainer}>
         <Swiper
           ref={swipeRef}
-          cards={cards}
+          cards={cards ?? []}
           cardIndex={CurrentCardIndex}
           stackSize={2}
           stackSeparation={0}
           horizontalThreshold={width / 2.5}
-          key={cards.length}
+          key={cards?.length ?? 0}
           secondCardZoom={0}
           swipeBackCard={true}
           onSwipedRight={OnSwipeRight}

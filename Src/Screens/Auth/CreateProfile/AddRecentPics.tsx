@@ -3,6 +3,7 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Platform,
   ScrollView,
@@ -23,20 +24,26 @@ import {
   deleteUrlFromItem,
   sortByUrl,
 } from '../../../Utils/ImagePickerUtils';
+import {useCustomToast} from '../../../Utils/toastUtils';
 import AddUserPhoto from './Components/AddUserPhoto';
 import ChooseFromModal from './Components/ChooseFromModal';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 import axios from 'axios';
-import {useCustomToast} from '../../../Utils/toastUtils';
+import {useDispatch, useSelector} from 'react-redux';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {updateField} from '../../../Redux/Action/userActions';
 
 const AddRecentPics: FC = () => {
   const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+    useNavigation<NativeStackNavigationProp<{BottomTab: {}}>>();
   const {showToast} = useCustomToast();
+  const userData = useSelector((state: any) => state?.user);
+  // console.log('userData', userData);
+  const dispatch = useDispatch();
   const {requestCameraPermission} = useCameraPermission();
   const {requestGalleryPermission} = useGalleryPermission();
-
+  const [IsLoading, setIsLoading] = useState<boolean>(false);
   const [ChooseModalVisible, setChooseModalVisible] = useState<boolean>(false);
   const [data, setData] = useState(
     Array.from({length: TotalProfilePicCanUpload}, (_, index) => ({
@@ -54,7 +61,7 @@ const AddRecentPics: FC = () => {
 
   //* Manage Gallery Image Pick
   const HandleGalleryImagePicker = async (Key: string) => {
-    console.log('Key', Key);
+    // console.log('Key', Key);
     try {
       const res = await ImagePicker.launchImageLibrary({
         mediaType: 'photo',
@@ -65,7 +72,7 @@ const AddRecentPics: FC = () => {
 
       const newImages =
         res?.assets?.map((image, index) => ({
-          name: image.fileName,
+          name: image.fileName || '',
           type: image.type || '',
           key: `${Date.now()}-${index}`,
           url: image.uri || '',
@@ -92,7 +99,7 @@ const AddRecentPics: FC = () => {
 
       const newImages =
         res?.assets?.map((image, index) => ({
-          name: image.fileName,
+          name: image.fileName || '',
           type: image.type || '',
           key: `${Date.now()}-${index}`,
           url: image.uri || '',
@@ -126,7 +133,7 @@ const AddRecentPics: FC = () => {
         selectedOption === 'Camera'
           ? await requestCameraPermission()
           : await requestGalleryPermission();
-      console.log('permissionStatus', permissionStatus);
+
       if (permissionStatus) {
         console.log(
           `${selectedOption} permission granted. Opening ${selectedOption.toLowerCase()}...`,
@@ -170,60 +177,76 @@ const AddRecentPics: FC = () => {
   };
 
   const onNextPress = () => {
-    console.log('DATA:', data);
-    const validImages = data.filter(image => image.url);
-    uploadImagesSequentially(validImages)
-      .then(uploadedResults => {
-        console.log('All images uploaded successfully:', uploadedResults);
-        // Do something with the uploaded results, if needed
-        showToast('Image Uploaded', 'Cant Navigate To Next Screen', 'success');
-
-        // setTimeout(() => {
-        //   navigation.navigate('BottomTab', {
-        //     screen: 'Home',
-        //   });
-        // }, 500);
-      })
-      .catch(error => {
-        console.error('Error during image upload:', error);
-        // Handle error as needed
-      });
+    setIsLoading(true);
+    try {
+      const validImages = data.filter(image => image.url);
+      uploadImagesSequentially(validImages)
+        .then(uploadedResults => {
+          console.log('All images uploaded successfully:', uploadedResults);
+          dispatch(updateField(LocalStorageFields.isImageUploaded, true));
+          showToast(
+            'Image Uploaded',
+            'Cant Navigate To Next Screen',
+            'success',
+          );
+          setTimeout(() => {
+            navigation.navigate('BottomTab', {
+              screen: 'Home',
+            });
+          }, 500);
+        })
+        .catch(error => {
+          console.error('Error during image upload:', error);
+        });
+    } catch (error) {
+      console.log('CatchLog Image Upload:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const uploadImage = async (ImageData: any) => {
-    const {uri, type, fileName} = ImageData;
+    const {url, type, name} = ImageData;
     const formData = new FormData();
 
-    if (uri && type && fileName) {
-      formData.append('photo', {
-        uri: Platform.OS === 'android' ? uri : uri.replace('file://', ''),
+    if (url && type && name) {
+      formData.append('eventName', 'update_profile');
+      formData.append('file_to', 'profile_images');
+      formData.append('file', {
+        uri: Platform.OS === 'android' ? url : url.replace('file://', ''),
         type,
-        name: fileName,
+        name: name,
       });
-    }
 
-    try {
-      // const response = await axios.post('YOUR_UPLOAD_ENDPOINT', formData, {
-      //   onUploadProgress: progressEvent => {
-      //     const progress = Math.round(
-      //       (progressEvent.loaded / progressEvent?.total) * 100,
-      //     );
-      //     console.log(`Uploading: ${progress}%`);
-      //     // You can update the progress in your state or perform any other actions.
-      //   },
-      // });
-      // console.log('Upload successful:', response.data);
-      // return response.data; // Return any relevant data from the response
-      const response = true;
-      return response; // Return any relevant data from the response
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      throw error; // Rethrow the error to be caught by the caller
+      try {
+        const response = await axios.post(
+          'https://nirvanatechlabs.in/dating/upload',
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${userData.Token}`,
+              app_secret: '_d_a_t_i_n_g_',
+              'Content-Type': 'multipart/form-data',
+            },
+            onUploadProgress,
+          },
+        );
+
+        console.log('Upload successful:', response.data);
+        return response.data; // Return any relevant data from the response
+      } catch (error) {
+        showToast(
+          'Upload Error',
+          'Something went wrong while uploading image',
+          'error',
+        );
+        console.error('Error uploading image:', error.response.data);
+        throw error.response.data; // Rethrow the error to be caught by the caller
+      }
     }
   };
 
   const uploadImagesSequentially = async (images: any, index = 0) => {
-    console.log('images', images?.length);
     if (index < images.length) {
       const image = images[index];
       try {
@@ -235,9 +258,15 @@ const AddRecentPics: FC = () => {
         await uploadImagesSequentially(images, index + 1);
       } catch (error) {
         console.error(`Failed to upload image ${index + 1}:`, error);
-        // Handle error as needed, e.g., break out of the loop or show a message
       }
     }
+  };
+
+  const onUploadProgress = progressEvent => {
+    const percentCompleted = Math.round(
+      (progressEvent.loaded * 100) / progressEvent.total,
+    );
+    console.log(`Upload Progress: ${percentCompleted}%`);
   };
 
   return (
@@ -255,7 +284,7 @@ const AddRecentPics: FC = () => {
           </Text>
         </View>
 
-        <ScrollView bounces={false} style={styles.FlatListWrapper}>
+        <View style={styles.FlatListWrapper}>
           <FlatList
             data={data}
             numColumns={2}
@@ -266,7 +295,7 @@ const AddRecentPics: FC = () => {
             contentContainerStyle={styles.contentContainerStyle}
             showsVerticalScrollIndicator={false}
           />
-        </ScrollView>
+        </View>
       </View>
 
       <ChooseFromModal
@@ -279,8 +308,8 @@ const AddRecentPics: FC = () => {
 
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
-          Disabled={false}
-          isLoading={false}
+          Disabled={data.filter(image => image.url).length === 0 ? true : false}
+          isLoading={IsLoading}
           Title={'Continue'}
           Navigation={onNextPress}
         />

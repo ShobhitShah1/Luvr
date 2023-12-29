@@ -1,7 +1,14 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {FC, useState} from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -19,7 +26,7 @@ const CategoryRenderCard: FC<RenderlookingViewProps> = ({item, index}) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{ExploreCardDetail: {}}>>();
   const marginHorizontal = index === 1 || index === 3 ? '4%' : 0;
-
+  const [IsImageLoading, setIsImageLoading] = useState(false);
   const OnPressCard = () => {
     navigation.navigate('ExploreCardDetail', {props: item});
   };
@@ -29,11 +36,22 @@ const CategoryRenderCard: FC<RenderlookingViewProps> = ({item, index}) => {
       activeOpacity={1}
       onPress={OnPressCard}
       style={[styles.container, {marginHorizontal}]}>
+      {IsImageLoading && (
+        <View style={styles.ImageLoaderView}>
+          <ActivityIndicator
+            size={30}
+            color={COLORS.Primary}
+            style={styles.Loader}
+          />
+        </View>
+      )}
       <FastImage
         source={{
           uri: item.images[0],
           priority: FastImage.priority.high,
         }}
+        onLoadStart={() => setIsImageLoading(true)}
+        onLoad={() => setIsImageLoading(false)}
         resizeMode="cover"
         style={styles.imageView}>
         <LinearGradient
@@ -140,5 +158,19 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     width: hp('4.6%'),
     height: hp('4.6%'),
+  },
+  ImageLoaderView: {
+    zIndex: 999,
+    top: 0,
+    bottom: 0,
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  Loader: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
   },
 });

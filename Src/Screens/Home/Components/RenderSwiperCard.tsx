@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {COLORS, GROUP_FONT} from '../../../Common/Theme';
+import ApiConfig from '../../../Config/ApiConfig';
+import {SwiperCard} from '../../../Types/SwiperCard';
 
 interface RenderCardProps {
   CurrentCardIndex: number;
@@ -17,13 +19,9 @@ interface RenderCardProps {
   setFirstImageLoading: (loading: boolean) => void;
   firstImageLoading: boolean;
   currentImageIndex: number;
-  cardIndex: Card;
+  cardIndex: SwiperCard;
   startInterval: any;
   stopInterval: any;
-}
-
-interface Card {
-  images: string[];
 }
 
 const RenderSwiperCard: FC<RenderCardProps> = ({
@@ -103,21 +101,30 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
         onPressOut={handlePressOut}>
         <Animated.View style={[styles.card]} {...panResponder.panHandlers}>
           <React.Fragment>
-            <Text style={styles.topCardTitle}>
-              Image Index Is: {currentImageIndex}
-            </Text>
-
             <FastImage
               onLoadStart={ImageLoading}
               onLoad={ImageLoaded}
               onLoadEnd={ImageLoaded}
               resizeMode="cover"
               source={{
-                uri: cardIndex?.images && cardIndex?.images[currentImageIndex],
+                uri:
+                  cardIndex?.recent_pik &&
+                  `${
+                    ApiConfig.IMAGE_BASE_URL +
+                    cardIndex?.recent_pik[currentImageIndex]
+                  }`,
                 priority: FastImage.priority.high,
               }}
               style={styles.ImageStyle}
             />
+
+            <View style={styles.CardBottomDetailView}>
+              <View style={styles.TitleView}>
+                <Text style={styles.TitleText}>
+                  {(cardIndex?.full_name, cardIndex.radius)}
+                </Text>
+              </View>
+            </View>
 
             {firstImageLoading && (
               <View style={styles.LoadingImageView}>
@@ -135,7 +142,10 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
     <View style={[styles.card]}>
       <FastImage
         resizeMode="cover"
-        source={{uri: cardIndex?.images[0], priority: FastImage.priority.high}}
+        source={{
+          uri: cardIndex?.recent_pik[0],
+          priority: FastImage.priority.high,
+        }}
         style={styles.ImageStyle}
       />
     </View>
@@ -148,7 +158,7 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    // alignItems: 'center',
     zIndex: 9999,
   },
   topCard: {
@@ -158,16 +168,24 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: 'hidden',
   },
-  topCardTitle: {
-    position: 'absolute',
-    top: 50,
-    zIndex: 9999,
-    ...GROUP_FONT.h1,
-    color: COLORS.White,
-  },
   ImageStyle: {
     width: '100%',
     height: '100%',
+  },
+  CardBottomDetailView: {
+    bottom: 0,
+    zIndex: 9999,
+    width: '90%',
+    alignSelf: 'center',
+    position: 'absolute',
+  },
+  TitleView: {
+    marginVertical: 5,
+    justifyContent: 'center',
+  },
+  TitleText: {
+    ...GROUP_FONT.h2,
+    color: COLORS.White,
   },
 
   // Loader

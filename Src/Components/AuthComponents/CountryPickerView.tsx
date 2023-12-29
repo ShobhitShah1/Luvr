@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/react-in-jsx-scope */
 import {FC, useEffect} from 'react';
 import {
@@ -24,7 +25,7 @@ import CountryWithCode from '../Data/CountryWithCode';
 
 interface CountryPickerProps {
   value: string | undefined;
-  setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setValue: React.Dispatch<React.SetStateAction<string>>;
   diallingCode: string | null;
   defaultDiallingCode: string | null;
   visible: boolean;
@@ -45,7 +46,6 @@ const CountryPickerView: FC<CountryPickerProps> = ({
   setDiallingCode,
   setDefaultDiallingCode,
 }) => {
-  console.log('diallingCode', diallingCode);
   useEffect(() => {
     const fetchCountryCode = async () => {
       try {

@@ -1,7 +1,15 @@
+/* eslint-disable react-native/no-inline-styles */
 // AddUserPhoto.tsx
 import {BlurView} from '@react-native-community/blur';
-import React from 'react';
-import {Animated, Image, StyleSheet, Text, View} from 'react-native';
+import React, {useState} from 'react';
+import {
+  ActivityIndicator,
+  Animated,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
 import {COLORS, GROUP_FONT, SIZES} from '../../../../Common/Theme';
@@ -21,11 +29,25 @@ type AddUserPhotoProps = {
 
 const AddUserPhoto: React.FC<AddUserPhotoProps> = ({picture}) => {
   const hasPicture = !!picture.url;
-
+  const [IsImageLoading, setIsImageLoading] = useState<boolean>(false);
   return (
     <View style={styles.item} key={picture?.url}>
       <Animated.View style={styles.UserImageContainer}>
+        {IsImageLoading && (
+          <ActivityIndicator
+            color={COLORS.Primary}
+            size={23}
+            style={{
+              zIndex: 9999,
+              position: 'absolute',
+              justifyContent: 'center',
+              alignSelf: 'center',
+            }}
+          />
+        )}
         <Image
+          onLoadStart={() => setIsImageLoading(true)}
+          onLoad={() => setIsImageLoading(false)}
           source={picture?.url ? {uri: picture?.url} : CommonIcons.NoImage}
           resizeMode="cover"
           style={picture?.url ? styles.ImageHasImageView : styles.NoImageView}
@@ -39,38 +61,38 @@ const AddUserPhoto: React.FC<AddUserPhotoProps> = ({picture}) => {
             borderColor: hasPicture ? COLORS.White : COLORS.Black,
           },
         ]}>
-        <BlurView
-          blurType="light"
+        {/* <BlurView
+          // blurType="light"
           blurAmount={1}
           style={styles.BlurView}
-          overlayColor="#ffffff0"
-          reducedTransparencyFallbackColor="#ffffff0">
-          <View style={[styles.AddAndDeleteContainerView]}>
-            <View style={styles.FlexView}>
-              <Image
-                resizeMode="cover"
-                style={[
-                  styles.ImageView,
-                  {
-                    tintColor: hasPicture ? COLORS.White : COLORS.Black,
-                  },
-                ]}
-                source={
-                  hasPicture ? CommonIcons.DeleteImage : CommonIcons.AddImage
-                }
-              />
-              <Text
-                style={[
-                  styles.AddAndRemoveText,
-                  {
-                    color: hasPicture ? COLORS.White : COLORS.Black,
-                  },
-                ]}>
-                {hasPicture ? 'Delete Photo' : 'Add Photo'}
-              </Text>
-            </View>
+          overlayColor="#00000000"
+          reducedTransparencyFallbackColor="#00000000"> */}
+        <View style={[styles.AddAndDeleteContainerView]}>
+          <View style={styles.FlexView}>
+            <Image
+              resizeMode="cover"
+              style={[
+                styles.ImageView,
+                {
+                  tintColor: hasPicture ? COLORS.White : COLORS.Black,
+                },
+              ]}
+              source={
+                hasPicture ? CommonIcons.DeleteImage : CommonIcons.AddImage
+              }
+            />
+            <Text
+              style={[
+                styles.AddAndRemoveText,
+                {
+                  color: hasPicture ? COLORS.White : COLORS.Black,
+                },
+              ]}>
+              {hasPicture ? 'Delete Photo' : 'Add Photo'}
+            </Text>
           </View>
-        </BlurView>
+        </View>
+        {/* </BlurView> */}
       </View>
     </View>
   );

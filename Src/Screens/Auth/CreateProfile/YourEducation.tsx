@@ -12,12 +12,14 @@ import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import {useCustomToast} from '../../../Utils/toastUtils';
 
 const YourEducation: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const KeyboardVisible = useKeyboardVisibility();
   const userData = useSelector((state: any) => state?.user);
+  const {showToast} = useCustomToast();
   const dispatch = useDispatch();
   const [EducationDegree, setEducationDegree] = useState<string>(
     userData.educationDegree,
@@ -37,7 +39,7 @@ const YourEducation: FC = () => {
         dispatch(updateField(LocalStorageFields.collegeName, CollegeName));
       }, 0);
     } else {
-      Alert.alert('Error', 'Please fill all details');
+      showToast('Validation Error', 'Please fill all details', 'error');
     }
   };
   return (
@@ -95,6 +97,7 @@ const YourEducation: FC = () => {
       {!KeyboardVisible && (
         <View style={CreateProfileStyles.BottomButton}>
           <GradientButton
+            isLoading={false}
             Title={'Continue'}
             Disabled={false}
             Navigation={() => onNextPress()}

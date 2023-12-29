@@ -33,10 +33,6 @@ const YourIntro: FC = () => {
     userData.likesInto,
   );
 
-  useEffect(() => {
-    console.log('YourIntro Screen User Data Redux:', userData);
-  }, []);
-
   const handleOptionPress = useCallback((YourIntoID: number, name: string) => {
     setSelectedItems(prevSelection => {
       if (prevSelection.includes(name)) {
@@ -83,17 +79,27 @@ const YourIntro: FC = () => {
     setIsAPILoading(true);
     try {
       if (selectedItems.length === 5) {
-        dispatch(updateField(LocalStorageFields.likesInto, selectedItems));
-        dispatch(
-          updateField(LocalStorageFields.eventName, 'app_user_register'),
-        );
-        dispatch(updateField(LocalStorageFields.loginType, 'non_social'));
+        setTimeout(async () => {
+          await Promise.all([
+            dispatch(updateField(LocalStorageFields.likesInto, selectedItems)),
+            dispatch(
+              updateField(LocalStorageFields.eventName, 'app_user_register'),
+            ),
+            dispatch(updateField(LocalStorageFields.loginType, 'non_social')),
+          ]);
 
-        setTimeout(() => {
+          console.log('DOne');
+
           CallUpdateProfileAPI();
-        }, 500);
+        }, 0);
       } else {
-        throw new Error('Please select exactly 5 items before proceeding.');
+        showToast(
+          'Validation Error',
+          `You have selected ${selectedItems.length} items. ${
+            5 - selectedItems.length
+          } items remaining to reach the total of ${5}.`,
+          'error',
+        );
       }
     } catch (error) {
       console.error('Error during registration:', error);
@@ -103,8 +109,6 @@ const YourIntro: FC = () => {
         `Failed to complete registration. ${error?.message}`,
         'error',
       );
-    } finally {
-      setIsAPILoading(false);
     }
   };
 
@@ -121,6 +125,9 @@ const YourIntro: FC = () => {
           'Registration Successful',
           'Thank you for registering! You can now proceed.',
           'success',
+        );
+        dispatch(
+          updateField(LocalStorageFields.Token, APIResponse.data?.token),
         );
         navigation.replace('LoginStack', {
           screen: 'AddRecentPics',
@@ -140,6 +147,8 @@ const YourIntro: FC = () => {
       );
     }
   };
+
+  console.log('IsLoading', IsAPILoading);
 
   return (
     <View style={CreateProfileStyles.Container}>
@@ -182,7 +191,12 @@ const YourIntro: FC = () => {
           isLoading={IsAPILoading}
           Title={`Next ${selectedItems.length}/5`}
           Disabled={false}
-          Navigation={onPressNext}
+          Navigation={() => {
+            setIsAPILoading(true);
+            setTimeout(() => {
+              onPressNext();
+            }, 0);
+          }}
         />
       </View>
     </View>
