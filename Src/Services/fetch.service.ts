@@ -1,5 +1,6 @@
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import {store} from '../Redux/Store/store';
+import ApiConfig from '../Config/ApiConfig';
 
 interface FetchWrapper {
   get: (
@@ -38,7 +39,7 @@ interface FetchWrapper {
 const commonConfig: AxiosRequestConfig = {
   method: 'post',
   maxBodyLength: Infinity,
-  url: 'https://nirvanatechlabs.in/dating/data',
+  url: `${ApiConfig.BASE_URL}/data`,
   headers: {
     'Content-Type': 'application/json',
     app_secret: '_d_a_t_i_n_g_',
@@ -166,6 +167,7 @@ async function makeRequest(
   params?: Record<string, any>,
   config?: AxiosRequestConfig,
 ): Promise<any> {
+  initToken();
   handleLogs(url, params);
 
   // Retrieve token from Redux store
@@ -192,8 +194,7 @@ async function makeRequest(
 }
 
 function initToken() {
-  const user = 'store.getState().UserReducer.user';
-  const token = user && user?.accessToken;
+  const token = store.getState().user.Token ?? '';
   if (true) {
     console.log('Init Token DEBUG:', token);
   }

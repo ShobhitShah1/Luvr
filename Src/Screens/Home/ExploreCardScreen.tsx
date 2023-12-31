@@ -1,10 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-native/no-inline-styles */
+import NetInfo from '@react-native-community/netinfo';
 import React, {FC, useEffect, useRef, useState} from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Animated,
   Image,
   Platform,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
   useWindowDimensions,
@@ -12,51 +17,79 @@ import {
 import Swiper from 'react-native-deck-swiper';
 import {Easing} from 'react-native-reanimated';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useSelector} from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, GROUP_FONT} from '../../Common/Theme';
-import {CardDelay, imageArray} from '../../Config/Setting';
+import {CardDelay} from '../../Config/Setting';
 import useInterval from '../../Hooks/useInterval';
+import UserService from '../../Services/AuthService';
+import {SwiperCard} from '../../Types/SwiperCard';
+import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from './Components/BottomTabHeader';
 import RenderSwiperCard from './Components/RenderSwiperCard';
-import UserService from '../../Services/AuthService';
-import {useSelector} from 'react-redux';
-import {useCustomToast} from '../../Utils/toastUtils';
-import {SwiperCard} from '../../Types/SwiperCard';
 
 const ExploreCardScreen: FC = () => {
   const {width} = useWindowDimensions();
-  const [cards, setCards] = useState<SwiperCard[]>();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [CurrentCardIndex, setCurrentCardIndex] = useState(0);
-
-  const [firstImageLoading, setFirstImageLoading] = useState(true);
-
   const swipeRef = useRef<Swiper<SwiperCard>>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
 
+  const [cards, setCards] = useState<SwiperCard[]>();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [CurrentCardIndex, setCurrentCardIndex] = useState(0);
+  const [firstImageLoading, setFirstImageLoading] = useState(true);
+  const [IsAPILoading, setIsAPILoading] = useState(false);
+  const [IsNetConnected, setIsNetConnected] = useState(false);
+
   useEffect(() => {
-    FetchAPIData();
+    CheckConnectionAndFetchAPI();
   }, []);
 
+  const CheckConnectionAndFetchAPI = () => {
+    setIsAPILoading(true);
+    NetInfo.addEventListener(state => {
+      if (state.isConnected) {
+        FetchAPIData();
+        setIsNetConnected(true);
+      } else {
+        showToast(
+          'No Internet Connection',
+          'Please check your internet connection',
+          'error',
+        );
+        setIsNetConnected(true);
+        setIsAPILoading(false);
+      }
+    });
+  };
+
   const FetchAPIData = async () => {
-    const userDataForApi = {
-      eventName: 'list_neighbour',
-      latitude: 20.7665,
-      longitude: 72.969704,
-      // latitude: userData.latitude,
-      // longitude: userData.longitude,
-      radius: userData.radius,
-    };
+    try {
+      const userDataForApi = {
+        eventName: 'list_neighbour',
+        // latitude: 20.7665,
+        // longitude: 72.969704,
+        latitude: userData.latitude,
+        longitude: userData.longitude,
+        radius: userData.radius,
+      };
 
-    const APIResponse = await UserService.UserRegister(userDataForApi);
-    console.log('APIResponse', APIResponse);
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      console.log('APIResponse', APIResponse);
 
-    if (APIResponse?.code === 200) {
-      setCards(APIResponse.data);
-    } else {
-      showToast('Something went wrong', error?.message, 'error');
+      if (APIResponse?.code === 200) {
+        setCards(APIResponse.data);
+        console.log('APIResponse.data', APIResponse.data);
+        swipeRef.current?.forceUpdate();
+        startInterval();
+      } else {
+        showToast('Something went wrong', APIResponse?.message, 'error');
+      }
+    } catch (error) {
+      console.log('Something Went Wrong With Feting API Data');
+    } finally {
+      setIsAPILoading(false);
     }
   };
 
@@ -65,7 +98,7 @@ const ExploreCardScreen: FC = () => {
       if (cards) {
         setCurrentImageIndex(
           prevIndex =>
-            (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik?.length ?? 0,
+            (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik.length ?? 0,
         );
 
         Animated.timing(animatedOpacity, {
@@ -99,8 +132,7 @@ const ExploreCardScreen: FC = () => {
 
   const OnSwipeAll = () => {
     Alert.alert('All cards swiped');
-    // setCards([...range(1, 50)].map(() => ({images: [...imageArray]})));
-    startInterval();
+    FetchAPIData();
     swipeRef.current?.forceUpdate();
   };
 
@@ -112,100 +144,168 @@ const ExploreCardScreen: FC = () => {
     swipeRef.current?.swipeRight();
   };
 
+  const slideDownAnimation = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (cards?.length === 0) {
+      Animated.timing(slideDownAnimation, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [cards, slideDownAnimation]);
+
+  if (IsAPILoading) {
+    return (
+      <React.Fragment>
+        <BottomTabHeader />
+        <View style={[styles.container, styles.LoaderContainer]}>
+          <ActivityIndicator size={'large'} color={COLORS.Primary} />
+        </View>
+      </React.Fragment>
+    );
+  }
+
+  if (IsNetConnected && !IsAPILoading) {
+    <React.Fragment>
+      <BottomTabHeader />
+      <View style={[styles.container, styles.LoaderContainer]}>
+        <ActivityIndicator size={'large'} color={COLORS.Primary} />
+      </View>
+    </React.Fragment>;
+  }
+
   return (
     <View style={styles.container}>
       <BottomTabHeader />
 
-      <View style={styles.SwiperContainer}>
-        <Swiper
-          ref={swipeRef}
-          cards={cards ?? []}
-          cardIndex={CurrentCardIndex}
-          stackSize={2}
-          stackSeparation={0}
-          horizontalThreshold={width / 2.5}
-          key={cards?.length ?? 0}
-          secondCardZoom={0}
-          swipeBackCard={true}
-          onSwipedRight={OnSwipeRight}
-          onSwiped={OnSwiped}
-          onSwipedAll={OnSwipeAll}
-          containerStyle={styles.CardContainerStyle}
-          cardVerticalMargin={0}
-          animateCardOpacity={true}
-          animateOverlayLabelsOpacity={true}
-          backgroundColor={COLORS.Secondary}
-          disableBottomSwipe
-          stackScale={0}
-          cardStyle={styles.swiperStyle}
-          overlayOpacityHorizontalThreshold={1}
-          inputOverlayLabelsOpacityRangeX={
-            Platform.OS === 'ios'
-              ? [-width / 3, -1, 0, 1, width / 3]
-              : [-width / 3, -1, 0, 1, width / 3]
-          }
-          useViewOverflow={true}
-          overlayLabels={{
-            left: {
-              element: (
-                <Image
-                  source={CommonIcons.dislike_button}
-                  style={styles.LeftImage}
+      <View
+        style={[
+          styles.SwiperContainer,
+          {
+            flex: cards?.length !== 0 ? 0.9 : 1,
+          },
+        ]}>
+        {cards?.length !== 0 && IsNetConnected ? (
+          <Swiper
+            ref={swipeRef}
+            cards={cards ?? []}
+            cardIndex={CurrentCardIndex}
+            stackSize={2}
+            stackSeparation={0}
+            horizontalThreshold={width / 2.5}
+            key={cards?.length ?? 0}
+            secondCardZoom={0}
+            swipeBackCard={true}
+            onSwipedRight={OnSwipeRight}
+            onSwiped={OnSwiped}
+            onSwipedAll={OnSwipeAll}
+            containerStyle={styles.CardContainerStyle}
+            cardVerticalMargin={0}
+            animateCardOpacity={true}
+            animateOverlayLabelsOpacity={true}
+            backgroundColor={'transparent'}
+            disableBottomSwipe
+            disableTopSwipe
+            stackScale={0}
+            cardStyle={styles.swiperStyle}
+            overlayOpacityHorizontalThreshold={1}
+            onSwiping={() => stopInterval()}
+            onSwipedAborted={() => startInterval()}
+            inputOverlayLabelsOpacityRangeX={
+              Platform.OS === 'ios'
+                ? [-width / 3, -1, 0, 1, width / 3]
+                : [-width / 3, -1, 0, 1, width / 3]
+            }
+            useViewOverflow={true}
+            overlayLabels={{
+              left: {
+                element: (
+                  <Image
+                    source={CommonIcons.dislike_button}
+                    style={styles.LeftImage}
+                  />
+                ),
+              },
+              right: {
+                element: (
+                  <Image
+                    source={CommonIcons.like_button}
+                    style={styles.RightImage}
+                  />
+                ),
+              },
+            }}
+            renderCard={(cardData: any, card: any) => {
+              console.log('cardData', cardData);
+              return (
+                <RenderSwiperCard
+                  CurrentCardIndex={CurrentCardIndex}
+                  cardData={cardData}
+                  card={card}
+                  firstImageLoading={firstImageLoading}
+                  setFirstImageLoading={setFirstImageLoading}
+                  currentImageIndex={currentImageIndex}
+                  startInterval={startInterval}
+                  stopInterval={stopInterval}
                 />
-              ),
-            },
-            right: {
-              element: (
-                <Image
-                  source={CommonIcons.like_button}
-                  style={styles.RightImage}
-                />
-              ),
-            },
-          }}
-          renderCard={(cardIndex: any, card: any) => {
-            return (
-              <RenderSwiperCard
-                CurrentCardIndex={CurrentCardIndex}
-                cardIndex={cardIndex}
-                card={card}
-                firstImageLoading={firstImageLoading}
-                setFirstImageLoading={setFirstImageLoading}
-                currentImageIndex={currentImageIndex}
-                startInterval={startInterval}
-                stopInterval={stopInterval}
-              />
-            );
-          }}
-        />
+              );
+            }}
+          />
+        ) : (
+          !IsAPILoading &&
+          IsNetConnected && (
+            <View style={styles.EmptyCardView}>
+              <Text style={styles.EmptyCardText}>
+                Your dating compass needs a spin! Adjust your settings and let
+                the matchmaking magic begin. 🧭✨
+              </Text>
+
+              <TouchableOpacity
+                activeOpacity={ActiveOpacity}
+                style={styles.ChangeSettingButton}>
+                <Text style={styles.ChangeSettingText}>Change Setting</Text>
+              </TouchableOpacity>
+            </View>
+          )
+        )}
       </View>
 
       {/* Like And Reject View */}
-      <View style={styles.LikeAndRejectView}>
-        {/* Reject Button */}
-        <TouchableOpacity
-          onPress={SwipeLeft}
-          activeOpacity={ActiveOpacity}
-          style={styles.LikeAndRejectButtonView}>
-          <Image
-            resizeMode="contain"
-            style={styles.DislikeButton}
-            source={CommonIcons.dislike_button}
-          />
-        </TouchableOpacity>
+      {/* <Animated.View
+        style={{
+          ...styles.LikeAndRejectView,
+          transform: [{translateY: slideDownAnimation}],
+        }}> */}
+      {cards?.length !== 0 && IsNetConnected && (
+        <View style={styles.LikeAndRejectView}>
+          {/* Reject Button */}
+          <TouchableOpacity
+            onPress={SwipeLeft}
+            activeOpacity={ActiveOpacity}
+            style={styles.LikeAndRejectButtonView}>
+            <Image
+              resizeMode="contain"
+              style={styles.DislikeButton}
+              source={CommonIcons.dislike_button}
+            />
+          </TouchableOpacity>
 
-        {/* Like Button */}
-        <TouchableOpacity
-          onPress={SwipeRight}
-          activeOpacity={ActiveOpacity}
-          style={styles.LikeAndRejectButtonView}>
-          <Image
-            resizeMode="contain"
-            style={styles.LikeButton}
-            source={CommonIcons.like_button}
-          />
-        </TouchableOpacity>
-      </View>
+          {/* Like Button */}
+          <TouchableOpacity
+            onPress={SwipeRight}
+            activeOpacity={ActiveOpacity}
+            style={styles.LikeAndRejectButtonView}>
+            <Image
+              resizeMode="contain"
+              style={styles.LikeButton}
+              source={CommonIcons.like_button}
+            />
+          </TouchableOpacity>
+        </View>
+      )}
+      {/* </Animated.View> */}
     </View>
   );
 };
@@ -214,6 +314,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.Secondary,
+  },
+  LoaderContainer: {
+    justifyContent: 'center',
   },
   card: {
     flex: 1,
@@ -252,31 +355,30 @@ const styles = StyleSheet.create({
   },
   SwiperContainer: {
     padding: 0,
-    flex: 0.6,
-    marginVertical: hp('2%'),
+    zIndex: 999,
+    marginVertical: 10,
   },
   CardContainerStyle: {
-    // zIndex: 9999,
+    zIndex: 9999,
     alignSelf: 'center',
     justifyContent: 'center',
   },
   swiperStyle: {
-    // width: hp('47%'),
-    height: hp('65%'),
+    height: '100%',
     borderWidth: 1,
     overflow: 'hidden',
     borderRadius: hp('4%'),
+    borderColor: 'transparent',
   },
-
   LikeAndRejectView: {
-    marginTop: hp('67%'),
+    flex: 0.15,
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
   },
   LikeAndRejectButtonView: {
+    alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'center',
   },
   DislikeButton: {
     padding: 0,
@@ -291,6 +393,33 @@ const styles = StyleSheet.create({
     height: hp('12%'),
     justifyContent: 'center',
     alignSelf: 'center',
+  },
+  EmptyCardView: {
+    flex: 1,
+    width: '90%',
+    height: hp('100%'),
+    alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  EmptyCardText: {
+    ...GROUP_FONT.h2,
+    textAlign: 'center',
+    color: COLORS.Primary,
+  },
+  ChangeSettingButton: {
+    top: 20,
+    width: 250,
+    height: 50,
+    alignItems: 'center',
+    borderRadius: hp('4%'),
+    justifyContent: 'center',
+    backgroundColor: COLORS.Primary,
+  },
+  ChangeSettingText: {
+    ...GROUP_FONT.h3,
+    lineHeight: 18,
+    color: COLORS.White,
   },
 });
 

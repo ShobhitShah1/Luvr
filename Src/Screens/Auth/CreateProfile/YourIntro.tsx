@@ -100,10 +100,11 @@ const YourIntro: FC = () => {
           } items remaining to reach the total of ${5}.`,
           'error',
         );
+        setIsAPILoading(false);
       }
     } catch (error) {
       console.error('Error during registration:', error);
-
+      setIsAPILoading(false);
       showToast(
         'Registration Error',
         `Failed to complete registration. ${error?.message}`,
