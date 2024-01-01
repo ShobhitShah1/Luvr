@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, { FC } from 'react';
+import React, {FC} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';

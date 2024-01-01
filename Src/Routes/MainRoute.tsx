@@ -27,9 +27,10 @@ import {
 } from '../Screens/Auth';
 
 // ========================== HOME SCREENS ==========================
+import BottomTab from './BottomTab';
+import ChatScreen from '../Screens/Chat/ChatScreen';
 import CategoryDetailCardsScreen from '../Screens/Home/ExploreCards/CategoryDetailCardsScreen';
 import ExploreCardDetailScreen from '../Screens/Home/ExploreCards/ExploreCardDetailScreen';
-import BottomTab from './BottomTab';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -249,6 +250,7 @@ export default function MainRoute() {
               name="ExploreCardDetail"
               component={ExploreCardDetailScreen}
             />
+            <Stack.Screen name="Chat" component={ChatScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       )}

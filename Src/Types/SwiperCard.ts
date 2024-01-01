@@ -20,4 +20,5 @@ export interface SwiperCard {
   radius: number;
   recent_pik: [];
   user_from: string;
+  location?: string;
 }

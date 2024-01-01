@@ -3,7 +3,7 @@ import CommonImages from '../../../Common/CommonImages';
 export const HomeLookingForData = [
   {
     id: 1,
-    title: 'Long term relationship',
+    title: 'hoping',
     image: CommonImages.WelcomeBackground,
   },
   {

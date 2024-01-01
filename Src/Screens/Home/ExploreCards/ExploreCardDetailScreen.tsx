@@ -14,8 +14,8 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import {CardDetailType} from '../../../Types/CardDetailType';
-import DetailCardHeader from './Components/DetailCardHeader';
 import CommonImages from '../../../Common/CommonImages';
+import DetailCardHeader from './Components/DetailCardHeader';
 
 type DetailCardRouteParams = {
   props: CardDetailType;

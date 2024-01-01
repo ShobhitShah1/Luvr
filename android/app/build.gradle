@@ -101,9 +101,6 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-            ndk {
-                abiFilters "x86", "armeabi-v7a"
-            }
         }
     }
 }

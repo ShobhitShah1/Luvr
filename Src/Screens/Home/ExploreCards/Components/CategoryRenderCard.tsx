@@ -15,10 +15,12 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
 import CommonImages from '../../../../Common/CommonImages';
 import {ActiveOpacity, COLORS, FONTS} from '../../../../Common/Theme';
-import {CardDetailType} from '../../../../Types/CardDetailType';
+import ApiConfig from '../../../../Config/ApiConfig';
+import useCalculateAge from '../../../../Hooks/useCalculateAge';
+import {SwiperCard} from '../../../../Types/SwiperCard';
 
 interface RenderlookingViewProps {
-  item: CardDetailType;
+  item: SwiperCard;
   index: number;
 }
 
@@ -30,6 +32,15 @@ const CategoryRenderCard: FC<RenderlookingViewProps> = ({item, index}) => {
   const OnPressCard = () => {
     navigation.navigate('ExploreCardDetail', {props: item});
   };
+
+  console.log('item', item);
+
+  const ImagePath =
+    item.recent_pik.length !== 0
+      ? {uri: ApiConfig.IMAGE_BASE_URL + item.recent_pik[0]}
+      : CommonImages.WelcomeBackground;
+  const Age = useCalculateAge(item.birthdate);
+  console.log('Age', Age);
 
   return (
     <TouchableOpacity
@@ -46,10 +57,7 @@ const CategoryRenderCard: FC<RenderlookingViewProps> = ({item, index}) => {
         </View>
       )}
       <FastImage
-        source={{
-          uri: item.images[0],
-          priority: FastImage.priority.high,
-        }}
+        source={ImagePath}
         onLoadStart={() => setIsImageLoading(true)}
         onLoad={() => setIsImageLoading(false)}
         resizeMode="cover"
@@ -61,16 +69,16 @@ const CategoryRenderCard: FC<RenderlookingViewProps> = ({item, index}) => {
           <View style={styles.DetailContainerView}>
             <View style={styles.UserInfoView}>
               <Text numberOfLines={2} style={styles.TitleText}>
-                {item.name}, {item.age}
+                {item.full_name ?? 'User'}, {Age ?? 0}
               </Text>
-              {item.location && (
+              {item?.city && (
                 <View style={styles.LocationView}>
                   <Image
                     style={styles.LocationIcon}
                     source={CommonIcons.Location}
                   />
                   <Text numberOfLines={1} style={styles.LocationText}>
-                    {item.location}
+                    {item?.city ?? 'Location'}
                   </Text>
                 </View>
               )}

@@ -65,7 +65,6 @@ const HomeScreen = () => {
         source={data?.image}
         resizeMode="cover"
         style={styles.item1Inner}>
-        {/* <Image source={data?.image} resizeMode="cover" style={styles.fill} /> */}
         <Text style={styles.VerticalImageViewText}>{data?.title}</Text>
       </ImageBackground>
     );
@@ -90,7 +89,7 @@ const HomeScreen = () => {
             />
           }
         />
-        <FlatList
+        {/* <FlatList
           style={[styles.FlatListStyle]}
           data={DataToRenderForYou}
           renderItem={renderForYouView}
@@ -101,7 +100,7 @@ const HomeScreen = () => {
               Description="Based on your profile"
             />
           }
-        />
+        /> */}
       </ScrollView>
     </View>
   );

@@ -4,12 +4,10 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS} from '../Common/Theme';
 import CommonIcons from '../Common/CommonIcons';
-import {
-  ChatRoomScreen,
-  ExploreCard,
-  HomeScreen,
-  ProfileScreen,
-} from '../Screens/Home/index';
+import {HomeScreen} from '../Screens/Home/index';
+import ChatRoomScreen from '../Screens/Chat/ChatRoomScreen';
+import ProfileScreen from '../Screens/Profile/ProfileScreen';
+import ExploreCardScreen from '../Screens/Explore/ExploreCardScreen';
 
 const BottomTab: React.FC = () => {
   const Tab = createBottomTabNavigator();
@@ -36,7 +34,7 @@ const BottomTab: React.FC = () => {
     {name: 'Home', component: HomeScreen, icon: CommonIcons.HomeTab},
     {
       name: 'ExploreCard',
-      component: ExploreCard,
+      component: ExploreCardScreen,
       icon: CommonIcons.FindMatchTab,
     },
     {name: 'ChatRoom', component: ChatRoomScreen, icon: CommonIcons.MessageTab},

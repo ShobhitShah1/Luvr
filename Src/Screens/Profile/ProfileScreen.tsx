@@ -1,14 +1,14 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 
-const ChatRoomScreen = () => {
+const ProfileScreen = () => {
   return (
     <View>
-      <Text>ChatRoomScreen</Text>
+      <Text>ProfileScreen</Text>
     </View>
   );
 };
 
-export default ChatRoomScreen;
+export default ProfileScreen;
 
 const styles = StyleSheet.create({});

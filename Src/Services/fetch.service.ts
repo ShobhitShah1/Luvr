@@ -206,7 +206,7 @@ function initToken() {
 
 function handleResponse(response: AxiosResponse<any>) {
   if (true) {
-    console.log('Response:', response.data);
+    // console.log('Response:', response.data);
   }
 
   if (response && response.data?.code === 200) {

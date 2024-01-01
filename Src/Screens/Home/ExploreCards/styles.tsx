@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import {COLORS} from '../../../Common/Theme';
+import {COLORS, GROUP_FONT} from '../../../Common/Theme';
 
 const styles = StyleSheet.create({
   Container: {
@@ -10,6 +10,21 @@ const styles = StyleSheet.create({
     width: '90%',
     alignSelf: 'center',
   },
+  EmptyListView: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  EmptyListText: {
+    ...GROUP_FONT.h2,
+    textAlign: 'center',
+    color: COLORS.Primary,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.Secondary,
+  },
+  LoaderContainer: {
+    justifyContent: 'center',
+  },
 });
-
 export default styles;

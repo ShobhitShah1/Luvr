@@ -21,6 +21,7 @@ import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import useCalculateAge from '../../../Hooks/useCalculateAge';
 import {SwiperCard} from '../../../Types/SwiperCard';
+import {DummyImage} from '../../../Config/Setting';
 
 interface RenderCardProps {
   CurrentCardIndex: number;
@@ -82,7 +83,6 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
 
     runOnJS(setFirstImageLoading)(true);
 
-    // Simulate loading delay
     setTimeout(() => {
       runOnJS(setFirstImageLoading)(false);
       opacity.value = withSpring(1);
@@ -113,6 +113,21 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
     startInterval();
   };
 
+  const getCardImageUrl = (
+    ImageCardData: any,
+    isFirstCard: any,
+    currentCardNumber: any,
+  ) => {
+    const defaultImageUrl = DummyImage;
+    const imageIndex = isFirstCard ? currentCardNumber : 0;
+
+    return (
+      (ImageCardData?.recent_pik[imageIndex] &&
+        `${ApiConfig.IMAGE_BASE_URL}${ImageCardData?.recent_pik[imageIndex]}`) ||
+      defaultImageUrl
+    );
+  };
+
   return (
     <TouchableWithoutFeedback
       onPressIn={handlePressIn}
@@ -124,11 +139,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
             onLoad={ImageLoaded}
             resizeMode="cover"
             source={{
-              uri: `${
-                ApiConfig.IMAGE_BASE_URL +
-                cardData?.recent_pik[IsFirstCard ? currentImageIndex : 0]
-              }`,
-              priority: FastImage.priority.high,
+              uri: getCardImageUrl(cardData, IsFirstCard, currentImageIndex),
             }}
             style={styles.ImageStyle}
           />
@@ -152,12 +163,12 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
               source={CommonIcons.Location}
             />
             <Text numberOfLines={1} style={styles.LocationText}>
-              {'11 kms away, Goa'}
+              {cardData.city ?? 'Somewhere in earth'}
             </Text>
           </View>
 
           <View style={styles.MultipleBoxFlexView}>
-            {YourInto.map((interestedInItem, index) => {
+            {YourInto?.map((interestedInItem, index) => {
               return (
                 <View key={index} style={styles.MultipleBoxView}>
                   <Text style={styles.MultipleDetailText} key={index}>

@@ -4,7 +4,13 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
 import {COLORS, FONTS} from '../../../Common/Theme';
 
-const BottomTabHeader: FC = () => {
+interface BottomTabHeaderProps {
+  hideSettingAndNotification?: boolean;
+}
+
+const BottomTabHeader: FC<BottomTabHeaderProps> = ({
+  hideSettingAndNotification,
+}) => {
   return (
     <View style={styles.Container}>
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.White} />
@@ -13,22 +19,24 @@ const BottomTabHeader: FC = () => {
           <Text style={styles.TitleText}>App Name</Text>
         </View>
 
-        <View style={styles.IconsView}>
-          <View style={styles.IconWrapper}>
-            <Image
-              style={styles.Icons}
-              resizeMode="contain"
-              source={CommonIcons.Notification}
-            />
+        {!hideSettingAndNotification && (
+          <View style={styles.IconsView}>
+            <View style={styles.IconWrapper}>
+              <Image
+                style={styles.Icons}
+                resizeMode="contain"
+                source={CommonIcons.Notification}
+              />
+            </View>
+            <View style={styles.IconWrapper}>
+              <Image
+                style={styles.Icons}
+                resizeMode="contain"
+                source={CommonIcons.Setting}
+              />
+            </View>
           </View>
-          <View style={styles.IconWrapper}>
-            <Image
-              style={styles.Icons}
-              resizeMode="contain"
-              source={CommonIcons.Setting}
-            />
-          </View>
-        </View>
+        )}
       </View>
     </View>
   );

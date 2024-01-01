@@ -4,6 +4,7 @@ const Gallery_Icon = require('../../Assets/Images/gallery_icon.png');
 const Location = require('../../Assets/Images/location.png');
 const Avoid_Contact = require('../../Assets/Images/avoid_contact.png');
 const LikeCard = require('../../Assets/Images/LikeCard.png');
+const NoChat = require('../../Assets/Images/no_chats_icon.png');
 
 export default {
   WelcomeBackground,
@@ -12,4 +13,5 @@ export default {
   Location,
   Avoid_Contact,
   LikeCard,
+  NoChat,
 };

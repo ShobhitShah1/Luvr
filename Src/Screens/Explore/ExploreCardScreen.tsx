@@ -20,12 +20,12 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useSelector} from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, GROUP_FONT} from '../../Common/Theme';
-import {CardDelay} from '../../Config/Setting';
+import {CardDelay, CardLimit} from '../../Config/Setting';
 import useInterval from '../../Hooks/useInterval';
 import UserService from '../../Services/AuthService';
 import {SwiperCard} from '../../Types/SwiperCard';
 import {useCustomToast} from '../../Utils/toastUtils';
-import BottomTabHeader from './Components/BottomTabHeader';
+import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderSwiperCard from './Components/RenderSwiperCard';
 
 const ExploreCardScreen: FC = () => {
@@ -35,7 +35,8 @@ const ExploreCardScreen: FC = () => {
   const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
 
-  const [cards, setCards] = useState<SwiperCard[]>();
+  const [cards, setCards] = useState([]);
+  const [cardToSkipNumber, setCardToSkipNumber] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [CurrentCardIndex, setCurrentCardIndex] = useState(0);
   const [firstImageLoading, setFirstImageLoading] = useState(true);
@@ -60,6 +61,7 @@ const ExploreCardScreen: FC = () => {
         );
         setIsNetConnected(true);
         setIsAPILoading(false);
+        setCards([]);
       }
     });
   };
@@ -67,24 +69,26 @@ const ExploreCardScreen: FC = () => {
   const FetchAPIData = async () => {
     try {
       const userDataForApi = {
+        limit: CardLimit,
+        skip: cardToSkipNumber,
+        radius: userData.radius,
         eventName: 'list_neighbour',
-        // latitude: 20.7665,
-        // longitude: 72.969704,
         latitude: userData.latitude,
         longitude: userData.longitude,
-        radius: userData.radius,
       };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
-      console.log('APIResponse', APIResponse);
-
       if (APIResponse?.code === 200) {
         setCards(APIResponse.data);
         console.log('APIResponse.data', APIResponse.data);
         swipeRef.current?.forceUpdate();
         startInterval();
       } else {
-        showToast('Something went wrong', APIResponse?.message, 'error');
+        showToast(
+          'Something went wrong',
+          APIResponse?.message ?? 'Please try again letter',
+          'error',
+        );
       }
     } catch (error) {
       console.log('Something Went Wrong With Feting API Data');
@@ -125,15 +129,21 @@ const ExploreCardScreen: FC = () => {
   const OnSwipeRight = (item: any) => {
     console.log('cardIndex:', item);
   };
+
   const OnSwiped = (cardIndex: any) => {
     setCurrentCardIndex(cardIndex + 1);
     setCurrentImageIndex(0);
   };
 
   const OnSwipeAll = () => {
-    Alert.alert('All cards swiped');
-    FetchAPIData();
     swipeRef.current?.forceUpdate();
+    setCardToSkipNumber(cardToSkipNumber + 10);
+    FetchAPIData();
+    showToast(
+      'All cards swiped',
+      'Feting new cards for you (Toast is just for testing)',
+      'success',
+    );
   };
 
   const SwipeLeft = () => {
@@ -187,10 +197,10 @@ const ExploreCardScreen: FC = () => {
             flex: cards?.length !== 0 ? 0.9 : 1,
           },
         ]}>
-        {cards?.length !== 0 && IsNetConnected ? (
+        {cards && cards.length !== 0 && !IsAPILoading && IsNetConnected ? (
           <Swiper
             ref={swipeRef}
-            cards={cards ?? []}
+            cards={cards}
             cardIndex={CurrentCardIndex}
             stackSize={2}
             stackSeparation={0}
@@ -237,12 +247,11 @@ const ExploreCardScreen: FC = () => {
                 ),
               },
             }}
-            renderCard={(cardData: any, card: any) => {
-              console.log('cardData', cardData);
+            renderCard={(item: any, card: any) => {
               return (
                 <RenderSwiperCard
                   CurrentCardIndex={CurrentCardIndex}
-                  cardData={cardData}
+                  cardData={item}
                   card={card}
                   firstImageLoading={firstImageLoading}
                   setFirstImageLoading={setFirstImageLoading}
@@ -264,6 +273,7 @@ const ExploreCardScreen: FC = () => {
 
               <TouchableOpacity
                 activeOpacity={ActiveOpacity}
+                onPress={() => {}}
                 style={styles.ChangeSettingButton}>
                 <Text style={styles.ChangeSettingText}>Change Setting</Text>
               </TouchableOpacity>
@@ -273,11 +283,6 @@ const ExploreCardScreen: FC = () => {
       </View>
 
       {/* Like And Reject View */}
-      {/* <Animated.View
-        style={{
-          ...styles.LikeAndRejectView,
-          transform: [{translateY: slideDownAnimation}],
-        }}> */}
       {cards?.length !== 0 && IsNetConnected && (
         <View style={styles.LikeAndRejectView}>
           {/* Reject Button */}
@@ -292,7 +297,6 @@ const ExploreCardScreen: FC = () => {
             />
           </TouchableOpacity>
 
-          {/* Like Button */}
           <TouchableOpacity
             onPress={SwipeRight}
             activeOpacity={ActiveOpacity}
@@ -305,7 +309,6 @@ const ExploreCardScreen: FC = () => {
           </TouchableOpacity>
         </View>
       )}
-      {/* </Animated.View> */}
     </View>
   );
 };
