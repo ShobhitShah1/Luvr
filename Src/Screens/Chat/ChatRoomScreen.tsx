@@ -23,6 +23,7 @@ const ChatRoomScreen = () => {
       </View>
     );
   };
+
   return (
     <View style={styles.container}>
       <BottomTabHeader hideSettingAndNotification={true} />

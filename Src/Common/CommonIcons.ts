@@ -27,6 +27,7 @@ const message_button = require('../../Assets/Icons/message_button.png');
 const report_profile_icon = require('../../Assets/Icons/report_profile_icon.png');
 const add_contact = require('../../Assets/Icons/add_contact_icon.png');
 const more_option = require('../../Assets/Icons/more_option_icon.png');
+const delete_chat = require('../../Assets/Icons/delete_chat_icon.png');
 
 // Home
 const HomeTab = require('../../Assets/Icons/home_icon_select.png');
@@ -68,6 +69,7 @@ export default {
   report_profile_icon,
   add_contact,
   more_option,
+  delete_chat,
 
   //* Home
   HomeTab,

@@ -155,7 +155,7 @@ const PhoneNumber: FC = () => {
       }${StorePhoneNumber}/AUTOGEN3/OTP1`;
 
       const response = await axios.get(url);
-
+      console.log('response', response);
       if (response.data?.Status === 'Success') {
         showToast(
           'OTP Sent Successfully',

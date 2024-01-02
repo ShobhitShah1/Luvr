@@ -2,7 +2,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import axios from 'axios';
 import React, {FC, useEffect, useState} from 'react';
-import {Text, View} from 'react-native';
+import {Alert, Text, View} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import {useDispatch} from 'react-redux';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
@@ -44,11 +44,6 @@ const OTPScreen: FC = () => {
   const VerifyClick = () => {
     if (otp.length === 4) {
       verifyOtp();
-
-      setTimeout(() => {
-        dispatch(updateField(LocalStorageFields.OTP, otp.join('')));
-        dispatch(updateField(LocalStorageFields.isVerified, true));
-      }, 0);
     } else {
       showToast('Invalid OTP', 'Please Verify OTP', 'error');
     }
@@ -102,6 +97,39 @@ const OTPScreen: FC = () => {
     }
   };
 
+  const handleSendOtp = async () => {
+    setIsAPILoading(true);
+    try {
+      const url = `${ApiConfig.OTP_BASE_URL}${number}/AUTOGEN3/OTP1`;
+
+      const response = await axios.get(url);
+      console.log('response', response);
+      if (response.data?.Status === 'Success') {
+        showToast(
+          'OTP Resend Successfully',
+          'Please check your device for OTP',
+          'success',
+        );
+      } else {
+        showToast(
+          'Server Error',
+          'Something went wrong, try again later',
+          'error',
+        );
+      }
+    } catch (error) {
+      showToast(
+        'Error',
+        'Failed to send otp OTP. Please check your network connection and try again.',
+        'error',
+      );
+      console.error('Error sending OTP:', error);
+      Alert.alert('Error', 'Failed to send OTP. Please try again.');
+    } finally {
+      setIsAPILoading(false);
+    }
+  };
+
   return (
     <View style={styles.Container}>
       <CreateProfileHeader ProgressCount={0} Skip={false} />
@@ -126,7 +154,9 @@ const OTPScreen: FC = () => {
 
         <View style={styles.ResendView}>
           <Text style={styles.NoCodeText}>Didn't you received any code?</Text>
-          <Text style={styles.ResendText}>Resend a new code</Text>
+          <Text onPress={handleSendOtp} style={styles.ResendText}>
+            Resend a new code
+          </Text>
         </View>
       </View>
 

@@ -16,6 +16,8 @@ import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import {CardDetailType} from '../../../Types/CardDetailType';
 import CommonImages from '../../../Common/CommonImages';
 import DetailCardHeader from './Components/DetailCardHeader';
+import {DummyImage} from '../../../Config/Setting';
+import ApiConfig from '../../../Config/ApiConfig';
 
 type DetailCardRouteParams = {
   props: CardDetailType;
@@ -29,10 +31,10 @@ const ExploreCardDetailScreen = () => {
     useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
 
   const item = CardDetail.params.props || {};
-
+  console.log('item', item);
   return (
     <View style={styles.Container}>
-      <DetailCardHeader />
+      <DetailCardHeader props={item} />
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.White} />
 
       <View style={styles.ContentView}>
@@ -44,7 +46,11 @@ const ExploreCardDetailScreen = () => {
             <Image
               resizeMode="cover"
               style={{width: '100%', height: 350}}
-              source={CommonImages.WelcomeBackground}
+              source={{
+                uri: item?.recent_pik
+                  ? `${ApiConfig.IMAGE_BASE_URL}${item.recent_pik[0]}`
+                  : DummyImage,
+              }}
             />
           </View>
 
@@ -60,7 +66,7 @@ const ExploreCardDetailScreen = () => {
                 About me
               </Text>
             </View>
-            <Text style={styles.DetailText}>{item.bio}</Text>
+            <Text style={styles.DetailText}>{item.bio || 'Write BIO'}</Text>
           </View>
 
           {/* Birthday */}
@@ -75,7 +81,7 @@ const ExploreCardDetailScreen = () => {
                 Birthday
               </Text>
             </View>
-            <Text style={styles.DetailText}>{item.birthdate}</Text>
+            <Text style={styles.DetailText}>{item.birthdate || 0}</Text>
           </View>
 
           {/* Looking for */}
@@ -90,33 +96,36 @@ const ExploreCardDetailScreen = () => {
                 Looking for
               </Text>
             </View>
-            <Text style={styles.DetailText}>{item.lookingFor}</Text>
+            <Text style={styles.DetailText}>{item?.hoping}</Text>
           </View>
 
           {/* Interested in */}
-          <View style={styles.DetailBoxContainerView}>
-            <View style={styles.TitleAndIconView}>
-              <Image
-                style={styles.DetailIconsView}
-                resizeMode="contain"
-                source={CommonIcons.interested_in_icon}
-              />
-              <Text style={styles.TitleText} numberOfLines={1}>
-                Interested in
-              </Text>
+          {/* {item?.magical_person.length !== 0 && (
+            <View style={styles.DetailBoxContainerView}>
+              <View style={styles.TitleAndIconView}>
+                <Image
+                  style={styles.DetailIconsView}
+                  resizeMode="contain"
+                  source={CommonIcons.interested_in_icon}
+                />
+                <Text style={styles.TitleText} numberOfLines={1}>
+                  Interested in
+                </Text>
+              </View>
+              <View style={styles.MultipleBoxFlexView}>
+                {item?.magical_person &&
+                  item?.magical_person?.map((interestedInItem, index) => {
+                    return (
+                      <View key={index} style={styles.MultipleBoxView}>
+                        <Text style={styles.MultipleDetailText} key={index}>
+                          {`${interestedInItem}` || 'ERROR 404'}
+                        </Text>
+                      </View>
+                    );
+                  })}
+              </View>
             </View>
-            <View style={styles.MultipleBoxFlexView}>
-              {item.interestedIn.map((interestedInItem, index) => {
-                return (
-                  <View key={index} style={styles.MultipleBoxView}>
-                    <Text style={styles.MultipleDetailText} key={index}>
-                      {interestedInItem}
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
-          </View>
+          )} */}
 
           {/* Location */}
           <View style={styles.DetailBoxContainerView}>
@@ -130,7 +139,7 @@ const ExploreCardDetailScreen = () => {
                 Location
               </Text>
             </View>
-            <Text style={styles.DetailText}>{item.location}</Text>
+            <Text style={styles.DetailText}>{item?.city || 'City'}</Text>
           </View>
 
           {/* Education */}
@@ -145,7 +154,10 @@ const ExploreCardDetailScreen = () => {
                 Education
               </Text>
             </View>
-            <Text style={styles.DetailText}>{item.education}</Text>
+            <Text style={styles.DetailText}>
+              {item.education?.college_name || 'Error 404'},{' '}
+              {item.education?.digree || 'Error 404'}
+            </Text>
           </View>
 
           {/* I like */}
@@ -161,15 +173,16 @@ const ExploreCardDetailScreen = () => {
               </Text>
             </View>
             <View style={styles.MultipleBoxFlexView}>
-              {item.like.map((ILikeItem, index) => {
-                return (
-                  <View key={index} style={styles.MultipleBoxView}>
-                    <Text style={styles.MultipleDetailText} key={index}>
-                      {ILikeItem}
-                    </Text>
-                  </View>
-                );
-              })}
+              {item?.likes_into &&
+                item?.likes_into?.map((ILikeItem, index) => {
+                  return (
+                    <View key={index} style={styles.MultipleBoxView}>
+                      <Text style={styles.MultipleDetailText} key={index}>
+                        {`${ILikeItem}` || 'ERROR 404'}
+                      </Text>
+                    </View>
+                  );
+                })}
             </View>
           </View>
 

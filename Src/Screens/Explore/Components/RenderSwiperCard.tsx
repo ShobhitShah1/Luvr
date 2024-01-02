@@ -147,9 +147,11 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
 
         <View style={styles.CardBottomDetailView}>
           <View style={styles.TitleView}>
-            <Text style={styles.TitleText}>{`${
-              cardData?.full_name ? cardData?.full_name : 'User'
-            }, ${Age}`}</Text>
+            <Text style={styles.TitleText}>
+              {`${cardData?.full_name ? cardData?.full_name : 'User'}, ${
+                Age ? Age : 0
+              }`}
+            </Text>
             <Image
               source={CommonIcons.Verification_Icon}
               style={styles.VerifyIconImage}
@@ -163,7 +165,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
               source={CommonIcons.Location}
             />
             <Text numberOfLines={1} style={styles.LocationText}>
-              {cardData.city ?? 'Somewhere in earth'}
+              {cardData?.city || 'Somewhere in earth'}
             </Text>
           </View>
 

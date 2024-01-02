@@ -1,11 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {FC} from 'react';
-import {chatRoomDataType} from '../../../Types/chatRoomDataType';
 import FastImage from 'react-native-fast-image';
-import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
 import CommonIcons from '../../../Common/CommonIcons';
 import {useNavigation} from '@react-navigation/native';
+import {chatRoomDataType} from '../../../Types/chatRoomDataType';
+import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 interface ChatRoomProps {
   item: chatRoomDataType;
@@ -17,9 +17,10 @@ const RenderChatRoomList: FC<ChatRoomProps> = ({item, index}) => {
 
   return (
     <TouchableOpacity
+      key={index}
       activeOpacity={ActiveOpacity}
       onPress={() => {
-        navigation.navigate('Chat');
+        navigation.navigate('Chat', {ChatData: item});
       }}
       style={styles.ChatRoomContainerView}>
       <View style={styles.ProfilePicView}>

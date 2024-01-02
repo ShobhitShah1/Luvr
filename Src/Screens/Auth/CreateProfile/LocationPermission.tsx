@@ -33,28 +33,44 @@ const LocationPermission: FC = () => {
     }
   };
 
-  const navigateToNextScreen = () => {
-    Geolocation.getCurrentPosition(
-      position => {
-        console.log(position);
-        dispatch(
-          updateField(LocalStorageFields.longitude, position.coords.longitude),
+  const navigateToNextScreen = async () => {
+    try {
+      return new Promise((resolve, reject) => {
+        Geolocation.getCurrentPosition(
+          async position => {
+            const {coords} = position;
+            if (coords) {
+              await Promise.all([
+                dispatch(
+                  updateField(LocalStorageFields.longitude, coords.longitude),
+                ),
+                dispatch(
+                  updateField(LocalStorageFields.latitude, coords.latitude),
+                ),
+              ]);
+
+              setTimeout(() => {
+                navigation.replace('LoginStack', {
+                  screen: 'IdentifyYourSelf',
+                });
+              }, 0);
+            }
+          },
+          error => reject(error),
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
         );
-        dispatch(
-          updateField(LocalStorageFields.latitude, position.coords.latitude),
-        );
-      },
-      error => {
-        console.log(error.code, error.message);
-        showToast(String(error.code), String(error.message), 'error');
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
-    setTimeout(() => {
-      navigation.replace('LoginStack', {
-        screen: 'IdentifyYourSelf',
       });
-    }, 0);
+    } catch (error) {
+      console.error(error, error?.message);
+      showToast(
+        'Something went wrong',
+        String(
+          error?.message ??
+            'Unable to find your location please try gain letter',
+        ),
+        'error',
+      );
+    }
   };
 
   return (

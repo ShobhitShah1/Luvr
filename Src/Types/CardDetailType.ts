@@ -4,10 +4,13 @@ export interface CardDetailType {
   age: number;
   birthdate: string;
   images: string[];
-  location: string;
+  magical_person: string[];
+  recent_pik: [];
+  city: string;
   bio: string;
-  interestedIn: string[];
+  likes_into: string[];
   lookingFor: string;
   like: string[];
   education: string;
+  hoping: string;
 }

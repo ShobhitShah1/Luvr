@@ -194,7 +194,7 @@ async function makeRequest(
 }
 
 function initToken() {
-  const token = store.getState().user.Token ?? '';
+  const token = store.getState().user.Token || '';
   if (true) {
     console.log('Init Token DEBUG:', token);
   }

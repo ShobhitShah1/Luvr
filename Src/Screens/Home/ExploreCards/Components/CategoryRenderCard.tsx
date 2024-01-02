@@ -33,14 +33,11 @@ const CategoryRenderCard: FC<RenderlookingViewProps> = ({item, index}) => {
     navigation.navigate('ExploreCardDetail', {props: item});
   };
 
-  console.log('item', item);
-
   const ImagePath =
     item.recent_pik.length !== 0
       ? {uri: ApiConfig.IMAGE_BASE_URL + item.recent_pik[0]}
       : CommonImages.WelcomeBackground;
   const Age = useCalculateAge(item.birthdate);
-  console.log('Age', Age);
 
   return (
     <TouchableOpacity
@@ -69,7 +66,7 @@ const CategoryRenderCard: FC<RenderlookingViewProps> = ({item, index}) => {
           <View style={styles.DetailContainerView}>
             <View style={styles.UserInfoView}>
               <Text numberOfLines={2} style={styles.TitleText}>
-                {item.full_name ?? 'User'}, {Age ?? 0}
+                {item.full_name || 'User'}, {Age || 0}
               </Text>
               {item?.city && (
                 <View style={styles.LocationView}>
@@ -78,7 +75,7 @@ const CategoryRenderCard: FC<RenderlookingViewProps> = ({item, index}) => {
                     source={CommonIcons.Location}
                   />
                   <Text numberOfLines={1} style={styles.LocationText}>
-                    {item?.city ?? 'Location'}
+                    {item?.city || 'Location'}
                   </Text>
                 </View>
               )}

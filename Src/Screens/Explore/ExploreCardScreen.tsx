@@ -86,7 +86,7 @@ const ExploreCardScreen: FC = () => {
       } else {
         showToast(
           'Something went wrong',
-          APIResponse?.message ?? 'Please try again letter',
+          APIResponse?.message || 'Please try again letter',
           'error',
         );
       }
@@ -102,7 +102,7 @@ const ExploreCardScreen: FC = () => {
       if (cards) {
         setCurrentImageIndex(
           prevIndex =>
-            (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik.length ?? 0,
+            (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik.length || 0,
         );
 
         Animated.timing(animatedOpacity, {
@@ -205,7 +205,7 @@ const ExploreCardScreen: FC = () => {
             stackSize={2}
             stackSeparation={0}
             horizontalThreshold={width / 2.5}
-            key={cards?.length ?? 0}
+            key={cards?.length || 0}
             secondCardZoom={0}
             swipeBackCard={true}
             onSwipedRight={OnSwipeRight}

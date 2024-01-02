@@ -1,5 +1,5 @@
 import {RouteProp, useRoute} from '@react-navigation/native';
-import React from 'react';
+import React, {FC} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
@@ -10,18 +10,18 @@ type DetailCardRouteParams = {
   props: CardDetailType;
 };
 
-const DetailCardHeader = () => {
+const DetailCardHeader: FC<DetailCardRouteParams> = ({props}) => {
   const CardDetail =
     useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
-
-  const item = CardDetail.params.props || {};
+  console.log('props', props);
+  const item = props || CardDetail.params.props;
 
   return (
     <View style={styles.Container}>
       <View style={styles.ContentView}>
         <View style={styles.NameAndBadgeView}>
           <Text style={styles.HeaderText}>
-            {item.name}, {item.age}
+            {item?.full_name || item?.name || 'User'}, {item?.age || 0}
           </Text>
           <Image
             resizeMode="contain"
