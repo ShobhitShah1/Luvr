@@ -174,8 +174,8 @@ const styles = StyleSheet.create({
   },
   TotalPercentageCompletedView: {
     flex: 1,
-    width: '80%',
-    height: 110,
+    width: '85%',
+    height: 120,
     marginTop: 30,
     borderRadius: 20,
     alignSelf: 'center',
@@ -191,8 +191,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   PercentageCountView: {
-    width: 54,
-    height: 54,
+    width: 57,
+    height: 57,
     borderRadius: 100,
     justifyContent: 'center',
     backgroundColor: COLORS.White,

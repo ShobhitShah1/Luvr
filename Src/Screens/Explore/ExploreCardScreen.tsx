@@ -66,11 +66,11 @@ const ExploreCardScreen: FC = () => {
     });
   };
 
-  const FetchAPIData = async () => {
+  const FetchAPIData = async (cardSkipValue: number) => {
     try {
       const userDataForApi = {
         limit: CardLimit,
-        skip: cardToSkipNumber,
+        skip: cardSkipValue || cardToSkipNumber,
         radius: userData.radius,
         eventName: 'list_neighbour',
         latitude: userData.latitude,
@@ -137,8 +137,9 @@ const ExploreCardScreen: FC = () => {
 
   const OnSwipeAll = () => {
     swipeRef.current?.forceUpdate();
+    setIsAPILoading(true);
     setCardToSkipNumber(cardToSkipNumber + 10);
-    FetchAPIData();
+    FetchAPIData(cardToSkipNumber + 10);
     showToast(
       'All cards swiped',
       'Feting new cards for you (Toast is just for testing)',
@@ -201,11 +202,11 @@ const ExploreCardScreen: FC = () => {
           <Swiper
             ref={swipeRef}
             cards={cards}
-            cardIndex={CurrentCardIndex}
+            // cardIndex={CurrentCardIndex}
             stackSize={2}
             stackSeparation={0}
             horizontalThreshold={width / 2.5}
-            key={cards?.length || 0}
+            key={cards?.length}
             secondCardZoom={0}
             swipeBackCard={true}
             onSwipedRight={OnSwipeRight}
@@ -247,12 +248,13 @@ const ExploreCardScreen: FC = () => {
                 ),
               },
             }}
-            renderCard={(item: any, card: any) => {
+            renderCard={(cardData: any, cardIndex: any) => {
+              console.log('item', cardData);
               return (
                 <RenderSwiperCard
                   CurrentCardIndex={CurrentCardIndex}
-                  cardData={item}
-                  card={card}
+                  cardData={cardData}
+                  card={cardIndex}
                   firstImageLoading={firstImageLoading}
                   setFirstImageLoading={setFirstImageLoading}
                   currentImageIndex={currentImageIndex}
@@ -273,7 +275,10 @@ const ExploreCardScreen: FC = () => {
 
               <TouchableOpacity
                 activeOpacity={ActiveOpacity}
-                onPress={() => {}}
+                onPress={() => {
+                  setCardToSkipNumber(0);
+                  FetchAPIData(0);
+                }}
                 style={styles.ChangeSettingButton}>
                 <Text style={styles.ChangeSettingText}>Change Setting</Text>
               </TouchableOpacity>

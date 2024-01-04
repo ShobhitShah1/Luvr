@@ -1,7 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import {RouteProp, useRoute} from '@react-navigation/native';
-import React from 'react';
+import React, {useRef, useState} from 'react';
 import {
+  Animated,
+  Dimensions,
+  FlatList,
   Image,
   ScrollView,
   StatusBar,
@@ -18,6 +21,7 @@ import CommonImages from '../../../Common/CommonImages';
 import DetailCardHeader from './Components/DetailCardHeader';
 import {DummyImage} from '../../../Config/Setting';
 import ApiConfig from '../../../Config/ApiConfig';
+import Paginator from '../../../Components/Paginator';
 
 type DetailCardRouteParams = {
   props: CardDetailType;
@@ -29,12 +33,19 @@ const ExploreCardDetailScreen = () => {
   // const carouselWidth = screenWidth * 0.9;
   const CardDetail =
     useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const CardData = CardDetail.params.props || {};
+  const [CurrentIndex, setCurrentIndex] = useState<number>(0);
 
-  const item = CardDetail.params.props || {};
-  console.log('item', item);
+  const viewableItemsChanged = useRef(({viewableItems}: any) => {
+    setCurrentIndex(viewableItems[0]?.index);
+  }).current;
+
+  const viewConfig = useRef({viewAreaCoveragePercentThreshold: 50}).current;
+
   return (
     <View style={styles.Container}>
-      <DetailCardHeader props={item} />
+      <DetailCardHeader props={CardData} />
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.White} />
 
       <View style={styles.ContentView}>
@@ -43,64 +54,105 @@ const ExploreCardDetailScreen = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.ScrollViewContentContainerStyle}>
           <View style={styles.ProfileImageView}>
-            <Image
-              resizeMode="cover"
-              style={{width: '100%', height: 350}}
-              source={{
-                uri: item?.recent_pik
-                  ? `${ApiConfig.IMAGE_BASE_URL}${item.recent_pik[0]}`
-                  : DummyImage,
+            <FlatList
+              horizontal
+              style={{flex: 1}}
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              data={CardData?.recent_pik}
+              renderItem={({item, index}) => {
+                return (
+                  <View>
+                    <Image
+                      key={index}
+                      resizeMode="cover"
+                      style={styles.UserProfileImages}
+                      source={{
+                        uri: item
+                          ? `${ApiConfig.IMAGE_BASE_URL}${item}`
+                          : DummyImage,
+                      }}
+                    />
+                  </View>
+                );
               }}
+              onScroll={Animated.event(
+                [{nativeEvent: {contentOffset: {x: scrollX}}}],
+                {
+                  useNativeDriver: false,
+                },
+              )}
+              scrollEventThrottle={32}
+              onViewableItemsChanged={viewableItemsChanged}
+              viewabilityConfig={viewConfig}
             />
+          </View>
+          <View
+            style={{
+              // position: 'absolute',
+              // top: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
+              flex: 1,
+            }}>
+            <Paginator data={CardData.recent_pik} scrollX={scrollX} />
           </View>
 
           {/* About Me */}
-          <View style={styles.DetailBoxContainerView}>
-            <View style={styles.TitleAndIconView}>
-              <Image
-                style={styles.DetailIconsView}
-                resizeMode="contain"
-                source={CommonIcons.about_me_icon}
-              />
-              <Text style={styles.TitleText} numberOfLines={1}>
-                About me
+          {CardData?.bio && (
+            <View style={styles.DetailBoxContainerView}>
+              <View style={styles.TitleAndIconView}>
+                <Image
+                  style={styles.DetailIconsView}
+                  resizeMode="contain"
+                  source={CommonIcons.about_me_icon}
+                />
+                <Text style={styles.TitleText} numberOfLines={1}>
+                  About me
+                </Text>
+              </View>
+              <Text style={styles.DetailText}>
+                {CardData?.bio || 'Write BIO'}
               </Text>
             </View>
-            <Text style={styles.DetailText}>{item.bio || 'Write BIO'}</Text>
-          </View>
+          )}
 
           {/* Birthday */}
-          <View style={styles.DetailBoxContainerView}>
-            <View style={styles.TitleAndIconView}>
-              <Image
-                style={styles.DetailIconsView}
-                resizeMode="contain"
-                source={CommonIcons.birthday_icon}
-              />
-              <Text style={styles.TitleText} numberOfLines={1}>
-                Birthday
-              </Text>
+          {CardData?.birthdate && (
+            <View style={styles.DetailBoxContainerView}>
+              <View style={styles.TitleAndIconView}>
+                <Image
+                  style={styles.DetailIconsView}
+                  resizeMode="contain"
+                  source={CommonIcons.birthday_icon}
+                />
+                <Text style={styles.TitleText} numberOfLines={1}>
+                  Birthday
+                </Text>
+              </View>
+              <Text style={styles.DetailText}>{CardData?.birthdate || 0}</Text>
             </View>
-            <Text style={styles.DetailText}>{item.birthdate || 0}</Text>
-          </View>
+          )}
 
           {/* Looking for */}
-          <View style={styles.DetailBoxContainerView}>
-            <View style={styles.TitleAndIconView}>
-              <Image
-                style={styles.DetailIconsView}
-                resizeMode="contain"
-                source={CommonIcons.looking_for_icon}
-              />
-              <Text style={styles.TitleText} numberOfLines={1}>
-                Looking for
-              </Text>
+          {CardData?.hoping && (
+            <View style={styles.DetailBoxContainerView}>
+              <View style={styles.TitleAndIconView}>
+                <Image
+                  style={styles.DetailIconsView}
+                  resizeMode="contain"
+                  source={CommonIcons.looking_for_icon}
+                />
+                <Text style={styles.TitleText} numberOfLines={1}>
+                  Looking for
+                </Text>
+              </View>
+              <Text style={styles.DetailText}>{CardData?.hoping}</Text>
             </View>
-            <Text style={styles.DetailText}>{item?.hoping}</Text>
-          </View>
+          )}
 
           {/* Interested in */}
-          {/* {item?.magical_person.length !== 0 && (
+          {/* {CardData?.magical_person.length !== 0 && (
             <View style={styles.DetailBoxContainerView}>
               <View style={styles.TitleAndIconView}>
                 <Image
@@ -113,8 +165,8 @@ const ExploreCardDetailScreen = () => {
                 </Text>
               </View>
               <View style={styles.MultipleBoxFlexView}>
-                {item?.magical_person &&
-                  item?.magical_person?.map((interestedInItem, index) => {
+                {CardData?.magical_person &&
+                  CardData?.magical_person?.map((interestedInItem, index) => {
                     return (
                       <View key={index} style={styles.MultipleBoxView}>
                         <Text style={styles.MultipleDetailText} key={index}>
@@ -128,63 +180,70 @@ const ExploreCardDetailScreen = () => {
           )} */}
 
           {/* Location */}
-          <View style={styles.DetailBoxContainerView}>
-            <View style={styles.TitleAndIconView}>
-              <Image
-                style={styles.DetailIconsView}
-                resizeMode="contain"
-                source={CommonIcons.location_icon}
-              />
-              <Text style={styles.TitleText} numberOfLines={1}>
-                Location
-              </Text>
+          {CardData?.city && (
+            <View style={styles.DetailBoxContainerView}>
+              <View style={styles.TitleAndIconView}>
+                <Image
+                  style={styles.DetailIconsView}
+                  resizeMode="contain"
+                  source={CommonIcons.location_icon}
+                />
+                <Text style={styles.TitleText} numberOfLines={1}>
+                  Location
+                </Text>
+              </View>
+              <Text style={styles.DetailText}>{CardData?.city || 'City'}</Text>
             </View>
-            <Text style={styles.DetailText}>{item?.city || 'City'}</Text>
-          </View>
+          )}
 
           {/* Education */}
-          <View style={styles.DetailBoxContainerView}>
-            <View style={styles.TitleAndIconView}>
-              <Image
-                style={styles.DetailIconsView}
-                resizeMode="contain"
-                source={CommonIcons.education_icon}
-              />
-              <Text style={styles.TitleText} numberOfLines={1}>
-                Education
-              </Text>
-            </View>
-            <Text style={styles.DetailText}>
-              {item.education?.college_name || 'Error 404'},{' '}
-              {item.education?.digree || 'Error 404'}
-            </Text>
-          </View>
+          {CardData?.education?.college_name &&
+            CardData?.education?.college_name && (
+              <View style={styles.DetailBoxContainerView}>
+                <View style={styles.TitleAndIconView}>
+                  <Image
+                    style={styles.DetailIconsView}
+                    resizeMode="contain"
+                    source={CommonIcons.education_icon}
+                  />
+                  <Text style={styles.TitleText} numberOfLines={1}>
+                    Education
+                  </Text>
+                </View>
+                <Text style={styles.DetailText}>
+                  {CardData?.education?.college_name || 'Error 404'},{' '}
+                  {CardData?.education?.degree || 'Error 404'}
+                </Text>
+              </View>
+            )}
 
           {/* I like */}
-          <View style={styles.DetailBoxContainerView}>
-            <View style={styles.TitleAndIconView}>
-              <Image
-                style={styles.DetailIconsView}
-                resizeMode="contain"
-                source={CommonIcons.i_like_icon}
-              />
-              <Text style={styles.TitleText} numberOfLines={1}>
-                I like
-              </Text>
+          {CardData?.likes_into && CardData?.likes_into[0] !== '' && (
+            <View style={styles.DetailBoxContainerView}>
+              <View style={styles.TitleAndIconView}>
+                <Image
+                  style={styles.DetailIconsView}
+                  resizeMode="contain"
+                  source={CommonIcons.i_like_icon}
+                />
+                <Text style={styles.TitleText} numberOfLines={1}>
+                  I like
+                </Text>
+              </View>
+              <View style={styles.MultipleBoxFlexView}>
+                {CardData?.likes_into &&
+                  CardData?.likes_into?.map((ILikeItem, index) => {
+                    return (
+                      <View key={index} style={styles.MultipleBoxView}>
+                        <Text style={styles.MultipleDetailText} key={index}>
+                          {`${ILikeItem}` || 'ERROR 404'}
+                        </Text>
+                      </View>
+                    );
+                  })}
+              </View>
             </View>
-            <View style={styles.MultipleBoxFlexView}>
-              {item?.likes_into &&
-                item?.likes_into?.map((ILikeItem, index) => {
-                  return (
-                    <View key={index} style={styles.MultipleBoxView}>
-                      <Text style={styles.MultipleDetailText} key={index}>
-                        {`${ILikeItem}` || 'ERROR 404'}
-                      </Text>
-                    </View>
-                  );
-                })}
-            </View>
-          </View>
+          )}
 
           {/* Block And Report Profile */}
           <View style={styles.BlockAndReportProfileView}>
@@ -266,6 +325,7 @@ const styles = StyleSheet.create({
     paddingBottom: hp('10%'),
   },
   ProfileImageView: {
+    flex: 1,
     width: '100%',
     height: 350,
     borderRadius: 25,
@@ -274,7 +334,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   DetailBoxContainerView: {
-    width: '100%',
+    // width: '100%',
     borderRadius: hp('4%'),
     marginVertical: hp('1%'),
     paddingVertical: hp('1.5%'),
@@ -323,6 +383,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: hp('0.8%'),
     color: 'rgba(108, 108, 108, 1)',
+  },
+  UserProfileImages: {
+    width: Dimensions.get('screen').width - 41,
+    height: '100%',
   },
   BlockAndReportProfileView: {
     width: '100%',
