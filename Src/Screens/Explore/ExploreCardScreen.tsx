@@ -4,7 +4,6 @@ import NetInfo from '@react-native-community/netinfo';
 import React, {FC, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Animated,
   Image,
   Platform,
@@ -34,7 +33,7 @@ const ExploreCardScreen: FC = () => {
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
-
+  const swipedUserIds = useSelector(state => state?.user.swipedLeftUserIds);
   const [cards, setCards] = useState([]);
   const [cardToSkipNumber, setCardToSkipNumber] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -42,16 +41,28 @@ const ExploreCardScreen: FC = () => {
   const [firstImageLoading, setFirstImageLoading] = useState(true);
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [IsNetConnected, setIsNetConnected] = useState(false);
+  const slideDownAnimation = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     CheckConnectionAndFetchAPI();
+    console.log('swipedUserIds', swipedUserIds);
   }, []);
+
+  useEffect(() => {
+    if (cards?.length === 0) {
+      Animated.timing(slideDownAnimation, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [cards, slideDownAnimation]);
 
   const CheckConnectionAndFetchAPI = () => {
     setIsAPILoading(true);
     NetInfo.addEventListener(state => {
       if (state.isConnected) {
-        FetchAPIData();
+        FetchAPIData(cardToSkipNumber);
         setIsNetConnected(true);
       } else {
         showToast(
@@ -70,6 +81,7 @@ const ExploreCardScreen: FC = () => {
     try {
       const userDataForApi = {
         limit: CardLimit,
+        unlike: ['65896c8d4cd38a9908e358f8'],
         skip: cardSkipValue || cardToSkipNumber,
         radius: userData.radius,
         eventName: 'list_neighbour',
@@ -126,8 +138,16 @@ const ExploreCardScreen: FC = () => {
     };
   }, [startInterval, clearInterval]);
 
-  const OnSwipeRight = (item: any) => {
-    console.log('cardIndex:', item);
+  const OnSwipeRight = (cardIndex: number) => {
+    console.log('Right Card Index:', cardIndex, cards[cardIndex]);
+    if (cards && cards[cardIndex]?.id) {
+      LikeUserAPI(cards[cardIndex]?.id);
+    }
+  };
+
+  const OnSwipeLeft = (cardIndex: any) => {
+    // store.dispatch(onSwipeLeft(item.userIdKey));
+    console.log('left Card Index:', cards[cardIndex]);
   };
 
   const OnSwiped = (cardIndex: any) => {
@@ -155,17 +175,32 @@ const ExploreCardScreen: FC = () => {
     swipeRef.current?.swipeRight();
   };
 
-  const slideDownAnimation = useRef(new Animated.Value(1)).current;
+  //* User Like API
+  const LikeUserAPI = async (id: string) => {
+    try {
+      const userDataForApi = {
+        eventName: 'like',
+        like_to: id,
+      };
 
-  useEffect(() => {
-    if (cards?.length === 0) {
-      Animated.timing(slideDownAnimation, {
-        toValue: 0,
-        duration: 500,
-        useNativeDriver: true,
-      }).start();
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      if (APIResponse?.code === 200) {
+        setCards(APIResponse.data);
+        console.log('APIResponse.data', APIResponse.data);
+        swipeRef.current?.forceUpdate();
+      } else {
+        showToast(
+          'Something went wrong',
+          APIResponse?.message || 'Please try again letter',
+          'error',
+        );
+      }
+    } catch (error) {
+      console.log('Something Went Wrong With Feting API Data');
+    } finally {
+      setIsAPILoading(false);
     }
-  }, [cards, slideDownAnimation]);
+  };
 
   if (IsAPILoading) {
     return (
@@ -211,6 +246,7 @@ const ExploreCardScreen: FC = () => {
             swipeBackCard={true}
             onSwipedRight={OnSwipeRight}
             onSwiped={OnSwiped}
+            onSwipedLeft={OnSwipeLeft}
             onSwipedAll={OnSwipeAll}
             containerStyle={styles.CardContainerStyle}
             cardVerticalMargin={0}
@@ -249,7 +285,6 @@ const ExploreCardScreen: FC = () => {
               },
             }}
             renderCard={(cardData: any, cardIndex: any) => {
-              console.log('item', cardData);
               return (
                 <RenderSwiperCard
                   CurrentCardIndex={CurrentCardIndex}
