@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import NetInfo from '@react-native-community/netinfo';
-import React, {FC, useEffect, useRef, useState} from 'react';
+import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Animated,
@@ -26,6 +26,8 @@ import {SwiperCard} from '../../Types/SwiperCard';
 import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderSwiperCard from './Components/RenderSwiperCard';
+import {onSwipeLeft} from '../../Redux/Action/userActions';
+import {store} from '../../Redux/Store/store';
 
 const ExploreCardScreen: FC = () => {
   const {width} = useWindowDimensions();
@@ -34,7 +36,7 @@ const ExploreCardScreen: FC = () => {
   const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
   const swipedUserIds = useSelector(state => state?.user.swipedLeftUserIds);
-  const [cards, setCards] = useState([]);
+  const [cards, setCards] = useState<SwiperCard[]>([]);
   const [cardToSkipNumber, setCardToSkipNumber] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [CurrentCardIndex, setCurrentCardIndex] = useState(0);
@@ -42,72 +44,6 @@ const ExploreCardScreen: FC = () => {
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [IsNetConnected, setIsNetConnected] = useState(false);
   const slideDownAnimation = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    CheckConnectionAndFetchAPI();
-    console.log('swipedUserIds', swipedUserIds);
-  }, []);
-
-  useEffect(() => {
-    if (cards?.length === 0) {
-      Animated.timing(slideDownAnimation, {
-        toValue: 0,
-        duration: 500,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [cards, slideDownAnimation]);
-
-  const CheckConnectionAndFetchAPI = () => {
-    setIsAPILoading(true);
-    NetInfo.addEventListener(state => {
-      if (state.isConnected) {
-        FetchAPIData(cardToSkipNumber);
-        setIsNetConnected(true);
-      } else {
-        showToast(
-          'No Internet Connection',
-          'Please check your internet connection',
-          'error',
-        );
-        setIsNetConnected(true);
-        setIsAPILoading(false);
-        setCards([]);
-      }
-    });
-  };
-
-  const FetchAPIData = async (cardSkipValue: number) => {
-    try {
-      const userDataForApi = {
-        limit: CardLimit,
-        unlike: ['65896c8d4cd38a9908e358f8'],
-        skip: cardSkipValue || cardToSkipNumber,
-        radius: userData.radius,
-        eventName: 'list_neighbour',
-        latitude: userData.latitude,
-        longitude: userData.longitude,
-      };
-
-      const APIResponse = await UserService.UserRegister(userDataForApi);
-      if (APIResponse?.code === 200) {
-        setCards(APIResponse.data);
-        console.log('APIResponse.data', APIResponse.data);
-        swipeRef.current?.forceUpdate();
-        startInterval();
-      } else {
-        showToast(
-          'Something went wrong',
-          APIResponse?.message || 'Please try again letter',
-          'error',
-        );
-      }
-    } catch (error) {
-      console.log('Something Went Wrong With Feting API Data');
-    } finally {
-      setIsAPILoading(false);
-    }
-  };
 
   const {startInterval, stopInterval, clearInterval} = useInterval(
     () => {
@@ -131,6 +67,21 @@ const ExploreCardScreen: FC = () => {
   );
 
   useEffect(() => {
+    CheckConnectionAndFetchAPI();
+    console.log('swipedUserIds', swipedUserIds, IsAPILoading);
+  }, []);
+
+  useEffect(() => {
+    if (cards?.length === 0) {
+      Animated.timing(slideDownAnimation, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [cards, slideDownAnimation]);
+
+  useEffect(() => {
     startInterval();
 
     return () => {
@@ -138,6 +89,76 @@ const ExploreCardScreen: FC = () => {
     };
   }, [startInterval, clearInterval]);
 
+  const CheckConnectionAndFetchAPI = useCallback(() => {
+    setIsAPILoading(true);
+    NetInfo.addEventListener(async state => {
+      if (state.isConnected) {
+        setIsNetConnected(state.isConnected);
+      }
+
+      if (state.isConnected) {
+        FetchAPIData(cardToSkipNumber);
+      } else {
+        showToast(
+          'No Internet Connection',
+          'Please check your internet connection',
+          'error',
+        );
+        setIsAPILoading(false);
+        setCards([]);
+      }
+    });
+  }, [
+    cardToSkipNumber,
+    showToast,
+    setIsAPILoading,
+    setCards,
+    setIsNetConnected,
+  ]);
+
+  const FetchAPIData = useCallback(
+    async (cardSkipValue: number | undefined) => {
+      try {
+        const userDataForApi = {
+          limit: CardLimit,
+          unlike: ['65896c8d4cd38a9908e358f8'],
+          skip: cardSkipValue || cardToSkipNumber,
+          radius: userData.radius,
+          eventName: 'list_neighbour',
+          latitude: userData.latitude,
+          longitude: userData.longitude,
+        };
+
+        const APIResponse = await UserService.UserRegister(userDataForApi);
+        if (APIResponse?.code === 200) {
+          setCards(prevCards => [...prevCards, ...APIResponse.data]);
+          console.log('APIResponse.data', APIResponse.data);
+          swipeRef.current?.forceUpdate();
+          startInterval();
+        } else {
+          showToast(
+            'Something went wrong',
+            APIResponse?.message || 'Please try again later',
+            'error',
+          );
+        }
+      } catch (error) {
+        console.log('Something Went Wrong With Fetching API Data');
+      } finally {
+        setIsAPILoading(false);
+      }
+    },
+    [
+      userData,
+      setCards,
+      swipeRef,
+      showToast,
+      setIsAPILoading,
+      cardToSkipNumber,
+    ],
+  );
+
+  //* On Swipe Right Do Something
   const OnSwipeRight = (cardIndex: number) => {
     console.log('Right Card Index:', cardIndex, cards[cardIndex]);
     if (cards && cards[cardIndex]?.id) {
@@ -145,16 +166,28 @@ const ExploreCardScreen: FC = () => {
     }
   };
 
+  //! FOR TEST
+  const generateRandomId = (): string => {
+    return (
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15)
+    );
+  };
+
+  //* On Swipe Left Do Something
   const OnSwipeLeft = (cardIndex: any) => {
-    // store.dispatch(onSwipeLeft(item.userIdKey));
+    const randomId = generateRandomId();
+    store.dispatch(onSwipeLeft(randomId));
     console.log('left Card Index:', cards[cardIndex]);
   };
 
+  //* Card Swiped
   const OnSwiped = (cardIndex: any) => {
     setCurrentCardIndex(cardIndex + 1);
     setCurrentImageIndex(0);
   };
 
+  //* When Swipe All Card Fetch New
   const OnSwipeAll = () => {
     swipeRef.current?.forceUpdate();
     setIsAPILoading(true);
@@ -167,10 +200,12 @@ const ExploreCardScreen: FC = () => {
     );
   };
 
+  //* This Will Just Swipe Left
   const SwipeLeft = () => {
     swipeRef.current?.swipeLeft();
   };
 
+  //* This Will Just Swipe Right
   const SwipeRight = () => {
     swipeRef.current?.swipeRight();
   };
@@ -213,13 +248,19 @@ const ExploreCardScreen: FC = () => {
     );
   }
 
-  if (IsNetConnected && !IsAPILoading) {
-    <React.Fragment>
-      <BottomTabHeader />
-      <View style={[styles.container, styles.LoaderContainer]}>
-        <ActivityIndicator size={'large'} color={COLORS.Primary} />
-      </View>
-    </React.Fragment>;
+  if (!IsNetConnected && !IsAPILoading) {
+    return (
+      <React.Fragment>
+        <BottomTabHeader />
+        <View style={[styles.container, styles.LoaderContainer]}>
+          <Text style={styles.NoNetText}>
+            Unable to establish an internet connection at the moment. Please
+            check your network settings and try again."
+          </Text>
+          {/* <ActivityIndicator size={'large'} color={COLORS.Primary} /> */}
+        </View>
+      </React.Fragment>
+    );
   }
 
   return (
@@ -463,6 +504,13 @@ const styles = StyleSheet.create({
     ...GROUP_FONT.h3,
     lineHeight: 18,
     color: COLORS.White,
+  },
+  NoNetText: {
+    width: '90%',
+    ...GROUP_FONT.h2,
+    textAlign: 'center',
+    alignSelf: 'center',
+    color: COLORS.Primary,
   },
 });
 

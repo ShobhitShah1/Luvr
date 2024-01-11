@@ -17,16 +17,65 @@ import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import calculateDataPercentage from './Components/calculateDataPercentage';
 import useCalculateAge from '../../Hooks/useCalculateAge';
 import CommonIcons from '../../Common/CommonIcons';
+import UserService from '../../Services/AuthService';
+import {useCustomToast} from '../../Utils/toastUtils';
+import {ProfileType} from '../../Types/ProfileType';
+import ApiConfig from '../../Config/ApiConfig';
 
 const ProfileScreen = () => {
   const userData = useSelector((state: any) => state?.user);
+  const {showToast} = useCustomToast();
   const percentage = calculateDataPercentage(userData);
   const Age = useCalculateAge(userData?.birthdate);
   const [IsImageLoading, setIsImageLoading] = useState(false);
+  const [IsAPILoading, setIsAPILoading] = useState(false);
+  const [ProfileData, setProfileData] = useState<ProfileType | undefined>(
+    undefined,
+  );
+
   useEffect(() => {
     console.log('Age', userData?.birthdate, Age);
     console.log('Percentage:', percentage, Math.round(percentage));
-  }, [percentage, userData, Age]);
+    GetProfileData();
+  }, []);
+
+  //* User Like API
+  const GetProfileData = async () => {
+    setIsAPILoading(true);
+    try {
+      const userDataForApi = {
+        eventName: 'get_profile',
+      };
+
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      if (APIResponse?.code === 200) {
+        setProfileData(APIResponse.data);
+        console.log('GetProfileData Data:', APIResponse.data);
+      } else {
+        showToast(
+          'Something went wrong',
+          APIResponse?.message || 'Please try again letter',
+          'error',
+        );
+        setProfileData({} as ProfileType);
+      }
+    } catch (error) {
+      console.log('Something Went Wrong With Feting API Data');
+    } finally {
+      setIsAPILoading(false);
+    }
+  };
+
+  if (IsAPILoading) {
+    return (
+      <React.Fragment>
+        <BottomTabHeader />
+        <View style={[styles.container, styles.LoaderContainer]}>
+          <ActivityIndicator size={'large'} color={COLORS.Primary} />
+        </View>
+      </React.Fragment>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -48,7 +97,9 @@ const ProfileScreen = () => {
                     onLoad={() => setIsImageLoading(false)}
                     style={styles.ProfileImage}
                     source={{
-                      uri: DummyImage,
+                      uri:
+                        ApiConfig.IMAGE_BASE_URL + ProfileData?.recent_pik[0] ||
+                        DummyImage,
                       priority: FastImage.priority.high,
                     }}
                   />
@@ -68,16 +119,17 @@ const ProfileScreen = () => {
 
           <View style={styles.UserNameAndLocationView}>
             <View style={styles.NameAndBadgeView}>
-              <Text
-                style={
-                  styles.UserNameText
-                }>{`${userData?.fullName}, ${Age}`}</Text>
+              <Text style={styles.UserNameText}>{`${
+                ProfileData?.full_name || userData?.fullName
+              }, ${Age || 0}`}</Text>
               <Image
                 source={CommonIcons.Verification_Icon}
                 style={styles.VerifyIcon}
               />
             </View>
-            <Text style={styles.UserCityText}>{userData?.city}</Text>
+            <Text style={styles.UserCityText}>
+              {ProfileData?.city || 'City'}
+            </Text>
           </View>
 
           <View style={styles.TotalPercentageCompletedView}>
@@ -113,6 +165,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.Secondary,
+  },
+  LoaderContainer: {
+    justifyContent: 'center',
   },
   ProfileImage: {
     width: '101%',
