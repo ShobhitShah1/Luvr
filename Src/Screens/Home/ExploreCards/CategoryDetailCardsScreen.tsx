@@ -26,7 +26,9 @@ const CategoryDetailCardsScreen: FC = () => {
   const {params} = useRoute<CategoryDetailCardsProps>();
   const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
-
+  const LeftSwipedUserIds = useSelector(
+    state => state?.user?.swipedLeftUserIds || [],
+  );
   const [CategoryData, setCategoryData] = useState([]);
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [IsNetConnected, setIsNetConnected] = useState(false);
@@ -60,6 +62,7 @@ const CategoryDetailCardsScreen: FC = () => {
         latitude: userData.latitude,
         longitude: userData.longitude,
         radius: 180,
+        unlike: LeftSwipedUserIds,
         hoping: params?.item?.title,
         skip: 0,
         limit: 0,

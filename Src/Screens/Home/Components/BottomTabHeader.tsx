@@ -13,7 +13,11 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
 }) => {
   return (
     <View style={styles.Container}>
-      <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.White} />
+      <StatusBar
+        barStyle={'dark-content'}
+        backgroundColor={COLORS.White}
+        animated={true}
+      />
       <View style={styles.ContentView}>
         <View style={styles.TitleTextView}>
           <Text style={styles.TitleText}>App Name</Text>

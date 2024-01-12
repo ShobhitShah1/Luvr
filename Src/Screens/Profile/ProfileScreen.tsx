@@ -21,12 +21,14 @@ import UserService from '../../Services/AuthService';
 import {useCustomToast} from '../../Utils/toastUtils';
 import {ProfileType} from '../../Types/ProfileType';
 import ApiConfig from '../../Config/ApiConfig';
+import { useNavigation } from '@react-navigation/native';
 
 const ProfileScreen = () => {
   const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
   const percentage = calculateDataPercentage(userData);
   const Age = useCalculateAge(userData?.birthdate);
+  const navigation = useNavigation();
   const [IsImageLoading, setIsImageLoading] = useState(false);
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [ProfileData, setProfileData] = useState<ProfileType | undefined>(
@@ -148,6 +150,7 @@ const ProfileScreen = () => {
             <View style={styles.EditProfileView}>
               <TouchableOpacity
                 activeOpacity={ActiveOpacity}
+                onPress={() => navigation.navigate('EditProfile')}
                 style={styles.EditButtonView}>
                 <Text style={styles.EditButtonText}>Edit profile</Text>
               </TouchableOpacity>

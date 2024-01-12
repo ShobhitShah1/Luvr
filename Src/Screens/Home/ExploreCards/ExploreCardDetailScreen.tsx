@@ -1,7 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import {RouteProp, useRoute} from '@react-navigation/native';
-import React, {useRef, useState} from 'react';
+import {RouteProp, useIsFocused, useRoute} from '@react-navigation/native';
+import React, {useEffect, useRef, useState} from 'react';
 import {
+  ActivityIndicator,
   Animated,
   Dimensions,
   FlatList,
@@ -16,15 +18,17 @@ import {
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
-import {CardDetailType} from '../../../Types/CardDetailType';
-import CommonImages from '../../../Common/CommonImages';
-import DetailCardHeader from './Components/DetailCardHeader';
-import {DummyImage} from '../../../Config/Setting';
-import ApiConfig from '../../../Config/ApiConfig';
 import Paginator from '../../../Components/Paginator';
+import ApiConfig from '../../../Config/ApiConfig';
+import {DummyImage} from '../../../Config/Setting';
+import {CardDetailType} from '../../../Types/CardDetailType';
+import DetailCardHeader from './Components/DetailCardHeader';
+import UserService from '../../../Services/AuthService';
+import {ProfileType} from '../../../Types/ProfileType';
+import {useCustomToast} from '../../../Utils/toastUtils';
 
 type DetailCardRouteParams = {
-  props: CardDetailType;
+  props: ProfileType;
 };
 
 // const screenWidth = Dimensions.get('window').width;
@@ -34,14 +38,62 @@ const ExploreCardDetailScreen = () => {
   const CardDetail =
     useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
   const scrollX = useRef(new Animated.Value(0)).current;
-  const CardData = CardDetail.params.props || {};
+  const {showToast} = useCustomToast();
+  const UserID = CardDetail.params.props?._id || {};
+  const IsFocused = useIsFocused();
   const [CurrentIndex, setCurrentIndex] = useState<number>(0);
+  const [CardData, setCardData] = useState<ProfileType>();
+  const [IsAPILoading, setIsAPILoading] = useState(false);
+
+  useEffect(() => {
+    if (IsFocused) {
+      GetUserData();
+    }
+  }, [IsFocused]);
+
+  const GetUserData = async () => {
+    setIsAPILoading(true);
+    try {
+      const userDataForApi = {
+        eventName: 'get_other_profile',
+        id: UserID,
+      };
+
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      if (APIResponse?.code === 200) {
+        setCardData(APIResponse.data);
+        console.log('GetProfileData Data:', APIResponse.data);
+      } else {
+        showToast(
+          'Something went wrong',
+          APIResponse?.message || 'Please try again letter',
+          'error',
+        );
+        setCardData({} as ProfileType);
+      }
+    } catch (error) {
+      console.log('Something Went Wrong With Feting API Data');
+    } finally {
+      setIsAPILoading(false);
+    }
+  };
 
   const viewableItemsChanged = useRef(({viewableItems}: any) => {
     setCurrentIndex(viewableItems[0]?.index);
   }).current;
 
   const viewConfig = useRef({viewAreaCoveragePercentThreshold: 50}).current;
+
+  if (IsAPILoading) {
+    return (
+      <React.Fragment>
+        <DetailCardHeader props={CardData} />
+        <View style={[styles.Container, styles.LoaderContainer]}>
+          <ActivityIndicator size={'large'} color={COLORS.Primary} />
+        </View>
+      </React.Fragment>
+    );
+  }
 
   return (
     <View style={styles.Container}>
@@ -89,13 +141,11 @@ const ExploreCardDetailScreen = () => {
           </View>
           <View
             style={{
-              // position: 'absolute',
-              // top: 10,
               justifyContent: 'center',
               alignItems: 'center',
               flex: 1,
             }}>
-            <Paginator data={CardData.recent_pik} scrollX={scrollX} />
+            {/* <Paginator data={CardData?.recent_pik || 0} scrollX={scrollX} /> */}
           </View>
 
           {/* About Me */}
@@ -308,6 +358,9 @@ const styles = StyleSheet.create({
   Container: {
     flex: 1,
     backgroundColor: COLORS.Secondary,
+  },
+  LoaderContainer: {
+    justifyContent: 'center',
   },
   ImageCarousel: {
     alignSelf: 'center',

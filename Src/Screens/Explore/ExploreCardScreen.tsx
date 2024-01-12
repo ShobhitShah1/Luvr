@@ -28,23 +28,26 @@ import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderSwiperCard from './Components/RenderSwiperCard';
 import {onSwipeLeft} from '../../Redux/Action/userActions';
 import {store} from '../../Redux/Store/store';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 
 const ExploreCardScreen: FC = () => {
-  const {width} = useWindowDimensions();
+  const {width} = useWindowDimensions() || {};
+  const isFocused = useIsFocused();
   const swipeRef = useRef<Swiper<SwiperCard>>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
-  const swipedUserIds = useSelector(state => state?.user.swipedLeftUserIds);
+  const LeftSwipedUserIds = useSelector(
+    state => state?.user?.swipedLeftUserIds || [],
+  );
   const [cards, setCards] = useState<SwiperCard[]>([]);
   const [cardToSkipNumber, setCardToSkipNumber] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [CurrentCardIndex, setCurrentCardIndex] = useState(0);
   const [firstImageLoading, setFirstImageLoading] = useState(true);
   const [IsAPILoading, setIsAPILoading] = useState(false);
-  const [IsNetConnected, setIsNetConnected] = useState(false);
+  const [IsNetConnected, setIsNetConnected] = useState(true);
   const slideDownAnimation = useRef(new Animated.Value(1)).current;
-
   const {startInterval, stopInterval, clearInterval} = useInterval(
     () => {
       if (cards) {
@@ -67,9 +70,13 @@ const ExploreCardScreen: FC = () => {
   );
 
   useEffect(() => {
-    CheckConnectionAndFetchAPI();
-    console.log('swipedUserIds', swipedUserIds, IsAPILoading);
-  }, []);
+    if (isFocused) {
+      setIsAPILoading(true);
+      setIsNetConnected(true);
+      FetchAPIData(0);
+      setCardToSkipNumber(0);
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     if (cards?.length === 0) {
@@ -86,42 +93,38 @@ const ExploreCardScreen: FC = () => {
 
     return () => {
       clearInterval();
+      stopInterval(); //! Added For Test If Timer Stop's For Found Bug Related To Time Remove This
     };
   }, [startInterval, clearInterval]);
 
-  const CheckConnectionAndFetchAPI = useCallback(() => {
-    setIsAPILoading(true);
-    NetInfo.addEventListener(async state => {
-      if (state.isConnected) {
-        setIsNetConnected(state.isConnected);
-      }
+  // const CheckConnectionAndFetchAPI = useCallback(() => {
+  //   setIsAPILoading(true);
+  //   NetInfo.addEventListener(async state => {
+  //     if (state.isConnected) {
+  //       setIsNetConnected(state.isConnected);
+  //     }
 
-      if (state.isConnected) {
-        FetchAPIData(cardToSkipNumber);
-      } else {
-        showToast(
-          'No Internet Connection',
-          'Please check your internet connection',
-          'error',
-        );
-        setIsAPILoading(false);
-        setCards([]);
-      }
-    });
-  }, [
-    cardToSkipNumber,
-    showToast,
-    setIsAPILoading,
-    setCards,
-    setIsNetConnected,
-  ]);
+  //     if (state.isConnected) {
+  //       FetchAPIData(cardToSkipNumber);
+  //     } else {
+  //       showToast(
+  //         'No Internet Connection',
+  //         'Please check your internet connection',
+  //         'error',
+  //       );
+  //       setIsAPILoading(false);
+  //       setCards([]);
+  //     }
+  //   });
+  // }, []);
 
   const FetchAPIData = useCallback(
     async (cardSkipValue: number | undefined) => {
       try {
+        console.log(LeftSwipedUserIds);
         const userDataForApi = {
           limit: CardLimit,
-          unlike: ['65896c8d4cd38a9908e358f8'],
+          unlike: LeftSwipedUserIds,
           skip: cardSkipValue || cardToSkipNumber,
           radius: userData.radius,
           eventName: 'list_neighbour',
@@ -130,11 +133,35 @@ const ExploreCardScreen: FC = () => {
         };
 
         const APIResponse = await UserService.UserRegister(userDataForApi);
-        if (APIResponse?.code === 200) {
-          setCards(prevCards => [...prevCards, ...APIResponse.data]);
-          console.log('APIResponse.data', APIResponse.data);
-          swipeRef.current?.forceUpdate();
-          startInterval();
+
+        if (APIResponse?.code === 200 && Array.isArray(APIResponse.data)) {
+          const newCards = APIResponse.data;
+          console.log('newCards', newCards?.length);
+          if (newCards.length !== 0) {
+            setCards(newCards);
+            // setCards(prevCards => [...prevCards, ...newCards]);
+            swipeRef.current?.forceUpdate();
+            startInterval();
+          } else {
+            setCards([]);
+            showToast(
+              'No more cards',
+              'You have reached the end of available cards',
+              'info',
+            );
+            stopInterval();
+          }
+          // else if (
+          //   (cardToSkipNumber === 0 || cardSkipValue === 0) &&
+          //   newCards.length === 0
+          // ) {
+          // setCards([]);
+          // showToast(
+          //   'No more cards',
+          //   'You have reached the end of available cards',
+          //   'info',
+          // );
+          // }
         } else {
           showToast(
             'Something went wrong',
@@ -148,51 +175,52 @@ const ExploreCardScreen: FC = () => {
         setIsAPILoading(false);
       }
     },
-    [
-      userData,
-      setCards,
-      swipeRef,
-      showToast,
-      setIsAPILoading,
-      cardToSkipNumber,
-    ],
+    [],
   );
 
   //* On Swipe Right Do Something
   const OnSwipeRight = (cardIndex: number) => {
     console.log('Right Card Index:', cardIndex, cards[cardIndex]);
-    if (cards && cards[cardIndex]?.id) {
-      LikeUserAPI(cards[cardIndex]?.id);
+    if (cards && cards[cardIndex]?._id) {
+      LikeUserAPI(cards[cardIndex]?._id);
     }
-  };
-
-  //! FOR TEST
-  const generateRandomId = (): string => {
-    return (
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15)
-    );
   };
 
   //* On Swipe Left Do Something
   const OnSwipeLeft = (cardIndex: any) => {
-    const randomId = generateRandomId();
-    store.dispatch(onSwipeLeft(randomId));
-    console.log('left Card Index:', cards[cardIndex]);
+    if (cards[cardIndex] && cards[cardIndex]?._id) {
+      store.dispatch(onSwipeLeft(cards[cardIndex]?._id));
+    }
+    console.log('left Card Index:', cards[cardIndex]?._id);
   };
 
   //* Card Swiped
   const OnSwiped = (cardIndex: any) => {
     setCurrentCardIndex(cardIndex + 1);
     setCurrentImageIndex(0);
+
+    // Load new cards when user swipes half of the existing cards
+    // const halfCardsIndex = Math.floor(cards.length / 2);
+    // console.log('halfCardsIndex', halfCardsIndex, cardIndex);
+    // if (cardIndex === halfCardsIndex) {
+    //   setCardToSkipNumber(0);
+    //   FetchAPIData(0);
+    //   // setCardToSkipNumber(cardToSkipNumber + CardLimit);
+    //   // FetchAPIData(cardToSkipNumber + CardLimit);
+    //   showToast(
+    //     'Loading more cards',
+    //     'Fetching new cards for you (Toast is just for testing)',
+    //     'success',
+    //   );
+    // }
   };
 
   //* When Swipe All Card Fetch New
   const OnSwipeAll = () => {
     swipeRef.current?.forceUpdate();
     setIsAPILoading(true);
-    setCardToSkipNumber(cardToSkipNumber + 10);
-    FetchAPIData(cardToSkipNumber + 10);
+    setCardToSkipNumber(cardToSkipNumber + CardLimit);
+    FetchAPIData(cardToSkipNumber + CardLimit);
     showToast(
       'All cards swiped',
       'Feting new cards for you (Toast is just for testing)',
@@ -220,9 +248,13 @@ const ExploreCardScreen: FC = () => {
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
-        setCards(APIResponse.data);
         console.log('APIResponse.data', APIResponse.data);
         swipeRef.current?.forceUpdate();
+        showToast(
+          'Swipe Right Success',
+          'You swiped right! Waiting for the other user to match.',
+          'success',
+        );
       } else {
         showToast(
           'Something went wrong',
@@ -354,9 +386,13 @@ const ExploreCardScreen: FC = () => {
                 onPress={() => {
                   setCardToSkipNumber(0);
                   FetchAPIData(0);
+                  // setCardToSkipNumber(cardToSkipNumber + CardLimit);
+                  // FetchAPIData(cardToSkipNumber + CardLimit);
                 }}
                 style={styles.ChangeSettingButton}>
-                <Text style={styles.ChangeSettingText}>Change Setting</Text>
+                <Text style={styles.ChangeSettingText}>
+                  Change Setting (OnClick SetLimit to 0)
+                </Text>
               </TouchableOpacity>
             </View>
           )
@@ -503,6 +539,8 @@ const styles = StyleSheet.create({
   ChangeSettingText: {
     ...GROUP_FONT.h3,
     lineHeight: 18,
+    width: '90%',
+    textAlign: 'center',
     color: COLORS.White,
   },
   NoNetText: {

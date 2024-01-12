@@ -1,4 +1,5 @@
 export interface SwiperCard {
+  _id: string;
   birthdate: string;
   city: string;
   date: number;

@@ -4,10 +4,11 @@ import {Image, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
 import {COLORS, FONTS} from '../../../../Common/Theme';
-import {CardDetailType} from '../../../../Types/CardDetailType';
+import {ProfileType} from '../../../../Types/ProfileType';
+import useCalculateAge from '../../../../Hooks/useCalculateAge';
 
 type DetailCardRouteParams = {
-  props: CardDetailType;
+  props: ProfileType;
 };
 
 const DetailCardHeader: FC<DetailCardRouteParams> = ({props}) => {
@@ -15,13 +16,14 @@ const DetailCardHeader: FC<DetailCardRouteParams> = ({props}) => {
     useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
   console.log('props', props);
   const item = props || CardDetail.params.props;
+  const Age = useCalculateAge(item?.birthdate);
 
   return (
     <View style={styles.Container}>
       <View style={styles.ContentView}>
         <View style={styles.NameAndBadgeView}>
           <Text style={styles.HeaderText}>
-            {item?.full_name || item?.name || 'User'}, {item?.age || 0}
+            {item?.full_name || 'User'}, {Age || 0}
           </Text>
           <Image
             resizeMode="contain"

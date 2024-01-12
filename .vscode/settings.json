@@ -8,12 +8,14 @@
         "Moti",
         "neighbour",
         "netinfo",
+        "persistor",
         "recived",
         "stry",
         "Subviews",
         "swiper",
         "Swiper",
-        "textinput"
+        "textinput",
+        "viewability"
     ],
     "vsintellicode.features.python.deepLearning": "enabled",
     "vsintellicode.modelDownloadPath": "",

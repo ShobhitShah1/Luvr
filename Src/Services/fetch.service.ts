@@ -39,7 +39,7 @@ interface FetchWrapper {
 const commonConfig: AxiosRequestConfig = {
   method: 'post',
   maxBodyLength: Infinity,
-  url: `${ApiConfig.BASE_URL}/data`,
+  url: `${ApiConfig.BASE_URL}data`,
   headers: {
     'Content-Type': 'application/json',
     app_secret: '_d_a_t_i_n_g_',
@@ -180,7 +180,7 @@ async function makeRequest(
   };
 
   const mergedConfig: AxiosRequestConfig = {
-    ...commonConfig,
+    // ...commonConfig,
     method,
     url,
     data: params,
@@ -194,7 +194,7 @@ async function makeRequest(
 }
 
 function initToken() {
-  const token = store.getState().user.Token || '';
+  const token = store.getState()?.user?.Token || '';
   if (true) {
     console.log('Init Token DEBUG:', token);
   }
@@ -253,6 +253,3 @@ function handleLogs(url: string, params?: Record<string, any>) {
 const data = {
   /* your data */
 };
-
-// Usage of common configuration
-fetchWrapper.post(commonConfig.url, data);
