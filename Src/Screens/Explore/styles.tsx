@@ -22,6 +22,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: 15,
     position: 'absolute',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   TitleView: {
     flexDirection: 'row',
@@ -87,6 +89,15 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
+  },
+  ViewProfileBTN: {
+    justifyContent: 'flex-end',
+  },
+  ViewProfileIcon: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
 });
 

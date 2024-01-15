@@ -3,6 +3,7 @@ import {LocalStorageFields} from '../../Types/LocalStorageFields';
 export const UPDATE_FIELD = 'UPDATE_FIELD';
 export const RESET = 'RESET';
 export const ON_SWIPE_LEFT = 'ON_SWIPE_LEFT';
+export const ON_SWIPE_RIGHT = 'ON_SWIPE_RIGHT';
 
 export type UserAction =
   | {
@@ -25,11 +26,23 @@ export const updateField = (
 
 export type OnSwipeLeftAction = {
   type: typeof ON_SWIPE_LEFT;
-  userId: string;
+  userId: string | string[];
+};
+
+export type OnSwipeRightAction = {
+  type: typeof ON_SWIPE_RIGHT;
+  userId: string | string[];
 };
 
 export const onSwipeLeft = (userId: string): OnSwipeLeftAction => ({
   type: ON_SWIPE_LEFT,
+  userId,
+});
+
+export const onSwipeRight = (
+  userId: string | string[],
+): OnSwipeRightAction => ({
+  type: ON_SWIPE_RIGHT,
   userId,
 });
 

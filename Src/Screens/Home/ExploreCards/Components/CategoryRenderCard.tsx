@@ -38,7 +38,7 @@ const CategoryRenderCard: FC<RenderlookingViewProps> = ({item, index}) => {
       ? {uri: ApiConfig.IMAGE_BASE_URL + item.recent_pik[0]}
       : CommonImages.WelcomeBackground;
   const Age = useCalculateAge(item.birthdate);
-
+  console.log('ImagePath', ImagePath);
   return (
     <TouchableOpacity
       activeOpacity={1}

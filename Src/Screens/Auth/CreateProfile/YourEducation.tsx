@@ -28,20 +28,28 @@ const YourEducation: FC = () => {
 
   const onNextPress = () => {
     if (EducationDegree && CollegeName) {
+      Promise.all([
+        dispatch(
+          updateField(LocalStorageFields.educationDegree, EducationDegree),
+        ),
+        dispatch(updateField(LocalStorageFields.collegeName, CollegeName)),
+      ])
+        .then(() => {
+          navigation.navigate('LoginStack', {
+            screen: 'AddDailyHabits',
+          });
+        })
+        .catch(error => {
+          console.error('Error updating fields:', error);
+        });
+    } else {
       navigation.navigate('LoginStack', {
         screen: 'AddDailyHabits',
       });
-
-      setTimeout(() => {
-        dispatch(
-          updateField(LocalStorageFields.educationDegree, EducationDegree),
-        );
-        dispatch(updateField(LocalStorageFields.collegeName, CollegeName));
-      }, 0);
-    } else {
-      showToast('Validation Error', 'Please fill all details', 'error');
+      // showToast('Validation Error', 'Please fill all details', 'error');
     }
   };
+
   return (
     <View style={CreateProfileStyles.Container}>
       <CreateProfileHeader

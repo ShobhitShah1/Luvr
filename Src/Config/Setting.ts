@@ -1,4 +1,4 @@
-export const CardDelay = 5000;
+export const CardDelay = 3000;
 export const CardLimit = 10;
 
 export const imageArray = [
@@ -13,3 +13,5 @@ export const imageArray = [
 export const DummyImage = 'https://picsum.photos/720/1080';
 
 export const TotalProfilePicCanUpload = 4;
+
+export const APP_NAME = 'AppName';

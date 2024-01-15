@@ -29,6 +29,9 @@ const CategoryDetailCardsScreen: FC = () => {
   const LeftSwipedUserIds = useSelector(
     state => state?.user?.swipedLeftUserIds || [],
   );
+  const RightSwipedUserIds = useSelector(
+    state => state?.user?.swipedRightUserIds || [],
+  );
   const [CategoryData, setCategoryData] = useState([]);
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [IsNetConnected, setIsNetConnected] = useState(false);
@@ -63,16 +66,10 @@ const CategoryDetailCardsScreen: FC = () => {
         longitude: userData.longitude,
         radius: 180,
         unlike: LeftSwipedUserIds,
+        like: RightSwipedUserIds,
         hoping: params?.item?.title,
         skip: 0,
         limit: 0,
-
-        // eventName: 'list_neighbour',
-        // latitude: userData.latitude,
-        // longitude: userData.longitude,
-        // radius: userData.radius,
-        // skip: 0,
-        // limit: 10,
       };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);

@@ -1,13 +1,46 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React from 'react';
+import React, {useEffect} from 'react';
 import {FlatList, ImageBackground, ScrollView, Text, View} from 'react-native';
 import HomeLookingForData from '../../Components/Data/HomeData/HomeLookingForData';
 import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
 import RenderlookingView from './Components/RenderlookingView';
 import styles from './styles';
+import UserService from '../../Services/AuthService';
+import {store} from '../../Redux/Store/store';
+import {onSwipeRight} from '../../Redux/Action/userActions';
 
 const HomeScreen = () => {
+  useEffect(() => {
+    GetMyLikes();
+  }, []);
+
+  const GetMyLikes = async () => {
+    try {
+      const userDataForApi = {
+        eventName: 'my_likes',
+      };
+
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      if (APIResponse?.code === 200) {
+        // console.log('Get My Like Data:', APIResponse.data);
+        if (APIResponse?.code === 200 && APIResponse?.data) {
+          const userIds = Array.isArray(APIResponse.data)
+            ? APIResponse.data
+            : [APIResponse.data];
+          console.log('userIds', userIds);
+          store.dispatch(onSwipeRight(userIds));
+        } else {
+          // Handle error
+        }
+      } else {
+      }
+    } catch (error) {
+      console.log('Something Went Wrong With Feting API Data', error);
+    } finally {
+    }
+  };
+
   const modifyData = (arr: any) => {
     let finalData = [];
     let type1 = true;
@@ -32,6 +65,7 @@ const HomeScreen = () => {
 
     return finalData;
   };
+
   const DataToRenderForYou = modifyData(HomeLookingForData);
 
   const renderForYouView = ({item, index}: any) => {

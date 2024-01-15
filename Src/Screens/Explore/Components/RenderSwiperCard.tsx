@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   Image,
   Text,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
@@ -15,12 +16,13 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import CommonIcons from '../../../Common/CommonIcons';
-import {COLORS} from '../../../Common/Theme';
+import {ActiveOpacity, COLORS} from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import {DummyImage} from '../../../Config/Setting';
 import useCalculateAge from '../../../Hooks/useCalculateAge';
 import {SwiperCard} from '../../../Types/SwiperCard';
 import styles from '../styles';
+import {useNavigation} from '@react-navigation/native';
 
 interface RenderCardProps {
   CurrentCardIndex: number;
@@ -46,6 +48,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
   const opacity = useSharedValue(0);
   const IsFirstCard = CurrentCardIndex === card;
   const Age = useCalculateAge(cardData?.birthdate);
+  const navigation = useNavigation();
   // const YourInto = ['Cricket', 'Gaming', 'Coding'];
 
   // useEffect(() => {
@@ -145,42 +148,56 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
         </Animated.View>
 
         <View style={styles.CardBottomDetailView}>
-          <View style={styles.TitleView}>
-            <Text style={styles.TitleText}>
-              {`${cardData?.full_name ? cardData?.full_name : 'User'}, ${
-                Age ? Age : 0
-              }`}
-            </Text>
-            <Image
-              source={CommonIcons.Verification_Icon}
-              style={styles.VerifyIconImage}
-            />
+          <View>
+            <View style={styles.TitleView}>
+              <Text style={styles.TitleText}>
+                {`${cardData?.full_name ? cardData?.full_name : 'User'}, ${
+                  Age ? Age : 0
+                }`}
+              </Text>
+              <Image
+                source={CommonIcons.Verification_Icon}
+                style={styles.VerifyIconImage}
+              />
+            </View>
+
+            <View style={styles.LocationView}>
+              <Image
+                tintColor={'rgba(198, 198, 198, 1)'}
+                style={styles.LocationIcon}
+                source={CommonIcons.Location}
+              />
+              <Text numberOfLines={1} style={styles.LocationText}>
+                {cardData?.city || 'Somewhere in earth'}
+              </Text>
+            </View>
+
+            <View style={styles.MultipleBoxFlexView}>
+              {cardData.likes_into.length !== 0 &&
+                cardData.likes_into[0] !== '' &&
+                cardData.likes_into?.map((interestedInItem, index) => {
+                  return (
+                    <View key={index} style={styles.MultipleBoxView}>
+                      <Text style={styles.MultipleDetailText}>
+                        {interestedInItem}
+                      </Text>
+                    </View>
+                  );
+                })}
+            </View>
           </View>
 
-          <View style={styles.LocationView}>
+          <TouchableOpacity
+            activeOpacity={ActiveOpacity}
+            onPress={() => {
+              navigation.navigate('ExploreCardDetail', {props: cardData});
+            }}
+            style={styles.ViewProfileBTN}>
             <Image
-              tintColor={'rgba(198, 198, 198, 1)'}
-              style={styles.LocationIcon}
-              source={CommonIcons.Location}
+              source={CommonIcons.view_profile}
+              style={styles.ViewProfileIcon}
             />
-            <Text numberOfLines={1} style={styles.LocationText}>
-              {cardData?.city || 'Somewhere in earth'}
-            </Text>
-          </View>
-
-          <View style={styles.MultipleBoxFlexView}>
-            {/* {cardData.likes_into.length !== 0 &&
-              cardData.likes_into[0] !== '' &&
-              cardData.likes_into?.map((interestedInItem, index) => {
-                return (
-                  <View key={index} style={styles.MultipleBoxView}>
-                    <Text style={styles.MultipleDetailText}>
-                      {interestedInItem}
-                    </Text>
-                  </View>
-                );
-              })} */}
-          </View>
+          </TouchableOpacity>
         </View>
 
         {firstImageLoading && (

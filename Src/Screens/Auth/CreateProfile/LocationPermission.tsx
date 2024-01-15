@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import {Image, StatusBar, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonImages from '../../../Common/CommonImages';
@@ -21,19 +21,25 @@ const LocationPermission: FC = () => {
   const dispatch = useDispatch();
   const {locationPermission, requestLocationPermission} =
     useLocationPermission();
+  const [IsLocationLoading, setIsLocationLoading] = useState(false);
 
   const onNextPress = async () => {
     if (locationPermission) {
+      setIsLocationLoading(true);
       navigateToNextScreen();
     } else {
       const requestPermission = await requestLocationPermission();
       if (requestPermission) {
+        setIsLocationLoading(true);
         navigateToNextScreen();
+      } else {
+        setIsLocationLoading(false);
       }
     }
   };
 
   const navigateToNextScreen = async () => {
+    setIsLocationLoading(true);
     try {
       return new Promise((resolve, reject) => {
         Geolocation.getCurrentPosition(
@@ -60,7 +66,7 @@ const LocationPermission: FC = () => {
           {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
         );
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error, error?.message);
       showToast(
         'Something went wrong',
@@ -70,6 +76,8 @@ const LocationPermission: FC = () => {
         ),
         'error',
       );
+    } finally {
+      setIsLocationLoading(false);
     }
   };
 
@@ -91,9 +99,9 @@ const LocationPermission: FC = () => {
       <View style={[CreateProfileStyles.BottomButton]}>
         <GradientButton
           Title={'Allow'}
-          isLoading={false}
           Disabled={false}
           Navigation={onNextPress}
+          isLoading={IsLocationLoading}
         />
       </View>
     </View>

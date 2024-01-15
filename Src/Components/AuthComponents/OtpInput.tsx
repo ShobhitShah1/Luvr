@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useRef, useState} from 'react';
 import {Keyboard, StyleSheet, TextInput, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';

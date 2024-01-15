@@ -179,29 +179,30 @@ const AddRecentPics: FC = () => {
   const onNextPress = () => {
     setIsLoading(true);
     try {
-      const validImages = data.filter(image => image.url);
-      uploadImagesSequentially(validImages)
-        .then(uploadedResults => {
-          console.log('All images uploaded successfully:', uploadedResults);
-          dispatch(updateField(LocalStorageFields.isImageUploaded, true));
-          showToast(
-            'Image Uploaded',
-            'Cant Navigate To Next Screen',
-            'success',
-          );
-          setTimeout(() => {
-            navigation.navigate('BottomTab', {
-              screen: 'Home',
-            });
-          }, 500);
-        })
-        .catch(error => {
-          console.error('Error during image upload:', error);
-        });
+      setTimeout(() => {
+        const validImages = data.filter(image => image.url);
+        uploadImagesSequentially(validImages)
+          .then(uploadedResults => {
+            console.log('All images uploaded successfully:', uploadedResults);
+            dispatch(updateField(LocalStorageFields.isImageUploaded, true));
+            showToast(
+              'Image Uploaded',
+              'Cant Navigate To Next Screen',
+              'success',
+            );
+            setTimeout(() => {
+              setIsLoading(false);
+              navigation.replace('BottomTab', {
+                screen: 'Home',
+              });
+            }, 500);
+          })
+          .catch(error => {
+            console.error('Error during image upload:', error);
+          });
+      }, 0);
     } catch (error) {
       console.log('CatchLog Image Upload:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -234,7 +235,7 @@ const AddRecentPics: FC = () => {
 
         console.log('Upload successful:', response.data);
         return response.data; // Return any relevant data from the response
-      } catch (error) {
+      } catch (error: any) {
         showToast(
           'Upload Error',
           'Something went wrong while uploading image',
@@ -311,7 +312,9 @@ const AddRecentPics: FC = () => {
           Disabled={data.filter(image => image.url).length === 0 ? true : false}
           isLoading={IsLoading}
           Title={'Continue'}
-          Navigation={onNextPress}
+          Navigation={() => {
+            onNextPress();
+          }}
         />
       </View>
     </View>

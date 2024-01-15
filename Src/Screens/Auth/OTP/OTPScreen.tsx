@@ -2,7 +2,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import axios from 'axios';
 import React, {FC, useEffect, useState} from 'react';
-import {Alert, Text, View} from 'react-native';
+import {Alert, Keyboard, Text, View} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import {useDispatch} from 'react-redux';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
@@ -43,7 +43,10 @@ const OTPScreen: FC = () => {
 
   const VerifyClick = () => {
     if (otp.length === 4) {
-      verifyOtp();
+      Keyboard.dismiss();
+      setTimeout(() => {
+        verifyOtp();
+      }, 0);
     } else {
       showToast('Invalid OTP', 'Please Verify OTP', 'error');
     }

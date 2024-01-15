@@ -26,6 +26,7 @@ import DetailCardHeader from './Components/DetailCardHeader';
 import UserService from '../../../Services/AuthService';
 import {ProfileType} from '../../../Types/ProfileType';
 import {useCustomToast} from '../../../Utils/toastUtils';
+import FastImage from 'react-native-fast-image';
 
 type DetailCardRouteParams = {
   props: ProfileType;
@@ -44,7 +45,7 @@ const ExploreCardDetailScreen = () => {
   const [CurrentIndex, setCurrentIndex] = useState<number>(0);
   const [CardData, setCardData] = useState<ProfileType>();
   const [IsAPILoading, setIsAPILoading] = useState(false);
-
+  const [IsImageLoading, setIsImageLoading] = useState(false);
   useEffect(() => {
     if (IsFocused) {
       GetUserData();
@@ -106,38 +107,57 @@ const ExploreCardDetailScreen = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.ScrollViewContentContainerStyle}>
           <View style={styles.ProfileImageView}>
-            <FlatList
-              horizontal
-              style={{flex: 1}}
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              data={CardData?.recent_pik}
-              renderItem={({item, index}) => {
-                return (
-                  <View>
-                    <Image
-                      key={index}
-                      resizeMode="cover"
-                      style={styles.UserProfileImages}
-                      source={{
-                        uri: item
-                          ? `${ApiConfig.IMAGE_BASE_URL}${item}`
-                          : DummyImage,
-                      }}
-                    />
-                  </View>
-                );
-              }}
-              onScroll={Animated.event(
-                [{nativeEvent: {contentOffset: {x: scrollX}}}],
-                {
-                  useNativeDriver: false,
-                },
-              )}
-              scrollEventThrottle={32}
-              onViewableItemsChanged={viewableItemsChanged}
-              viewabilityConfig={viewConfig}
-            />
+            {IsImageLoading && (
+              <View style={styles.ImageLoaderView}>
+                <ActivityIndicator size={40} color={COLORS.Primary} />
+              </View>
+            )}
+            {CardData?.recent_pik.length !== 0 ? (
+              <FlatList
+                horizontal
+                style={{flex: 1}}
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                data={CardData?.recent_pik}
+                renderItem={({item, index}) => {
+                  return (
+                    <View>
+                      <FastImage
+                        onLoadStart={() => setIsImageLoading(true)}
+                        onLoadEnd={() => setIsImageLoading(false)}
+                        key={index}
+                        resizeMode="cover"
+                        style={styles.UserProfileImages}
+                        source={{
+                          uri: item
+                            ? `${ApiConfig.IMAGE_BASE_URL}${item}`
+                            : DummyImage,
+                        }}
+                      />
+                    </View>
+                  );
+                }}
+                onScroll={Animated.event(
+                  [{nativeEvent: {contentOffset: {x: scrollX}}}],
+                  {
+                    useNativeDriver: false,
+                  },
+                )}
+                scrollEventThrottle={32}
+                onViewableItemsChanged={viewableItemsChanged}
+                viewabilityConfig={viewConfig}
+              />
+            ) : (
+              <View>
+                <Image
+                  resizeMode="cover"
+                  onLoadStart={() => setIsImageLoading(true)}
+                  onLoadEnd={() => setIsImageLoading(false)}
+                  style={styles.UserProfileImages}
+                  source={{uri: DummyImage}}
+                />
+              </View>
+            )}
           </View>
           <View
             style={{
@@ -381,10 +401,11 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: 350,
+    marginTop: 15,
     borderRadius: 25,
     overflow: 'hidden',
     marginVertical: 10,
-    marginTop: 15,
+    justifyContent: 'center',
   },
   DetailBoxContainerView: {
     // width: '100%',
@@ -494,5 +515,11 @@ const styles = StyleSheet.create({
     height: hp('13%'),
     justifyContent: 'center',
     alignSelf: 'center',
+  },
+  ImageLoaderView: {
+    zIndex: 9999,
+    alignSelf: 'center',
+    position: 'absolute',
+    justifyContent: 'center',
   },
 });

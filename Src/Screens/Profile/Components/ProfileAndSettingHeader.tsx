@@ -8,8 +8,6 @@ import {
 } from 'react-native';
 import React, {FC} from 'react';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-// import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../../Common/Theme';
-// import CommonIcons from '../../../../Common/CommonIcons';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useNavigation} from '@react-navigation/native';
 import CommonIcons from '../../../Common/CommonIcons';
@@ -72,7 +70,7 @@ const styles = StyleSheet.create({
   ViewStyle: {
     width: '10%',
     justifyContent: 'center',
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   BackIcon: {
     width: 25,

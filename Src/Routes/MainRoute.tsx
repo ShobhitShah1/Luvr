@@ -32,6 +32,7 @@ import ChatScreen from '../Screens/Chat/ChatScreen';
 import CategoryDetailCardsScreen from '../Screens/Home/ExploreCards/CategoryDetailCardsScreen';
 import ExploreCardDetailScreen from '../Screens/Home/ExploreCards/ExploreCardDetailScreen';
 import EditProfileScreen from '../Screens/Profile/EditProfileScreen';
+import SettingScreen from '../Screens/Setting/SettingScreen';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -253,6 +254,7 @@ export default function MainRoute() {
             />
             <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="Setting" component={SettingScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       )}

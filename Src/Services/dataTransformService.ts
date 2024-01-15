@@ -11,7 +11,7 @@ const transformUserDataForApi = (
     mobile_no: userData[LocalStorageFields.mobileNo],
     identity: userData[LocalStorageFields.identity],
     profile_image: userData[LocalStorageFields.profileImage],
-    Full_name: userData[LocalStorageFields.fullName],
+    full_name: userData[LocalStorageFields.fullName],
     birthdate: userData[LocalStorageFields.birthdate],
     gender: userData[LocalStorageFields.gender],
     city: userData[LocalStorageFields.city],

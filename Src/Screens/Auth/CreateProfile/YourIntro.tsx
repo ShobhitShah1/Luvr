@@ -119,7 +119,11 @@ const YourIntro: FC = () => {
       console.log('userDataForApi', userDataForApi);
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
-      console.log('APIResponse', APIResponse);
+      console.log('CallUpdateProfileAPI APIResponse', APIResponse);
+      console.log(
+        'CallUpdateProfileAPI APIResponse TOKEN:',
+        APIResponse.data?.token,
+      );
 
       if (APIResponse && APIResponse.code === 200) {
         showToast(

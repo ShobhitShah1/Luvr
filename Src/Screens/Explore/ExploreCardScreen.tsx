@@ -26,7 +26,7 @@ import {SwiperCard} from '../../Types/SwiperCard';
 import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderSwiperCard from './Components/RenderSwiperCard';
-import {onSwipeLeft} from '../../Redux/Action/userActions';
+import {onSwipeLeft, onSwipeRight} from '../../Redux/Action/userActions';
 import {store} from '../../Redux/Store/store';
 import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 
@@ -40,6 +40,10 @@ const ExploreCardScreen: FC = () => {
   const LeftSwipedUserIds = useSelector(
     state => state?.user?.swipedLeftUserIds || [],
   );
+  const RightSwipedUserIds = useSelector(
+    state => state?.user?.swipedRightUserIds || [],
+  );
+  // console.log('RightSwipedUserIds ----:>', RightSwipedUserIds);
   const [cards, setCards] = useState<SwiperCard[]>([]);
   const [cardToSkipNumber, setCardToSkipNumber] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -70,13 +74,21 @@ const ExploreCardScreen: FC = () => {
   );
 
   useEffect(() => {
-    if (isFocused) {
-      setIsAPILoading(true);
-      setIsNetConnected(true);
-      FetchAPIData(0);
-      setCardToSkipNumber(0);
-    }
-  }, [isFocused]);
+    // if (isFocused) {
+    setIsAPILoading(true);
+    setIsNetConnected(true);
+    FetchAPIData(0);
+    setCardToSkipNumber(0);
+    // }
+  }, []);
+  // useEffect(() => {
+  //   if (isFocused) {
+  //     setIsAPILoading(true);
+  //     setIsNetConnected(true);
+  //     FetchAPIData(0);
+  //     setCardToSkipNumber(0);
+  //   }
+  // }, [isFocused]);
 
   useEffect(() => {
     if (cards?.length === 0) {
@@ -125,6 +137,7 @@ const ExploreCardScreen: FC = () => {
         const userDataForApi = {
           limit: CardLimit,
           unlike: LeftSwipedUserIds,
+          like: [], //RightSwipedUserIds
           skip: cardSkipValue || cardToSkipNumber,
           radius: userData.radius,
           eventName: 'list_neighbour',
@@ -180,15 +193,17 @@ const ExploreCardScreen: FC = () => {
 
   //* On Swipe Right Do Something
   const OnSwipeRight = (cardIndex: number) => {
-    console.log('Right Card Index:', cardIndex, cards[cardIndex]);
+    console.log('Right Card Index:', cardIndex, cards[cardIndex]?._id);
     if (cards && cards[cardIndex]?._id) {
       LikeUserAPI(cards[cardIndex]?._id);
+      store.dispatch(onSwipeRight(cards[cardIndex]?._id));
     }
   };
 
   //* On Swipe Left Do Something
   const OnSwipeLeft = (cardIndex: any) => {
     if (cards[cardIndex] && cards[cardIndex]?._id) {
+      console.log('cards[cardIndex]?._id', cards[cardIndex]?._id);
       store.dispatch(onSwipeLeft(cards[cardIndex]?._id));
     }
     console.log('left Card Index:', cards[cardIndex]?._id);

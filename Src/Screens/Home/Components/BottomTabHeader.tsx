@@ -1,16 +1,28 @@
 import React, {FC} from 'react';
-import {Image, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {
+  Image,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
-import {COLORS, FONTS} from '../../../Common/Theme';
+import {ActiveOpacity, COLORS, FONTS} from '../../../Common/Theme';
+import {useNavigation} from '@react-navigation/native';
+import {APP_NAME} from '../../../Config/Setting';
 
 interface BottomTabHeaderProps {
   hideSettingAndNotification?: boolean;
+  showSetting?: boolean;
 }
 
 const BottomTabHeader: FC<BottomTabHeaderProps> = ({
   hideSettingAndNotification,
+  showSetting,
 }) => {
+  const navigation = useNavigation();
   return (
     <View style={styles.Container}>
       <StatusBar
@@ -20,7 +32,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
       />
       <View style={styles.ContentView}>
         <View style={styles.TitleTextView}>
-          <Text style={styles.TitleText}>App Name</Text>
+          <Text style={styles.TitleText}>{APP_NAME}</Text>
         </View>
 
         {!hideSettingAndNotification && (
@@ -32,13 +44,18 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
                 source={CommonIcons.Notification}
               />
             </View>
-            <View style={styles.IconWrapper}>
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              onPress={() => {
+                navigation.navigate('Setting');
+              }}
+              style={styles.IconWrapper}>
               <Image
                 style={styles.Icons}
                 resizeMode="contain"
                 source={CommonIcons.Setting}
               />
-            </View>
+            </TouchableOpacity>
           </View>
         )}
       </View>

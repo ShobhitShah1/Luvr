@@ -21,7 +21,7 @@ import UserService from '../../Services/AuthService';
 import {useCustomToast} from '../../Utils/toastUtils';
 import {ProfileType} from '../../Types/ProfileType';
 import ApiConfig from '../../Config/ApiConfig';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 const ProfileScreen = () => {
   const userData = useSelector((state: any) => state?.user);
@@ -81,7 +81,7 @@ const ProfileScreen = () => {
 
   return (
     <View style={styles.container}>
-      <BottomTabHeader hideSettingAndNotification={true} />
+      <BottomTabHeader hideSettingAndNotification={true} showSetting={true} />
       <ScrollView bounces={false} style={styles.ProfileViewContainer}>
         <View style={styles.ContentView}>
           <View style={styles.ProfileImageView}>
@@ -150,7 +150,9 @@ const ProfileScreen = () => {
             <View style={styles.EditProfileView}>
               <TouchableOpacity
                 activeOpacity={ActiveOpacity}
-                onPress={() => navigation.navigate('EditProfile')}
+                onPress={() =>
+                  navigation.navigate('EditProfile', {id: ProfileData?._id})
+                }
                 style={styles.EditButtonView}>
                 <Text style={styles.EditButtonText}>Edit profile</Text>
               </TouchableOpacity>
