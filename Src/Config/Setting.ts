@@ -13,5 +13,6 @@ export const imageArray = [
 export const DummyImage = 'https://picsum.photos/720/1080';
 
 export const TotalProfilePicCanUpload = 4;
+export const TotalProfilePicCanUploadEditProfile = 6;
 
 export const APP_NAME = 'AppName';

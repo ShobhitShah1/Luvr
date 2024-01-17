@@ -1,23 +1,17 @@
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
 import React, {useLayoutEffect, useState} from 'react';
-import styles from './styles';
-import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../Common/CommonIcons';
-import EditProfileTitleView from '../Profile/Components/EditProfileComponents/EditProfileTitleView';
-import EditProfileBoxView from '../Profile/Components/EditProfileComponents/EditProfileBoxView';
-import UserService from '../../Services/AuthService';
-import {ProfileType} from '../../Types/ProfileType';
-import SettingFlexView from './Components/SettingFlexView';
-import RNSwitch from '../../Components/SwitchComponent';
+import {ActiveOpacity, COLORS} from '../../Common/Theme';
+import CustomMultiSlider from '../../Components/CustomMultiSlider';
 import SwitchComponent from '../../Components/SwitchComponent';
-import {COLORS} from '../../Common/Theme';
+import {ProfileType} from '../../Types/ProfileType';
+import EditProfileBoxView from '../Profile/Components/EditProfileComponents/EditProfileBoxView';
+import EditProfileTitleView from '../Profile/Components/EditProfileComponents/EditProfileTitleView';
+import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
+import SettingFlexView from './Components/SettingFlexView';
+import styles from './styles';
+import UserService from '../../Services/AuthService';
 
 const initialProfileState: ProfileType = {
   _id: '',
@@ -52,6 +46,14 @@ const initialProfileState: ProfileType = {
 
 const SettingScreen = () => {
   const [profile, setProfile] = useState<ProfileType>(initialProfileState);
+
+  const [selectedGender, setSelectedGender] = useState<string>('Man');
+
+  const genders = ['Man', 'Woman', 'Everyone'];
+
+  const handleGenderSelection = (gender: string) => {
+    setSelectedGender(gender);
+  };
 
   useLayoutEffect(() => {
     GetProfileData();
@@ -92,7 +94,7 @@ const SettingScreen = () => {
             <EditProfileBoxView>
               <SettingFlexView
                 style={styles.PhoneNumberFlexStyle}
-                Item={profile?.mobile_no}
+                Item={profile?.mobile_no || '+0000000000'}
                 onPress={() => {}}
               />
             </EditProfileBoxView>
@@ -107,7 +109,21 @@ const SettingScreen = () => {
               Title="Maximum Distance"
             />
             <EditProfileBoxView>
-              <View style={styles.MaximumDistanceView}></View>
+              <View style={styles.MaximumDistanceView}>
+                <View style={{flexDirection: 'row'}}>
+                  <SwitchComponent isActive={true} size={40} />
+                  <CustomMultiSlider
+                    RightValue={10}
+                    LeftValue={90}
+                    onValueChange={(value: any) => {
+                      console.log(
+                        'Slider Value ==:>',
+                        `${value?.leftValue}-${value?.rightValue}`,
+                      );
+                    }}
+                  />
+                </View>
+              </View>
             </EditProfileBoxView>
           </View>
 
@@ -119,13 +135,40 @@ const SettingScreen = () => {
               Icon={CommonIcons.ProfileTab}
               Title="Show me"
             />
-            <EditProfileBoxView>
-              <SwitchComponent
-                backgroundColor={COLORS.Secondary}
-                onChange={console.log}
-              />
-              {/* <RNSwitch value={true} /> */}
-            </EditProfileBoxView>
+            {/* <EditProfileBoxView> */}
+            <View style={styles.GenderContainer}>
+              {genders.map((gender, index) => (
+                <TouchableOpacity
+                  activeOpacity={ActiveOpacity}
+                  key={index}
+                  onPress={() => handleGenderSelection(gender)}
+                  style={[
+                    styles.GenderView,
+                    {
+                      width: hp('12%'),
+                      borderWidth: selectedGender === gender ? 2 : 0,
+                      backgroundColor:
+                        selectedGender === gender
+                          ? COLORS.Primary
+                          : COLORS.White,
+                    },
+                  ]}>
+                  <Text
+                    style={[
+                      styles.GenderText,
+                      {
+                        color:
+                          selectedGender === gender
+                            ? COLORS.White
+                            : COLORS.Gray,
+                      },
+                    ]}>
+                    {gender}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            {/* </EditProfileBoxView> */}
           </View>
 
           {/* Age range */}
@@ -137,7 +180,9 @@ const SettingScreen = () => {
               Title="Age range"
             />
             <EditProfileBoxView>
-              <View></View>
+              <View>
+                <Text>Hello Active Status</Text>
+              </View>
             </EditProfileBoxView>
           </View>
 
@@ -167,7 +212,12 @@ const SettingScreen = () => {
               Title="Active status"
             />
             <EditProfileBoxView>
-              <View></View>
+              <SettingFlexView
+                style={styles.PhoneNumberFlexStyle}
+                Item={'Show my status'}
+                onPress={() => {}}
+                IsSwitch={true}
+              />
             </EditProfileBoxView>
           </View>
 
@@ -180,7 +230,20 @@ const SettingScreen = () => {
               Title="Notifications"
             />
             <EditProfileBoxView>
-              <View></View>
+              <View>
+                <SettingFlexView
+                  style={styles.NotificationFlexView}
+                  Item={'Push Notification'}
+                  onPress={() => {}}
+                  IsSwitch={true}
+                />
+                <SettingFlexView
+                  style={styles.NotificationFlexView}
+                  Item={'Email Notification'}
+                  onPress={() => {}}
+                  IsSwitch={true}
+                />
+              </View>
             </EditProfileBoxView>
           </View>
 
@@ -240,6 +303,23 @@ const SettingScreen = () => {
                 />
               </View>
             </EditProfileBoxView>
+          </View>
+
+          {/* Delete And Logout Button */}
+          <View style={styles.DeleteAndLogoutContainerView}>
+            <TouchableOpacity style={[styles.DeleteAndLogoutButtonView]}>
+              <Text style={styles.DeleteAndLogoutButtonText}>
+                Delete Account
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.DeleteAndLogoutButtonView}>
+              <Text style={styles.DeleteAndLogoutButtonText}>Logout</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* App Version */}
+          <View style={styles.AppVersionView}>
+            <Text style={styles.AppVersionText}>Version 1.0.0</Text>
           </View>
         </View>
       </ScrollView>

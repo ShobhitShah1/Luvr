@@ -35,8 +35,9 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
           <Text style={styles.TitleText}>{APP_NAME}</Text>
         </View>
 
-        {!hideSettingAndNotification && (
-          <View style={styles.IconsView}>
+        {/* {hideSettingAndNotification === false && showSetting === true && ( */}
+        <View style={styles.IconsView}>
+          {hideSettingAndNotification === false && (
             <View style={styles.IconWrapper}>
               <Image
                 style={styles.Icons}
@@ -44,6 +45,8 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
                 source={CommonIcons.Notification}
               />
             </View>
+          )}
+          {(hideSettingAndNotification === false || showSetting === true) && (
             <TouchableOpacity
               activeOpacity={ActiveOpacity}
               onPress={() => {
@@ -56,8 +59,9 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
                 source={CommonIcons.Setting}
               />
             </TouchableOpacity>
-          </View>
-        )}
+          )}
+        </View>
+        {/* )} */}
       </View>
     </View>
   );

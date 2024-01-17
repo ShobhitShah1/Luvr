@@ -75,8 +75,8 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
                 styles.ImageView,
                 {
                   tintColor: hasPicture ? COLORS.White : COLORS.Black,
-                  width: hasPicture ? hp('1.4%') : hp('1.4%'),
-                  height: hasPicture ? hp('1.4%') : hp('1.4%'),
+                  width: hasPicture ? hp('1.3%') : hp('1.4%'),
+                  height: hasPicture ? hp('1.3%') : hp('1.4%'),
                 },
               ]}
               source={
@@ -88,7 +88,7 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
                 styles.AddAndRemoveText,
                 {
                   color: hasPicture ? COLORS.White : COLORS.Black,
-                  fontSize: hasPicture ? 12 : 11,
+                  fontSize: hasPicture ? 11 : 12,
                 },
               ]}>
               {hasPicture ? 'Delete Photo' : 'Add Photo'}

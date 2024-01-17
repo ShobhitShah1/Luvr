@@ -1,25 +1,43 @@
-import {useRoute} from '@react-navigation/native';
-import React, {useLayoutEffect, useRef, useState} from 'react';
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
+  Button,
   FlatList,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
+import * as ImagePicker from 'react-native-image-picker';
 import CommonIcons from '../../Common/CommonIcons';
-import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../Common/Theme';
+import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import CustomTextInput from '../../Components/CustomTextInput';
+import FakeUserCard from '../../Components/Data/FakeUserCard';
+import {
+  DummyImage,
+  TotalProfilePicCanUploadEditProfile,
+} from '../../Config/Setting';
+import {useCameraPermission} from '../../Hooks/useCameraPermission';
+import {useGalleryPermission} from '../../Hooks/useGalleryPermission';
 import UserService from '../../Services/AuthService';
 import {ProfileType} from '../../Types/ProfileType';
+import ChooseFromModal from '../Auth/CreateProfile/Components/ChooseFromModal';
+import EditProfileAllImageView from './Components/EditProfileComponents/EditProfileAllImageView';
 import EditProfileBoxView from './Components/EditProfileComponents/EditProfileBoxView';
 import EditProfileCategoriesList from './Components/EditProfileComponents/EditProfileCategoriesList';
 import EditProfileTitleView from './Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from './Components/ProfileAndSettingHeader';
-import EditProfileAllImageView from './Components/EditProfileComponents/EditProfileAllImageView';
-
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+  BottomSheetScrollView,
+} from '@gorhom/bottom-sheet';
 const initialProfileState: ProfileType = {
   _id: '',
   birthdate: '',
@@ -55,6 +73,20 @@ const EditProfileScreen = () => {
   const dayInputRef = useRef(null);
   const yearInputRef = useRef(null);
   const monthInputRef = useRef(null);
+  const [ChooseModalVisible, setChooseModalVisible] = useState<boolean>(false);
+  const {requestCameraPermission} = useCameraPermission();
+  const {requestGalleryPermission} = useGalleryPermission();
+
+  const [UserPicks, setUserPicks] = useState(
+    Array.from({length: TotalProfilePicCanUploadEditProfile}, (_, index) => ({
+      name: '',
+      type: '',
+      key: String(index),
+      url: DummyImage,
+    })),
+  );
+
+  console.log('UserPicks', UserPicks);
 
   const [profile, setProfile] = useState<ProfileType>(initialProfileState);
 
@@ -78,6 +110,106 @@ const EditProfileScreen = () => {
     } catch (error) {
       console.log('Something Went Wrong With Feting API Data');
     } finally {
+    }
+  };
+
+  // ref
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  // variables
+  const snapPoints = useMemo(() => ['25%', '50%'], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index);
+  }, []);
+
+  //* Toggle Modal Open
+  const OnToggleModal = () => {
+    setChooseModalVisible(!ChooseModalVisible);
+  };
+
+  //* Manage Gallery Image Pick
+  const HandleGalleryImagePicker = async () => {
+    try {
+      const res = await ImagePicker.launchImageLibrary({
+        mediaType: 'photo',
+        selectionLimit:
+          TotalProfilePicCanUploadEditProfile -
+          UserPicks.filter(item => item.url !== '').length,
+      });
+
+      const newImages =
+        res?.assets?.map((image, index) => ({
+          name: image.fileName || '',
+          type: image.type || '',
+          key: `${Date.now()}-${index}`,
+          url: image.uri || '',
+        })) || [];
+
+      if (newImages.length > 0) {
+        const newData = UserPicks.map(item =>
+          item.url === '' ? newImages.shift() || item : item,
+        );
+        setUserPicks(newData);
+        console.log('Selected Images:', newData);
+      }
+    } catch (error) {
+      console.log('Image Picker Error:', error);
+    }
+  };
+
+  //* Manage Camera Image Pick
+  const HandleCameraImagePicker = async () => {
+    try {
+      const res = await ImagePicker.launchCamera({
+        mediaType: 'photo',
+      });
+
+      const newImages =
+        res?.assets?.map((image, index) => ({
+          name: image.fileName || '',
+          type: image.type || '',
+          key: `${Date.now()}-${index}`,
+          url: image.uri || '',
+        })) || [];
+
+      if (newImages.length > 0) {
+        const newData = UserPicks.map(item =>
+          item.url === '' ? newImages.shift() || item : item,
+        );
+        setUserPicks(newData);
+      }
+    } catch (error) {
+      console.log('Image Picker Error:', error);
+    }
+  };
+
+  const HandleUserSelection = async (selectedOption: string) => {
+    try {
+      const permissionStatus =
+        selectedOption === 'Camera'
+          ? await requestCameraPermission()
+          : await requestGalleryPermission();
+
+      if (permissionStatus) {
+        console.log(
+          `${selectedOption} permission granted. Opening ${selectedOption.toLowerCase()}...`,
+        );
+
+        if (selectedOption === 'Camera') {
+          await HandleCameraImagePicker();
+        } else {
+          await HandleGalleryImagePicker();
+        }
+
+        setChooseModalVisible(false);
+      }
+    } catch (error) {
+      console.error('Error handling user selection:', error);
     }
   };
 
@@ -164,13 +296,19 @@ const EditProfileScreen = () => {
             />
 
             <FlatList
-              // style={{ flex: 1 }}
-              // contentContainerStyle={{flex: 1}}
-              data={[1, 2, 3, 4, 5, 6]}
+              data={UserPicks}
               numColumns={3}
               renderItem={({item, index}) => {
-                console.log('item, index', item, index);
-                return <EditProfileAllImageView />;
+                console.log('item', item);
+                return (
+                  <EditProfileAllImageView
+                    item={item}
+                    index={index}
+                    setUserPicks={setUserPicks}
+                    UserPicks={UserPicks}
+                    OnToggleModal={OnToggleModal}
+                  />
+                );
               }}
             />
           </View>
@@ -209,7 +347,7 @@ const EditProfileScreen = () => {
                     ? profile.gender
                     : [profile.gender]
                 }
-                onPress={() => {}}
+                onPress={() => handlePresentModalPress()}
               />
             </EditProfileBoxView>
           </View>
@@ -237,13 +375,13 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView>
               <EditProfileCategoriesList
-                Item={['Man', 'Woman', 'Any', 'cd', '123', '51cd']}
-                // Item={
-                //   Array.isArray(profile.likes_into)
-                //     ? profile.likes_into
-                //     : [profile.likes_into]
-                // }
-                onPress={() => {}}
+                // Item={['Man', 'Woman', 'Any', 'cd', '123', '51cd']}
+                Item={
+                  Array.isArray(profile.likes_into)
+                    ? profile.likes_into
+                    : [profile.likes_into]
+                }
+                onPress={() => handlePresentModalPress()}
               />
             </EditProfileBoxView>
           </View>
@@ -262,7 +400,7 @@ const EditProfileScreen = () => {
                     ? profile.gender
                     : [profile.gender]
                 }
-                onPress={() => {}}
+                onPress={() => handlePresentModalPress()}
               />
             </EditProfileBoxView>
           </View>
@@ -281,7 +419,7 @@ const EditProfileScreen = () => {
                     ? profile.gender
                     : [profile.gender]
                 }
-                onPress={() => {}}
+                onPress={() => handlePresentModalPress()}
               />
             </EditProfileBoxView>
           </View>
@@ -300,7 +438,7 @@ const EditProfileScreen = () => {
                     ? profile.magical_person.star_sign
                     : [profile.magical_person.star_sign]
                 }
-                onPress={() => {}}
+                onPress={() => handlePresentModalPress()}
               />
             </EditProfileBoxView>
           </View>
@@ -319,7 +457,8 @@ const EditProfileScreen = () => {
                     My education degree is
                   </Text>
                   <CustomTextInput
-                    // value={EducationDegree}
+                    value={profile.education.digree}
+                    defaultValue={profile.education.digree}
                     onChangeText={value => {
                       // setEducationDegree(value);
                     }}
@@ -333,7 +472,8 @@ const EditProfileScreen = () => {
                     My college name is
                   </Text>
                   <CustomTextInput
-                    // value={EducationDegree}
+                    defaultValue={profile.education.college_name}
+                    value={profile.education.college_name}
                     onChangeText={value => {
                       // setEducationDegree(value);
                     }}
@@ -360,7 +500,7 @@ const EditProfileScreen = () => {
                     ? profile.gender
                     : [profile.gender]
                 }
-                onPress={() => {}}
+                onPress={() => handlePresentModalPress()}
               />
             </EditProfileBoxView>
           </View>
@@ -379,7 +519,7 @@ const EditProfileScreen = () => {
                     ? profile.habits.smoke
                     : [profile.habits.smoke]
                 }
-                onPress={() => {}}
+                onPress={() => handlePresentModalPress()}
               />
             </EditProfileBoxView>
           </View>
@@ -398,7 +538,7 @@ const EditProfileScreen = () => {
                     ? profile.habits.movies
                     : [profile.habits.movies]
                 }
-                onPress={() => {}}
+                onPress={() => handlePresentModalPress()}
               />
             </EditProfileBoxView>
           </View>
@@ -417,12 +557,47 @@ const EditProfileScreen = () => {
                     ? profile.habits.drink
                     : [profile.habits.drink]
                 }
-                onPress={() => {}}
+                onPress={() => handlePresentModalPress()}
               />
             </EditProfileBoxView>
           </View>
         </View>
       </ScrollView>
+
+      <ChooseFromModal
+        isModalVisible={ChooseModalVisible}
+        toggleModal={OnToggleModal}
+        OnOptionPress={(option: string) => {
+          console.log('option', option);
+          HandleUserSelection(option);
+        }}
+      />
+
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          enableDynamicSizing
+          maxDynamicContentSize={650}
+          // index={1}
+          // snapPoints={snapPoints}
+          onChange={handleSheetChanges}>
+          <BottomSheetScrollView>
+            <View style={styles.BottomSheetContainerView}>
+              <Text>Awesome 🎉</Text>
+              <Text>Awesome 🎉</Text>
+              <Text>Awesome 🎉</Text>
+              <Text>Awesome 🎉</Text>
+              <Text>Awesome 🎉</Text>
+              <Text>Awesome 🎉</Text>
+              <Text>Awesome 🎉</Text>
+              <Text>Awesome 🎉</Text>
+              <Text>Awesome 🎉</Text>
+              <Text>Awesome 🎉</Text>
+              <Text>Awesome 🎉</Text>
+            </View>
+          </BottomSheetScrollView>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
     </View>
   );
 };
@@ -506,5 +681,8 @@ const styles = StyleSheet.create({
     color: COLORS.Black,
     // fontFamily: FONTS.SemiBold,
     backgroundColor: 'rgba(234, 234, 234, 1)',
+  },
+  BottomSheetContainerView: {
+    marginVertical: 10,
   },
 });

@@ -22,6 +22,7 @@ import {useCustomToast} from '../../Utils/toastUtils';
 import {ProfileType} from '../../Types/ProfileType';
 import ApiConfig from '../../Config/ApiConfig';
 import {useNavigation} from '@react-navigation/native';
+import {Skeleton} from 'moti/skeleton';
 
 const ProfileScreen = () => {
   const userData = useSelector((state: any) => state?.user);
@@ -94,18 +95,22 @@ const ProfileScreen = () => {
               backgroundColor={'transparent'}>
               {() => (
                 <View style={styles.ImageContainerView}>
-                  <FastImage
-                    onLoadStart={() => setIsImageLoading(true)}
-                    onLoad={() => setIsImageLoading(false)}
-                    style={styles.ProfileImage}
-                    source={{
-                      uri:
-                        ApiConfig.IMAGE_BASE_URL + ProfileData?.recent_pik[0] ||
-                        DummyImage,
-                      priority: FastImage.priority.high,
-                    }}
-                  />
-                  {IsImageLoading && (
+                  <Skeleton
+                    show={IsImageLoading}
+                    colorMode="light"
+                    colors={COLORS.LoaderGradient}>
+                    <FastImage
+                      onLoadStart={() => setIsImageLoading(true)}
+                      onLoad={() => setIsImageLoading(false)}
+                      style={styles.ProfileImage}
+                      source={{
+                        uri:
+                          ApiConfig.IMAGE_BASE_URL +
+                            ProfileData?.recent_pik[0] || DummyImage,
+                        priority: FastImage.priority.high,
+                      }}
+                    />
+                    {/* {IsImageLoading && (
                     <View style={styles.ImageLoaderView}>
                       <ActivityIndicator
                         size={45}
@@ -113,7 +118,8 @@ const ProfileScreen = () => {
                         style={styles.ImageLoader}
                       />
                     </View>
-                  )}
+                  )} */}
+                  </Skeleton>
                 </View>
               )}
             </AnimatedCircularProgress>
@@ -189,7 +195,7 @@ const styles = StyleSheet.create({
     borderWidth: 5,
     justifyContent: 'center',
     overflow: 'hidden',
-    borderRadius: 100,
+    borderRadius: 500,
     borderColor: COLORS.White,
   },
   ProfileViewContainer: {

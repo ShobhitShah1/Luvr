@@ -23,6 +23,7 @@ import useCalculateAge from '../../../Hooks/useCalculateAge';
 import {SwiperCard} from '../../../Types/SwiperCard';
 import styles from '../styles';
 import {useNavigation} from '@react-navigation/native';
+import {Skeleton} from 'moti/skeleton';
 
 interface RenderCardProps {
   CurrentCardIndex: number;
@@ -136,15 +137,20 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
       onPressOut={handlePressOut}>
       <View style={styles.card}>
         <Animated.View style={[styles.imageContainer, animatedStyle]}>
-          <FastImage
-            onLoadStart={ImageLoading}
-            onLoad={ImageLoaded}
-            resizeMode="cover"
-            source={{
-              uri: getCardImageUrl(cardData, IsFirstCard, currentImageIndex),
-            }}
-            style={styles.ImageStyle}
-          />
+          <Skeleton
+            show={firstImageLoading}
+            colorMode="light"
+            colors={COLORS.LoaderGradient}>
+            <FastImage
+              onLoadStart={ImageLoading}
+              onLoad={ImageLoaded}
+              resizeMode="cover"
+              source={{
+                uri: getCardImageUrl(cardData, IsFirstCard, currentImageIndex),
+              }}
+              style={styles.ImageStyle}
+            />
+          </Skeleton>
         </Animated.View>
 
         <View style={styles.CardBottomDetailView}>
@@ -200,11 +206,11 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
           </TouchableOpacity>
         </View>
 
-        {firstImageLoading && (
+        {/* {firstImageLoading && (
           <View style={styles.LoadingImageView}>
             <ActivityIndicator size="large" color={COLORS.Primary} />
           </View>
-        )}
+        )} */}
       </View>
     </TouchableWithoutFeedback>
   );

@@ -19,6 +19,12 @@ export const COLORS = {
   LightGray: 'rgb(218,218,218)',
   TabBarUnFocused: 'rgba(198, 198, 198, 1)',
   GradientViewForCards: ['rgba(217, 217, 217, 0)', 'rgba(0, 0, 0, 0.4)'],
+  LoaderGradient: [
+    'rgba(255, 65, 101, 0.7)',
+    'rgba(245, 113, 138, 1)',
+    'rgba(255, 65, 101, 0.7)',
+    'rgba(245, 113, 138, 1)',
+  ],
 };
 
 export const FONTS = {

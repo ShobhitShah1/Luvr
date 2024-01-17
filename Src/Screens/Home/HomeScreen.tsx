@@ -1,43 +1,66 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React, {useEffect} from 'react';
-import {FlatList, ImageBackground, ScrollView, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  FlatList,
+  ImageBackground,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import HomeLookingForData from '../../Components/Data/HomeData/HomeLookingForData';
 import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
-import RenderlookingView from './Components/RenderlookingView';
 import styles from './styles';
 import UserService from '../../Services/AuthService';
 import {store} from '../../Redux/Store/store';
 import {onSwipeRight} from '../../Redux/Action/userActions';
+import RenderLookingView from './Components/RenderLookingView';
 
 const HomeScreen = () => {
+  const [IsAPIDataLoading, setIsAPIDataLoading] = useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
+
   useEffect(() => {
     GetMyLikes();
   }, []);
 
-  const GetMyLikes = async () => {
-    try {
-      const userDataForApi = {
-        eventName: 'my_likes',
-      };
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setIsAPIDataLoading(true);
+    setTimeout(() => {
+      GetMyLikes();
+    }, 2000);
+  }, []);
 
-      const APIResponse = await UserService.UserRegister(userDataForApi);
-      if (APIResponse?.code === 200) {
-        // console.log('Get My Like Data:', APIResponse.data);
-        if (APIResponse?.code === 200 && APIResponse?.data) {
-          const userIds = Array.isArray(APIResponse.data)
-            ? APIResponse.data
-            : [APIResponse.data];
-          console.log('userIds', userIds);
-          store.dispatch(onSwipeRight(userIds));
+  const GetMyLikes = async () => {
+    setIsAPIDataLoading(true);
+    try {
+      setTimeout(async () => {
+        const userDataForApi = {
+          eventName: 'my_likes',
+        };
+
+        const APIResponse = await UserService.UserRegister(userDataForApi);
+        if (APIResponse?.code === 200) {
+          // console.log('Get My Like Data:', APIResponse.data);
+          if (APIResponse?.code === 200 && APIResponse?.data) {
+            const userIds = Array.isArray(APIResponse.data)
+              ? APIResponse.data
+              : [APIResponse.data];
+            console.log('userIds', userIds);
+            store.dispatch(onSwipeRight(userIds));
+          } else {
+            // Handle error
+          }
         } else {
-          // Handle error
         }
-      } else {
-      }
+      }, 2000);
     } catch (error) {
       console.log('Something Went Wrong With Feting API Data', error);
     } finally {
+      setIsAPIDataLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -106,15 +129,25 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.Container}>
-      <BottomTabHeader />
+      <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
 
-      <ScrollView bounces={false}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        bounces={false}>
         <FlatList
           numColumns={2}
           style={styles.FlatListStyle}
           data={HomeLookingForData}
           renderItem={({item, index}) => {
-            return <RenderlookingView item={item} index={index} />;
+            return (
+              <RenderLookingView
+                item={item}
+                index={index}
+                IsLoading={IsAPIDataLoading}
+              />
+            );
           }}
           ListHeaderComponent={
             <CategoryHeaderView

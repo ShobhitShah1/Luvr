@@ -26,7 +26,7 @@ const ChatRoomScreen = () => {
 
   return (
     <View style={styles.container}>
-      <BottomTabHeader hideSettingAndNotification={true} />
+      <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
 
       <View style={styles.ListChatView}>
         <FlatList

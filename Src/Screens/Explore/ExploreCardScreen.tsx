@@ -28,13 +28,18 @@ import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderSwiperCard from './Components/RenderSwiperCard';
 import {onSwipeLeft, onSwipeRight} from '../../Redux/Action/userActions';
 import {store} from '../../Redux/Store/store';
-import {useFocusEffect, useIsFocused} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+} from '@react-navigation/native';
 
 const ExploreCardScreen: FC = () => {
   const {width} = useWindowDimensions() || {};
-  const isFocused = useIsFocused();
   const swipeRef = useRef<Swiper<SwiperCard>>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
+  const navigation = useNavigation();
+
   const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
   const LeftSwipedUserIds = useSelector(
@@ -52,9 +57,11 @@ const ExploreCardScreen: FC = () => {
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [IsNetConnected, setIsNetConnected] = useState(true);
   const slideDownAnimation = useRef(new Animated.Value(1)).current;
+  const isScreenFocused = useIsFocused();
+
   const {startInterval, stopInterval, clearInterval} = useInterval(
     () => {
-      if (cards) {
+      if (cards && isScreenFocused) {
         setCurrentImageIndex(
           prevIndex =>
             (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik.length || 0,
@@ -74,21 +81,31 @@ const ExploreCardScreen: FC = () => {
   );
 
   useEffect(() => {
-    // if (isFocused) {
     setIsAPILoading(true);
-    setIsNetConnected(true);
     FetchAPIData(0);
     setCardToSkipNumber(0);
-    // }
   }, []);
-  // useEffect(() => {
-  //   if (isFocused) {
-  //     setIsAPILoading(true);
-  //     setIsNetConnected(true);
-  //     FetchAPIData(0);
-  //     setCardToSkipNumber(0);
-  //   }
-  // }, [isFocused]);
+
+  //* Blur Screen useEffect
+  useEffect(() => {
+    const _unsubscribe = navigation.addListener('blur', () => {
+      stopInterval();
+      clearInterval();
+      setCardToSkipNumber(0);
+      // Alert.alert('Brooooo!', 'you are leaving this screen');
+    });
+    return () => _unsubscribe();
+  }, []);
+
+  //* Focus Screen useEffect
+  useEffect(() => {
+    const _unsubscribe = navigation.addListener('focus', () => {
+      startInterval();
+      FetchAPIData(0);
+      // Alert.alert('Brooooo!', 'Thanks for coming back');
+    });
+    return () => _unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (cards?.length === 0) {
@@ -99,15 +116,6 @@ const ExploreCardScreen: FC = () => {
       }).start();
     }
   }, [cards, slideDownAnimation]);
-
-  useEffect(() => {
-    startInterval();
-
-    return () => {
-      clearInterval();
-      stopInterval(); //! Added For Test If Timer Stop's For Found Bug Related To Time Remove This
-    };
-  }, [startInterval, clearInterval]);
 
   // const CheckConnectionAndFetchAPI = useCallback(() => {
   //   setIsAPILoading(true);
@@ -312,7 +320,7 @@ const ExploreCardScreen: FC = () => {
 
   return (
     <View style={styles.container}>
-      <BottomTabHeader />
+      <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
 
       <View
         style={[

@@ -2,21 +2,23 @@
 import React, {FC} from 'react';
 import {
   Image,
+  ImageStyle,
   StyleSheet,
   Text,
+  TextStyle,
   TouchableOpacity,
   View,
   ViewStyle,
-  TextStyle,
-  ImageStyle,
 } from 'react-native';
 import CommonIcons from '../../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import SwitchComponent from '../../../Components/SwitchComponent';
 
 interface SettingFlexViewProps {
   Item: string;
   onPress: () => void;
   style?: ViewStyle;
+  IsSwitch?: boolean;
   itemStyle?: TextStyle;
   rightIconViewStyle?: ViewStyle;
   rightArrowIconStyle?: ImageStyle;
@@ -27,23 +29,28 @@ const SettingFlexView: FC<SettingFlexViewProps> = ({
   onPress,
   style,
   itemStyle,
+  IsSwitch,
   rightIconViewStyle,
   rightArrowIconStyle,
 }) => {
   return (
-    <View style={[styles.SettingView, style]}>
+    <TouchableOpacity
+      activeOpacity={ActiveOpacity}
+      onPress={onPress}
+      style={[styles.SettingView, style]}>
       <Text style={[styles.ItemTextStyle, itemStyle]}>{Item}</Text>
-      <TouchableOpacity
-        activeOpacity={ActiveOpacity}
-        onPress={onPress}
-        style={[styles.RightIconView, rightIconViewStyle]}>
-        <Image
-          resizeMode="contain"
-          source={CommonIcons.RightArrow}
-          style={[styles.RightArrowIcon, rightArrowIconStyle]}
-        />
-      </TouchableOpacity>
-    </View>
+      {IsSwitch ? (
+        <SwitchComponent isActive={true} size={38} />
+      ) : (
+        <View style={[styles.RightIconView, rightIconViewStyle]}>
+          <Image
+            resizeMode="contain"
+            source={CommonIcons.RightArrow}
+            style={[styles.RightArrowIcon, rightArrowIconStyle]}
+          />
+        </View>
+      )}
+    </TouchableOpacity>
   );
 };
 export default SettingFlexView;
