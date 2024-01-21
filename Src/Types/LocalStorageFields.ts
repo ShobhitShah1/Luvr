@@ -1,4 +1,5 @@
 export const LocalStorageFields = {
+  _id: '_id',
   eventName: 'eventName',
   loginType: 'loginType',
   userFrom: 'userFrom',

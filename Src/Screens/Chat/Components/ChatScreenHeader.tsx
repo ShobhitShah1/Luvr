@@ -1,3 +1,4 @@
+import {useNavigation} from '@react-navigation/native';
 import React, {FC} from 'react';
 import {
   Image,
@@ -7,15 +8,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
-import CommonIcons from '../../../Common/CommonIcons';
-import {useNavigation} from '@react-navigation/native';
-import {chatRoomDataType} from '../../../Types/chatRoomDataType';
 import FastImage from 'react-native-fast-image';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import CommonIcons from '../../../Common/CommonIcons';
+import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import ApiConfig from '../../../Config/ApiConfig';
+import {DummyImage} from '../../../Config/Setting';
+import {ProfileType} from '../../../Types/ProfileType';
 
 interface ChatHeaderProps {
-  data: chatRoomDataType;
+  data: ProfileType;
 }
 
 const ChatScreenHeader: FC<ChatHeaderProps> = ({data}) => {
@@ -38,17 +40,24 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({data}) => {
             <View style={styles.ProfileImageView}>
               <FastImage
                 style={styles.ProfileImage}
-                source={{
-                  uri: data?.profilePik,
-                  priority: FastImage.priority.high,
-                }}
+                source={
+                  data?.recent_pik && data?.recent_pik.length !== 0
+                    ? {
+                        uri: ApiConfig.IMAGE_BASE_URL + data?.recent_pik[0],
+                        priority: FastImage.priority.high,
+                      }
+                    : DummyImage
+                }
               />
             </View>
             <View style={styles.ProfileNameView}>
               <Text numberOfLines={1} style={styles.ProfileNameText}>
-                {data?.name}
+                {data?.full_name}
               </Text>
-              <Image source={CommonIcons.Verification_Icon} style={styles.VerifyIconView} />
+              <Image
+                source={CommonIcons.Verification_Icon}
+                style={styles.VerifyIconView}
+              />
             </View>
           </View>
         </View>

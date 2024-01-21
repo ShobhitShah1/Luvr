@@ -27,7 +27,7 @@ import CommonIcons from '../../../Common/CommonIcons';
 import CountryPickerView from '../../../Components/AuthComponents/CountryPickerView';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
-import CountryWithCode from '../../../Components/Data/CountryWithCode';
+import {CountryWithCode} from '../../../Components/Data';
 import ApiConfig from '../../../Config/ApiConfig';
 import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';

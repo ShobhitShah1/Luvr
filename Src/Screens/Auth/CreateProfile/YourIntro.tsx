@@ -13,7 +13,7 @@ import {
   SIZES,
 } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import YourIntoData from '../../../Components/Data/YourIntoData';
+import {YourIntoData} from '../../../Components/Data';
 import {updateField} from '../../../Redux/Action/userActions';
 import UserService from '../../../Services/AuthService';
 import {transformUserDataForApi} from '../../../Services/dataTransformService';

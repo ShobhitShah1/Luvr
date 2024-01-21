@@ -10,14 +10,14 @@ function useInterval(callback: () => void, delay: number | null) {
   }, [callback]);
 
   const startInterval = () => {
-    console.log('Interval ---:> Start');
+    // console.log('Interval ---:> Start');
     if (delay !== null && !intervalId.current) {
       intervalId.current = setInterval(() => savedCallback.current(), delay);
     }
   };
 
   const stopInterval = () => {
-    console.log('Interval ---:> Stop');
+    // console.log('Interval ---:> Stop');
     if (intervalId.current !== null) {
       clearInterval(intervalId.current);
       intervalId.current = null;
@@ -25,7 +25,7 @@ function useInterval(callback: () => void, delay: number | null) {
   };
 
   const clearIntervalFn = () => {
-    console.log('Interval ---:> Clear');
+    // console.log('Interval ---:> Clear');
     stopInterval();
     intervalId.current = null;
   };

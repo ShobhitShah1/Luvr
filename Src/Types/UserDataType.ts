@@ -1,6 +1,12 @@
 import {LocalStorageFields} from './LocalStorageFields';
 
+type HopingType = {
+  Title: string;
+  Emoji: string;
+  Icon: string;
+};
 export interface UserDataType {
+  [LocalStorageFields._id]: number;
   [LocalStorageFields.eventName]: string;
   [LocalStorageFields.loginType]: string;
   [LocalStorageFields.userFrom]: string;
@@ -13,7 +19,7 @@ export interface UserDataType {
   [LocalStorageFields.city]: string;
   [LocalStorageFields.orientation]: string[];
   [LocalStorageFields.isOrientationVisible]: false;
-  [LocalStorageFields.hoping]: string;
+  [LocalStorageFields.hoping]: HopingType;
   [LocalStorageFields.educationDegree]: string;
   [LocalStorageFields.collegeName]: string;
   [LocalStorageFields.habitsExercise]: string;

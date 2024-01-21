@@ -4,22 +4,20 @@ import {
   ON_SWIPE_LEFT,
   ON_SWIPE_RIGHT,
   RESET,
+  SET_USER_DATA,
   UPDATE_FIELD,
 } from '../Action/userActions';
 
-// const initialState: UserDataType = Object.keys(LocalStorageFields).reduce(
-//   (acc, field) => ({...acc, [field]: ''}),
-//   {} as UserDataType,
-// );
 const initialState: UserDataType & {swipedLeftUserIds: string[]} & {
   swipedRightUserIds: string[];
-} = {
+} & {userData: string[]} = {
   ...Object.keys(LocalStorageFields).reduce(
     (acc, field) => ({...acc, [field]: ''}),
     {} as UserDataType,
   ),
   swipedLeftUserIds: [],
   swipedRightUserIds: [],
+  userData: [],
 };
 
 const userReducer = (
@@ -28,7 +26,13 @@ const userReducer = (
   } = initialState,
   action: any,
 ) => {
+  console.log('Reduce ID:', action.userId);
   switch (action.type) {
+    case SET_USER_DATA:
+      return {
+        ...state,
+        userData: action.payload,
+      };
     case UPDATE_FIELD:
       return {
         ...state,
@@ -40,12 +44,16 @@ const userReducer = (
         swipedLeftUserIds: [...(state?.swipedLeftUserIds || []), action.userId],
       };
     case ON_SWIPE_RIGHT:
+      const newUserId =
+        action.userId instanceof Array ? action.userId : [action.userId];
+      const uniqueUserIds = new Set([
+        ...(state?.swipedRightUserIds || []),
+        ...newUserId,
+      ]);
+
       return {
         ...state,
-        swipedRightUserIds: [
-          ...(state?.swipedRightUserIds || []),
-          ...action.userId,
-        ],
+        swipedRightUserIds: Array.from(uniqueUserIds),
       };
     case RESET:
       return initialState;

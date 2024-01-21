@@ -5,7 +5,7 @@ import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {RESULTS} from 'react-native-permissions';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
-import {ContactTabData} from '../../../Components/Data/ContactTabData';
+import {ContactTabData} from '../../../Components/Data';
 import {useContacts} from '../../../Hooks/useContacts';
 import ContactHeader from './Components/ContactHeader';
 import ContactSearch from './Components/ContactSearch';

@@ -22,7 +22,7 @@ import {
   SIZES,
 } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import LookingFor from '../../../Components/Data/LookingFor';
+import {LookingFor} from '../../../Components/Data';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';

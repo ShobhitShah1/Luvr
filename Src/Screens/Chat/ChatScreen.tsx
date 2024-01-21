@@ -3,12 +3,11 @@
 import {ParamListBase, RouteProp, useRoute} from '@react-navigation/native';
 import React, {FC, useCallback, useEffect, useState} from 'react';
 import {
-  Dimensions,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   StatusBar,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import {
@@ -20,14 +19,21 @@ import {
   IMessage,
   InputToolbar,
 } from 'react-native-gifted-chat';
+import {useSelector} from 'react-redux';
 import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
+// import socket from '../../Services/socket';
 import {chatRoomDataType} from '../../Types/chatRoomDataType';
 import ChatScreenHeader from './Components/ChatScreenHeader';
-import {useSelector} from 'react-redux';
+import {ProfileType} from '../../Types/ProfileType';
+import UserService from '../../Services/AuthService';
+import {Socket, io} from 'socket.io-client';
+import ApiConfig from '../../Config/ApiConfig';
+import {store} from '../../Redux/Store/store';
 
 interface ChatData {
   params: {
     ChatData: chatRoomDataType;
+    id?: number;
   };
 }
 
@@ -35,40 +41,171 @@ type ChatScreenRouteProp = RouteProp<ParamListBase, 'ChatScreen'> & ChatData;
 
 const ChatScreen: FC = () => {
   const {params} = useRoute<ChatScreenRouteProp>();
-  const chatData = params?.ChatData || {};
+  console.log('params', params?.id);
+  // const chatData = params?.ChatData || {};
+  const CurrentLoginUserId = store.getState().user?.userData?._id;
+  const CurrentLoginUserFullName = store.getState().user?.userData?.full_name;
   const userData = useSelector((state: any) => state?.user);
   const [userMessage, setUserMessages] = useState<IMessage[]>([]);
+  const [OtherUserProfileData, setOtherUserProfileData] =
+    useState<ProfileType>();
+  // const socketInstance = io('http://nirvanatechlabs.in:1111/');
+
+  const [socket, setSocket] = useState<Socket>();
+
+  const generateRandomId = () => {
+    // Generate a random ID (you may replace this with your own logic)
+    return Math.random().toString(36).substr(2, 9);
+  };
+
+  const transformDataForGiftedChat = apiData => {
+    const giftedChatMessages = apiData?.data?.map(chatItem => {
+      const messages = chatItem?.chat?.map(message => {
+        return {
+          _id: message?.message_id || generateRandomId(),
+          text: message?.message,
+          createdAt: new Date(message?.timestamp),
+          user: {
+            _id: message?.from === CurrentLoginUserId ? 1 : 2,
+            name:
+              message?.from === CurrentLoginUserFullName
+                ? CurrentLoginUserFullName
+                : chatItem?.name,
+          },
+        };
+      });
+
+      return messages;
+    });
+
+    return giftedChatMessages.flat();
+  };
 
   useEffect(() => {
-    setUserMessages([
-      {
-        _id: 1,
-        text: `Hello ${userData?.fullName}`,
-        createdAt: new Date(),
-        user: {
-          _id: 0,
-          name: chatData?.name,
-          avatar: chatData?.profilePik,
-        },
-      },
-      {
-        _id: 2,
-        text: `Hello ${chatData?.name}`,
-        createdAt: new Date(),
-        user: {
-          _id: 1,
-          name: chatData?.name,
-          avatar: chatData?.profilePik,
-        },
-      },
-    ]);
+    getOtherUserDataCall();
   }, []);
 
-  const onSend = useCallback((messages: IMessage[]) => {
-    setUserMessages(previousMessages =>
-      GiftedChat.append(previousMessages, messages),
-    );
+  useEffect(() => {
+    const socketInstance = io('http://nirvanatechlabs.in:1111/');
+    setSocket(socketInstance);
+
+    return () => {
+      socketInstance.disconnect();
+    };
   }, []);
+
+  useEffect(() => {
+    if (!socket) {
+      return;
+    }
+
+    // Event: Join
+    socket.emit('Join', {id: CurrentLoginUserId});
+
+    // Event: Get Receiver Socket
+    socket.emit('get_receiver_socket', {
+      to: CurrentLoginUserId,
+    });
+
+    // Event: List
+    socket.emit('List', {id: CurrentLoginUserId});
+
+    // Event: List - Response
+    const handleListResponse = (data: any) => {
+      console.log('List Response:', data);
+      const giftedChatMessages = transformDataForGiftedChat(data);
+      setUserMessages(previousMessages =>
+        GiftedChat.append(previousMessages, giftedChatMessages),
+      );
+      // Handle the list response here
+    };
+
+    // Event: Receive Message
+    const handleReceivedMessage = (data: any) => {
+      console.log('Received Message:', data);
+      // setMessages(prevMessages => [...prevMessages, data]);
+    };
+
+    socket.on('List', handleListResponse);
+    socket.on('message', handleReceivedMessage);
+
+    return () => {
+      socket.off('List', handleListResponse);
+      socket.off('message', handleReceivedMessage);
+    };
+  }, [socket, CurrentLoginUserId]);
+
+  const getOtherUserDataCall = async () => {
+    try {
+      const data = {
+        eventName: 'get_other_profile',
+        id: params?.id,
+      };
+
+      const apiResponse = await UserService.UserRegister(data);
+
+      if (apiResponse?.code === 200) {
+        console.log('APIResponse', apiResponse.data);
+        setOtherUserProfileData(apiResponse.data);
+      }
+    } catch (error) {
+      console.error('Error in getOtherUserDataCall:', error);
+    }
+  };
+
+  const onSend = useCallback(
+    (messages: IMessage[]) => {
+      // setUserMessages(previousMessages =>
+      //   GiftedChat.append(previousMessages, messages),
+      // );
+
+      if (socket) {
+        // Event: Chat
+        const chatData = {
+          to: CurrentLoginUserId,
+          reciver_socket_id: params.id,
+          from_name: OtherUserProfileData?.full_name,
+          to_name: CurrentLoginUserFullName,
+          message: messages[0].text,
+        };
+
+        // Emit the 'chat' event with acknowledgment callback
+        socket.emit('chat', chatData, acknowledgment => {
+          // acknowledgment is the data sent back by the server
+          console.log('Message acknowledgment:', acknowledgment);
+
+          // You can handle the acknowledgment as needed
+          if (acknowledgment && acknowledgment.success) {
+            // Message sent successfully
+            console.log('Message sent successfully');
+          } else {
+            // Message failed to send
+            console.error('Message failed to send');
+          }
+        });
+      }
+    },
+    [
+      socket,
+      CurrentLoginUserId,
+      OtherUserProfileData,
+      CurrentLoginUserFullName,
+    ],
+  );
+  // const onSend = useCallback((messages: IMessage[]) => {
+  // setUserMessages(previousMessages =>
+  //   GiftedChat.append(previousMessages, messages),
+  // );
+  //   // Event: Chat
+  //   const chatData = {
+  //     to: CurrentLoginUserId,
+  //     reciver_socket_id: params.id,
+  //     from_name: OtherUserProfileData?.full_name,
+  //     to_name: CurrentLoginUserFullName,
+  //     message: messages[0].text,
+  //   };
+  //   socketInstance.emit('chat', chatData);
+  // }, []);
 
   const renderInputToolbar = (props: any) => {
     return (
@@ -212,7 +349,7 @@ const ChatScreen: FC = () => {
 
   return (
     <View style={styles.Container}>
-      <ChatScreenHeader data={chatData} />
+      <ChatScreenHeader data={OtherUserProfileData} />
       <StatusBar backgroundColor={COLORS.White} barStyle={'dark-content'} />
       <View style={styles.ChatContainer}>
         <GiftedChat

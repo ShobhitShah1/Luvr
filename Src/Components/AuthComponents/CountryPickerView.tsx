@@ -21,7 +21,7 @@ import {
   SIZES,
 } from '../../Common/Theme';
 import CustomTextInput from '../CustomTextInput';
-import CountryWithCode from '../Data/CountryWithCode';
+import {CountryWithCode} from '../Data';
 
 interface CountryPickerProps {
   value: string | undefined;

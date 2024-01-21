@@ -20,7 +20,7 @@ import {
   SIZES,
 } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import LifestyleData from '../../../Components/Data/LifestyleData';
+import {LifestyleData} from '../../../Components/Data';
 import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';

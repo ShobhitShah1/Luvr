@@ -8,13 +8,17 @@ import {
   Text,
   View,
 } from 'react-native';
-import HomeLookingForData from '../../Components/Data/HomeData/HomeLookingForData';
+import {HomeLookingForData} from '../../Components/Data';
 import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
 import styles from './styles';
 import UserService from '../../Services/AuthService';
 import {store} from '../../Redux/Store/store';
-import {onSwipeRight} from '../../Redux/Action/userActions';
+import {
+  onSwipeRight,
+  setUserData,
+  updateField,
+} from '../../Redux/Action/userActions';
 import RenderLookingView from './Components/RenderLookingView';
 
 const HomeScreen = () => {
@@ -23,7 +27,26 @@ const HomeScreen = () => {
 
   useEffect(() => {
     GetMyLikes();
+    GetProfileData();
   }, []);
+
+  const GetProfileData = async () => {
+    try {
+      const userDataForApi = {
+        eventName: 'get_profile',
+      };
+
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      if (APIResponse?.code === 200) {
+        store.dispatch(setUserData(APIResponse.data));
+        console.log('GetProfileData Data:', APIResponse.data);
+      }
+    } catch (error) {
+      console.log('Something Went Wrong With Feting API Data');
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);

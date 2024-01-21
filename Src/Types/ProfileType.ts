@@ -22,6 +22,12 @@ type MagicalPersonType = {
   star_sign: string;
 };
 
+type HopingType = {
+  Title: string;
+  Emoji: string;
+  Icon: string;
+};
+
 export type ProfileType = {
   _id: string;
   birthdate: string;
@@ -32,7 +38,7 @@ export type ProfileType = {
   full_name: string | null;
   gender: string;
   habits: HabitsType;
-  hoping: string;
+  hoping: HopingType;
   identity: string;
   is_block_contact: string;
   is_orientation_visible: boolean;

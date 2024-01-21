@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
+  Dimensions,
   Image,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -36,6 +38,13 @@ const ProfileScreen = () => {
     undefined,
   );
 
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    GetProfileData();
+  }, []);
+
   useEffect(() => {
     console.log('Age', userData?.birthdate, Age);
     console.log('Percentage:', percentage, Math.round(percentage));
@@ -66,24 +75,30 @@ const ProfileScreen = () => {
       console.log('Something Went Wrong With Feting API Data');
     } finally {
       setIsAPILoading(false);
+      setRefreshing(false);
     }
   };
 
-  if (IsAPILoading) {
-    return (
-      <React.Fragment>
-        <BottomTabHeader />
-        <View style={[styles.container, styles.LoaderContainer]}>
-          <ActivityIndicator size={'large'} color={COLORS.Primary} />
-        </View>
-      </React.Fragment>
-    );
-  }
+  // if (IsAPILoading) {
+  //   return (
+  //     <React.Fragment>
+  //       <BottomTabHeader />
+  //       <View style={[styles.container, styles.LoaderContainer]}>
+  //         <ActivityIndicator size={'large'} color={COLORS.Primary} />
+  //       </View>
+  //     </React.Fragment>
+  //   );
+  // }
 
   return (
     <View style={styles.container}>
       <BottomTabHeader hideSettingAndNotification={true} showSetting={true} />
-      <ScrollView bounces={false} style={styles.ProfileViewContainer}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        bounces={false}
+        style={styles.ProfileViewContainer}>
         <View style={styles.ContentView}>
           <View style={styles.ProfileImageView}>
             <AnimatedCircularProgress
@@ -110,15 +125,6 @@ const ProfileScreen = () => {
                         priority: FastImage.priority.high,
                       }}
                     />
-                    {/* {IsImageLoading && (
-                    <View style={styles.ImageLoaderView}>
-                      <ActivityIndicator
-                        size={45}
-                        color={COLORS.Primary}
-                        style={styles.ImageLoader}
-                      />
-                    </View>
-                  )} */}
                   </Skeleton>
                 </View>
               )}
@@ -126,26 +132,50 @@ const ProfileScreen = () => {
           </View>
 
           <View style={styles.UserNameAndLocationView}>
-            <View style={styles.NameAndBadgeView}>
-              <Text style={styles.UserNameText}>{`${
-                ProfileData?.full_name || userData?.fullName
-              }, ${Age || 0}`}</Text>
-              <Image
-                source={CommonIcons.Verification_Icon}
-                style={styles.VerifyIcon}
-              />
+            <View style={styles.NameAndBadgeContainer}>
+              <Skeleton
+                show={IsAPILoading}
+                width={240}
+                colorMode="light"
+                colors={COLORS.LoaderGradient}>
+                <View style={styles.NameAndBadgeView}>
+                  <Text style={styles.UserNameText}>{`${
+                    ProfileData?.full_name || userData?.fullName
+                  }, ${Age || 0}`}</Text>
+                  <Image
+                    source={CommonIcons.Verification_Icon}
+                    style={styles.VerifyIcon}
+                  />
+                </View>
+              </Skeleton>
             </View>
-            <Text style={styles.UserCityText}>
-              {ProfileData?.city || 'City'}
-            </Text>
+            <View style={styles.NameAndBadgeContainer}>
+              <Skeleton
+                show={IsAPILoading}
+                colorMode="light"
+                width={70}
+                colors={COLORS.LoaderGradient}>
+                <Text style={styles.UserCityText}>
+                  {ProfileData?.city || 'City'}
+                </Text>
+              </Skeleton>
+            </View>
           </View>
 
           <View style={styles.TotalPercentageCompletedView}>
             <View style={styles.PercentageView}>
               <View style={styles.PercentageCountView}>
-                <Text style={styles.PercentageCountText}>{`${Math.floor(
-                  percentage,
-                )}%`}</Text>
+                <Skeleton
+                  show={IsAPILoading}
+                  colorMode="light"
+                  height={57}
+                  colors={COLORS.LoaderGradient}>
+                  <View style={styles.PercentageTextFlexView}>
+                    <Text style={styles.PercentageCountText}>{`${Math.floor(
+                      percentage,
+                    )}%`}</Text>
+                  </View>
+                </Skeleton>
               </View>
               <View style={styles.CompleteProfileTextView}>
                 <Text numberOfLines={2} style={styles.CompleteProfileText}>
@@ -156,9 +186,7 @@ const ProfileScreen = () => {
             <View style={styles.EditProfileView}>
               <TouchableOpacity
                 activeOpacity={ActiveOpacity}
-                onPress={() =>
-                  navigation.navigate('EditProfile', {id: ProfileData?._id})
-                }
+                onPress={() => navigation.navigate('EditProfile')}
                 style={styles.EditButtonView}>
                 <Text style={styles.EditButtonText}>Edit profile</Text>
               </TouchableOpacity>
@@ -180,6 +208,11 @@ const styles = StyleSheet.create({
   LoaderContainer: {
     justifyContent: 'center',
   },
+  NameAndBadgeContainer: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginTop: 5,
+  },
   ProfileImage: {
     width: '101%',
     height: '101%',
@@ -195,7 +228,7 @@ const styles = StyleSheet.create({
     borderWidth: 5,
     justifyContent: 'center',
     overflow: 'hidden',
-    borderRadius: 500,
+    borderRadius: Dimensions.get('window').width / 2,
     borderColor: COLORS.White,
   },
   ProfileViewContainer: {
@@ -255,19 +288,31 @@ const styles = StyleSheet.create({
     height: '60%',
     alignItems: 'center',
     flexDirection: 'row',
+    overflow: 'hidden',
+    alignSelf: 'center',
+    alignContent: 'center',
+    // justifyContent: 'center'
   },
   PercentageCountView: {
     width: 57,
     height: 57,
+    overflow: 'hidden',
     borderRadius: 100,
     justifyContent: 'center',
     backgroundColor: COLORS.White,
+  },
+  PercentageTextFlexView: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    flex: 1,
   },
   PercentageCountText: {
     fontSize: 16,
     fontFamily: FONTS.Bold,
     textAlign: 'center',
     color: COLORS.Primary,
+    // justifyContent: 'center',
+    // alignSelf: 'center',
   },
   CompleteProfileTextView: {
     width: '70%',

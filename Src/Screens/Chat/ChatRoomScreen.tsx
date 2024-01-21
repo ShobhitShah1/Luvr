@@ -4,7 +4,7 @@ import React from 'react';
 import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
 import CommonImages from '../../Common/CommonImages';
 import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
-import {chatRoomData} from '../../Components/Data/ChatRoomData';
+import {chatRoomData} from '../../Components/Data';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderChatRoomList from './Components/RenderChatRoomList';
 
@@ -30,9 +30,10 @@ const ChatRoomScreen = () => {
 
       <View style={styles.ListChatView}>
         <FlatList
-          data={chatRoomData}
+          data={[]} //chatRoomData
           contentContainerStyle={{
-            flex: chatRoomData.length === 0 ? 1 : 0,
+            // flex: chatRoomData.length === 0 ? 1 : 0,
+            flex: 1,
             justifyContent: chatRoomData.length === 0 ? 'center' : undefined,
           }}
           maxToRenderPerBatch={10}
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   EmptyListView: {
-    // flex: 1,
+    flex: 1,
     width: '90%',
     alignSelf: 'center',
     alignItems: 'center',

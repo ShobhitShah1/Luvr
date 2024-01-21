@@ -1,3 +1,12 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react/no-unstable-nested-components */
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetModalProvider,
+  BottomSheetScrollView,
+} from '@gorhom/bottom-sheet';
+import {BlurView} from '@react-native-community/blur';
 import React, {
   useCallback,
   useLayoutEffect,
@@ -6,7 +15,7 @@ import React, {
   useState,
 } from 'react';
 import {
-  Button,
+  Dimensions,
   FlatList,
   ScrollView,
   StyleSheet,
@@ -18,7 +27,6 @@ import * as ImagePicker from 'react-native-image-picker';
 import CommonIcons from '../../Common/CommonIcons';
 import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import CustomTextInput from '../../Components/CustomTextInput';
-import FakeUserCard from '../../Components/Data/FakeUserCard';
 import {
   DummyImage,
   TotalProfilePicCanUploadEditProfile,
@@ -31,13 +39,9 @@ import ChooseFromModal from '../Auth/CreateProfile/Components/ChooseFromModal';
 import EditProfileAllImageView from './Components/EditProfileComponents/EditProfileAllImageView';
 import EditProfileBoxView from './Components/EditProfileComponents/EditProfileBoxView';
 import EditProfileCategoriesList from './Components/EditProfileComponents/EditProfileCategoriesList';
+import EditProfileSheetView from './Components/EditProfileComponents/EditProfileSheetView';
 import EditProfileTitleView from './Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from './Components/ProfileAndSettingHeader';
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-  BottomSheetScrollView,
-} from '@gorhom/bottom-sheet';
 const initialProfileState: ProfileType = {
   _id: '',
   birthdate: '',
@@ -577,24 +581,32 @@ const EditProfileScreen = () => {
         <BottomSheetModal
           ref={bottomSheetModalRef}
           enableDynamicSizing
-          maxDynamicContentSize={650}
-          // index={1}
-          // snapPoints={snapPoints}
-          onChange={handleSheetChanges}>
-          <BottomSheetScrollView>
-            <View style={styles.BottomSheetContainerView}>
-              <Text>Awesome 🎉</Text>
-              <Text>Awesome 🎉</Text>
-              <Text>Awesome 🎉</Text>
-              <Text>Awesome 🎉</Text>
-              <Text>Awesome 🎉</Text>
-              <Text>Awesome 🎉</Text>
-              <Text>Awesome 🎉</Text>
-              <Text>Awesome 🎉</Text>
-              <Text>Awesome 🎉</Text>
-              <Text>Awesome 🎉</Text>
-              <Text>Awesome 🎉</Text>
-            </View>
+          backgroundStyle={{
+            backgroundColor: COLORS.Secondary,
+          }}
+          handleComponent={null}
+          backdropComponent={props => (
+            <BlurView blurAmount={2} style={props.style}>
+              <BottomSheetBackdrop
+                {...props}
+                // opacity={0.5}
+                enableTouchThrough={false}
+                appearsOnIndex={0}
+                disappearsOnIndex={-1}
+                style={[StyleSheet.absoluteFillObject]}
+              />
+            </BlurView>
+          )}
+          maxDynamicContentSize={Dimensions.get('screen').height - 150}
+          onChange={handleSheetChanges}
+          style={{
+            borderRadius: 0,
+          }}
+          containerStyle={{
+            borderRadius: 0,
+          }}>
+          <BottomSheetScrollView style={{}}>
+            <EditProfileSheetView profile={profile} setProfile={setProfile} />
           </BottomSheetScrollView>
         </BottomSheetModal>
       </BottomSheetModalProvider>

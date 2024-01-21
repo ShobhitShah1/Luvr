@@ -48,7 +48,6 @@ const ExploreCardScreen: FC = () => {
   const RightSwipedUserIds = useSelector(
     state => state?.user?.swipedRightUserIds || [],
   );
-  // console.log('RightSwipedUserIds ----:>', RightSwipedUserIds);
   const [cards, setCards] = useState<SwiperCard[]>([]);
   const [cardToSkipNumber, setCardToSkipNumber] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -92,7 +91,6 @@ const ExploreCardScreen: FC = () => {
       stopInterval();
       clearInterval();
       setCardToSkipNumber(0);
-      // Alert.alert('Brooooo!', 'you are leaving this screen');
     });
     return () => _unsubscribe();
   }, []);
@@ -102,7 +100,6 @@ const ExploreCardScreen: FC = () => {
     const _unsubscribe = navigation.addListener('focus', () => {
       startInterval();
       FetchAPIData(0);
-      // Alert.alert('Brooooo!', 'Thanks for coming back');
     });
     return () => _unsubscribe();
   }, []);
@@ -271,7 +268,11 @@ const ExploreCardScreen: FC = () => {
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
-        console.log('APIResponse.data', APIResponse.data);
+        console.log('LikeUserAPI APIResponse ---:>', APIResponse);
+        console.log('LikeUserAPI APIResponse Data ---:>', APIResponse.data);
+        if (APIResponse.data?.status === 'match') {
+          navigation.navigate('Chat', {id: APIResponse?.data?.like_to});
+        }
         swipeRef.current?.forceUpdate();
         showToast(
           'Swipe Right Success',
@@ -413,9 +414,7 @@ const ExploreCardScreen: FC = () => {
                   // FetchAPIData(cardToSkipNumber + CardLimit);
                 }}
                 style={styles.ChangeSettingButton}>
-                <Text style={styles.ChangeSettingText}>
-                  Change Setting (OnClick SetLimit to 0)
-                </Text>
+                <Text style={styles.ChangeSettingText}>Change Setting</Text>
               </TouchableOpacity>
             </View>
           )

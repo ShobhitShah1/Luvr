@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
+import React, {FC, useCallback, useRef, useState} from 'react';
 import {
   Alert,
-  BackHandler,
   Keyboard,
   ScrollView,
   StyleSheet,
@@ -16,16 +15,16 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import {useDispatch, useSelector} from 'react-redux';
 import {COLORS, FONTS, SIZES} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
-import {useUserData} from '../../../Contexts/UserDataContext';
+import {MainGenders} from '../../../Components/Data';
 import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
+import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import {useDispatch, useSelector} from 'react-redux';
-import {updateField} from '../../../Redux/Action/userActions';
 
 const IdentifyYourSelf: FC = () => {
   //* Get Key Name. From Where You Want To Store Data
@@ -51,8 +50,6 @@ const IdentifyYourSelf: FC = () => {
   );
   const [CityName, setCityName] = useState<string>(userData.city);
   const [selectedGender, setSelectedGender] = useState<string>(userData.gender);
-
-  const genders = ['Man', 'Woman', 'Other'];
 
   // useEffect(() => {
   //   const handleBackPress = () => {
@@ -226,7 +223,7 @@ const IdentifyYourSelf: FC = () => {
           <View style={styles.TextViewForSpace}>
             <Text style={styles.NameText}>I am a</Text>
             <View style={styles.BirthdayInputView}>
-              {genders.map((gender, index) => (
+              {MainGenders.map((gender, index) => (
                 <TouchableOpacity
                   key={index}
                   onPress={() => handleGenderSelection(gender)}
