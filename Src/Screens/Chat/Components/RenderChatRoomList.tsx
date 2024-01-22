@@ -7,12 +7,28 @@ import {chatRoomDataType} from '../../../Types/chatRoomDataType';
 import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
+interface MessageType {
+  id: string;
+  is_read: number;
+  message: string;
+  time: number;
+}
+
+interface ChatRoomDataType {
+  chat: MessageType[];
+  last_updated_time: number;
+  name: string;
+  reciver_socket_id: string | null;
+  to: string;
+}
+
 interface ChatRoomProps {
-  item: chatRoomDataType;
+  item: ChatRoomDataType;
   index: number;
 }
 
 const RenderChatRoomList: FC<ChatRoomProps> = ({item, index}) => {
+  console.log('item', item.chat[0].message);
   const navigation = useNavigation();
 
   return (
@@ -27,7 +43,7 @@ const RenderChatRoomList: FC<ChatRoomProps> = ({item, index}) => {
         <FastImage
           resizeMode="cover"
           style={styles.ProfilePic}
-          source={{uri: item.profilePik}}
+          source={{uri: item?.profilePik}}
         />
       </View>
       <View style={styles.NameAndMessageView}>
@@ -37,7 +53,8 @@ const RenderChatRoomList: FC<ChatRoomProps> = ({item, index}) => {
             style={[
               styles.NameText,
               {
-                color: item.isRead ? COLORS.Black : COLORS.Primary,
+                color:
+                  item.chat[0]?.is_read === 1 ? COLORS.Black : COLORS.Primary,
               },
             ]}>
             {item.name}
@@ -52,14 +69,20 @@ const RenderChatRoomList: FC<ChatRoomProps> = ({item, index}) => {
           style={[
             styles.LastMessageText,
             {
-              color: item.isRead ? 'rgba(108, 108, 108, 1)' : COLORS.Primary,
+              color:
+                item.chat[0]?.is_read === 1
+                  ? 'rgba(108, 108, 108, 1)'
+                  : COLORS.Primary,
             },
           ]}>
-          {item.lastMessage}
+          {item?.chat[0]?.message}
+          {/* {item.lastMessage} */}
         </Text>
       </View>
       <View style={styles.TimeView}>
-        <Text style={styles.TimeText}>{item.time}</Text>
+        <Text style={styles.TimeText}>
+          {new Date(item.chat[0].time).toLocaleTimeString()}
+        </Text>
       </View>
     </TouchableOpacity>
   );

@@ -1,6 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import {RouteProp, useIsFocused, useRoute} from '@react-navigation/native';
+import {
+  RouteProp,
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import React, {useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
@@ -27,6 +32,8 @@ import UserService from '../../../Services/AuthService';
 import {ProfileType} from '../../../Types/ProfileType';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import FastImage from 'react-native-fast-image';
+import {store} from '../../../Redux/Store/store';
+import {onSwipeRight} from '../../../Redux/Action/userActions';
 
 type DetailCardRouteParams = {
   props: ProfileType;
@@ -46,6 +53,7 @@ const ExploreCardDetailScreen = () => {
   const [CardData, setCardData] = useState<ProfileType>();
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [IsImageLoading, setIsImageLoading] = useState(false);
+  const navigation = useNavigation();
   useEffect(() => {
     if (IsFocused) {
       GetUserData();
@@ -84,6 +92,36 @@ const ExploreCardDetailScreen = () => {
   }).current;
 
   const viewConfig = useRef({viewAreaCoveragePercentThreshold: 50}).current;
+
+  const onLikePress = async () => {
+    const userDataForApi = {
+      eventName: 'like',
+      like_to: UserID,
+    };
+
+    const APIResponse = await UserService.UserRegister(userDataForApi);
+    if (APIResponse?.code === 200) {
+      if (APIResponse.data?.status === 'match') {
+      }
+      navigation.goBack();
+      store.dispatch(onSwipeRight(UserID));
+      // showToast(
+      //   'Swipe Right Success',
+      //   'You swiped right! Waiting for the other user to match.',
+      //   'success',
+      // );
+    } else {
+      showToast(
+        'Something went wrong',
+        APIResponse?.message || 'Please try again letter',
+        'error',
+      );
+    }
+  };
+  const onRejectPress = async () => {
+    store.dispatch(onLikePress(UserID));
+    navigation.goBack();
+  };
 
   if (IsAPILoading) {
     return (
@@ -169,7 +207,7 @@ const ExploreCardDetailScreen = () => {
           </View>
 
           {/* About Me */}
-          {CardData?.bio && (
+          {/* {CardData?.bio && (
             <View style={styles.DetailBoxContainerView}>
               <View style={styles.TitleAndIconView}>
                 <Image
@@ -185,7 +223,7 @@ const ExploreCardDetailScreen = () => {
                 {CardData?.bio || 'Write BIO'}
               </Text>
             </View>
-          )}
+          )} */}
 
           {/* Birthday */}
           {CardData?.birthdate && (
@@ -346,6 +384,7 @@ const ExploreCardDetailScreen = () => {
           <View style={styles.LikeAndRejectView}>
             {/* Reject Button */}
             <TouchableOpacity
+              onPress={onRejectPress}
               activeOpacity={ActiveOpacity}
               style={styles.LikeAndRejectButtonView}>
               <Image
@@ -357,6 +396,7 @@ const ExploreCardDetailScreen = () => {
 
             {/* Like Button */}
             <TouchableOpacity
+              onPress={onLikePress}
               activeOpacity={ActiveOpacity}
               style={styles.LikeAndRejectButtonView}>
               <Image

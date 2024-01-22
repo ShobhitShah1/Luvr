@@ -73,10 +73,7 @@ const HomeScreen = () => {
               : [APIResponse.data];
             console.log('userIds', userIds);
             store.dispatch(onSwipeRight(userIds));
-          } else {
-            // Handle error
           }
-        } else {
         }
       }, 2000);
     } catch (error) {

@@ -59,7 +59,9 @@ const ChatScreen: FC = () => {
   };
 
   const transformDataForGiftedChat = apiData => {
+    console.log('apiData', apiData);
     const giftedChatMessages = apiData?.data?.map(chatItem => {
+      console.log('chatItem', chatItem);
       const messages = chatItem?.chat?.map(message => {
         return {
           _id: message?.message_id || generateRandomId(),
@@ -86,7 +88,7 @@ const ChatScreen: FC = () => {
   }, []);
 
   useEffect(() => {
-    const socketInstance = io('http://nirvanatechlabs.in:1111/');
+    const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
     setSocket(socketInstance);
 
     return () => {
@@ -100,24 +102,22 @@ const ChatScreen: FC = () => {
     }
 
     // Event: Join
-    socket.emit('Join', {id: CurrentLoginUserId});
+    socket.emit('Join', {id: params?.id});
 
     // Event: Get Receiver Socket
     socket.emit('get_receiver_socket', {
-      to: CurrentLoginUserId,
+      to: params?.id,
     });
 
     // Event: List
-    socket.emit('List', {id: CurrentLoginUserId});
+    socket.emit('List', {id: params?.id});
 
     // Event: List - Response
     const handleListResponse = (data: any) => {
-      console.log('List Response:', data);
       const giftedChatMessages = transformDataForGiftedChat(data);
       setUserMessages(previousMessages =>
         GiftedChat.append(previousMessages, giftedChatMessages),
       );
-      // Handle the list response here
     };
 
     // Event: Receive Message
@@ -133,7 +133,7 @@ const ChatScreen: FC = () => {
       socket.off('List', handleListResponse);
       socket.off('message', handleReceivedMessage);
     };
-  }, [socket, CurrentLoginUserId]);
+  }, [socket, params?.id]);
 
   const getOtherUserDataCall = async () => {
     try {
@@ -192,6 +192,7 @@ const ChatScreen: FC = () => {
       CurrentLoginUserFullName,
     ],
   );
+
   // const onSend = useCallback((messages: IMessage[]) => {
   // setUserMessages(previousMessages =>
   //   GiftedChat.append(previousMessages, messages),

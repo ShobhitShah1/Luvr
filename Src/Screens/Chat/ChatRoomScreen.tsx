@@ -1,14 +1,64 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
 import CommonImages from '../../Common/CommonImages';
 import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import {chatRoomData} from '../../Components/Data';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderChatRoomList from './Components/RenderChatRoomList';
+import {Socket, io} from 'socket.io-client';
+import ApiConfig from '../../Config/ApiConfig';
+import {store} from '../../Redux/Store/store';
 
 const ChatRoomScreen = () => {
+  const [socket, setSocket] = useState<Socket>();
+  const [messages, setMessages] = useState([]);
+  console.log('messages', messages);
+  const CurrentLoginUserId = store.getState().user?.userData?._id;
+  const CurrentLoginUserFullName = store.getState().user?.userData?.full_name;
+
+  useEffect(() => {
+    const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
+    setSocket(socketInstance);
+
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!socket) {
+      return;
+    }
+
+    // Event: Join
+    socket.emit('Join', {id: CurrentLoginUserId});
+
+    // Event: List
+    socket.emit('List', {id: CurrentLoginUserId});
+
+    // Event: List - Response
+    const handleListResponse = (data: any) => {
+      console.log('data', data.data[0]);
+      setMessages(data.data);
+    };
+
+    // Event: Receive Message
+    const handleReceivedMessage = (data: any) => {
+      console.log('Received Message:', data);
+      // setMessages(data);
+    };
+
+    socket.on('List', handleListResponse);
+    socket.on('message', handleReceivedMessage);
+
+    return () => {
+      socket.off('List', handleListResponse);
+      socket.off('message', handleReceivedMessage);
+    };
+  }, [socket, CurrentLoginUserId]);
+
   const ListEmptyView = () => {
     return (
       <View style={styles.EmptyListView}>
@@ -30,7 +80,7 @@ const ChatRoomScreen = () => {
 
       <View style={styles.ListChatView}>
         <FlatList
-          data={[]} //chatRoomData
+          data={messages} //chatRoomData
           contentContainerStyle={{
             // flex: chatRoomData.length === 0 ? 1 : 0,
             flex: 1,
