@@ -270,9 +270,9 @@ const ExploreCardScreen: FC = () => {
       if (APIResponse?.code === 200) {
         console.log('LikeUserAPI APIResponse ---:>', APIResponse);
         console.log('LikeUserAPI APIResponse Data ---:>', APIResponse.data);
-        if (APIResponse.data?.status === 'match') {
-          navigation.navigate('Chat', {id: APIResponse?.data?.like_to});
-        }
+        navigation.navigate('Chat', {id: APIResponse?.data?.like_to});
+        // if (APIResponse.data?.status === 'match') {
+        // }
         swipeRef.current?.forceUpdate();
         showToast(
           'Swipe Right Success',

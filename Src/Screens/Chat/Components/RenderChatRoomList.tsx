@@ -6,6 +6,7 @@ import {useNavigation} from '@react-navigation/native';
 import {chatRoomDataType} from '../../../Types/chatRoomDataType';
 import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {DummyImage} from '../../../Config/Setting';
 
 interface MessageType {
   id: string;
@@ -28,22 +29,26 @@ interface ChatRoomProps {
 }
 
 const RenderChatRoomList: FC<ChatRoomProps> = ({item, index}) => {
-  console.log('item', item.chat[0].message);
+  console.log('item', item.chat[0]);
   const navigation = useNavigation();
-
+  const formattedTime = new Date(item.chat[0].time).toLocaleTimeString([], {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  });
   return (
     <TouchableOpacity
       key={index}
       activeOpacity={ActiveOpacity}
       onPress={() => {
-        navigation.navigate('Chat', {ChatData: item});
+        navigation.navigate('Chat', {id: item.chat[0].id});
       }}
       style={styles.ChatRoomContainerView}>
       <View style={styles.ProfilePicView}>
         <FastImage
           resizeMode="cover"
           style={styles.ProfilePic}
-          source={{uri: item?.profilePik}}
+          source={{uri: item?.profilePik || DummyImage}}
         />
       </View>
       <View style={styles.NameAndMessageView}>
@@ -80,9 +85,7 @@ const RenderChatRoomList: FC<ChatRoomProps> = ({item, index}) => {
         </Text>
       </View>
       <View style={styles.TimeView}>
-        <Text style={styles.TimeText}>
-          {new Date(item.chat[0].time).toLocaleTimeString()}
-        </Text>
+        <Text style={styles.TimeText}>{formattedTime}</Text>
       </View>
     </TouchableOpacity>
   );

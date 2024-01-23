@@ -10,6 +10,7 @@ import RenderChatRoomList from './Components/RenderChatRoomList';
 import {Socket, io} from 'socket.io-client';
 import ApiConfig from '../../Config/ApiConfig';
 import {store} from '../../Redux/Store/store';
+import {useIsFocused} from '@react-navigation/native';
 
 const ChatRoomScreen = () => {
   const [socket, setSocket] = useState<Socket>();
@@ -17,47 +18,52 @@ const ChatRoomScreen = () => {
   console.log('messages', messages);
   const CurrentLoginUserId = store.getState().user?.userData?._id;
   const CurrentLoginUserFullName = store.getState().user?.userData?.full_name;
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
-    setSocket(socketInstance);
+    if (isFocused) {
+      const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
+      setSocket(socketInstance);
 
-    return () => {
-      socketInstance.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!socket) {
-      return;
+      return () => {
+        socketInstance.disconnect();
+      };
     }
+  }, [isFocused]);
 
-    // Event: Join
-    socket.emit('Join', {id: CurrentLoginUserId});
+  useEffect(() => {
+    if (isFocused) {
+      if (!socket) {
+        return;
+      }
 
-    // Event: List
-    socket.emit('List', {id: CurrentLoginUserId});
+      // Event: Join
+      socket.emit('Join', {id: CurrentLoginUserId});
 
-    // Event: List - Response
-    const handleListResponse = (data: any) => {
-      console.log('data', data.data[0]);
-      setMessages(data.data);
-    };
+      // Event: List
+      socket.emit('List', {id: CurrentLoginUserId});
 
-    // Event: Receive Message
-    const handleReceivedMessage = (data: any) => {
-      console.log('Received Message:', data);
-      // setMessages(data);
-    };
+      // Event: List - Response
+      const handleListResponse = (data: any) => {
+        console.log('data', data.data[0]);
+        setMessages(data.data);
+      };
 
-    socket.on('List', handleListResponse);
-    socket.on('message', handleReceivedMessage);
+      // Event: Receive Message
+      const handleReceivedMessage = (data: any) => {
+        console.log('Received Message:', data);
+        // setMessages(data);
+      };
 
-    return () => {
-      socket.off('List', handleListResponse);
-      socket.off('message', handleReceivedMessage);
-    };
-  }, [socket, CurrentLoginUserId]);
+      socket.on('List', handleListResponse);
+      socket.on('message', handleReceivedMessage);
+
+      return () => {
+        socket.off('List', handleListResponse);
+        socket.off('message', handleReceivedMessage);
+      };
+    }
+  }, [socket, CurrentLoginUserId, isFocused]);
 
   const ListEmptyView = () => {
     return (

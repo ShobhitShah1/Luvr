@@ -138,7 +138,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
       <View style={styles.card}>
         <Animated.View style={[styles.imageContainer, animatedStyle]}>
           <Skeleton
-            show={firstImageLoading}
+            show={false} //firstImageLoading
             colorMode="light"
             colors={COLORS.LoaderGradient}>
             <FastImage

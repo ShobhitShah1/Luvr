@@ -41,7 +41,6 @@ type ChatScreenRouteProp = RouteProp<ParamListBase, 'ChatScreen'> & ChatData;
 
 const ChatScreen: FC = () => {
   const {params} = useRoute<ChatScreenRouteProp>();
-  console.log('params', params?.id);
   // const chatData = params?.ChatData || {};
   const CurrentLoginUserId = store.getState().user?.userData?._id;
   const CurrentLoginUserFullName = store.getState().user?.userData?.full_name;
@@ -59,32 +58,35 @@ const ChatScreen: FC = () => {
   };
 
   const transformDataForGiftedChat = apiData => {
-    console.log('apiData', apiData);
+    // console.log('apiData', apiData);
     const giftedChatMessages = apiData?.data?.map(chatItem => {
-      console.log('chatItem', chatItem);
+      // console.log('chatItem', chatItem);
       const messages = chatItem?.chat?.map(message => {
+        console.log('messagemessage:', message);
         return {
-          _id: message?.message_id || generateRandomId(),
+          _id: generateRandomId(),
           text: message?.message,
-          createdAt: new Date(message?.timestamp),
+          createdAt: new Date(message?.time),
           user: {
-            _id: message?.from === CurrentLoginUserId ? 1 : 2,
+            _id: message?.id === CurrentLoginUserId ? 0 : 1,
             name:
-              message?.from === CurrentLoginUserFullName
+              message?.id === CurrentLoginUserId
                 ? CurrentLoginUserFullName
                 : chatItem?.name,
           },
         };
       });
+      console.log('messages: ---->', messages);
 
       return messages;
     });
 
-    return giftedChatMessages.flat();
+    return giftedChatMessages;
   };
 
   useEffect(() => {
     getOtherUserDataCall();
+    console.log('UserID:---:>', params?.id);
   }, []);
 
   useEffect(() => {
@@ -114,10 +116,17 @@ const ChatScreen: FC = () => {
 
     // Event: List - Response
     const handleListResponse = (data: any) => {
+      // console.log('handleListResponse :--:>', data);
       const giftedChatMessages = transformDataForGiftedChat(data);
-      setUserMessages(previousMessages =>
-        GiftedChat.append(previousMessages, giftedChatMessages),
-      );
+      // console.log('giftedChatMessages Format :--:>', giftedChatMessages);
+      if (giftedChatMessages?.length !== 0) {
+        giftedChatMessages?.map(res => {
+          console.log(res);
+          setUserMessages(previousMessages =>
+            GiftedChat.append(previousMessages, res),
+          );
+        });
+      }
     };
 
     // Event: Receive Message
@@ -126,14 +135,30 @@ const ChatScreen: FC = () => {
       // setMessages(prevMessages => [...prevMessages, data]);
     };
 
+    const handleRecivedChat = (chat: any) => {
+      console.log('HandelRecivedChat: --->', chat);
+    };
+    const handleReceiverSocketId = (data: any) => {
+      console.log('handleReceiverSocketId:', data);
+    };
+
+    const handleJoinResponse = (data: any) => {
+      console.log('handleJoinResponse:', data);
+    };
+
+    socket.on('join', handleJoinResponse);
     socket.on('List', handleListResponse);
     socket.on('message', handleReceivedMessage);
+    socket.on('chat', handleRecivedChat);
+    socket.on('get_receiver_socket', handleReceiverSocketId);
 
     return () => {
       socket.off('List', handleListResponse);
       socket.off('message', handleReceivedMessage);
+      socket.off('chat', handleRecivedChat);
+      socket.off('get_receiver_socket', handleReceiverSocketId);
     };
-  }, [socket, params?.id]);
+  }, [socket, params]);
 
   const getOtherUserDataCall = async () => {
     try {
@@ -145,7 +170,7 @@ const ChatScreen: FC = () => {
       const apiResponse = await UserService.UserRegister(data);
 
       if (apiResponse?.code === 200) {
-        console.log('APIResponse', apiResponse.data);
+        // console.log('APIResponse', apiResponse.data);
         setOtherUserProfileData(apiResponse.data);
       }
     } catch (error) {
@@ -155,34 +180,41 @@ const ChatScreen: FC = () => {
 
   const onSend = useCallback(
     (messages: IMessage[]) => {
-      // setUserMessages(previousMessages =>
-      //   GiftedChat.append(previousMessages, messages),
-      // );
+      setUserMessages(previousMessages =>
+        GiftedChat.append(previousMessages, messages),
+      );
 
       if (socket) {
-        // Event: Chat
         const chatData = {
+          // is_first: 1,
           to: CurrentLoginUserId,
           reciver_socket_id: params.id,
           from_name: OtherUserProfileData?.full_name,
           to_name: CurrentLoginUserFullName,
           message: messages[0].text,
         };
+        if (socket.connected) {
+          socket.emit('chat', chatData, (err, responses) => {
+            console.log('err, responses', err, responses);
+            if (err) {
+              // some clients did not acknowledge the event in the given delay
+            } else {
+              // acknowledgment is the data sent back by the server
+              console.log('Message acknowledgment:', responses);
 
-        // Emit the 'chat' event with acknowledgment callback
-        socket.emit('chat', chatData, acknowledgment => {
-          // acknowledgment is the data sent back by the server
-          console.log('Message acknowledgment:', acknowledgment);
-
-          // You can handle the acknowledgment as needed
-          if (acknowledgment && acknowledgment.success) {
-            // Message sent successfully
-            console.log('Message sent successfully');
-          } else {
-            // Message failed to send
-            console.error('Message failed to send');
-          }
-        });
+              // You can handle the acknowledgment as needed
+              if (responses && responses.success) {
+                // Message sent successfully
+                console.log('Message sent successfully');
+              } else {
+                // Message failed to send
+                console.error('Message failed to send');
+              }
+            }
+          });
+        } else {
+          Alert.alert('Error', 'Socket Not Connected');
+        }
       }
     },
     [
@@ -192,21 +224,6 @@ const ChatScreen: FC = () => {
       CurrentLoginUserFullName,
     ],
   );
-
-  // const onSend = useCallback((messages: IMessage[]) => {
-  // setUserMessages(previousMessages =>
-  //   GiftedChat.append(previousMessages, messages),
-  // );
-  //   // Event: Chat
-  //   const chatData = {
-  //     to: CurrentLoginUserId,
-  //     reciver_socket_id: params.id,
-  //     from_name: OtherUserProfileData?.full_name,
-  //     to_name: CurrentLoginUserFullName,
-  //     message: messages[0].text,
-  //   };
-  //   socketInstance.emit('chat', chatData);
-  // }, []);
 
   const renderInputToolbar = (props: any) => {
     return (
@@ -348,6 +365,8 @@ const ChatScreen: FC = () => {
     );
   };
 
+  // console.log('userMessage', userMessage);
+
   return (
     <View style={styles.Container}>
       <ChatScreenHeader data={OtherUserProfileData} />
@@ -356,11 +375,14 @@ const ChatScreen: FC = () => {
         <GiftedChat
           alignTop
           messages={userMessage}
-          onInputTextChanged={text => console.log('User Typing:', text)}
+          onInputTextChanged={text => {
+            //  console.log('User Typing:', text);
+          }}
           onSend={messages => onSend(messages)}
           user={{
             _id: 1,
           }}
+          // renderAvatar={() => {}}
           isTyping={false}
           messagesContainerStyle={styles.messagesContainer}
           maxComposerHeight={100}
