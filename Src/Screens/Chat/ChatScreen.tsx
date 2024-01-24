@@ -48,21 +48,23 @@ const ChatScreen: FC = () => {
   const [userMessage, setUserMessages] = useState<IMessage[]>([]);
   const [OtherUserProfileData, setOtherUserProfileData] =
     useState<ProfileType>();
-  // const socketInstance = io('http://nirvanatechlabs.in:1111/');
 
   const [socket, setSocket] = useState<Socket>();
 
   const generateRandomId = () => {
-    // Generate a random ID (you may replace this with your own logic)
     return Math.random().toString(36).substr(2, 9);
   };
 
   const transformDataForGiftedChat = apiData => {
-    // console.log('apiData', apiData);
-    const giftedChatMessages = apiData?.data?.map(chatItem => {
-      // console.log('chatItem', chatItem);
-      const messages = chatItem?.chat?.map(message => {
-        console.log('messagemessage:', message);
+    const data = apiData?.data;
+
+    if (!data || !Array.isArray(data)) {
+      console.error('Invalid data format:', data);
+      return [];
+    }
+
+    const giftedChatMessages = data.flatMap(chatItem => {
+      return chatItem?.chat?.map((message: any) => {
         return {
           _id: generateRandomId(),
           text: message?.message,
@@ -76,12 +78,14 @@ const ChatScreen: FC = () => {
           },
         };
       });
-      console.log('messages: ---->', messages);
-
-      return messages;
     });
 
-    return giftedChatMessages;
+    // Sort messages by createdAt in descending order (most recent first)
+    const sortedMessages = giftedChatMessages.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    );
+
+    return sortedMessages;
   };
 
   useEffect(() => {
@@ -116,16 +120,17 @@ const ChatScreen: FC = () => {
 
     // Event: List - Response
     const handleListResponse = (data: any) => {
-      // console.log('handleListResponse :--:>', data);
       const giftedChatMessages = transformDataForGiftedChat(data);
-      // console.log('giftedChatMessages Format :--:>', giftedChatMessages);
-      if (giftedChatMessages?.length !== 0) {
-        giftedChatMessages?.map(res => {
-          console.log(res);
-          setUserMessages(previousMessages =>
-            GiftedChat.append(previousMessages, res),
-          );
-        });
+
+      if (!giftedChatMessages) {
+        console.error('transformDataForGiftedChat returned undefined:', data);
+        return;
+      }
+
+      if (giftedChatMessages.length !== 0) {
+        setUserMessages(previousMessages =>
+          previousMessages.concat(...giftedChatMessages.flat()),
+        );
       }
     };
 
@@ -186,13 +191,14 @@ const ChatScreen: FC = () => {
 
       if (socket) {
         const chatData = {
-          // is_first: 1,
+          ...(userMessage && userMessage.length === 0 ? {is_first: 1} : {}),
           to: CurrentLoginUserId,
           reciver_socket_id: params.id,
           from_name: OtherUserProfileData?.full_name,
           to_name: CurrentLoginUserFullName,
           message: messages[0].text,
         };
+        console.log(chatData, userMessage.length);
         if (socket.connected) {
           socket.emit('chat', chatData, (err, responses) => {
             console.log('err, responses', err, responses);
@@ -365,7 +371,7 @@ const ChatScreen: FC = () => {
     );
   };
 
-  // console.log('userMessage', userMessage);
+  console.log('userMessage.length:-->', userMessage);
 
   return (
     <View style={styles.Container}>
@@ -381,7 +387,10 @@ const ChatScreen: FC = () => {
           onSend={messages => onSend(messages)}
           user={{
             _id: 1,
+            avatar:
+              ApiConfig.IMAGE_BASE_URL + OtherUserProfileData?.recent_pik[0],
           }}
+          // showUserAvatar={true}
           // renderAvatar={() => {}}
           isTyping={false}
           messagesContainerStyle={styles.messagesContainer}
