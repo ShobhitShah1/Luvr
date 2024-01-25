@@ -33,9 +33,11 @@ const RenderChatRoomList = ({item, index}: ChatRoomProps) => {
   const currentLoginUserId = store.getState().user?.userData?._id;
   const navigation = useNavigation();
 
-  const filteredData = item.chat
+  // console.log('item', item);
+
+  const filteredData = item?.chat
     // .filter(data => data.id === currentLoginUserId)
-    .sort((a, b) => b.time - a.time);
+    ?.sort((a, b) => b.time - a.time);
 
   const latestMessage = filteredData[0];
   // const latestMessage = item.chat.sort((a, b) => b.time - a.time)[0];
@@ -51,7 +53,8 @@ const RenderChatRoomList = ({item, index}: ChatRoomProps) => {
       key={index}
       activeOpacity={ActiveOpacity}
       onPress={() => {
-        navigation.navigate('Chat', {id: latestMessage?.id});
+        navigation.navigate('Chat', {id: item?.to});
+        // navigation.navigate('Chat', {id: latestMessage?.id});
       }}
       style={styles.chatRoomContainerView}>
       <View style={styles.profilePicView}>

@@ -46,31 +46,33 @@ const ChatScreen: FC = () => {
   const CurrentLoginUserFullName = store.getState().user?.userData?.full_name;
   const userData = useSelector((state: any) => state?.user);
   const [userMessage, setUserMessages] = useState<IMessage[]>([]);
+  const [CountMessage, setCountMessage] = useState(0);
   const [OtherUserProfileData, setOtherUserProfileData] =
     useState<ProfileType>();
 
   const [socket, setSocket] = useState<Socket>();
-
+  const [ReciverSocketId, setReciverSocketId] = useState(null);
   const generateRandomId = () => {
     return Math.random().toString(36).substr(2, 9);
   };
 
-  const transformDataForGiftedChat = apiData => {
+  const transformDataForGiftedChat = (apiData: any) => {
     const data = apiData?.data;
 
     if (!data || !Array.isArray(data)) {
-      console.error('Invalid data format:', data);
+      console.log('Invalid data format:', data, apiData);
       return [];
     }
 
     const giftedChatMessages = data.flatMap(chatItem => {
       return chatItem?.chat?.map((message: any) => {
+        setCountMessage(message?.id === CurrentLoginUserId ? 1 : 0);
         return {
           _id: generateRandomId(),
           text: message?.message,
           createdAt: new Date(message?.time),
           user: {
-            _id: message?.id === CurrentLoginUserId ? 0 : 1,
+            _id: message?.id === CurrentLoginUserId ? 1 : 0,
             name:
               message?.id === CurrentLoginUserId
                 ? CurrentLoginUserFullName
@@ -86,6 +88,27 @@ const ChatScreen: FC = () => {
     );
 
     return sortedMessages;
+  };
+
+  const StoreSingleChatFormat = (message: any) => {
+    console.log('StoreSingleChatFormat message:', message);
+    setCountMessage(message?.id === CurrentLoginUserId ? 1 : 0);
+
+    const singleChatMessage = {
+      _id: generateRandomId(),
+      text: message?.message,
+      createdAt: new Date(message?.last_updated_time),
+      user: {
+        _id: message?.from === CurrentLoginUserId ? 1 : 0,
+        name:
+          message?.from === CurrentLoginUserId
+            ? CurrentLoginUserFullName
+            : message?.from_name,
+      },
+    };
+
+    // Return an array with the single chat message
+    return [singleChatMessage];
   };
 
   useEffect(() => {
@@ -108,18 +131,19 @@ const ChatScreen: FC = () => {
     }
 
     // Event: Join
-    socket.emit('Join', {id: params?.id});
+    socket.emit('Join', {id: CurrentLoginUserId}); //params?.id
 
     // Event: Get Receiver Socket
-    socket.emit('get_receiver_socket', {
-      to: params?.id,
+    socket.emit('get_reciver_socket', {
+      to: params?.id, //CurrentLoginUserId
     });
 
     // Event: List
-    socket.emit('List', {id: params?.id});
+    socket.emit('List', {id: CurrentLoginUserId});
 
     // Event: List - Response
     const handleListResponse = (data: any) => {
+      // console.log('handleListResponse', data);
       const giftedChatMessages = transformDataForGiftedChat(data);
 
       if (!giftedChatMessages) {
@@ -141,10 +165,28 @@ const ChatScreen: FC = () => {
     };
 
     const handleRecivedChat = (chat: any) => {
-      console.log('HandelRecivedChat: --->', chat);
+      console.log(
+        'HandelRecivedChat: --->',
+        chat,
+        chat.from,
+        CurrentLoginUserId,
+      );
+      // Alert.alert('Got Message', chat.from_name);
+      const giftedChatMessages = StoreSingleChatFormat(chat);
+      console.log('SINGLE: giftedChatMessages:', giftedChatMessages);
+      // const giftedChatMessages = transformDataForGiftedChat(chat);
+
+      // if (!giftedChatMessages) {
+      //   console.error('transformDataForGiftedChat returned undefined:', chat);
+      //   return;
+      // }
+      setUserMessages(previousMessages =>
+        GiftedChat.append(previousMessages, ...giftedChatMessages),
+      );
     };
     const handleReceiverSocketId = (data: any) => {
-      console.log('handleReceiverSocketId:', data);
+      console.log('handleReceiverSocketId:', data, data?.to_socket_id);
+      setReciverSocketId(data?.to_socket_id);
     };
 
     const handleJoinResponse = (data: any) => {
@@ -155,13 +197,13 @@ const ChatScreen: FC = () => {
     socket.on('List', handleListResponse);
     socket.on('message', handleReceivedMessage);
     socket.on('chat', handleRecivedChat);
-    socket.on('get_receiver_socket', handleReceiverSocketId);
+    socket.on('get_reciver_socket', handleReceiverSocketId);
 
     return () => {
       socket.off('List', handleListResponse);
       socket.off('message', handleReceivedMessage);
       socket.off('chat', handleRecivedChat);
-      socket.off('get_receiver_socket', handleReceiverSocketId);
+      socket.off('get_reciver_socket', handleReceiverSocketId);
     };
   }, [socket, params]);
 
@@ -188,14 +230,32 @@ const ChatScreen: FC = () => {
       setUserMessages(previousMessages =>
         GiftedChat.append(previousMessages, messages),
       );
+      setCountMessage(1);
+      console.log(
+        'userMessage.length:-->',
+        userMessage.length,
+        CountMessage,
+        ReciverSocketId,
+      );
+      let SOCKET_ID;
+
+      const handleReceiverSocketId = (data: any) => {
+        console.log('WOOOOOOOH:', data, data?.to_socket_id);
+        SOCKET_ID = data?.to_socket_id;
+        // setReciverSocketId(data?.to_socket_id);
+      };
+
+      if (socket) {
+        socket.on('get_reciver_socket', handleReceiverSocketId);
+      }
 
       if (socket) {
         const chatData = {
-          ...(userMessage && userMessage.length === 0 ? {is_first: 1} : {}),
-          to: CurrentLoginUserId,
-          reciver_socket_id: params.id,
-          from_name: OtherUserProfileData?.full_name,
-          to_name: CurrentLoginUserFullName,
+          ...(CountMessage && CountMessage === 0 ? {is_first: 1} : {}),
+          to: params?.id, // CurrentLoginUserId
+          reciver_socket_id: SOCKET_ID || ReciverSocketId || null, // Socket ID Other User Not Mine
+          from_name: CurrentLoginUserFullName, // OtherUserProfileData?.full_name
+          to_name: OtherUserProfileData?.full_name, // CurrentLoginUserFullName
           message: messages[0].text,
         };
         console.log(chatData, userMessage.length);
@@ -228,6 +288,7 @@ const ChatScreen: FC = () => {
       CurrentLoginUserId,
       OtherUserProfileData,
       CurrentLoginUserFullName,
+      ReciverSocketId,
     ],
   );
 
@@ -370,8 +431,6 @@ const ChatScreen: FC = () => {
       />
     );
   };
-
-  console.log('userMessage.length:-->', userMessage);
 
   return (
     <View style={styles.Container}>

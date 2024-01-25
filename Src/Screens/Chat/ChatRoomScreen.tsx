@@ -3,6 +3,7 @@
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Image,
   StyleSheet,
@@ -45,6 +46,7 @@ interface SocketEventHandlers {
 const JOIN_EVENT = 'Join';
 const LIST_EVENT = 'List';
 const MESSAGE_EVENT = 'message';
+const CHAT_EVENT = 'chat';
 
 const ChatRoomScreen = () => {
   const [socket, setSocket] = useState<Socket | undefined>();
@@ -59,9 +61,9 @@ const ChatRoomScreen = () => {
       const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
       setSocket(socketInstance);
 
-      return () => {
-        socketInstance.disconnect();
-      };
+      // return () => {
+      //   socketInstance.disconnect();
+      // };
     }
   }, [isFocused]);
 
@@ -77,16 +79,13 @@ const ChatRoomScreen = () => {
 
       // Event: List - Response
       const handleListResponse: SocketEventHandlers['List'] = data => {
+        // console.log('data', data);
         try {
           if (data?.data) {
             const filteredData = data.data.filter(
               (item: MessageItem) => item.to !== currentLoginUserId,
             );
-            console.log('filteredData:', filteredData);
             const combinedData = combineSameIdData(filteredData);
-            // const sortedMessages = combinedData.sort(
-            //   (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-            // );
             console.log('combinedData', combinedData);
             setMessages(combinedData);
           } else {
@@ -113,8 +112,19 @@ const ChatRoomScreen = () => {
         }
       };
 
+      const handleRecivedChat = (chat: any) => {
+        console.log('HandelRecivedChat: --->', chat, chat.from);
+        // Alert.alert('Got Message', chat.from_name);
+        // handleListResponse;
+        setMessages(previousMessages => {
+          const combinedData = combineSameIdData([...previousMessages, chat]);
+          return combinedData;
+        });
+      };
+
       socket.on(LIST_EVENT, handleListResponse);
       socket.on(MESSAGE_EVENT, handleReceivedMessage);
+      socket.on(CHAT_EVENT, handleRecivedChat);
 
       return () => {
         socket.off(LIST_EVENT, handleListResponse);
