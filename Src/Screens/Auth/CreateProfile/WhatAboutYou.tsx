@@ -38,10 +38,7 @@ const WhatAboutYou: FC = () => {
     recived_love: userData.magicalPersonReceivedLove,
     star_sign: userData.magicalPersonStarSign,
   });
-  console.log(
-    'userData.magicalPersonCommunicationStr',
-    userData.magicalPersonCommunicationStr,
-  );
+
   const [IsSendRequestLoading, setIsSendRequestLoading] =
     useState<boolean>(false);
 

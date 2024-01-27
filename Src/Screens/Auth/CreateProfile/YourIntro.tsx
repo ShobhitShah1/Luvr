@@ -102,7 +102,7 @@ const YourIntro: FC = () => {
         );
         setIsAPILoading(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error during registration:', error);
       setIsAPILoading(false);
       showToast(

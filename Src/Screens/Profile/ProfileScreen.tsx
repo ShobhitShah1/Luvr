@@ -1,8 +1,12 @@
+/* eslint-disable prettier/prettier */
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {Skeleton} from 'moti/skeleton';
 import React, {useEffect, useState} from 'react';
 import {
-  ActivityIndicator,
   Dimensions,
   Image,
+  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -13,55 +17,70 @@ import {
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import FastImage from 'react-native-fast-image';
 import {useSelector} from 'react-redux';
+import CommonIcons from '../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
+import ApiConfig from '../../Config/ApiConfig';
 import {DummyImage} from '../../Config/Setting';
+import useCalculateAge from '../../Hooks/useCalculateAge';
+import UserService from '../../Services/AuthService';
+import {ProfileType} from '../../Types/ProfileType';
+import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import calculateDataPercentage from './Components/calculateDataPercentage';
-import useCalculateAge from '../../Hooks/useCalculateAge';
-import CommonIcons from '../../Common/CommonIcons';
-import UserService from '../../Services/AuthService';
-import {useCustomToast} from '../../Utils/toastUtils';
-import {ProfileType} from '../../Types/ProfileType';
-import ApiConfig from '../../Config/ApiConfig';
-import {useNavigation} from '@react-navigation/native';
-import {Skeleton} from 'moti/skeleton';
 
 const ProfileScreen = () => {
   const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
-  const percentage = calculateDataPercentage(userData);
   const Age = useCalculateAge(userData?.birthdate);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const [IsImageLoading, setIsImageLoading] = useState(false);
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [ProfileData, setProfileData] = useState<ProfileType | undefined>(
     undefined,
   );
+  const [percentage, setPercentage] = useState(0);
+  // const percentage = calculateDataPercentage(ProfileData);
+  const [ErrorFetchingData, setErrorFetchingData] = useState<boolean>(false);
 
   const [refreshing, setRefreshing] = React.useState(false);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      GetProfileData();
+    }
+  }, [isFocused]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     GetProfileData();
   }, []);
 
-  useEffect(() => {
-    console.log('Age', userData?.birthdate, Age);
-    console.log('Percentage:', percentage, Math.round(percentage));
-    GetProfileData();
-  }, []);
-
   //* User Like API
   const GetProfileData = async () => {
-    setIsAPILoading(true);
+    setIsAPILoading(false);
+    setErrorFetchingData(false);
+
+    // Set a timeout for 2 seconds
+    const timeoutId = setTimeout(() => {
+      setIsAPILoading(true);
+    }, 1000);
+
     try {
       const userDataForApi = {
         eventName: 'get_profile',
       };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
+
+      // Clear the timeout as we got the response
+      clearTimeout(timeoutId);
+
       if (APIResponse?.code === 200) {
         setProfileData(APIResponse.data);
+        let GetPercentage = calculateDataPercentage(APIResponse.data);
+        console.log('GetPercentage', GetPercentage);
+        setPercentage(GetPercentage);
         console.log('GetProfileData Data:', APIResponse.data);
       } else {
         showToast(
@@ -74,6 +93,9 @@ const ProfileScreen = () => {
     } catch (error) {
       console.log('Something Went Wrong With Feting API Data');
     } finally {
+      // Clear the timeout in case the response is received within 2 seconds
+      clearTimeout(timeoutId);
+
       setIsAPILoading(false);
       setRefreshing(false);
     }
@@ -111,20 +133,48 @@ const ProfileScreen = () => {
               {() => (
                 <View style={styles.ImageContainerView}>
                   <Skeleton
-                    show={IsImageLoading}
+                    show={IsAPILoading || IsImageLoading}
                     colorMode="light"
                     colors={COLORS.LoaderGradient}>
-                    <FastImage
-                      onLoadStart={() => setIsImageLoading(true)}
-                      onLoad={() => setIsImageLoading(false)}
-                      style={styles.ProfileImage}
-                      source={{
-                        uri:
-                          ApiConfig.IMAGE_BASE_URL +
-                            ProfileData?.recent_pik[0] || DummyImage,
-                        priority: FastImage.priority.high,
-                      }}
-                    />
+                    {ProfileData?.recent_pik &&
+                    ProfileData?.recent_pik.length !== 0 ? (
+                      <FastImage
+                        onLoadStart={() => setIsImageLoading(true)}
+                        onLoad={() => setIsImageLoading(false)}
+                        onLoadEnd={() => setIsImageLoading(false)}
+                        style={styles.ProfileImage}
+                        source={{
+                          uri:
+                            ApiConfig.IMAGE_BASE_URL +
+                            ProfileData?.recent_pik[0],
+                          priority: FastImage.priority.high,
+                        }}
+                        fallback={Platform.OS === 'android'}
+                      />
+                    ) : (
+                      <View style={styles.LottieViewStyle}>
+                        {!IsAPILoading && (
+                          <FastImage
+                            onLoadStart={() => setIsImageLoading(true)}
+                            onLoad={() => setIsImageLoading(false)}
+                            onLoadEnd={() => setIsImageLoading(false)}
+                            style={styles.ProfileImage}
+                            source={{
+                              uri: DummyImage,
+                              priority: FastImage.priority.high,
+                            }}
+                            fallback={Platform.OS === 'android'}
+                          />
+                          // <LottieView
+                          //   style={styles.LottieViewStyle}
+                          //   source={CommonIcons.PepeTheFrogGif}
+                          //   autoPlay={true}
+                          //   useNativeLooping={true}
+                          //   loop
+                          // />
+                        )}
+                      </View>
+                    )}
                   </Skeleton>
                 </View>
               )}
@@ -135,17 +185,21 @@ const ProfileScreen = () => {
             <View style={styles.NameAndBadgeContainer}>
               <Skeleton
                 show={IsAPILoading}
-                width={240}
+                width={300}
                 colorMode="light"
                 colors={COLORS.LoaderGradient}>
                 <View style={styles.NameAndBadgeView}>
                   <Text style={styles.UserNameText}>{`${
-                    ProfileData?.full_name || userData?.fullName
-                  }, ${Age || 0}`}</Text>
-                  <Image
-                    source={CommonIcons.Verification_Icon}
-                    style={styles.VerifyIcon}
-                  />
+                    IsAPILoading
+                      ? ''
+                      : ProfileData?.full_name || userData?.full_name
+                  }${IsAPILoading ? '' : `,${Age}` || 0}`}</Text>
+                  {!IsAPILoading && (
+                    <Image
+                      source={CommonIcons.Verification_Icon}
+                      style={styles.VerifyIcon}
+                    />
+                  )}
                 </View>
               </Skeleton>
             </View>
@@ -153,10 +207,10 @@ const ProfileScreen = () => {
               <Skeleton
                 show={IsAPILoading}
                 colorMode="light"
-                width={70}
+                width={250}
                 colors={COLORS.LoaderGradient}>
                 <Text style={styles.UserCityText}>
-                  {ProfileData?.city || 'City'}
+                  {IsAPILoading ? '' : ProfileData?.city || 'Not Specified?'}
                 </Text>
               </Skeleton>
             </View>
@@ -171,9 +225,9 @@ const ProfileScreen = () => {
                   height={57}
                   colors={COLORS.LoaderGradient}>
                   <View style={styles.PercentageTextFlexView}>
-                    <Text style={styles.PercentageCountText}>{`${Math.floor(
-                      percentage,
-                    )}%`}</Text>
+                    <Text style={styles.PercentageCountText}>{`${
+                      IsAPILoading ? '' : `${Math.floor(percentage)}%`
+                    }`}</Text>
                   </View>
                 </Skeleton>
               </View>
@@ -353,5 +407,46 @@ const styles = StyleSheet.create({
   ImageLoader: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  LottieViewStyle: {
+    // width: '100%',
+    // height: '100%',
+    // width: 10,
+    // height: 10,
+    aspectRatio: 1 / 17,
+    backgroundColor: COLORS.Primary,
+  },
+  ErrorViewContainer: {
+    flex: 1,
+    width: '90%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  ErrorViewTitleText: {
+    ...GROUP_FONT.h2,
+    color: COLORS.Primary,
+    textAlign: 'center',
+  },
+  ErrorRefButton: {
+    top: 10,
+    height: 45,
+    width: 250,
+    backgroundColor: COLORS.Primary,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  ErrorRefText: {
+    ...GROUP_FONT.h3,
+    textAlign: 'center',
+    color: COLORS.White,
+  },
+  ThrowPCGif: {
+    width: 300,
+    height: 180,
+    marginVertical: 15,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
 });

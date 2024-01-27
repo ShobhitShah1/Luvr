@@ -59,10 +59,16 @@ const LocationPermission: FC = () => {
                 navigation.replace('LoginStack', {
                   screen: 'IdentifyYourSelf',
                 });
+                setIsLocationLoading(false);
               }, 0);
             }
           },
-          error => reject(error),
+          error => {
+            reject(error);
+            setTimeout(() => {
+              setIsLocationLoading(false);
+            }, 0);
+          },
           {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
         );
       });
@@ -76,8 +82,9 @@ const LocationPermission: FC = () => {
         ),
         'error',
       );
-    } finally {
-      setIsLocationLoading(false);
+      setTimeout(() => {
+        setIsLocationLoading(false);
+      }, 0);
     }
   };
 
@@ -100,7 +107,10 @@ const LocationPermission: FC = () => {
         <GradientButton
           Title={'Allow'}
           Disabled={false}
-          Navigation={onNextPress}
+          Navigation={() => {
+            setIsLocationLoading(true);
+            onNextPress();
+          }}
           isLoading={IsLocationLoading}
         />
       </View>

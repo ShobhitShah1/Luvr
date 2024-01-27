@@ -34,6 +34,7 @@ export const FONTS = {
   Bold: 'OpenSans-Bold',
   SemiBold: 'OpenSans-SemiBold',
   ExtraBold: 'OpenSans-ExtraBold',
+  Pacifico_Regular: 'Pacifico-Regular',
 };
 
 export const SIZES = {

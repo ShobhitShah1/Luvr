@@ -19,7 +19,7 @@ export interface SwiperCard {
   orientation: [];
   profile_image: string;
   radius: number;
-  recent_pik: [];
+  recent_pik: string[];
   user_from: string;
   location?: string;
 }

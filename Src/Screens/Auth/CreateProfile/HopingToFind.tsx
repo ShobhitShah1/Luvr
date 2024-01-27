@@ -28,12 +28,12 @@ import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 import {updateField} from '../../../Redux/Action/userActions';
 
-interface ItemProps {
-  id: number;
-  Title: string;
-  Emoji: string;
-  Icon: string;
-}
+// interface ItemProps {
+//   id: number;
+//   Title: string;
+//   Emoji: string;
+//   Icon: string;
+// }
 
 const {width} = Dimensions.get('window');
 
@@ -44,23 +44,18 @@ const HopingToFind: FC = () => {
   const userData = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
   const [SelectedLookingForIndex, setSelectedLookingForIndex] =
-    useState<ItemProps>(userData.hoping ? userData.hoping : {});
+    useState<string>(userData.hoping ? userData.hoping : {});
 
-  console.log('SelectedLookingForIndex', SelectedLookingForIndex);
+  // console.log('SelectedLookingForIndex', SelectedLookingForIndex);
 
   const onPressLookingFor = useCallback(
-    (item: ItemProps) => {
+    (item: string) => {
       //* Check if the selected item is already in the array
-      const isSelected = SelectedLookingForIndex.Title === item?.Title;
+      const isSelected = SelectedLookingForIndex === item;
 
       //* If the selected item is already in the array, unselect it
       if (isSelected) {
-        setSelectedLookingForIndex({
-          id: -1,
-          Title: '',
-          Emoji: '',
-          Icon: '',
-        });
+        setSelectedLookingForIndex(item);
       } else {
         //* If the selected item is not in the array, select it and unselect the previous one
         setSelectedLookingForIndex(item);
@@ -72,7 +67,7 @@ const HopingToFind: FC = () => {
   );
 
   const renderItem = ({item, index}: {item: any; index: number}) => {
-    const Selected = SelectedLookingForIndex?.Title === item?.Title;
+    const Selected = SelectedLookingForIndex === item;
     return (
       <TouchableOpacity
         activeOpacity={ActiveOpacity}
@@ -88,7 +83,7 @@ const HopingToFind: FC = () => {
                 fontFamily: Selected ? FONTS.Bold : FONTS.Medium,
               },
             ]}>
-            {item.Title}
+            {item}
           </Text>
           {Selected && (
             <Image
@@ -136,7 +131,7 @@ const HopingToFind: FC = () => {
           data={LookingFor}
           renderItem={renderItem}
           contentContainerStyle={styles.FlatListContainer}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={(item, index) => index.toString()}
         />
       </View>
 

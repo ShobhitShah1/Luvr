@@ -26,7 +26,6 @@ const userReducer = (
   } = initialState,
   action: any,
 ) => {
-  console.log('Reduce ID:', action.userId);
   switch (action.type) {
     case SET_USER_DATA:
       return {

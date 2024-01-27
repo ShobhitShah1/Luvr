@@ -9,25 +9,32 @@ import {
 import CommonIcons from '../../../../Common/CommonIcons';
 
 interface CategoriesListProps {
-  Item: string[];
+  Item: any[];
   onPress: () => void;
+  EmptyTitleText: string;
 }
 
 const EditProfileCategoriesList: FC<CategoriesListProps> = ({
   Item,
   onPress,
+  EmptyTitleText,
 }) => {
   return (
     <View style={styles.CategoryContainerView}>
       <View style={styles.CategoryView}>
-        {Item?.map((res, index) => {
-          console.log('res', res, index);
-          return (
-            <View key={index} style={styles.SingleCategoryView}>
-              <Text style={styles.CategoryTextStyle}>{res}</Text>
-            </View>
-          );
-        })}
+        {Item.length !== 0 ? (
+          Item?.map((res, index) => {
+            return (
+              <View key={index} style={styles.SingleCategoryView}>
+                <Text style={styles.CategoryTextStyle}>{res}</Text>
+              </View>
+            );
+          })
+        ) : (
+          <View style={[styles.EmptyCategoryView]}>
+            <Text style={styles.CategoryTextStyle}>{EmptyTitleText}</Text>
+          </View>
+        )}
       </View>
       <TouchableOpacity
         activeOpacity={ActiveOpacity}
@@ -69,6 +76,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 13,
     borderColor: COLORS.Black,
+  },
+  EmptyCategoryView: {
+    padding: 5,
+    // borderWidth: 1,
+    marginRight: 10,
+    // borderRadius: 15,
+    marginBottom: 10,
+    paddingHorizontal: 13,
+    // borderColor: COLORS.Black,
   },
   RightIconView: {
     width: 35,

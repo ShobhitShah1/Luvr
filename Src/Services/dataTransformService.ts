@@ -17,7 +17,7 @@ const transformUserDataForApi = (
     city: userData[LocalStorageFields.city],
     orientation: userData[LocalStorageFields.orientation],
     is_orientation_visible: userData[LocalStorageFields.isOrientationVisible],
-    hoping: userData[LocalStorageFields.hoping]?.Title,
+    hoping: userData[LocalStorageFields.hoping],
     education: {
       digree: userData[LocalStorageFields.educationDegree],
       college_name: userData[LocalStorageFields.collegeName],

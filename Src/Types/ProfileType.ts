@@ -1,35 +1,30 @@
-type EducationType = {
+export type EducationType = {
   college_name: string;
   digree: string;
 };
 
-type HabitsType = {
+export type HabitsType = {
   drink: string;
   exercise: string;
   movies: string;
   smoke: string;
 };
 
-type LocationType = {
+export type LocationType = {
   coordinates: [number, number];
   type: string;
 };
 
-type MagicalPersonType = {
+export type MagicalPersonType = {
   communication_stry: string;
   education_level: string;
   recived_love: string;
   star_sign: string;
 };
 
-type HopingType = {
-  Title: string;
-  Emoji: string;
-  Icon: string;
-};
-
 export type ProfileType = {
   _id: string;
+  bio: string;
   birthdate: string;
   city: string;
   date: number;
@@ -38,11 +33,11 @@ export type ProfileType = {
   full_name: string | null;
   gender: string;
   habits: HabitsType;
-  hoping: HopingType;
+  hoping: string;
   identity: string;
   is_block_contact: string;
   is_orientation_visible: boolean;
-  likes_into: string;
+  likes_into: string[];
   location: LocationType;
   login_type: string;
   magical_person: MagicalPersonType;

@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   GenderView: {
     padding: 0,
     backgroundColor: COLORS.White,
-    height: hp('6.8%'),
+    height: hp('6.2%'),
     width: wp('85%'),
     borderRadius: SIZES.radius,
     alignItems: 'center',

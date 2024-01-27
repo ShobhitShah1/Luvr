@@ -7,6 +7,7 @@ import {
   Animated,
   Image,
   Platform,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -33,13 +34,16 @@ import {
   useIsFocused,
   useNavigation,
 } from '@react-navigation/native';
+import Modal from 'react-native-modal';
+import ItsAMatch from './Components/ItsAMatch';
 
 const ExploreCardScreen: FC = () => {
   const {width} = useWindowDimensions() || {};
   const swipeRef = useRef<Swiper<SwiperCard>>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
-
+  const slideDownAnimation = useRef(new Animated.Value(1)).current;
+  const isScreenFocused = useIsFocused();
   const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
   const LeftSwipedUserIds = useSelector(
@@ -55,22 +59,21 @@ const ExploreCardScreen: FC = () => {
   const [firstImageLoading, setFirstImageLoading] = useState(true);
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [IsNetConnected, setIsNetConnected] = useState(true);
-  const slideDownAnimation = useRef(new Animated.Value(1)).current;
-  const isScreenFocused = useIsFocused();
+  const [ItsMatchModalView, setItsMatchModalView] = useState(false);
 
   const {startInterval, stopInterval, clearInterval} = useInterval(
     () => {
       if (cards && isScreenFocused) {
         setCurrentImageIndex(
           prevIndex =>
-            (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik.length || 0,
+            (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik?.length || 0,
         );
 
         Animated.timing(animatedOpacity, {
           toValue: 1,
           duration: 1000,
           easing: Easing.linear,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }).start();
 
         swipeRef.current?.forceUpdate();
@@ -78,6 +81,14 @@ const ExploreCardScreen: FC = () => {
     },
     cards && cards?.length > 0 ? CardDelay : null,
   );
+
+  useEffect(() => {
+    if (ItsMatchModalView) {
+      stopInterval();
+    } else {
+      startInterval();
+    }
+  }, [ItsMatchModalView]);
 
   useEffect(() => {
     setIsAPILoading(true);
@@ -250,12 +261,14 @@ const ExploreCardScreen: FC = () => {
 
   //* This Will Just Swipe Left
   const SwipeLeft = () => {
-    swipeRef.current?.swipeLeft();
+    // swipeRef.current?.swipeLeft();
+    setItsMatchModalView(true);
   };
 
   //* This Will Just Swipe Right
   const SwipeRight = () => {
-    swipeRef.current?.swipeRight();
+    // swipeRef.current?.swipeRight();
+    setItsMatchModalView(true);
   };
 
   //* User Like API
@@ -448,6 +461,39 @@ const ExploreCardScreen: FC = () => {
           </TouchableOpacity>
         </View>
       )}
+
+      <Modal
+        isVisible={
+          IsAPILoading || cards?.length === 0 ? false : ItsMatchModalView
+        }
+        animationIn={'fadeIn'}
+        animationOut={'fadeOut'}
+        useNativeDriver
+        useNativeDriverForBackdrop
+        hasBackdrop
+        onBackdropPress={() => {
+          setItsMatchModalView(false);
+        }}
+        onBackButtonPress={() => {
+          setItsMatchModalView(false);
+        }}
+        // statusBarTranslucent
+        // backdropColor="rgba(0,0,0,0.7)"
+        // presentationStyle="overFullScreen"
+        style={{
+          flex: 1,
+          // padding: 0,
+          margin: 0,
+          // alignItems: 'center',
+          // alignSelf: 'center',
+          // justifyContent: 'center',
+        }}>
+        <ItsAMatch
+          user={cards && cards[CurrentCardIndex]}
+          onSayHiClick={() => {}}
+          setItsMatch={setItsMatchModalView}
+        />
+      </Modal>
     </View>
   );
 };

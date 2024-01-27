@@ -1,5 +1,14 @@
-import React, {useLayoutEffect, useState} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+/* eslint-disable react/no-unstable-nested-components */
+/* eslint-disable react-native/no-inline-styles */
+import React, {useLayoutEffect, useRef, useState} from 'react';
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../Common/CommonIcons';
 import {ActiveOpacity, COLORS} from '../../Common/Theme';
@@ -12,43 +21,22 @@ import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHead
 import SettingFlexView from './Components/SettingFlexView';
 import styles from './styles';
 import UserService from '../../Services/AuthService';
-
-const initialProfileState: ProfileType = {
-  _id: '',
-  birthdate: '',
-  city: '',
-  date: 0,
-  education: {college_name: '', digree: ''},
-  enable: 0,
-  full_name: null,
-  gender: '',
-  habits: {drink: '', exercise: '', movies: '', smoke: ''},
-  hoping: '',
-  identity: '',
-  is_block_contact: '',
-  is_orientation_visible: false,
-  likes_into: '',
-  location: {coordinates: [0, 0], type: ''},
-  login_type: '',
-  magical_person: {
-    communication_stry: '',
-    education_level: '',
-    recived_love: '',
-    star_sign: '',
-  },
-  mobile_no: '',
-  orientation: [],
-  profile_image: '',
-  radius: 0,
-  recent_pik: [],
-  user_from: '',
-};
+import Modal from 'react-native-modal';
+import LogOutModalRenderView from './Components/LogOutModalRenderView';
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
+import {BlurView} from '@react-native-community/blur';
 
 const SettingScreen = () => {
-  const [profile, setProfile] = useState<ProfileType>(initialProfileState);
+  const LogOutSheetRef = useRef<BottomSheetModal>();
 
+  const [profile, setProfile] = useState<ProfileType>();
   const [selectedGender, setSelectedGender] = useState<string>('Man');
-
+  const [LogOutModalView, setLogOutModalView] = useState(false);
+  const [DeleteAccountModalView, setDeleteAccountModalView] = useState(false);
   const genders = ['Man', 'Woman', 'Everyone'];
 
   const handleGenderSelection = (gender: string) => {
@@ -307,12 +295,24 @@ const SettingScreen = () => {
 
           {/* Delete And Logout Button */}
           <View style={styles.DeleteAndLogoutContainerView}>
-            <TouchableOpacity style={[styles.DeleteAndLogoutButtonView]}>
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              onPress={() => {
+                // LogOutSheetRef.current?.present()
+                setDeleteAccountModalView(!DeleteAccountModalView);
+              }}
+              style={[styles.DeleteAndLogoutButtonView]}>
               <Text style={styles.DeleteAndLogoutButtonText}>
                 Delete Account
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.DeleteAndLogoutButtonView}>
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              onPress={() => {
+                // LogOutSheetRef.current?.present()
+                setLogOutModalView(!LogOutModalView);
+              }}
+              style={styles.DeleteAndLogoutButtonView}>
               <Text style={styles.DeleteAndLogoutButtonText}>Logout</Text>
             </TouchableOpacity>
           </View>
@@ -323,6 +323,91 @@ const SettingScreen = () => {
           </View>
         </View>
       </ScrollView>
+
+      <Modal
+        isVisible={LogOutModalView}
+        animationIn={'slideInUp'}
+        animationOut={'slideOutDown'}
+        animationInTiming={500}
+        animationOutTiming={500}
+        useNativeDriver
+        useNativeDriverForBackdrop
+        hasBackdrop
+        onBackdropPress={() => {
+          setLogOutModalView(false);
+        }}
+        onBackButtonPress={() => {
+          setLogOutModalView(false);
+        }}
+        // customBackdrop={() => {
+        //    <BlurView blurAmount={2} style={{flex: 1}} />;
+        // }}
+        // statusBarTranslucent
+        // backdropColor="rgba(0,0,0,0.7)"
+        // presentationStyle="overFullScreen"
+        style={{
+          flex: 1,
+          padding: 0,
+          margin: 0,
+          alignItems: 'center',
+          // alignSelf: 'center',
+          justifyContent: 'center',
+        }}>
+        <View style={{position: 'absolute', bottom: 20}}>
+          <LogOutModalRenderView
+            onPress={() => {}}
+            title="Logout"
+            description="Are you sure you want to logout?"
+            ButtonCloseText="Yes, Logout"
+            ButtonTitle="No"
+          />
+        </View>
+      </Modal>
+
+      <Modal
+        isVisible={DeleteAccountModalView}
+        animationIn={'slideInUp'}
+        animationOut={'slideOutDown'}
+        animationInTiming={500}
+        animationOutTiming={500}
+        useNativeDriver
+        useNativeDriverForBackdrop
+        hasBackdrop
+        onBackdropPress={() => {
+          setDeleteAccountModalView(false);
+        }}
+        onBackButtonPress={() => {
+          setDeleteAccountModalView(false);
+        }}
+        // customBackdrop={() => {
+        //    <BlurView blurAmount={2} style={{flex: 1}} />;
+        // }}
+        // statusBarTranslucent
+        // backdropColor="rgba(0,0,0,0.7)"
+        // presentationStyle="overFullScreen"
+        style={{
+          flex: 1,
+          padding: 0,
+          margin: 0,
+          alignItems: 'center',
+          // alignSelf: 'center',
+          justifyContent: 'center',
+        }}>
+        <View style={{position: 'absolute', bottom: 20}}>
+          <LogOutModalRenderView
+            onPress={() => {}}
+            title="Delete account"
+            description={
+              'Are you sure you want to delete account? If you delete your account, you will permanently lose your :\n\n' +
+              '- Profile\n' +
+              '- Messages\n' +
+              '- Photos'
+            }
+            ButtonCloseText="close"
+            ButtonTitle="cdcd"
+          />
+        </View>
+      </Modal>
     </View>
   );
 };

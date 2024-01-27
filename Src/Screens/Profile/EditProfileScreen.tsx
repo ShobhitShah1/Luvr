@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 import {
@@ -7,13 +8,7 @@ import {
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
 import {BlurView} from '@react-native-community/blur';
-import React, {
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Dimensions,
   FlatList,
@@ -27,14 +22,19 @@ import * as ImagePicker from 'react-native-image-picker';
 import CommonIcons from '../../Common/CommonIcons';
 import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import CustomTextInput from '../../Components/CustomTextInput';
-import {
-  DummyImage,
-  TotalProfilePicCanUploadEditProfile,
-} from '../../Config/Setting';
+import {TotalProfilePicCanUploadEditProfile} from '../../Config/Setting';
 import {useCameraPermission} from '../../Hooks/useCameraPermission';
 import {useGalleryPermission} from '../../Hooks/useGalleryPermission';
 import UserService from '../../Services/AuthService';
+// import ProfileService from '../../Services/ProfileService';
+import NetInfo from '@react-native-community/netinfo';
+import Geolocation from 'react-native-geolocation-service';
+import {useDispatch, useSelector} from 'react-redux';
+import {useLocationPermission} from '../../Hooks/useLocationPermission';
+import {updateField} from '../../Redux/Action/userActions';
+import {LocalStorageFields} from '../../Types/LocalStorageFields';
 import {ProfileType} from '../../Types/ProfileType';
+import {useCustomToast} from '../../Utils/toastUtils';
 import ChooseFromModal from '../Auth/CreateProfile/Components/ChooseFromModal';
 import EditProfileAllImageView from './Components/EditProfileComponents/EditProfileAllImageView';
 import EditProfileBoxView from './Components/EditProfileComponents/EditProfileBoxView';
@@ -42,61 +42,125 @@ import EditProfileCategoriesList from './Components/EditProfileComponents/EditPr
 import EditProfileSheetView from './Components/EditProfileComponents/EditProfileSheetView';
 import EditProfileTitleView from './Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from './Components/ProfileAndSettingHeader';
-const initialProfileState: ProfileType = {
-  _id: '',
-  birthdate: '',
-  city: '',
-  date: 0,
-  education: {college_name: '', digree: ''},
-  enable: 0,
-  full_name: null,
-  gender: '',
-  habits: {drink: '', exercise: '', movies: '', smoke: ''},
-  hoping: '',
-  identity: '',
-  is_block_contact: '',
-  is_orientation_visible: false,
-  likes_into: '',
-  location: {coordinates: [0, 0], type: ''},
-  login_type: '',
-  magical_person: {
-    communication_stry: '',
-    education_level: '',
-    recived_love: '',
-    star_sign: '',
-  },
-  mobile_no: '',
-  orientation: [],
-  profile_image: '',
-  radius: 0,
-  recent_pik: [],
-  user_from: '',
-};
 
 const EditProfileScreen = () => {
   const dayInputRef = useRef(null);
   const yearInputRef = useRef(null);
   const monthInputRef = useRef(null);
+
+  const [profile, setProfile] = useState<ProfileType>();
+  const [IsInternetConnected, setIsInternetConnected] = useState(true);
   const [ChooseModalVisible, setChooseModalVisible] = useState<boolean>(false);
+  const [Bio, setBio] = useState(profile?.bio);
+  const [CollegeName, setCollegeName] = useState(
+    profile?.education?.college_name,
+  );
+  const [EducationDegree, setEducationDegree] = useState(
+    profile?.education?.digree,
+  );
   const {requestCameraPermission} = useCameraPermission();
   const {requestGalleryPermission} = useGalleryPermission();
+  const {showToast} = useCustomToast();
+  const dispatch = useDispatch();
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  const UserData = useSelector((state: any) => state?.user);
+
+  const Day = profile?.birthdate.split('/')[0];
+  const Month = profile?.birthdate.split('/')[1];
+  const Year = profile?.birthdate.split('/')[2];
+  const [BirthdateDay, setBirthdateDay] = useState(Day);
+  const [BirthdateMonth, setBirthdateMonth] = useState(Month);
+  const [BirthdateYear, setBirthdateYear] = useState(Year);
 
   const [UserPicks, setUserPicks] = useState(
     Array.from({length: TotalProfilePicCanUploadEditProfile}, (_, index) => ({
       name: '',
       type: '',
       key: String(index),
-      url: DummyImage,
+      url: '',
     })),
   );
 
-  console.log('UserPicks', UserPicks);
+  useEffect(() => {
+    const CheckConnection = async () => {
+      try {
+        const IsNetOn = await NetInfo.fetch().then(info => info.isConnected);
+        if (IsNetOn) {
+          await GetProfileData();
+          await CheckLocationPermission();
+          setIsInternetConnected(true);
+        } else {
+          setIsInternetConnected(false);
+        }
+      } catch (error) {
+        console.error(
+          'Error fetching profile data or checking location permission:',
+          error,
+        );
+        setIsInternetConnected(false);
+      }
+    };
 
-  const [profile, setProfile] = useState<ProfileType>(initialProfileState);
-
-  useLayoutEffect(() => {
-    GetProfileData();
+    CheckConnection();
   }, []);
+
+  useEffect(() => {
+    console.log('UPDATE HERE:', profile);
+  }, [profile]);
+
+  const {locationPermission, requestLocationPermission} =
+    useLocationPermission();
+
+  //* Check User Location Permission
+  const CheckLocationPermission = async () => {
+    if (locationPermission) {
+      StoreLocationPermission();
+    } else {
+      const requestPermission = await requestLocationPermission();
+      if (requestPermission) {
+        StoreLocationPermission();
+      } else {
+      }
+    }
+  };
+
+  //* Get User Let And Long
+  const StoreLocationPermission = async () => {
+    try {
+      return new Promise((resolve, reject) => {
+        Geolocation.getCurrentPosition(
+          async position => {
+            const {coords} = position;
+            console.log('coords', coords);
+            if (coords) {
+              await Promise.all([
+                dispatch(
+                  updateField(LocalStorageFields.longitude, coords.longitude),
+                ),
+                dispatch(
+                  updateField(LocalStorageFields.latitude, coords.latitude),
+                ),
+              ]);
+            }
+          },
+          error => reject(error),
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
+      });
+    } catch (error: any) {
+      console.error(error, error?.message);
+      showToast(
+        'Something went wrong',
+        String(
+          error?.message ??
+            'Unable to find your location please try gain letter',
+        ),
+        'error',
+      );
+    } finally {
+    }
+  };
 
   const GetProfileData = async () => {
     try {
@@ -106,7 +170,41 @@ const EditProfileScreen = () => {
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
+        const DataToStore: ProfileType = APIResponse?.data
+          ? APIResponse?.data
+          : [];
         setProfile(APIResponse.data);
+        setBio(DataToStore.bio);
+        setCollegeName(DataToStore.education.college_name);
+        setEducationDegree(DataToStore.education.digree);
+        setBirthdateDay(DataToStore?.birthdate.split('/')[0]);
+        setBirthdateMonth(DataToStore?.birthdate.split('/')[1]);
+        setBirthdateYear(DataToStore?.birthdate.split('/')[2]);
+
+        if (DataToStore?.recent_pik?.length !== 0) {
+          DataToStore?.recent_pik?.forEach((res, index) => {
+            if (index < TotalProfilePicCanUploadEditProfile) {
+              const pathParts = res.split('/');
+              const name = pathParts[pathParts.length - 1];
+
+              setUserPicks(prevUserPicks => {
+                const updatedUserPicks = [...prevUserPicks];
+                const existingPick = updatedUserPicks[index];
+
+                if (existingPick) {
+                  updatedUserPicks[index] = {
+                    ...existingPick,
+                    name,
+                    url: res,
+                    key: res,
+                  };
+                }
+
+                return updatedUserPicks;
+              });
+            }
+          });
+        }
         console.log('GetProfileData Data:', APIResponse.data);
       } else {
         setProfile({} as ProfileType);
@@ -117,16 +215,17 @@ const EditProfileScreen = () => {
     }
   };
 
-  // ref
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  //* Birthdate Focus Handler
+  const handleTextChange = (value: string, nextInputRef: any) => {
+    if (value.length === 2) {
+      nextInputRef.current.focus();
+    }
+  };
 
-  // variables
-  const snapPoints = useMemo(() => ['25%', '50%'], []);
-
-  // callbacks
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
+
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
   }, []);
@@ -217,6 +316,113 @@ const EditProfileScreen = () => {
     }
   };
 
+  //* Update Profile API Call (API CALL)
+  // const onUpdateProfile = async () => {
+  //   try {
+  //     if (!IsInternetConnected) {
+  //       showToast(
+  //         'Network Issue',
+  //         'Please check your internet connection and try again',
+  //         'error',
+  //       );
+  //       return;
+  //     }
+
+  //     console.log(BirthdateDay, BirthdateMonth, BirthdateYear);
+
+  //     // const data = {
+  //     //   birthdate:
+  //     //     `${BirthdateDay || '00'}/${BirthdateMonth || '00'}/${
+  //     //       BirthdateYear || '0000'
+  //     //     }` || profile?.birthdate,
+  //     //   bio: Bio || '',
+  //     //   city: profile?.city || '',
+  //     //   college_name: CollegeName || '',
+  //     //   education_degree: EducationDegree || '',
+  //     //   fullName: profile?.fullName || '',
+  //     //   gender: profile?.gender || '',
+  //     //   habits_drink: profile?.habits_drink || '',
+  //     //   habits_exercise: profile?.habits_exercise || '',
+  //     //   habits_smoke: profile?.habits_smoke || '',
+  //     //   habits_movies: profile?.habits_movies || '',
+  //     //   hoping: profile?.hoping || '',
+  //     //   identity: profile?.identity || '',
+  //     //   is_orientation_visible: profile?.is_orientation_visible || false,
+  //     //   likes_into: profile?.likes_into || [],
+  //     //   latitude: UserData?.latitude || profile?.latitude || '',
+  //     //   longitude: UserData?.longitude || profile?.longitude || '',
+  //     //   magical_person_communication_str:
+  //     //     profile?.magical_person_communication_str || '',
+  //     //   magical_person_education_level:
+  //     //     profile?.magical_person_education_level || '',
+  //     //   magical_person_received_love:
+  //     //     profile?.magical_person_received_love || '',
+  //     //   magical_person_star_sign: profile?.magical_person_star_sign || '',
+  //     //   mobile_number: profile?.mobile_number || '',
+  //     //   orientation: profile?.orientation || [],
+  //     //   radius: profile?.radius || 0,
+  //     // };
+
+  //     // const APIResponse = await UserService.UserRegister(data);
+  //     // console.log('Update Profile Response :--:>', APIResponse);
+
+  //     // if (APIResponse.status) {
+  //     //   setProfile(APIResponse.data);
+  //     //   showToast(
+  //     //     'Profile Updated',
+  //     //     'Your profile information has been successfully updated.',
+  //     //     'success',
+  //     //   );
+  //     // } else {
+  //     //   showToast(
+  //     //     'Error Updating Profile',
+  //     //     'Oops! Something went wrong while trying to update your profile?. Please try again later or contact support if the issue persists',
+  //     //     'error',
+  //     //   );
+  //     //   console.log('Something went wrong');
+  //     // }
+  //   } catch (error) {
+  //     console.log('Something went wrong edit profile :--:>', error);
+  //   }
+  // };
+
+  //* Upload Single Image
+  // const UploadImage = async (item: any) => {
+  //   console.log('item', item);
+  //   let formData = new FormData();
+  //   item &&
+  //     item.forEach(({url, type, name}: any) => {
+  //       formData.append('images', {
+  //         uri: Platform.OS === 'android' ? url : url.replace('file://', ''),
+  //         type,
+  //         name,
+  //       });
+  //     });
+
+  //   // try {
+  //   //   const APIResponse = await ProfileService.AddUserImage(formData);
+  //   //   console.log('UploadImage APIResponse :--:>', APIResponse);
+
+  //   //   if (APIResponse.status) {
+  //   //     const newData = UserPicks.map(data =>
+  //   //       data.url === '' ? item.shift() || data : data,
+  //   //     );
+
+  //   //     setUserPicks(newData);
+  //   //   } else {
+  //   //     showToast(
+  //   //       'Error',
+  //   //       'Sorry! cant delete this image right now. try again',
+  //   //       'error',
+  //   //     );
+  //   //     return false;
+  //   //   }
+  //   // } catch (error) {
+  //   //   console.log('Error on image upload :--:>', error);
+  //   //   showToast('Error!', String(error), 'error');
+  //   // }
+  // };
+
   return (
     <View style={styles.Container}>
       <ProfileAndSettingHeader Title={'Edit Profile'} />
@@ -231,7 +437,7 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView>
               <Text style={styles.UserFullNameStyle}>
-                {profile.full_name ?? 'User'}
+                {profile?.full_name ?? 'User'}
               </Text>
             </EditProfileBoxView>
           </View>
@@ -247,12 +453,15 @@ const EditProfileScreen = () => {
               <View style={styles.BirthDateContainerView}>
                 <CustomTextInput
                   ref={dayInputRef}
-                  editable={false}
+                  editable={true}
                   keyboardType={'number-pad'}
-                  // value={BirthDateDD}
+                  value={BirthdateDay}
+                  cursorColor={COLORS.Primary}
+                  defaultValue={profile?.birthdate.split('/')[0]}
                   onChangeText={value => {
-                    // setBirthDateDD(value);
-                    // handleTextChange(value, monthInputRef);
+                    console.log('DayInput', value);
+                    setBirthdateDay(value);
+                    handleTextChange(value, monthInputRef);
                   }}
                   maxLength={2}
                   placeholder="DD"
@@ -261,12 +470,15 @@ const EditProfileScreen = () => {
                 />
                 <CustomTextInput
                   ref={monthInputRef}
-                  // value={BirthDateMM}
-                  editable={false}
+                  value={BirthdateMonth}
+                  editable={true}
                   keyboardType={'number-pad'}
+                  cursorColor={COLORS.Primary}
+                  defaultValue={profile?.birthdate.split('/')[1]}
                   onChangeText={value => {
-                    // setBirthDateMM(value);
-                    // handleTextChange(value, yearInputRef);
+                    setBirthdateMonth(value);
+                    console.log('MonthInput', value);
+                    handleTextChange(value, yearInputRef);
                   }}
                   maxLength={2}
                   placeholder="MM"
@@ -275,11 +487,14 @@ const EditProfileScreen = () => {
                 />
                 <CustomTextInput
                   ref={yearInputRef}
-                  editable={false}
-                  // value={BirthDateYYYY}
+                  editable={true}
+                  value={BirthdateYear}
+                  cursorColor={COLORS.Primary}
+                  defaultValue={profile?.birthdate.split('/')[2]}
                   keyboardType={'number-pad'}
                   onChangeText={value => {
-                    // setBirthDateYYYY(value);
+                    console.log('yearInput', value);
+                    setBirthdateYear(value);
                   }}
                   maxLength={4}
                   placeholder="YYYY"
@@ -287,7 +502,6 @@ const EditProfileScreen = () => {
                   placeholderTextColor={COLORS.Gray}
                 />
               </View>
-              {/* <Text>Hello</Text> */}
             </EditProfileBoxView>
           </View>
 
@@ -303,11 +517,11 @@ const EditProfileScreen = () => {
               data={UserPicks}
               numColumns={3}
               renderItem={({item, index}) => {
-                console.log('item', item);
                 return (
                   <EditProfileAllImageView
                     item={item}
                     index={index}
+                    showToast={showToast}
                     setUserPicks={setUserPicks}
                     UserPicks={UserPicks}
                     OnToggleModal={OnToggleModal}
@@ -327,8 +541,11 @@ const EditProfileScreen = () => {
             <View style={styles.AboutMeCustomView}>
               <TextInput
                 multiline
-                editable={false}
-                // numberOfLines={10}
+                value={Bio}
+                defaultValue={Bio}
+                editable={true}
+                cursorColor={COLORS.Primary}
+                onChangeText={setBio}
                 style={styles.AboutMeTextViewStyle}
                 placeholderTextColor={COLORS.Placeholder}
                 placeholder="Write something about you..."
@@ -346,10 +563,13 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView>
               <EditProfileCategoriesList
+                EmptyTitleText="Your gender?"
                 Item={
-                  Array.isArray(profile.gender)
-                    ? profile.gender
-                    : [profile.gender]
+                  profile?.gender
+                    ? Array.isArray(profile?.gender)
+                      ? profile?.gender
+                      : [profile?.gender]
+                    : []
                 }
                 onPress={() => handlePresentModalPress()}
               />
@@ -365,7 +585,7 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView>
               <Text style={styles.UserFullNameStyle}>
-                {profile.city ?? 'Somewhere'}
+                {profile?.city ?? 'Somewhere'}
               </Text>
             </EditProfileBoxView>
           </View>
@@ -379,11 +599,13 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView>
               <EditProfileCategoriesList
-                // Item={['Man', 'Woman', 'Any', 'cd', '123', '51cd']}
+                EmptyTitleText="Bud what you like?"
                 Item={
-                  Array.isArray(profile.likes_into)
-                    ? profile.likes_into
-                    : [profile.likes_into]
+                  profile?.likes_into
+                    ? Array.isArray(profile?.likes_into)
+                      ? profile?.likes_into
+                      : [profile?.likes_into]
+                    : []
                 }
                 onPress={() => handlePresentModalPress()}
               />
@@ -399,10 +621,13 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView>
               <EditProfileCategoriesList
+                EmptyTitleText="Add what you looking for"
                 Item={
-                  Array.isArray(profile.gender)
-                    ? profile.gender
-                    : [profile.gender]
+                  profile?.hoping
+                    ? Array.isArray(profile?.hoping)
+                      ? profile?.hoping
+                      : [profile?.hoping]
+                    : []
                 }
                 onPress={() => handlePresentModalPress()}
               />
@@ -418,10 +643,13 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView>
               <EditProfileCategoriesList
+                EmptyTitleText="What's your Interest?"
                 Item={
-                  Array.isArray(profile.gender)
-                    ? profile.gender
-                    : [profile.gender]
+                  profile?.orientation
+                    ? Array.isArray(profile?.orientation)
+                      ? profile?.orientation
+                      : [profile?.orientation]
+                    : []
                 }
                 onPress={() => handlePresentModalPress()}
               />
@@ -437,10 +665,13 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView>
               <EditProfileCategoriesList
+                EmptyTitleText="Add Your Zodiac Sign"
                 Item={
-                  Array.isArray(profile.magical_person.star_sign)
-                    ? profile.magical_person.star_sign
-                    : [profile.magical_person.star_sign]
+                  profile?.magical_person?.star_sign
+                    ? Array.isArray(profile?.magical_person?.star_sign)
+                      ? profile?.magical_person?.star_sign
+                      : [profile?.magical_person?.star_sign]
+                    : []
                 }
                 onPress={() => handlePresentModalPress()}
               />
@@ -461,11 +692,10 @@ const EditProfileScreen = () => {
                     My education degree is
                   </Text>
                   <CustomTextInput
-                    value={profile.education.digree}
-                    defaultValue={profile.education.digree}
-                    onChangeText={value => {
-                      // setEducationDegree(value);
-                    }}
+                    value={CollegeName}
+                    cursorColor={COLORS.Primary}
+                    defaultValue={CollegeName}
+                    onChangeText={setCollegeName}
                     placeholder="Enter your education degree"
                     style={styles.YourEducationTextStyle}
                     placeholderTextColor={COLORS.Gray}
@@ -476,11 +706,10 @@ const EditProfileScreen = () => {
                     My college name is
                   </Text>
                   <CustomTextInput
-                    defaultValue={profile.education.college_name}
-                    value={profile.education.college_name}
-                    onChangeText={value => {
-                      // setEducationDegree(value);
-                    }}
+                    value={EducationDegree}
+                    defaultValue={EducationDegree}
+                    cursorColor={COLORS.Primary}
+                    onChangeText={setEducationDegree}
                     placeholder="Enter your college name"
                     style={styles.YourEducationTextStyle}
                     placeholderTextColor={COLORS.Gray}
@@ -499,10 +728,35 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView>
               <EditProfileCategoriesList
+                EmptyTitleText="Add Communication Style"
                 Item={
-                  Array.isArray(profile.gender)
-                    ? profile.gender
-                    : [profile.gender]
+                  profile?.magical_person?.communication_stry
+                    ? Array.isArray(profile?.magical_person?.communication_stry)
+                      ? profile?.magical_person?.communication_stry
+                      : [profile?.magical_person?.communication_stry]
+                    : []
+                }
+                onPress={() => handlePresentModalPress()}
+              />
+            </EditProfileBoxView>
+          </View>
+
+          {/* Exercise style View */}
+          <View style={styles.DetailContainerView}>
+            <EditProfileTitleView
+              isIcon={true}
+              Icon={CommonIcons.education_icon}
+              Title="Exercise"
+            />
+            <EditProfileBoxView>
+              <EditProfileCategoriesList
+                EmptyTitleText="How often you do Exercise?"
+                Item={
+                  profile?.habits?.exercise
+                    ? Array.isArray(profile?.habits?.exercise)
+                      ? profile?.habits?.exercise
+                      : [profile?.habits?.exercise]
+                    : []
                 }
                 onPress={() => handlePresentModalPress()}
               />
@@ -518,10 +772,13 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView>
               <EditProfileCategoriesList
+                EmptyTitleText="Are you into Smoke & drinks?"
                 Item={
-                  Array.isArray(profile.habits.smoke)
-                    ? profile.habits.smoke
-                    : [profile.habits.smoke]
+                  profile?.habits?.smoke
+                    ? Array.isArray(profile?.habits?.smoke)
+                      ? profile?.habits?.smoke
+                      : [profile?.habits?.smoke]
+                    : []
                 }
                 onPress={() => handlePresentModalPress()}
               />
@@ -537,10 +794,13 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView>
               <EditProfileCategoriesList
+                EmptyTitleText="how often you movies?"
                 Item={
-                  Array.isArray(profile.habits.movies)
-                    ? profile.habits.movies
-                    : [profile.habits.movies]
+                  profile?.habits?.movies
+                    ? Array.isArray(profile?.habits?.movies)
+                      ? profile?.habits?.movies
+                      : [profile?.habits?.movies]
+                    : []
                 }
                 onPress={() => handlePresentModalPress()}
               />
@@ -556,10 +816,13 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView>
               <EditProfileCategoriesList
+                EmptyTitleText="What you drink dude?"
                 Item={
-                  Array.isArray(profile.habits.drink)
-                    ? profile.habits.drink
-                    : [profile.habits.drink]
+                  profile?.habits?.drink
+                    ? Array.isArray(profile?.habits?.drink)
+                      ? profile?.habits?.drink
+                      : [profile?.habits?.drink]
+                    : []
                 }
                 onPress={() => handlePresentModalPress()}
               />
