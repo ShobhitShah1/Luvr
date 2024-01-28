@@ -30,12 +30,14 @@ const more_option = require('../../Assets/Icons/more_option_icon.png');
 const delete_chat = require('../../Assets/Icons/delete_chat_icon.png');
 const view_profile = require('../../Assets/Icons/view_profile.png');
 const RightArrow = require('../../Assets/Icons/RightArrow.png');
+const NoLikes = require('../../Assets/Icons/no_likes_icon.png');
 
 // Home
 const HomeTab = require('../../Assets/Icons/home_icon_select.png');
 const FindMatchTab = require('../../Assets/Icons/find_matches_icon_unselect.png');
 const MessageTab = require('../../Assets/Icons/message_icon_unselect.png');
 const ProfileTab = require('../../Assets/Icons/profile_icon_unselect.png');
+const bottom_likes_icon = require('../../Assets/Icons/bottom_likes_icon.png');
 
 // Bottom Tab Header
 const Setting = require('../../Assets/Icons/settings_icon.png');
@@ -74,12 +76,14 @@ export default {
   delete_chat,
   view_profile,
   RightArrow,
+  NoLikes,
 
   //* Home
   HomeTab,
   FindMatchTab,
   MessageTab,
   ProfileTab,
+  bottom_likes_icon,
 
   //* Bottom Tab Header
   Setting,

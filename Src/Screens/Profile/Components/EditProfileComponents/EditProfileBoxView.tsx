@@ -1,13 +1,21 @@
 import React, {FC} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {LayoutChangeEvent, StyleSheet, View} from 'react-native';
 import {COLORS} from '../../../../Common/Theme';
 
 interface EditProfileBoxViewProps {
   children: React.ReactElement;
+  onLayout?: (event: LayoutChangeEvent) => void;
 }
 
-const EditProfileBoxView: FC<EditProfileBoxViewProps> = ({children}) => {
-  return <View style={styles.container}>{children}</View>;
+const EditProfileBoxView: FC<EditProfileBoxViewProps> = ({
+  children,
+  onLayout,
+}) => {
+  return (
+    <View onLayout={onLayout} style={styles.container}>
+      {children}
+    </View>
+  );
 };
 
 export default EditProfileBoxView;
@@ -15,9 +23,11 @@ export default EditProfileBoxView;
 const styles = StyleSheet.create({
   container: {
     borderRadius: 25,
-    marginVertical: 5,
+    marginVertical: 10,
     paddingVertical: 20,
     paddingHorizontal: 20,
+    alignContent: 'center',
+    justifyContent: 'center',
     backgroundColor: COLORS.White,
   },
 });

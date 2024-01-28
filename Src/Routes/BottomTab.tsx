@@ -8,6 +8,7 @@ import {HomeScreen} from '../Screens/Home/index';
 import ChatRoomScreen from '../Screens/Chat/ChatRoomScreen';
 import ProfileScreen from '../Screens/Profile/ProfileScreen';
 import ExploreCardScreen from '../Screens/Explore/ExploreCardScreen';
+import MyLikesScreen from '../Screens/MyLikes/MyLikesScreen';
 
 const BottomTab: React.FC = () => {
   const Tab = createBottomTabNavigator();
@@ -36,6 +37,11 @@ const BottomTab: React.FC = () => {
       name: 'ExploreCard',
       component: ExploreCardScreen,
       icon: CommonIcons.FindMatchTab,
+    },
+    {
+      name: 'MyLikes',
+      component: MyLikesScreen,
+      icon: CommonIcons.bottom_likes_icon,
     },
     {name: 'ChatRoom', component: ChatRoomScreen, icon: CommonIcons.MessageTab},
     {name: 'Profile', component: ProfileScreen, icon: CommonIcons.ProfileTab},
@@ -74,7 +80,7 @@ const styles = StyleSheet.create({
   },
   TabBarStyle: {
     height: hp(7),
-    marginLeft: hp('-1.5%'),
-    marginRight: hp('-1.5%'),
+    marginLeft: hp('-0.5%'),
+    marginRight: hp('-0.5%'),
   },
 });

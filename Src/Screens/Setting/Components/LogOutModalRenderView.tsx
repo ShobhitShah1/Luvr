@@ -13,9 +13,10 @@ import CommonIcons from '../../../Common/CommonIcons';
 interface SettingModalProps {
   onPress: () => void;
   title: string;
-  description: string;
+  description: string | JSX.Element;
   ButtonTitle: string;
   ButtonCloseText: string;
+  setState: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const LogOutModalRenderView: FC<SettingModalProps> = ({
@@ -24,10 +25,12 @@ const LogOutModalRenderView: FC<SettingModalProps> = ({
   description,
   ButtonTitle,
   ButtonCloseText,
+  setState,
 }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity
+        onPress={() => setState(false)}
         activeOpacity={ActiveOpacity}
         style={styles.CloseModalContainerView}>
         <Image source={CommonIcons.CloseModal} style={styles.CloseModalImage} />
@@ -35,7 +38,11 @@ const LogOutModalRenderView: FC<SettingModalProps> = ({
       <View style={styles.ContentContainer}>
         <View style={styles.TextContainerView}>
           <Text style={styles.TitleText}>{title}</Text>
-          <Text style={styles.DescriptionText}>{description}</Text>
+          {typeof description === 'string' ? (
+            <Text style={styles.DescriptionText}>{description}</Text>
+          ) : (
+            description
+          )}
         </View>
 
         <View style={styles.ButtonContainer}>
@@ -45,7 +52,9 @@ const LogOutModalRenderView: FC<SettingModalProps> = ({
             style={styles.LogoutButtonContainer}>
             <Text style={styles.LogoutButtonText}>{ButtonTitle}</Text>
           </TouchableOpacity>
-          <Text style={styles.NoButtonText}>{ButtonCloseText}</Text>
+          <Text onPress={() => setState(false)} style={styles.NoButtonText}>
+            {ButtonCloseText}
+          </Text>
         </View>
       </View>
     </View>
@@ -66,6 +75,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('screen').width - 50,
   },
   CloseModalContainerView: {
+    zIndex: 9999,
     position: 'absolute',
     right: 20,
     top: 20,
@@ -92,10 +102,10 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Bold,
   },
   DescriptionText: {
-    fontSize: 15,
+    fontSize: 14.5,
     marginVertical: 5,
     textAlign: 'center',
-    color: COLORS.Black,
+    color: 'rgba(108, 108, 108, 1)',
     fontFamily: FONTS.Medium,
   },
   ButtonContainer: {

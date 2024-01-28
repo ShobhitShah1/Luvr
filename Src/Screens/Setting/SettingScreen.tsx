@@ -1,74 +1,117 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useLayoutEffect, useRef, useState} from 'react';
+import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import React, {useLayoutEffect, useState} from 'react';
 import {
   Dimensions,
+  LayoutChangeEvent,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useSelector} from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
-import {ActiveOpacity, COLORS} from '../../Common/Theme';
-import CustomMultiSlider from '../../Components/CustomMultiSlider';
-import SwitchComponent from '../../Components/SwitchComponent';
-import {ProfileType} from '../../Types/ProfileType';
+import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
+import {SettingType} from '../../Types/ProfileType';
 import EditProfileBoxView from '../Profile/Components/EditProfileComponents/EditProfileBoxView';
 import EditProfileTitleView from '../Profile/Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
 import SettingFlexView from './Components/SettingFlexView';
 import styles from './styles';
-import UserService from '../../Services/AuthService';
-import Modal from 'react-native-modal';
 import LogOutModalRenderView from './Components/LogOutModalRenderView';
-import {
-  BottomSheetBackdrop,
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
-import {BlurView} from '@react-native-community/blur';
+import Modal from 'react-native-modal';
+import SettingCustomModal from './Components/SettingCustomModal';
+import { Rating } from 'react-native-ratings';
 
 const SettingScreen = () => {
-  const LogOutSheetRef = useRef<BottomSheetModal>();
-
-  const [profile, setProfile] = useState<ProfileType>();
-  const [selectedGender, setSelectedGender] = useState<string>('Man');
+  const profile = useSelector(state => state?.user);
+  // const [profile, setProfile] = useState<ProfileType>();
+  const [widthSeekBar, setWidthSeekBar] = useState(0);
+  const UserData = useSelector((state: any) => state?.user);
   const [LogOutModalView, setLogOutModalView] = useState(false);
   const [DeleteAccountModalView, setDeleteAccountModalView] = useState(false);
-  const genders = ['Man', 'Woman', 'Everyone'];
+  const [RateUsModalView, setRateUsModalView] = useState(false);
+  const [UserSetting, setUserSetting] = useState<SettingType>({
+    is_direction_on: true,
+    direction: 50,
+    show_me: 'Everyone',
+    age_to: 10,
+    age_from: 50,
+    active_status: true,
+    latitude: UserData?.latitude,
+    longitude: UserData?.longitude,
+    Location: '',
+  });
 
-  const handleGenderSelection = (gender: string) => {
-    setSelectedGender(gender);
+  // const {showToast} = useCustomToast();
+  // const [SelectedShowMe, setSelectedShowMe] = useState<string>(
+  //   UserSetting?.show_me || 'Female',
+  // );
+
+  const ShowMeArray = ['Male', 'Female', 'Everyone'];
+
+  const handleShowMeSelect = (gender: string) => {
+    // setSelectedShowMe(gender);
+    setUserSetting(prevState => ({
+      ...prevState,
+      show_me: gender,
+    }));
   };
 
   useLayoutEffect(() => {
-    GetProfileData();
+    GetSetting();
   }, []);
 
-  const GetProfileData = async () => {
+  const GetSetting = async () => {
     try {
-      const userDataForApi = {
-        eventName: 'get_profile',
-      };
-
-      const APIResponse = await UserService.UserRegister(userDataForApi);
-      if (APIResponse?.code === 200) {
-        setProfile(APIResponse.data);
-        console.log('GetProfileData Data:', APIResponse.data);
-      } else {
-        setProfile({} as ProfileType);
-      }
+      // const APIResponse = await ProfileService.GetUserSetting();
+      // if (APIResponse?.status) {
+      //   console.log('UserSetting', APIResponse.data);
+      //   setUserSetting(APIResponse.data);
+      //   console.log('GetSetting Data:', APIResponse.data);
+      // } else {
+      //   setUserSetting({} as SettingType);
+      // }
     } catch (error) {
       console.log('Something Went Wrong With Feting API Data');
     } finally {
     }
   };
 
+  const UpdateSetting = async () => {
+    try {
+      // const APIResponse = await ProfileService.UpdateUserSetting(UserSetting);
+      // if (APIResponse?.status) {
+      //   console.log('GetSetting Data:', APIResponse.data);
+      //   showToast('All Set', 'User Setting Updated Successfully', 'success');
+      // } else {
+      //   showToast(
+      //     'Error!',
+      //     APIResponse.message || 'Something went wrong',
+      //     'error',
+      //   );
+      // }
+    } catch (error) {
+      console.log('Something Went Wrong With Feting API Data');
+    } finally {
+    }
+  };
+
+  const getSizeSeekBar = (event: LayoutChangeEvent) => {
+    setWidthSeekBar(event.nativeEvent.layout.width);
+    console.log('size', event.nativeEvent.layout);
+  };
+
   return (
     <View style={styles.container}>
-      <ProfileAndSettingHeader Title={'Settings'} />
+      <ProfileAndSettingHeader
+        Title={'Settings'}
+        onUpdatePress={() => {
+          UpdateSetting();
+        }}
+      />
       <ScrollView bounces={false} style={styles.ContentView}>
         <View style={styles.ListSubView}>
           {/* Phone Number */}
@@ -81,8 +124,9 @@ const SettingScreen = () => {
             />
             <EditProfileBoxView>
               <SettingFlexView
+                isActive={false}
                 style={styles.PhoneNumberFlexStyle}
-                Item={profile?.mobile_no || '+0000000000'}
+                Item={profile?.mobileNo || profile?.mobile_no || '+0000000000'}
                 onPress={() => {}}
               />
             </EditProfileBoxView>
@@ -96,22 +140,58 @@ const SettingScreen = () => {
               Icon={CommonIcons.ProfileTab}
               Title="Maximum Distance"
             />
-            <EditProfileBoxView>
-              <View style={styles.MaximumDistanceView}>
-                <View style={{flexDirection: 'row'}}>
-                  <SwitchComponent isActive={true} size={40} />
-                  <CustomMultiSlider
-                    RightValue={10}
-                    LeftValue={90}
-                    onValueChange={(value: any) => {
-                      console.log(
-                        'Slider Value ==:>',
-                        `${value?.leftValue}-${value?.rightValue}`,
-                      );
+            <EditProfileBoxView onLayout={getSizeSeekBar}>
+              <React.Fragment>
+                <View style={styles.DistanceAndAgeView}>
+                  <Text style={styles.DistanceAndAgeRangeTitleText}>
+                    Distance Preference
+                  </Text>
+                  <Text style={styles.UserAgeText}>
+                    {UserSetting.direction}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    width: '100%',
+                    overflow: 'hidden',
+                  }}>
+                  <MultiSlider
+                    onValuesChange={v => {
+                      console.log('V ---:>', v);
+                      setUserSetting(prevState => ({
+                        ...prevState,
+                        direction: v[0],
+                      }));
                     }}
+                    values={[UserSetting.direction || 0]}
+                    isMarkersSeparated={true}
+                    max={100}
+                    // sliderLength={310}
+                    sliderLength={Dimensions.get('window').width - 85}
+                    customMarkerLeft={() => {
+                      return <View style={styles.CustomMarkerStyle} />;
+                    }}
+                    customMarkerRight={() => {
+                      return <View style={styles.CustomMarkerStyle} />;
+                    }}
+                    containerStyle={styles.SliderContainerStyle}
+                    trackStyle={styles.SliderContainer}
+                    selectedStyle={{backgroundColor: COLORS.Primary}}
                   />
                 </View>
-              </View>
+                <SettingFlexView
+                  isActive={UserSetting.is_direction_on}
+                  style={styles.PhoneNumberFlexStyle}
+                  Item={'Show between this distance'}
+                  onSwitchPress={() => {
+                    setUserSetting(prevState => ({
+                      ...prevState,
+                      is_direction_on: !UserSetting.is_direction_on,
+                    }));
+                  }}
+                  IsSwitch={true}
+                />
+              </React.Fragment>
             </EditProfileBoxView>
           </View>
 
@@ -125,20 +205,20 @@ const SettingScreen = () => {
             />
             {/* <EditProfileBoxView> */}
             <View style={styles.GenderContainer}>
-              {genders.map((gender, index) => (
+              {ShowMeArray.map((gender, index) => (
                 <TouchableOpacity
                   activeOpacity={ActiveOpacity}
                   key={index}
-                  onPress={() => handleGenderSelection(gender)}
+                  onPress={() => handleShowMeSelect(gender)}
                   style={[
                     styles.GenderView,
                     {
                       width: hp('12%'),
-                      borderWidth: selectedGender === gender ? 2 : 0,
                       backgroundColor:
-                        selectedGender === gender
+                        UserSetting?.show_me === gender
                           ? COLORS.Primary
                           : COLORS.White,
+                      borderWidth: UserSetting?.show_me === gender ? 2 : 0,
                     },
                   ]}>
                   <Text
@@ -146,7 +226,7 @@ const SettingScreen = () => {
                       styles.GenderText,
                       {
                         color:
-                          selectedGender === gender
+                          UserSetting?.show_me === gender
                             ? COLORS.White
                             : COLORS.Gray,
                       },
@@ -168,26 +248,45 @@ const SettingScreen = () => {
               Title="Age range"
             />
             <EditProfileBoxView>
-              <View>
-                <Text>Hello Active Status</Text>
-              </View>
-            </EditProfileBoxView>
-          </View>
-
-          {/* Block contacts */}
-          <View style={styles.DetailContainerView}>
-            <EditProfileTitleView
-              style={styles.TitleViewStyle}
-              isIcon={false}
-              Icon={CommonIcons.ProfileTab}
-              Title="Block contacts"
-            />
-            <EditProfileBoxView>
-              <SettingFlexView
-                style={styles.PhoneNumberFlexStyle}
-                Item={'Blocked contacts : 02'}
-                onPress={() => {}}
-              />
+              <React.Fragment>
+                <View style={styles.DistanceAndAgeView}>
+                  <Text style={styles.DistanceAndAgeRangeTitleText}>
+                    Distance Preference
+                  </Text>
+                  <Text style={styles.UserAgeText}>{`${
+                    UserSetting.age_from || 0
+                  } - ${UserSetting.age_to || 0}`}</Text>
+                </View>
+                <View
+                  style={{
+                    width: '100%',
+                    overflow: 'hidden',
+                  }}>
+                  <MultiSlider
+                    onValuesChange={v => {
+                      console.log('V ---:>', v);
+                      setUserSetting(prevState => ({
+                        ...prevState,
+                        age_from: v[0],
+                        age_to: v[1],
+                      }));
+                    }}
+                    values={[UserSetting.age_from, UserSetting.age_to]}
+                    isMarkersSeparated={true}
+                    max={100}
+                    sliderLength={Dimensions.get('window').width - 85}
+                    customMarkerLeft={() => {
+                      return <View style={styles.CustomMarkerStyle} />;
+                    }}
+                    customMarkerRight={() => {
+                      return <View style={styles.CustomMarkerStyle} />;
+                    }}
+                    containerStyle={styles.SliderContainerStyle}
+                    trackStyle={styles.SliderContainer}
+                    selectedStyle={{backgroundColor: COLORS.Primary}}
+                  />
+                </View>
+              </React.Fragment>
             </EditProfileBoxView>
           </View>
 
@@ -201,9 +300,16 @@ const SettingScreen = () => {
             />
             <EditProfileBoxView>
               <SettingFlexView
+                isActive={UserSetting?.active_status}
                 style={styles.PhoneNumberFlexStyle}
                 Item={'Show my status'}
                 onPress={() => {}}
+                onSwitchPress={() => {
+                  setUserSetting(prevState => ({
+                    ...prevState,
+                    active_status: !UserSetting.active_status,
+                  }));
+                }}
                 IsSwitch={true}
               />
             </EditProfileBoxView>
@@ -220,12 +326,14 @@ const SettingScreen = () => {
             <EditProfileBoxView>
               <View>
                 <SettingFlexView
+                  isActive={true}
                   style={styles.NotificationFlexView}
                   Item={'Push Notification'}
                   onPress={() => {}}
                   IsSwitch={true}
                 />
                 <SettingFlexView
+                  isActive={true}
                   style={styles.NotificationFlexView}
                   Item={'Email Notification'}
                   onPress={() => {}}
@@ -246,21 +354,25 @@ const SettingScreen = () => {
             <EditProfileBoxView>
               <View>
                 <SettingFlexView
+                  isActive={false}
                   Item={'Community guidelines'}
                   style={styles.ShareFlexViewStyle}
                   onPress={() => {}}
                 />
                 <SettingFlexView
+                  isActive={false}
                   style={styles.ShareFlexViewStyle}
                   Item={'Safety tips'}
                   onPress={() => {}}
                 />
                 <SettingFlexView
+                  isActive={false}
                   Item={'Privacy policy'}
                   style={styles.ShareFlexViewStyle}
                   onPress={() => {}}
                 />
                 <SettingFlexView
+                  isActive={false}
                   style={styles.ShareFlexViewStyle}
                   Item={'Terms of use'}
                   onPress={() => {}}
@@ -280,14 +392,16 @@ const SettingScreen = () => {
             <EditProfileBoxView>
               <View>
                 <SettingFlexView
+                  isActive={false}
                   Item={'Share app'}
                   style={styles.ShareFlexViewStyle}
                   onPress={() => {}}
                 />
                 <SettingFlexView
+                  isActive={false}
                   style={styles.ShareFlexViewStyle}
                   Item={'Rate app'}
-                  onPress={() => {}}
+                  onPress={() => setRateUsModalView(!RateUsModalView)}
                 />
               </View>
             </EditProfileBoxView>
@@ -324,90 +438,58 @@ const SettingScreen = () => {
         </View>
       </ScrollView>
 
-      <Modal
+      <SettingCustomModal
         isVisible={LogOutModalView}
-        animationIn={'slideInUp'}
-        animationOut={'slideOutDown'}
-        animationInTiming={500}
-        animationOutTiming={500}
-        useNativeDriver
-        useNativeDriverForBackdrop
-        hasBackdrop
-        onBackdropPress={() => {
-          setLogOutModalView(false);
-        }}
-        onBackButtonPress={() => {
-          setLogOutModalView(false);
-        }}
-        // customBackdrop={() => {
-        //    <BlurView blurAmount={2} style={{flex: 1}} />;
-        // }}
-        // statusBarTranslucent
-        // backdropColor="rgba(0,0,0,0.7)"
-        // presentationStyle="overFullScreen"
-        style={{
-          flex: 1,
-          padding: 0,
-          margin: 0,
-          alignItems: 'center',
-          // alignSelf: 'center',
-          justifyContent: 'center',
-        }}>
-        <View style={{position: 'absolute', bottom: 20}}>
-          <LogOutModalRenderView
-            onPress={() => {}}
-            title="Logout"
-            description="Are you sure you want to logout?"
-            ButtonCloseText="Yes, Logout"
-            ButtonTitle="No"
-          />
-        </View>
-      </Modal>
-
-      <Modal
+        setState={setLogOutModalView}
+        title="Logout"
+        description="Are you sure you want to logout?"
+        ButtonCloseText="No"
+        ButtonTitle="Yes, Logout"
+      />
+      <SettingCustomModal
         isVisible={DeleteAccountModalView}
-        animationIn={'slideInUp'}
-        animationOut={'slideOutDown'}
-        animationInTiming={500}
-        animationOutTiming={500}
-        useNativeDriver
-        useNativeDriverForBackdrop
-        hasBackdrop
-        onBackdropPress={() => {
-          setDeleteAccountModalView(false);
-        }}
-        onBackButtonPress={() => {
-          setDeleteAccountModalView(false);
-        }}
-        // customBackdrop={() => {
-        //    <BlurView blurAmount={2} style={{flex: 1}} />;
-        // }}
-        // statusBarTranslucent
-        // backdropColor="rgba(0,0,0,0.7)"
-        // presentationStyle="overFullScreen"
-        style={{
-          flex: 1,
-          padding: 0,
-          margin: 0,
-          alignItems: 'center',
-          // alignSelf: 'center',
-          justifyContent: 'center',
-        }}>
-        <View style={{position: 'absolute', bottom: 20}}>
-          <LogOutModalRenderView
-            onPress={() => {}}
-            title="Delete account"
-            description={
-              'Are you sure you want to delete account? If you delete your account, you will permanently lose your :\n\n' +
-              '- Profile\n' +
-              '- Messages\n' +
-              '- Photos'
-            }
-            ButtonCloseText="close"
-            ButtonTitle="cdcd"
-          />
-        </View>
-      </Modal>
+        setState={setDeleteAccountModalView}
+        title="Delete account"
+        description={
+          'Are you sure you want to delete account? If you delete your account, you will permanently lose your :\n\n' +
+          '- Profile\n' +
+          '- Messages\n' +
+          '- Photos'
+        }
+        ButtonTitle="Delete account"
+        ButtonCloseText="Cancel"
+      />
+      <SettingCustomModal
+        isVisible={RateUsModalView}
+        setState={setRateUsModalView}
+        title="Rate app"
+        // description={
+        //   'If you enjoy this app, would you mind taking a moment to rate it? It Won’t take more than a minute. Thanks for your support!'
+        // }
+        description={
+          <>
+            <Text
+              style={{
+                fontSize: 14.5,
+                marginVertical: 5,
+                textAlign: 'center',
+                color: 'rgba(108, 108, 108, 1)',
+                fontFamily: FONTS.Medium,
+              }}>
+              If you enjoy this app, would you mind taking a moment to rate it?
+              It Won’t take more than a minute. Thanks for your support!
+            </Text>
+            <Rating
+              // showRating={false}
+              onFinishRating={() => {}}
+              // showReadOnlyText
+              style={{paddingVertical: 10, marginHorizontal: 10}}
+            />
+          </>
+        }
+        ButtonTitle="Rate now"
+        ButtonCloseText="Maybe later"
+      />
     </View>
   );
 };

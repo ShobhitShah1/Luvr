@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import {MotiImage, MotiTransitionProp, MotiView} from 'moti';
-import React, {FC, useMemo, useState} from 'react';
+import React, {FC, useEffect, useMemo, useState} from 'react';
 import {Image, Pressable, StyleSheet, View} from 'react-native';
 import {Easing} from 'react-native-reanimated';
 import {COLORS} from '../Common/Theme';
@@ -8,12 +8,15 @@ import CommonIcons from '../Common/CommonIcons';
 
 const _colors = {
   Active: COLORS.Primary,
-  InActive: COLORS.Gray,
+  ActiveBackground: 'rgba(255, 229, 234, 1)',
+  InActive: 'rgba(108, 108, 108, 1)',
+  InActiveBackground: 'rgba(234, 234, 234, 1)',
 };
 
 interface SwitchComponentProps {
   isActive: boolean;
   size: number;
+  onPress: () => any;
 }
 
 const transition: MotiTransitionProp = {
@@ -22,22 +25,26 @@ const transition: MotiTransitionProp = {
   easing: Easing.inOut(Easing.ease),
 };
 
-const SwitchComponent: FC<SwitchComponentProps> = ({isActive, size}) => {
-  const [IsActive, setSetIsActive] = useState(isActive);
+const SwitchComponent: FC<SwitchComponentProps> = ({
+  isActive,
+  size,
+  onPress,
+}) => {
+  // const [IsActive, setSetIsActive] = useState(isActive);
+
+  // useEffect(() => {
+  //   setSetIsActive(isActive);
+  // }, [isActive, setSetIsActive]);
+
   const trackWidth = useMemo(() => {
     return size * 1.5;
   }, [size]);
 
   const trackHeight = useMemo(() => {
-    return size * 0.8;
+    return size * 0.88;
   }, [size]);
 
-  const knobSize = useMemo(() => {
-    return size * 0.6;
-  }, [size]);
-
-  const onPress = () => setSetIsActive(!IsActive);
-  console.log('IsActive:', IsActive);
+  // const onPress = () => setSetIsActive(!isActive);
   return (
     <Pressable
       onPress={onPress}
@@ -46,10 +53,16 @@ const SwitchComponent: FC<SwitchComponentProps> = ({isActive, size}) => {
         <MotiView
           transition={transition}
           from={{
-            backgroundColor: IsActive ? _colors.InActive : _colors.Active,
+            backgroundColor: isActive
+              ? _colors.InActiveBackground
+              : _colors.ActiveBackground,
+            borderColor: isActive ? _colors.InActive : _colors.Active,
           }}
           animate={{
-            backgroundColor: IsActive ? _colors.Active : _colors.InActive,
+            backgroundColor: isActive
+              ? _colors.ActiveBackground
+              : _colors.InActiveBackground,
+            borderColor: isActive ? _colors.Active : _colors.InActive,
           }}
           style={[
             styles.MotiTopViewStyle,
@@ -57,7 +70,8 @@ const SwitchComponent: FC<SwitchComponentProps> = ({isActive, size}) => {
               width: trackWidth,
               height: trackHeight,
               borderRadius: trackHeight / 2,
-              backgroundColor: _colors.Active,
+              borderWidth: 1.5,
+              // backgroundColor: _colors.Active,
               paddingHorizontal: 5,
             },
           ]}
@@ -65,7 +79,7 @@ const SwitchComponent: FC<SwitchComponentProps> = ({isActive, size}) => {
         <MotiView
           transition={transition}
           animate={{
-            translateX: IsActive ? trackWidth / 4 : -trackWidth / 4,
+            translateX: isActive ? trackWidth / 4 : -trackWidth / 4,
           }}
           style={{
             width: size / 1.7,
@@ -73,7 +87,7 @@ const SwitchComponent: FC<SwitchComponentProps> = ({isActive, size}) => {
             borderRadius: size / 2,
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: COLORS.White,
+            backgroundColor: isActive ? _colors.Active : _colors.InActive,
           }}>
           <MotiImage
             transition={transition}
@@ -84,9 +98,9 @@ const SwitchComponent: FC<SwitchComponentProps> = ({isActive, size}) => {
               opacity: 1,
             }}
             resizeMode="contain"
-            style={{width: 13, height: 13}}
-            source={IsActive ? CommonIcons.Check : CommonIcons.Cancel}
-            tintColor={IsActive ? _colors.Active : _colors.InActive}
+            style={{width: 11.5, height: 11.5}}
+            source={isActive ? CommonIcons.Check : CommonIcons.Cancel}
+            tintColor={COLORS.White}
           />
         </MotiView>
       </View>

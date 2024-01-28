@@ -48,3 +48,15 @@ export type ProfileType = {
   recent_pik: string[];
   user_from: string;
 };
+
+export type SettingType = {
+  is_direction_on: boolean;
+  direction: number;
+  show_me: string;
+  age_to: number;
+  age_from: number;
+  active_status: boolean;
+  latitude: string;
+  longitude: string;
+  Location: string;
+};

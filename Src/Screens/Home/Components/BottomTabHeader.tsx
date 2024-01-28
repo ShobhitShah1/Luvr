@@ -38,13 +38,18 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
         {/* {hideSettingAndNotification === false && showSetting === true && ( */}
         <View style={styles.IconsView}>
           {hideSettingAndNotification === false && (
-            <View style={styles.IconWrapper}>
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              onPress={() => {
+                navigation.navigate('Notification');
+              }}
+              style={styles.IconWrapper}>
               <Image
                 style={styles.Icons}
                 resizeMode="contain"
                 source={CommonIcons.Notification}
               />
-            </View>
+            </TouchableOpacity>
           )}
           {(hideSettingAndNotification === false || showSetting === true) && (
             <TouchableOpacity

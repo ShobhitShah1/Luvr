@@ -15,9 +15,10 @@ import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
 
 interface HeaderProps {
   Title: string;
+  onUpdatePress?: () => void;
 }
 
-const ProfileAndSettingHeader: FC<HeaderProps> = ({Title}) => {
+const ProfileAndSettingHeader: FC<HeaderProps> = ({Title, onUpdatePress}) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
@@ -38,7 +39,20 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({Title}) => {
         <View style={styles.TitleView}>
           <Text style={styles.Title}>{Title}</Text>
         </View>
-        <View style={styles.AddIconAndOption} />
+        <TouchableOpacity
+          onPress={onUpdatePress}
+          disabled={Title === 'Notification' ? false : true}
+          activeOpacity={ActiveOpacity}
+          style={styles.AddIconAndOption}>
+          {Title === 'Notification' && (
+            <View style={styles.SettingView}>
+              <Image
+                source={CommonIcons.delete_chat}
+                style={styles.DeleteChatIcon}
+              />
+            </View>
+          )}
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -69,15 +83,16 @@ const styles = StyleSheet.create({
   },
   ViewStyle: {
     width: '10%',
+    // backgroundColor: 'yellow',
     justifyContent: 'center',
-    // alignItems: 'center',
   },
   BackIcon: {
     width: 25,
     height: 25,
   },
   TitleView: {
-    width: '80%',
+    width: '75%',
+    // backgroundColor: 'red',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -89,6 +104,7 @@ const styles = StyleSheet.create({
   },
   AddIconAndOption: {
     width: '10%',
+    // backgroundColor: 'yellow',
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
@@ -101,5 +117,21 @@ const styles = StyleSheet.create({
   MoreOptionIcon: {
     width: hp('2.6%'),
     height: hp('2.6%'),
+  },
+  SettingView: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  SettingText: {
+    ...GROUP_FONT.h4,
+    color: COLORS.Primary,
+    textAlign: 'center',
+  },
+  DeleteChatIcon: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    justifyContent: 'center',
   },
 });
