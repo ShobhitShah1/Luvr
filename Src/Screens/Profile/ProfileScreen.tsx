@@ -58,13 +58,13 @@ const ProfileScreen = () => {
 
   //* User Like API
   const GetProfileData = async () => {
-    setIsAPILoading(false);
+    setIsAPILoading(true);
     setErrorFetchingData(false);
 
     // Set a timeout for 2 seconds
-    const timeoutId = setTimeout(() => {
-      setIsAPILoading(true);
-    }, 1000);
+    // const timeoutId = setTimeout(() => {
+    //   setIsAPILoading(true);
+    // }, 500);
 
     try {
       const userDataForApi = {
@@ -74,7 +74,7 @@ const ProfileScreen = () => {
       const APIResponse = await UserService.UserRegister(userDataForApi);
 
       // Clear the timeout as we got the response
-      clearTimeout(timeoutId);
+      // clearTimeout(timeoutId);
 
       if (APIResponse?.code === 200) {
         setProfileData(APIResponse.data);
@@ -94,7 +94,7 @@ const ProfileScreen = () => {
       console.log('Something Went Wrong With Feting API Data');
     } finally {
       // Clear the timeout in case the response is received within 2 seconds
-      clearTimeout(timeoutId);
+      // clearTimeout(timeoutId);
 
       setIsAPILoading(false);
       setRefreshing(false);
@@ -137,7 +137,7 @@ const ProfileScreen = () => {
                     colorMode="light"
                     colors={COLORS.LoaderGradient}>
                     {ProfileData?.recent_pik &&
-                    ProfileData?.recent_pik.length !== 0 ? (
+                    ProfileData?.recent_pik?.length !== 0 ? (
                       <FastImage
                         onLoadStart={() => setIsImageLoading(true)}
                         onLoad={() => setIsImageLoading(false)}
@@ -189,11 +189,12 @@ const ProfileScreen = () => {
                 colorMode="light"
                 colors={COLORS.LoaderGradient}>
                 <View style={styles.NameAndBadgeView}>
-                  <Text style={styles.UserNameText}>{`${
-                    IsAPILoading
-                      ? ''
-                      : ProfileData?.full_name || userData?.full_name
-                  }${IsAPILoading ? '' : `,${Age}` || 0}`}</Text>
+                  <Text style={styles.UserNameText}>
+                    {!IsAPILoading &&
+                      (ProfileData?.full_name || userData?.full_name) &&
+                      (ProfileData?.full_name || userData?.full_name) +
+                        (Age ? `, ${Age}` : '')}
+                  </Text>
                   {!IsAPILoading && (
                     <Image
                       source={CommonIcons.Verification_Icon}
@@ -210,7 +211,7 @@ const ProfileScreen = () => {
                 width={250}
                 colors={COLORS.LoaderGradient}>
                 <Text style={styles.UserCityText}>
-                  {IsAPILoading ? '' : ProfileData?.city || 'Not Specified?'}
+                  {IsAPILoading ? '' : ProfileData?.city || 'Not Specified'}
                 </Text>
               </Skeleton>
             </View>

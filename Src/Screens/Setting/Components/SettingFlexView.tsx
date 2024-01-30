@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   ItemTextStyle: {
     ...GROUP_FONT.body3,
     color: COLORS.Black,
-    fontSize: 13.2,
+    fontSize: 14.5,
     fontFamily: FONTS.Medium,
   },
 });

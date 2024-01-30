@@ -1,12 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react/no-unstable-nested-components */
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {FlatList, Text, TouchableOpacity, View} from 'react-native';
-import BottomTabHeader from '../Home/Components/BottomTabHeader';
-import styles from './styles';
 import {ActiveOpacity, COLORS} from '../../Common/Theme';
+import {FakeUserCard} from '../../Components/Data';
+import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import LikesContent from './Components/LikesContent';
 import TopPicksContent from './Components/TopPicksContent';
+import styles from './styles';
 
 type TabData = {title: string; index?: number};
 
@@ -60,7 +60,7 @@ const MyLikesScreen = () => {
       case 0:
         return <LikesContent LikesData={[]} />;
       case 1:
-        return <TopPicksContent TopPickData={[]} />;
+        return <TopPicksContent TopPickData={FakeUserCard} />;
       default:
         return null;
     }

@@ -30,31 +30,33 @@ interface ChatRoomProps {
 }
 
 const RenderChatRoomList = ({item, index}: ChatRoomProps) => {
-  const currentLoginUserId = store.getState().user?.userData?._id;
   const navigation = useNavigation();
+  console.log('RenderChatRoomList:--:>', item);
 
-  // console.log('item', item);
+  // Ensure item is not null and has the expected structure
+  if (!item || !item.chat || !Array.isArray(item.chat)) {
+    return null; // Render nothing if the data is invalid
+  }
 
-  const filteredData = item?.chat
-    // .filter(data => data.id === currentLoginUserId)
-    ?.sort((a, b) => b.time - a.time);
+  // Sort chat messages by time to get the latest message first
+  const sortedChat = item.chat.slice().sort((a, b) => b.time - a.time);
+  const latestMessage = sortedChat[0];
 
-  const latestMessage = filteredData[0];
-  // const latestMessage = item.chat.sort((a, b) => b.time - a.time)[0];
-
-  const formattedTime = new Date(latestMessage?.time).toLocaleTimeString([], {
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true,
-  });
+  // Format the time of the latest message
+  const formattedTime =
+    latestMessage &&
+    new Date(latestMessage.time).toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    });
 
   return (
     <TouchableOpacity
       key={index}
       activeOpacity={ActiveOpacity}
       onPress={() => {
-        navigation.navigate('Chat', {id: item?.to});
-        // navigation.navigate('Chat', {id: latestMessage?.id});
+        navigation.navigate('Chat', {id: item.to});
       }}
       style={styles.chatRoomContainerView}>
       <View style={styles.profilePicView}>

@@ -18,27 +18,39 @@ import {ActiveOpacity, COLORS, FONTS} from '../../../../Common/Theme';
 import ApiConfig from '../../../../Config/ApiConfig';
 import useCalculateAge from '../../../../Hooks/useCalculateAge';
 import {SwiperCard} from '../../../../Types/SwiperCard';
+import {ProfileType} from '../../../../Types/ProfileType';
 
 interface RenderlookingViewProps {
-  item: SwiperCard;
+  item: ProfileType;
   index: number;
+  isRecentlyActive?: boolean;
 }
 
-const CategoryRenderCard: FC<RenderlookingViewProps> = ({item, index}) => {
+const CategoryRenderCard: FC<RenderlookingViewProps> = ({
+  item,
+  index,
+  isRecentlyActive,
+}) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{ExploreCardDetail: {}}>>();
   const marginHorizontal = index === 1 || index === 3 ? '4%' : 0;
   const [IsImageLoading, setIsImageLoading] = useState(false);
+
   const OnPressCard = () => {
     navigation.navigate('ExploreCardDetail', {props: item});
   };
-
+  // console.log('item', item);
+  // const ImagePath =
+  //   item?.recent_pik && item?.recent_pik?.length !== 0
+  //     ? {uri: item?.recent_pik[0]}
+  //     : CommonImages.WelcomeBackground;
   const ImagePath =
-    item.recent_pik.length !== 0
-      ? {uri: ApiConfig.IMAGE_BASE_URL + item.recent_pik[0]}
+    item?.recent_pik && item?.recent_pik?.length !== 0
+      ? {uri: ApiConfig.IMAGE_BASE_URL + item?.recent_pik[0]}
       : CommonImages.WelcomeBackground;
+
   const Age = useCalculateAge(item.birthdate);
-  console.log('ImagePath', ImagePath);
+
   return (
     <TouchableOpacity
       activeOpacity={1}
@@ -66,18 +78,27 @@ const CategoryRenderCard: FC<RenderlookingViewProps> = ({item, index}) => {
           <View style={styles.DetailContainerView}>
             <View style={styles.UserInfoView}>
               <Text numberOfLines={2} style={styles.TitleText}>
-                {item.full_name || 'User'}, {Age || 0}
+                {item?.full_name || 'User'}, {Age || 0}
               </Text>
-              {item?.city && (
+              {isRecentlyActive ? (
                 <View style={styles.LocationView}>
-                  <Image
-                    style={styles.LocationIcon}
-                    source={CommonIcons.Location}
-                  />
+                  <View style={styles.IsActiveIndicator} />
                   <Text numberOfLines={1} style={styles.LocationText}>
-                    {item?.city || 'Location'}
+                    Recently active
                   </Text>
                 </View>
+              ) : (
+                item?.city && (
+                  <View style={styles.LocationView}>
+                    <Image
+                      style={styles.LocationIcon}
+                      source={CommonIcons.Location}
+                    />
+                    <Text numberOfLines={1} style={styles.LocationText}>
+                      {item?.city || 'Location'}
+                    </Text>
+                  </View>
+                )
               )}
             </View>
 
@@ -139,6 +160,7 @@ const styles = StyleSheet.create({
   LocationView: {
     width: '85%',
     overflow: 'hidden',
+    // alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: hp('2%'),
@@ -150,7 +172,7 @@ const styles = StyleSheet.create({
   LocationText: {
     width: '80%',
     marginLeft: hp('0.5%'),
-    fontFamily: FONTS.Bold,
+    fontFamily: FONTS.Medium,
     fontSize: hp('1.5%'),
     color: COLORS.White,
   },
@@ -177,5 +199,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
+  },
+  IsActiveIndicator: {
+    width: 14,
+    height: 14,
+    borderWidth: 1.5,
+    borderRadius: 500,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    borderColor: COLORS.White,
+    backgroundColor: 'rgba(0, 255, 71, 1)',
   },
 });

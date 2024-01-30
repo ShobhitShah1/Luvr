@@ -179,9 +179,11 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
             </View>
 
             <View style={styles.MultipleBoxFlexView}>
-              {cardData.likes_into.length !== 0 &&
-                cardData.likes_into[0] !== '' &&
-                cardData.likes_into?.map((interestedInItem, index) => {
+              {cardData?.likes_into &&
+                cardData?.likes_into !== null &&
+                cardData?.likes_into?.length !== 0 &&
+                cardData?.likes_into[0] !== '' &&
+                cardData?.likes_into?.map((interestedInItem, index) => {
                   return (
                     <View key={index} style={styles.MultipleBoxView}>
                       <Text style={styles.MultipleDetailText}>

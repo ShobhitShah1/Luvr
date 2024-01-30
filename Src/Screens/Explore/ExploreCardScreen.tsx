@@ -152,8 +152,8 @@ const ExploreCardScreen: FC = () => {
         console.log(LeftSwipedUserIds);
         const userDataForApi = {
           limit: CardLimit,
-          unlike: LeftSwipedUserIds,
-          like: [], //RightSwipedUserIds
+          unlike: [],
+          like: [],
           skip: cardSkipValue || cardToSkipNumber,
           radius: userData.radius,
           eventName: 'list_neighbour',
@@ -165,10 +165,9 @@ const ExploreCardScreen: FC = () => {
 
         if (APIResponse?.code === 200 && Array.isArray(APIResponse.data)) {
           const newCards = APIResponse.data;
-          console.log('newCards', newCards?.length);
+          console.log('Total Swiper Cards: --:>', newCards?.length);
           if (newCards.length !== 0) {
             setCards(newCards);
-            // setCards(prevCards => [...prevCards, ...newCards]);
             swipeRef.current?.forceUpdate();
             startInterval();
           } else {
@@ -180,17 +179,6 @@ const ExploreCardScreen: FC = () => {
             );
             stopInterval();
           }
-          // else if (
-          //   (cardToSkipNumber === 0 || cardSkipValue === 0) &&
-          //   newCards.length === 0
-          // ) {
-          // setCards([]);
-          // showToast(
-          //   'No more cards',
-          //   'You have reached the end of available cards',
-          //   'info',
-          // );
-          // }
         } else {
           showToast(
             'Something went wrong',
@@ -209,20 +197,17 @@ const ExploreCardScreen: FC = () => {
 
   //* On Swipe Right Do Something
   const OnSwipeRight = (cardIndex: number) => {
-    console.log('Right Card Index:', cardIndex, cards[cardIndex]?._id);
-    if (cards && cards[cardIndex]?._id) {
-      LikeUserAPI(cards[cardIndex]?._id);
-      store.dispatch(onSwipeRight(cards[cardIndex]?._id));
+    if (cards && cards[CurrentCardIndex]?._id) {
+      LikeUserAPI(String(cards[CurrentCardIndex]?._id));
+      store.dispatch(onSwipeRight(String(cards[CurrentCardIndex]?._id)));
     }
   };
 
   //* On Swipe Left Do Something
   const OnSwipeLeft = (cardIndex: any) => {
     if (cards[cardIndex] && cards[cardIndex]?._id) {
-      console.log('cards[cardIndex]?._id', cards[cardIndex]?._id);
-      store.dispatch(onSwipeLeft(cards[cardIndex]?._id));
+      store.dispatch(onSwipeLeft(String(cards[cardIndex]?._id)));
     }
-    console.log('left Card Index:', cards[cardIndex]?._id);
   };
 
   //* Card Swiped
@@ -261,14 +246,14 @@ const ExploreCardScreen: FC = () => {
 
   //* This Will Just Swipe Left
   const SwipeLeft = () => {
-    // swipeRef.current?.swipeLeft();
-    setItsMatchModalView(true);
+    swipeRef.current?.swipeLeft();
+    // setItsMatchModalView(true);
   };
 
   //* This Will Just Swipe Right
   const SwipeRight = () => {
-    // swipeRef.current?.swipeRight();
-    setItsMatchModalView(true);
+    swipeRef.current?.swipeRight();
+    // setItsMatchModalView(true);
   };
 
   //* User Like API
@@ -281,11 +266,11 @@ const ExploreCardScreen: FC = () => {
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
-        console.log('LikeUserAPI APIResponse ---:>', APIResponse);
         console.log('LikeUserAPI APIResponse Data ---:>', APIResponse.data);
-        navigation.navigate('Chat', {id: APIResponse?.data?.like_to});
-        // if (APIResponse.data?.status === 'match') {
-        // }
+        if (APIResponse.data?.status === 'match') {
+          setItsMatchModalView(true);
+        }
+        // setItsMatchModalView(true);
         swipeRef.current?.forceUpdate();
         showToast(
           'Swipe Right Success',
@@ -489,8 +474,14 @@ const ExploreCardScreen: FC = () => {
           // justifyContent: 'center',
         }}>
         <ItsAMatch
-          user={cards && cards[CurrentCardIndex]}
-          onSayHiClick={() => {}}
+          user={cards && cards[CurrentCardIndex - 1]}
+          onSayHiClick={() => {
+            setItsMatchModalView(false);
+            navigation.navigate('Chat', {
+              id: cards[CurrentCardIndex - 1]?._id,
+            });
+          }}
+          onCloseModalClick={() => setItsMatchModalView(false)}
           setItsMatch={setItsMatchModalView}
         />
       </Modal>

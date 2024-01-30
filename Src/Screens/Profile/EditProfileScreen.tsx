@@ -12,15 +12,18 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Dimensions,
   FlatList,
+  Image,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import * as ImagePicker from 'react-native-image-picker';
 import CommonIcons from '../../Common/CommonIcons';
-import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
+import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import CustomTextInput from '../../Components/CustomTextInput';
 import {TotalProfilePicCanUploadEditProfile} from '../../Config/Setting';
 import {useCameraPermission} from '../../Hooks/useCameraPermission';
@@ -66,9 +69,9 @@ const EditProfileScreen = () => {
 
   const UserData = useSelector((state: any) => state?.user);
 
-  const Day = profile?.birthdate.split('/')[0];
-  const Month = profile?.birthdate.split('/')[1];
-  const Year = profile?.birthdate.split('/')[2];
+  const Day = profile?.birthdate?.split('/')[0];
+  const Month = profile?.birthdate?.split('/')[1];
+  const Year = profile?.birthdate?.split('/')[2];
   const [BirthdateDay, setBirthdateDay] = useState(Day);
   const [BirthdateMonth, setBirthdateMonth] = useState(Month);
   const [BirthdateYear, setBirthdateYear] = useState(Year);
@@ -104,10 +107,6 @@ const EditProfileScreen = () => {
 
     CheckConnection();
   }, []);
-
-  useEffect(() => {
-    console.log('UPDATE HERE:', profile);
-  }, [profile]);
 
   const {locationPermission, requestLocationPermission} =
     useLocationPermission();
@@ -315,76 +314,89 @@ const EditProfileScreen = () => {
       console.error('Error handling user selection:', error);
     }
   };
+  // console.log('profile', profile);
 
   //* Update Profile API Call (API CALL)
-  // const onUpdateProfile = async () => {
-  //   try {
-  //     if (!IsInternetConnected) {
-  //       showToast(
-  //         'Network Issue',
-  //         'Please check your internet connection and try again',
-  //         'error',
-  //       );
-  //       return;
-  //     }
+  const onUpdateProfile = async () => {
+    try {
+      if (!IsInternetConnected) {
+        showToast(
+          'Network Issue',
+          'Please check your internet connection and try again',
+          'error',
+        );
+        return;
+      }
 
-  //     console.log(BirthdateDay, BirthdateMonth, BirthdateYear);
+      console.log(BirthdateDay, BirthdateMonth, BirthdateYear);
 
-  //     // const data = {
-  //     //   birthdate:
-  //     //     `${BirthdateDay || '00'}/${BirthdateMonth || '00'}/${
-  //     //       BirthdateYear || '0000'
-  //     //     }` || profile?.birthdate,
-  //     //   bio: Bio || '',
-  //     //   city: profile?.city || '',
-  //     //   college_name: CollegeName || '',
-  //     //   education_degree: EducationDegree || '',
-  //     //   fullName: profile?.fullName || '',
-  //     //   gender: profile?.gender || '',
-  //     //   habits_drink: profile?.habits_drink || '',
-  //     //   habits_exercise: profile?.habits_exercise || '',
-  //     //   habits_smoke: profile?.habits_smoke || '',
-  //     //   habits_movies: profile?.habits_movies || '',
-  //     //   hoping: profile?.hoping || '',
-  //     //   identity: profile?.identity || '',
-  //     //   is_orientation_visible: profile?.is_orientation_visible || false,
-  //     //   likes_into: profile?.likes_into || [],
-  //     //   latitude: UserData?.latitude || profile?.latitude || '',
-  //     //   longitude: UserData?.longitude || profile?.longitude || '',
-  //     //   magical_person_communication_str:
-  //     //     profile?.magical_person_communication_str || '',
-  //     //   magical_person_education_level:
-  //     //     profile?.magical_person_education_level || '',
-  //     //   magical_person_received_love:
-  //     //     profile?.magical_person_received_love || '',
-  //     //   magical_person_star_sign: profile?.magical_person_star_sign || '',
-  //     //   mobile_number: profile?.mobile_number || '',
-  //     //   orientation: profile?.orientation || [],
-  //     //   radius: profile?.radius || 0,
-  //     // };
+      // Mapping dynamic data to the new format
+      const DataToSend = {
+        eventName: 'app_user_register',
+        login_type: 'non_social',
+        user_from: 'app',
+        mobile_no: profile?.mobile_no || '', // Taken from the response
+        identity: profile?.identity || '', // Taken from the response
+        profile_image: '', // You haven't provided this data, so keeping it empty
+        full_name: profile?.full_name || '', // Taken from the response
+        birthdate:
+          `${BirthdateDay || '00'}/${BirthdateMonth || '00'}/${
+            BirthdateYear || '0000'
+          }` || profile?.birthdate,
+        bio: Bio || '',
+        gender: profile?.gender || '', // Taken from the response
+        city: profile?.city || '', // Taken from the response
+        orientation: profile?.orientation || [], // Taken from the response
+        is_orientation_visible: profile?.is_orientation_visible || false, // Taken from the response
+        hoping: profile?.hoping || '', // Taken from the response
+        education: {
+          digree: profile?.education?.digree || '', // Taken from the response
+          college_name: profile?.education?.college_name || '', // Taken from the response
+        },
+        habits: {
+          exercise: profile?.habits?.exercise || '', // Taken from the response
+          smoke: profile?.habits?.smoke || '', // Taken from the response
+          movies: profile?.habits?.movies || '', // Taken from the response
+          drink: profile?.habits?.drink || '', // Taken from the response
+        },
+        magical_person: {
+          communication_stry: profile?.magical_person?.star_sign || '', // Taken from the response
+          recived_love: profile?.magical_person?.recived_love || '', // Taken from the response
+          education_level: profile?.magical_person?.education_level || '', // Taken from the response
+          star_sign: profile?.magical_person?.star_sign || '', // Taken from the response
+        },
+        likes_into: profile?.likes_into || [], // Taken from the response
+        is_block_contact: profile?.is_block_contact, // This is not present in the response, consider how you want to handle this
+        latitude: profile?.latitude || '', // Taken from the response
+        longitude: profile?.longitude || '', // Taken from the response
+        radius: profile?.radius || 0, // Taken from the response
+        recent_pik: profile?.recent_pik, // You haven't provided this data, so keeping it empty
+      };
 
-  //     // const APIResponse = await UserService.UserRegister(data);
-  //     // console.log('Update Profile Response :--:>', APIResponse);
+      console.log('DataToSend', DataToSend);
 
-  //     // if (APIResponse.status) {
-  //     //   setProfile(APIResponse.data);
-  //     //   showToast(
-  //     //     'Profile Updated',
-  //     //     'Your profile information has been successfully updated.',
-  //     //     'success',
-  //     //   );
-  //     // } else {
-  //     //   showToast(
-  //     //     'Error Updating Profile',
-  //     //     'Oops! Something went wrong while trying to update your profile?. Please try again later or contact support if the issue persists',
-  //     //     'error',
-  //     //   );
-  //     //   console.log('Something went wrong');
-  //     // }
-  //   } catch (error) {
-  //     console.log('Something went wrong edit profile :--:>', error);
-  //   }
-  // };
+      // const APIResponse = await UserService.UserRegister(data);
+      // console.log('Update Profile Response :--:>', APIResponse);
+
+      // if (APIResponse.status) {
+      //   setProfile(APIResponse.data);
+      //   showToast(
+      //     'Profile Updated',
+      //     'Your profile information has been successfully updated.',
+      //     'success',
+      //   );
+      // } else {
+      //   showToast(
+      //     'Error Updating Profile',
+      //     'Oops! Something went wrong while trying to update your profile?. Please try again later or contact support if the issue persists',
+      //     'error',
+      //   );
+      //   console.log('Something went wrong');
+      // }
+    } catch (error) {
+      console.log('Something went wrong edit profile :--:>', error);
+    }
+  };
 
   //* Upload Single Image
   // const UploadImage = async (item: any) => {
@@ -457,7 +469,7 @@ const EditProfileScreen = () => {
                   keyboardType={'number-pad'}
                   value={BirthdateDay}
                   cursorColor={COLORS.Primary}
-                  defaultValue={profile?.birthdate.split('/')[0]}
+                  defaultValue={profile?.birthdate?.split('/')[0]}
                   onChangeText={value => {
                     console.log('DayInput', value);
                     setBirthdateDay(value);
@@ -474,7 +486,7 @@ const EditProfileScreen = () => {
                   editable={true}
                   keyboardType={'number-pad'}
                   cursorColor={COLORS.Primary}
-                  defaultValue={profile?.birthdate.split('/')[1]}
+                  defaultValue={profile?.birthdate?.split('/')[1]}
                   onChangeText={value => {
                     setBirthdateMonth(value);
                     console.log('MonthInput', value);
@@ -490,7 +502,7 @@ const EditProfileScreen = () => {
                   editable={true}
                   value={BirthdateYear}
                   cursorColor={COLORS.Primary}
-                  defaultValue={profile?.birthdate.split('/')[2]}
+                  defaultValue={profile?.birthdate?.split('/')[2]}
                   keyboardType={'number-pad'}
                   onChangeText={value => {
                     console.log('yearInput', value);
@@ -599,7 +611,7 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView>
               <EditProfileCategoriesList
-                EmptyTitleText="Bud what you like?"
+                EmptyTitleText="What you like?"
                 Item={
                   profile?.likes_into
                     ? Array.isArray(profile?.likes_into)
@@ -868,9 +880,32 @@ const EditProfileScreen = () => {
           containerStyle={{
             borderRadius: 0,
           }}>
-          <BottomSheetScrollView style={{}}>
-            <EditProfileSheetView profile={profile} setProfile={setProfile} />
-          </BottomSheetScrollView>
+          <View style={{flex: 1}}>
+            <View style={styles.CloseViewContainer}>
+              <TouchableOpacity
+                style={styles.ModalCloseIconBTN}
+                onPress={() => bottomSheetModalRef?.current?.close()}
+                activeOpacity={ActiveOpacity}>
+                <Image
+                  source={CommonIcons.CloseModal}
+                  style={styles.ModalCloseIcon}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => onUpdateProfile()}
+                style={styles.ModalSubmitButton}
+                activeOpacity={ActiveOpacity}>
+                <Image
+                  source={CommonIcons.Check}
+                  tintColor={COLORS.Primary}
+                  style={styles.ModalSubmitIcon}
+                />
+              </TouchableOpacity>
+            </View>
+            <BottomSheetScrollView>
+              <EditProfileSheetView profile={profile} setProfile={setProfile} />
+            </BottomSheetScrollView>
+          </View>
         </BottomSheetModal>
       </BottomSheetModalProvider>
     </View>
@@ -959,5 +994,31 @@ const styles = StyleSheet.create({
   },
   BottomSheetContainerView: {
     marginVertical: 10,
+  },
+  CloseViewContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+  },
+  ModalCloseIconBTN: {
+    flex: 1,
+  },
+  ModalCloseIcon: {
+    width: 29,
+    height: 29,
+  },
+  ModalSubmitButton: {
+    width: 29,
+    height: 29,
+    borderRadius: 500,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.White,
+  },
+  ModalSubmitIcon: {
+    width: 15,
+    height: 15,
+    alignSelf: 'center',
   },
 });

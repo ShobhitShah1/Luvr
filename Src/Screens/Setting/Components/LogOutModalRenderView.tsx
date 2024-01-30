@@ -82,8 +82,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   CloseModalImage: {
-    width: 23,
-    height: 23,
+    width: 26,
+    height: 26,
   },
   ContentContainer: {
     width: '90%',

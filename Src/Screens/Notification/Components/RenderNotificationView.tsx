@@ -17,7 +17,7 @@ const RenderNotificationView: FC<NotificationData> = ({
   description,
   time,
 }) => {
-    console.log('image', image);
+  console.log('image', image);
   return (
     <View style={styles.Container}>
       <View>

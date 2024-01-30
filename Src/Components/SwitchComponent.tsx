@@ -79,12 +79,14 @@ const SwitchComponent: FC<SwitchComponentProps> = ({
         <MotiView
           transition={transition}
           animate={{
-            translateX: isActive ? trackWidth / 4 : -trackWidth / 4,
+            translateX: isActive ? trackWidth / 5 : -trackWidth / 5,
           }}
           style={{
-            width: size / 1.7,
-            height: size / 1.7,
+            width: size / 1.5,
+            height: size / 1.5,
             borderRadius: size / 2,
+            // left: 5,
+            // right: -10,
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: isActive ? _colors.Active : _colors.InActive,

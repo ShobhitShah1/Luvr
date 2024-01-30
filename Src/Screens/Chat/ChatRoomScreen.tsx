@@ -1,24 +1,23 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
+import {useIsFocused} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Image,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import {Socket, io} from 'socket.io-client';
 import CommonImages from '../../Common/CommonImages';
 import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import {chatRoomData} from '../../Components/Data';
-import BottomTabHeader from '../Home/Components/BottomTabHeader';
-import RenderChatRoomList from './Components/RenderChatRoomList';
-import {Socket, io} from 'socket.io-client';
 import ApiConfig from '../../Config/ApiConfig';
 import {store} from '../../Redux/Store/store';
-import {useIsFocused} from '@react-navigation/native';
+import BottomTabHeader from '../Home/Components/BottomTabHeader';
+import RenderChatRoomList from './Components/RenderChatRoomList';
 
 interface ChatMessage {
   senderId: string;
@@ -40,7 +39,7 @@ interface ListResponseData {
 
 interface SocketEventHandlers {
   List: (data: ListResponseData | null) => void;
-  message: (data: any) => void; // Replace 'any' with a specific type for messages
+  message: (data: any) => void;
 }
 
 const JOIN_EVENT = 'Join';
@@ -51,7 +50,7 @@ const CHAT_EVENT = 'chat';
 const ChatRoomScreen = () => {
   const [socket, setSocket] = useState<Socket | undefined>();
   const [messages, setMessages] = useState<MessageItem[]>([]);
-  const [isSocketLoading, setIsSocketLoading] = useState(false);
+  const [isSocketLoading, setIsSocketLoading] = useState(true);
 
   const currentLoginUserId = store.getState().user?.userData?._id;
   const isFocused = useIsFocused();
@@ -61,9 +60,9 @@ const ChatRoomScreen = () => {
       const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
       setSocket(socketInstance);
 
-      // return () => {
-      //   socketInstance.disconnect();
-      // };
+      return () => {
+        socketInstance.disconnect();
+      };
     }
   }, [isFocused]);
 
@@ -79,7 +78,6 @@ const ChatRoomScreen = () => {
 
       // Event: List - Response
       const handleListResponse: SocketEventHandlers['List'] = data => {
-        // console.log('data', data);
         try {
           if (data?.data) {
             const filteredData = data.data.filter(
@@ -114,8 +112,6 @@ const ChatRoomScreen = () => {
 
       const handleRecivedChat = (chat: any) => {
         console.log('HandelRecivedChat: --->', chat, chat.from);
-        // Alert.alert('Got Message', chat.from_name);
-        // handleListResponse;
         setMessages(previousMessages => {
           const combinedData = combineSameIdData([...previousMessages, chat]);
           return combinedData;
@@ -125,28 +121,34 @@ const ChatRoomScreen = () => {
       socket.on(LIST_EVENT, handleListResponse);
       socket.on(MESSAGE_EVENT, handleReceivedMessage);
       socket.on(CHAT_EVENT, handleRecivedChat);
-
+      setIsSocketLoading(true);
       return () => {
         socket.off(LIST_EVENT, handleListResponse);
         socket.off(MESSAGE_EVENT, handleReceivedMessage);
       };
+    } else {
+      setIsSocketLoading(true);
     }
   }, [socket, currentLoginUserId, isFocused]);
 
   const combineSameIdData = (data: MessageItem[]): MessageItem[] => {
+    console.log('combineSameIdData:--:>', data);
     const combinedData: MessageItem[] = [];
     const idMap = new Map<string, MessageItem>();
 
-    data.forEach(item => {
-      const id = item.to;
+    data?.forEach(item => {
+      const id = item?.to;
 
       if (idMap.has(id)) {
-        idMap.get(id)!.chat = idMap.get(id)!.chat.concat(item.chat);
+        // If the item already exists, update its chat data
+        idMap.get(id)!.chat = [...idMap.get(id)!.chat, ...item.chat];
       } else {
+        // If the item doesn't exist, add it to the map
         idMap.set(id, {...item});
       }
     });
 
+    // Convert the map values to an array
     idMap.forEach(value => {
       combinedData.push(value);
     });

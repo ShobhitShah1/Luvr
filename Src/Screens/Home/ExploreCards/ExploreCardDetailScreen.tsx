@@ -20,20 +20,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
-import Paginator from '../../../Components/Paginator';
 import ApiConfig from '../../../Config/ApiConfig';
 import {DummyImage} from '../../../Config/Setting';
-import {CardDetailType} from '../../../Types/CardDetailType';
-import DetailCardHeader from './Components/DetailCardHeader';
+import {onSwipeLeft, onSwipeRight} from '../../../Redux/Action/userActions';
+import {store} from '../../../Redux/Store/store';
 import UserService from '../../../Services/AuthService';
 import {ProfileType} from '../../../Types/ProfileType';
 import {useCustomToast} from '../../../Utils/toastUtils';
-import FastImage from 'react-native-fast-image';
-import {store} from '../../../Redux/Store/store';
-import {onSwipeRight} from '../../../Redux/Action/userActions';
+import DetailCardHeader from './Components/DetailCardHeader';
 
 type DetailCardRouteParams = {
   props: ProfileType;
@@ -94,33 +92,42 @@ const ExploreCardDetailScreen = () => {
   const viewConfig = useRef({viewAreaCoveragePercentThreshold: 50}).current;
 
   const onLikePress = async () => {
-    const userDataForApi = {
-      eventName: 'like',
-      like_to: UserID,
-    };
+    if (UserID) {
+      const userDataForApi = {
+        eventName: 'like',
+        like_to: UserID,
+      };
 
-    const APIResponse = await UserService.UserRegister(userDataForApi);
-    if (APIResponse?.code === 200) {
-      if (APIResponse.data?.status === 'match') {
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      if (APIResponse?.code === 200) {
+        if (APIResponse.data?.status === 'match') {
+        }
+        store.dispatch(onSwipeRight(String(UserID)));
+        showToast(
+          'Swipe Right Success',
+          'You swiped right! Waiting for the other user to match.',
+          'success',
+        );
+        navigation.goBack();
+      } else {
+        showToast(
+          'Something went wrong',
+          APIResponse?.message || 'Please try again letter',
+          'error',
+        );
       }
-      navigation.goBack();
-      store.dispatch(onSwipeRight(UserID));
-      // showToast(
-      //   'Swipe Right Success',
-      //   'You swiped right! Waiting for the other user to match.',
-      //   'success',
-      // );
     } else {
-      showToast(
-        'Something went wrong',
-        APIResponse?.message || 'Please try again letter',
-        'error',
-      );
+      showToast('Error', "Can't find UserID please try again letter", 'error');
     }
   };
+
   const onRejectPress = async () => {
-    store.dispatch(onLikePress(UserID));
-    navigation.goBack();
+    if (UserID) {
+      store.dispatch(onSwipeLeft(String(UserID)));
+      navigation.goBack();
+    } else {
+      showToast('Error', "Can't find UserID please try again letter", 'error');
+    }
   };
 
   if (IsAPILoading) {
@@ -150,7 +157,7 @@ const ExploreCardDetailScreen = () => {
                 <ActivityIndicator size={40} color={COLORS.Primary} />
               </View>
             )}
-            {CardData?.recent_pik.length !== 0 ? (
+            {CardData?.recent_pik?.length !== 0 ? (
               <FlatList
                 horizontal
                 style={{flex: 1}}
@@ -207,7 +214,7 @@ const ExploreCardDetailScreen = () => {
           </View>
 
           {/* About Me */}
-          {/* {CardData?.bio && (
+          {CardData?.bio && (
             <View style={styles.DetailBoxContainerView}>
               <View style={styles.TitleAndIconView}>
                 <Image
@@ -223,7 +230,7 @@ const ExploreCardDetailScreen = () => {
                 {CardData?.bio || 'Write BIO'}
               </Text>
             </View>
-          )} */}
+          )}
 
           {/* Birthday */}
           {CardData?.birthdate && (
@@ -260,7 +267,7 @@ const ExploreCardDetailScreen = () => {
           )}
 
           {/* Interested in */}
-          {/* {CardData?.magical_person.length !== 0 && (
+          {CardData?.orientation?.length !== 0 && (
             <View style={styles.DetailBoxContainerView}>
               <View style={styles.TitleAndIconView}>
                 <Image
@@ -273,19 +280,19 @@ const ExploreCardDetailScreen = () => {
                 </Text>
               </View>
               <View style={styles.MultipleBoxFlexView}>
-                {CardData?.magical_person &&
-                  CardData?.magical_person?.map((interestedInItem, index) => {
+                {CardData?.orientation &&
+                  CardData?.orientation?.map((orientation, index) => {
                     return (
                       <View key={index} style={styles.MultipleBoxView}>
                         <Text style={styles.MultipleDetailText} key={index}>
-                          {`${interestedInItem}` || 'ERROR 404'}
+                          {`${orientation}` || ''}
                         </Text>
                       </View>
                     );
                   })}
               </View>
             </View>
-          )} */}
+          )}
 
           {/* Location */}
           {CardData?.city && (
@@ -319,14 +326,14 @@ const ExploreCardDetailScreen = () => {
                   </Text>
                 </View>
                 <Text style={styles.DetailText}>
-                  {CardData?.education?.college_name || 'Error 404'},{' '}
-                  {CardData?.education?.degree || 'Error 404'}
+                  {CardData?.education?.college_name || ''},{' '}
+                  {CardData?.education?.digree || ''}
                 </Text>
               </View>
             )}
 
           {/* I like */}
-          {CardData?.likes_into && CardData?.likes_into[0] !== '' && (
+          {CardData?.likes_into && CardData?.likes_into?.length !== 0 && (
             <View style={styles.DetailBoxContainerView}>
               <View style={styles.TitleAndIconView}>
                 <Image
@@ -344,7 +351,7 @@ const ExploreCardDetailScreen = () => {
                     return (
                       <View key={index} style={styles.MultipleBoxView}>
                         <Text style={styles.MultipleDetailText} key={index}>
-                          {`${ILikeItem}` || 'ERROR 404'}
+                          {`${ILikeItem}` || ''}
                         </Text>
                       </View>
                     );
@@ -442,7 +449,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 350,
     marginTop: 15,
-    borderRadius: 25,
+    borderRadius: 30,
     overflow: 'hidden',
     marginVertical: 10,
     justifyContent: 'center',

@@ -23,7 +23,7 @@ export type MagicalPersonType = {
 };
 
 export type ProfileType = {
-  _id: string;
+  _id: string | number;
   bio: string;
   birthdate: string;
   city: string;
@@ -47,6 +47,8 @@ export type ProfileType = {
   radius: number;
   recent_pik: string[];
   user_from: string;
+  latitude?: string | number;
+  longitude?: string | number;
 };
 
 export type SettingType = {

@@ -59,7 +59,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
     (item: any) => {
       //* Check if the selected item is already in the array
       const isSelected = profile.hoping === item?.Title;
-      // console.log('isSelected', isSelected, profile.hoping, item?.Title);
       //* If the selected item is already in the array, unselect it
       if (isSelected) {
         setProfile(prevState => ({
@@ -118,7 +117,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
   //* ================= Intrusted In Functions =================
   const onPressIntrusted = useCallback(
     (data: any) => {
-      console.log(data);
       setProfile(prevSelection => {
         const currentIntrustedIn = prevSelection.orientation || [];
 
@@ -379,7 +377,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
-            source={CommonIcons.interested_in_icon}
+            source={CommonIcons.gender_icon}
             style={styles.TitleIcon}
           />
           <Text style={styles.NameText}>I am a</Text>
@@ -432,17 +430,17 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
             ]}>
             <Image
               resizeMode="contain"
-              source={CommonIcons.interested_in_icon}
+              source={CommonIcons.i_like_icon}
               style={styles.TitleIcon}
             />
             <Text style={styles.NameText}>I'm Into</Text>
           </View>
-          <Text style={styles.NameText}>{`${
+          <Text style={styles.NameText}>{`(${
             profile?.likes_into !== undefined &&
             profile?.likes_into?.length !== 0
               ? profile?.likes_into?.length
               : 0
-          }/5`}</Text>
+          }/5)`}</Text>
         </View>
         <View style={styles.BirthdayInputView}>
           <FlatList
@@ -465,7 +463,8 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
-            source={CommonIcons.interested_in_icon}
+            source={CommonIcons.Search}
+            tintColor={COLORS.Black}
             style={styles.TitleIcon}
           />
           <Text style={styles.NameText}>Looking For</Text>
@@ -480,12 +479,47 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         </View>
       </View>
 
+      {/* Interested in */}
+      <View style={styles.TextViewForSpace}>
+        <View style={styles.ImIntoTitleFlexView}>
+          <View
+            style={[
+              styles.TitleFlexView,
+              {
+                marginTop: 0,
+                marginBottom: 0,
+              },
+            ]}>
+            <Image
+              resizeMode="contain"
+              source={CommonIcons.interested_in_icon}
+              style={styles.TitleIcon}
+            />
+            <Text style={styles.NameText}>Interested in</Text>
+          </View>
+          <Text style={styles.NameText}>{`(${
+            profile?.orientation !== undefined &&
+            profile?.orientation?.length !== 0
+              ? profile?.orientation?.length
+              : 0
+          }/3)`}</Text>
+        </View>
+        <View>
+          <FlatList
+            data={GendersData}
+            renderItem={renderIntrustedView}
+            // contentContainerStyle={styles.FlatListContainer}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
+      </View>
+
       {/* Zodiac Sign */}
       <View style={styles.TextViewForSpace}>
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
-            source={CommonIcons.interested_in_icon}
+            source={CommonIcons.zodiac_sign_icon}
             style={styles.TitleIcon}
           />
           <Text style={styles.NameText}>Zodiac Sign</Text>
@@ -514,32 +548,12 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         </View>
       </View>
 
-      {/* Hoping || Looking For */}
-      <View style={styles.TextViewForSpace}>
-        <View style={styles.TitleFlexView}>
-          <Image
-            resizeMode="contain"
-            source={CommonIcons.interested_in_icon}
-            style={styles.TitleIcon}
-          />
-          <Text style={styles.NameText}>Looking For</Text>
-        </View>
-        <View>
-          <FlatList
-            data={GendersData}
-            renderItem={renderIntrustedView}
-            // contentContainerStyle={styles.FlatListContainer}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </View>
-      </View>
-
       {/* Communication Style */}
       <View style={styles.TextViewForSpace}>
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
-            source={CommonIcons.interested_in_icon}
+            source={CommonIcons.communication_style_icon}
             style={styles.TitleIcon}
           />
           <Text style={styles.NameText}>Communication Style</Text>
@@ -573,7 +587,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
-            source={CommonIcons.interested_in_icon}
+            source={CommonIcons.exercise_icon}
             style={styles.TitleIcon}
           />
           <Text style={styles.NameText}>Exercise</Text>
@@ -603,7 +617,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
-            source={CommonIcons.interested_in_icon}
+            source={CommonIcons.smoke_and_drinks_icon}
             style={styles.TitleIcon}
           />
           <Text style={styles.NameText}>Smoke & Drink</Text>
@@ -631,7 +645,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
-            source={CommonIcons.interested_in_icon}
+            source={CommonIcons.movies_icon}
             style={styles.TitleIcon}
           />
           <Text style={styles.NameText}>Movie</Text>
@@ -659,7 +673,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
-            source={CommonIcons.interested_in_icon}
+            source={CommonIcons.drink_icon}
             style={styles.TitleIcon}
           />
           <Text style={styles.NameText}>Drink</Text>
@@ -709,8 +723,8 @@ const styles = StyleSheet.create({
     marginBottom: hp('1.5%'),
   },
   TitleIcon: {
-    width: 15,
-    height: 15,
+    width: 16,
+    height: 16,
     marginHorizontal: 5,
     alignItems: 'center',
     justifyContent: 'center',

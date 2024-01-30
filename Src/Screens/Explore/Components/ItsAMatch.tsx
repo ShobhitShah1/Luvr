@@ -26,9 +26,15 @@ interface ItsAMatchProps {
   user: SwiperCard | undefined;
   onSayHiClick: () => void;
   setItsMatch: React.Dispatch<React.SetStateAction<boolean>>;
+  onCloseModalClick: () => void;
 }
 
-const ItsAMatch: FC<ItsAMatchProps> = ({user, onSayHiClick, setItsMatch}) => {
+const ItsAMatch: FC<ItsAMatchProps> = ({
+  user,
+  onSayHiClick,
+  setItsMatch,
+  onCloseModalClick,
+}) => {
   const userData = useSelector((state: any) => state?.user);
   const [shoot, setShoot] = useState(true);
   const [IsImageLoading, setIsImageLoading] = useState(false);
@@ -109,9 +115,7 @@ const ItsAMatch: FC<ItsAMatchProps> = ({user, onSayHiClick, setItsMatch}) => {
               style={styles.SendMessageButton}>
               <Text style={styles.SendMessageText}>Send a message</Text>
             </TouchableOpacity>
-            <Text
-              onPress={() => setItsMatch(false)}
-              style={styles.KeepSwipingText}>
+            <Text onPress={onCloseModalClick} style={styles.KeepSwipingText}>
               Keep swiping
             </Text>
           </View>

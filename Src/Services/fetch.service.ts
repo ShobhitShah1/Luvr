@@ -132,9 +132,9 @@ async function uploadHandler(
       formData.append(key, params[key]);
     }
 
-    const token = store.getState().user.Token;
+    const token = store.getState()?.user?.Token;
 
-    console.log('TOKEN:', token);
+    // console.log('TOKEN:', token);
     const xhr = new XMLHttpRequest();
     xhr.open('POST', url);
     xhr.setRequestHeader('Authorization', `Basic ${token}`);
@@ -145,10 +145,10 @@ async function uploadHandler(
       }
 
       if (xhr.status === 200) {
-        console.log('success', xhr.responseText);
+        // console.log('success', xhr.responseText);
         return handleResponse(xhr.responseText);
       } else {
-        console.log('error', xhr.responseText);
+        // console.log('error', xhr.responseText);
         return handleError(xhr.responseText);
       }
     };
@@ -196,7 +196,7 @@ async function makeRequest(
 function initToken() {
   const token = store.getState()?.user?.Token || '';
   if (true) {
-    console.log('Init Token DEBUG:', token);
+    // console.log('Init Token DEBUG:', token);
   }
 
   if (token) {
@@ -242,14 +242,9 @@ async function handleError(error: any) {
 }
 
 function handleLogs(url: string, params?: Record<string, any>) {
-  if (true) {
+  if (false) {
     console.log('--------------- handleLogs --------------');
     console.log('URL: ', url);
     console.log('Request: ', params);
   }
 }
-
-// Example Usage
-const data = {
-  /* your data */
-};

@@ -31,6 +31,13 @@ const delete_chat = require('../../Assets/Icons/delete_chat_icon.png');
 const view_profile = require('../../Assets/Icons/view_profile.png');
 const RightArrow = require('../../Assets/Icons/RightArrow.png');
 const NoLikes = require('../../Assets/Icons/no_likes_icon.png');
+const communication_style_icon = require('../../Assets/Icons/communication_style_icon.png');
+const drink_icon = require('../../Assets/Icons/drink_icon.png');
+const exercise_icon = require('../../Assets/Icons/exercise_icon.png');
+const gender_icon = require('../../Assets/Icons/gender_icon.png');
+const movies_icon = require('../../Assets/Icons/movies_icon.png');
+const smoke_and_drinks_icon = require('../../Assets/Icons/smoke_&_drinks_icon.png');
+const zodiac_sign_icon = require('../../Assets/Icons/zodiac_sign_icon.png');
 
 // Home
 const HomeTab = require('../../Assets/Icons/home_icon_select.png');
@@ -77,6 +84,13 @@ export default {
   view_profile,
   RightArrow,
   NoLikes,
+  communication_style_icon,
+  drink_icon,
+  exercise_icon,
+  gender_icon,
+  movies_icon,
+  smoke_and_drinks_icon,
+  zodiac_sign_icon,
 
   //* Home
   HomeTab,

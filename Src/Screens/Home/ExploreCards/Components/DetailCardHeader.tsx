@@ -8,15 +8,16 @@ import {ProfileType} from '../../../../Types/ProfileType';
 import useCalculateAge from '../../../../Hooks/useCalculateAge';
 
 type DetailCardRouteParams = {
-  props: ProfileType;
+  props: ProfileType | undefined;
 };
 
 const DetailCardHeader: FC<DetailCardRouteParams> = ({props}) => {
   const CardDetail =
     useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
-  console.log('props', props);
+
   const item = props || CardDetail.params.props;
-  const Age = useCalculateAge(item?.birthdate);
+
+  const Age = useCalculateAge(item?.birthdate || '00/00/0000');
 
   return (
     <View style={styles.Container}>

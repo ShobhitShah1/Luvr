@@ -97,9 +97,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.White,
   },
   DeleteAndLogoutButtonText: {
-    ...GROUP_FONT.body4,
-    fontFamily: FONTS.Medium,
+    ...GROUP_FONT.h4,
+    fontFamily: FONTS.SemiBold,
     textAlign: 'center',
+    fontSize: 13.5,
     color: COLORS.Black,
   },
   AppVersionView: {
@@ -114,8 +115,8 @@ const styles = StyleSheet.create({
     color: COLORS.Black,
   },
   CustomMarkerStyle: {
-    width: 18,
-    height: 18,
+    width: 22,
+    height: 22,
     borderWidth: 1.5,
     borderRadius: 500,
     borderColor: COLORS.Primary,
