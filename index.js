@@ -11,9 +11,9 @@ import 'react-native-gesture-handler';
 Text.defaultProps = Text.defaultProps || {};
 Text.defaultProps.allowFontScaling = false;
 
-if (!__DEV__) {
-  console.log = () => {};
-}
+// if (!__DEV__) {
+//   console.log = () => {};
+// }
 
 if (__DEV__) {
   const ignoreWarns = [

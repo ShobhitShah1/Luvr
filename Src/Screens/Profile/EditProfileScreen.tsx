@@ -435,6 +435,7 @@ const EditProfileScreen = () => {
   //   // }
   // };
 
+  console.log(profile?.likes_into);
   return (
     <View style={styles.Container}>
       <ProfileAndSettingHeader Title={'Edit Profile'} />
@@ -597,7 +598,7 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView>
               <Text style={styles.UserFullNameStyle}>
-                {profile?.city ?? 'Somewhere'}
+                {profile?.city || 'Not Added Yet'}
               </Text>
             </EditProfileBoxView>
           </View>
@@ -613,11 +614,9 @@ const EditProfileScreen = () => {
               <EditProfileCategoriesList
                 EmptyTitleText="What you like?"
                 Item={
-                  profile?.likes_into
-                    ? Array.isArray(profile?.likes_into)
-                      ? profile?.likes_into
-                      : [profile?.likes_into]
-                    : []
+                  profile?.likes_into && Array.isArray(profile?.likes_into)
+                    ? profile?.likes_into?.filter(item => item.trim() !== '')
+                    : [profile?.likes_into || []]
                 }
                 onPress={() => handlePresentModalPress()}
               />
@@ -635,11 +634,9 @@ const EditProfileScreen = () => {
               <EditProfileCategoriesList
                 EmptyTitleText="Add what you looking for"
                 Item={
-                  profile?.hoping
-                    ? Array.isArray(profile?.hoping)
-                      ? profile?.hoping
-                      : [profile?.hoping]
-                    : []
+                  profile?.hoping && Array.isArray(profile?.hoping)
+                    ? profile?.hoping?.filter(item => item.trim() !== '')
+                    : [profile?.hoping || []]
                 }
                 onPress={() => handlePresentModalPress()}
               />

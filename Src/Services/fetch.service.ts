@@ -117,41 +117,25 @@ async function getAxios(
 
 async function uploadHandler(
   url: string,
-  params?: Record<string, any>,
+  formData: FormData,
   config?: AxiosRequestConfig,
 ): Promise<any> {
-  handleLogs(url, params);
-
-  if (cancelTokenSource) {
-    cancelTokenSource.cancel();
-  }
+  handleLogs(url);
 
   try {
-    const formData = new FormData();
-    for (const key in params) {
-      formData.append(key, params[key]);
-    }
-
     const token = store.getState()?.user?.Token;
+    console.log('token', token);
+    console.log('`Bearer ${token}`', `Bearer ${token}`);
+    const response = await axios.post(url, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+        ...commonConfig.headers,
+      },
+      ...config,
+    });
 
-    // console.log('TOKEN:', token);
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', url);
-    xhr.setRequestHeader('Authorization', `Basic ${token}`);
-    xhr.send(formData);
-    xhr.onreadystatechange = e => {
-      if (xhr.readyState !== 4) {
-        return;
-      }
-
-      if (xhr.status === 200) {
-        // console.log('success', xhr.responseText);
-        return handleResponse(xhr.responseText);
-      } else {
-        // console.log('error', xhr.responseText);
-        return handleError(xhr.responseText);
-      }
-    };
+    return handleResponse(response);
   } catch (error) {
     return handleError(error);
   }
@@ -195,8 +179,8 @@ async function makeRequest(
 
 function initToken() {
   const token = store.getState()?.user?.Token || '';
-  if (true) {
-    // console.log('Init Token DEBUG:', token);
+  if (ApiConfig.DEBUG) {
+    console.log('Init Token DEBUG:', token);
   }
 
   if (token) {
@@ -205,8 +189,8 @@ function initToken() {
 }
 
 function handleResponse(response: AxiosResponse<any>) {
-  if (true) {
-    // console.log('Response:', response.data);
+  if (ApiConfig.DEBUG) {
+    console.log('Response:', response.data);
   }
 
   if (response && response.data?.code === 200) {
@@ -217,7 +201,7 @@ function handleResponse(response: AxiosResponse<any>) {
 }
 
 async function handleError(error: any) {
-  if (true) {
+  if (ApiConfig.DEBUG) {
     console.log('Error:', error);
   }
 
@@ -242,7 +226,7 @@ async function handleError(error: any) {
 }
 
 function handleLogs(url: string, params?: Record<string, any>) {
-  if (false) {
+  if (ApiConfig.DEBUG) {
     console.log('--------------- handleLogs --------------');
     console.log('URL: ', url);
     console.log('Request: ', params);

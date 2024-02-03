@@ -3,7 +3,7 @@ import UserDataType from '../../../Types/UserDataType';
 
 const excludeFields = [
   LocalStorageFields.OTP, // Assuming LocalStorageFields.OTP is the field for OTP token
-  LocalStorageFields.userFrom,
+  LocalStorageFields.user_from,
   LocalStorageFields.phoneNumberWithoutCode,
   LocalStorageFields.phoneNumberCountryCode,
 ];

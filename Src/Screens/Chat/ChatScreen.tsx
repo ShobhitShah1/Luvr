@@ -8,13 +8,10 @@ import {
 } from '@react-navigation/native';
 import React, {FC, useCallback, useEffect, useState} from 'react';
 import {
-  Alert,
-  Image,
   KeyboardAvoidingView,
   Platform,
   StatusBar,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import {
@@ -26,16 +23,22 @@ import {
   IMessage,
   InputToolbar,
 } from 'react-native-gifted-chat';
-import {useSelector} from 'react-redux';
 import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 // import socket from '../../Services/socket';
-import {chatRoomDataType} from '../../Types/chatRoomDataType';
-import ChatScreenHeader from './Components/ChatScreenHeader';
-import {ProfileType} from '../../Types/ProfileType';
-import UserService from '../../Services/AuthService';
 import {Socket, io} from 'socket.io-client';
 import ApiConfig from '../../Config/ApiConfig';
+import {
+  CHAT_EVENT,
+  GET_RECIVER_SOCKET_EVENT,
+  JOIN_EVENT,
+  LIST_EVENT,
+  MESSAGE_EVENT,
+} from '../../Config/Setting';
 import {store} from '../../Redux/Store/store';
+import UserService from '../../Services/AuthService';
+import {ProfileType} from '../../Types/ProfileType';
+import {chatRoomDataType} from '../../Types/chatRoomDataType';
+import ChatScreenHeader from './Components/ChatScreenHeader';
 
 interface ChatData {
   params: {
@@ -88,7 +91,7 @@ const ChatScreen: FC = () => {
 
     // Transform combined messages into GiftedChat format
     const giftedChatMessages = allMessages.map((message: any) => {
-      // console.log('message', message);
+      // console.log(MESSAGE_EVENT, message);
       return {
         _id: generateRandomId(),
         text: message.message,
@@ -184,15 +187,15 @@ const ChatScreen: FC = () => {
     }
 
     // Event: Join
-    socket.emit('Join', {id: CurrentLoginUserId});
+    socket.emit(JOIN_EVENT, {id: CurrentLoginUserId});
 
     // Event: Get Receiver Socket
-    socket.emit('get_reciver_socket', {
+    socket.emit(GET_RECIVER_SOCKET_EVENT, {
       to: params?.id,
     });
 
     // Event: List
-    socket.emit('List', {id: CurrentLoginUserId});
+    socket.emit(LIST_EVENT, {id: CurrentLoginUserId});
 
     // Event: List - Response
     const handleListResponse = (data: {data: any}) => {
@@ -249,18 +252,18 @@ const ChatScreen: FC = () => {
       }
     };
 
-    socket.on('Join', handleJoinResponse);
-    socket.on('List', handleListResponse);
-    socket.on('message', handleReceivedMessage);
-    socket.on('chat', handleRecivedChat);
-    socket.on('get_reciver_socket', handleReceiverSocketId);
+    socket.on(JOIN_EVENT, handleJoinResponse);
+    socket.on(LIST_EVENT, handleListResponse);
+    socket.on(MESSAGE_EVENT, handleReceivedMessage);
+    socket.on(CHAT_EVENT, handleRecivedChat);
+    socket.on(GET_RECIVER_SOCKET_EVENT, handleReceiverSocketId);
 
     return () => {
-      socket.off('Join', handleJoinResponse);
-      socket.off('List', handleListResponse);
-      socket.off('message', handleReceivedMessage);
-      socket.off('chat', handleRecivedChat);
-      socket.off('get_reciver_socket', handleReceiverSocketId);
+      socket.off(JOIN_EVENT, handleJoinResponse);
+      socket.off(LIST_EVENT, handleListResponse);
+      socket.off(MESSAGE_EVENT, handleReceivedMessage);
+      socket.off(CHAT_EVENT, handleRecivedChat);
+      socket.off(GET_RECIVER_SOCKET_EVENT, handleReceiverSocketId);
     };
   }, [socket, params]);
 
@@ -303,7 +306,7 @@ const ChatScreen: FC = () => {
       // };
 
       // if (socket) {
-      //   socket.on('get_reciver_socket', handleReceiverSocketId);
+      //   socket.on(GET_RECIVER_SOCKET_EVENT, handleReceiverSocketId);
       // }
 
       if (socket) {
@@ -318,7 +321,7 @@ const ChatScreen: FC = () => {
 
         console.log(chatData, userMessage.length);
 
-        socket.emit('chat', chatData, (err, responses) => {
+        socket.emit(CHAT_EVENT, chatData, (err, responses) => {
           console.log('err, responses', err, responses);
           if (err) {
             // some clients did not acknowledge the event in the given delay

@@ -38,7 +38,7 @@ const IdentifyYourSelf: FC = () => {
   const yearInputRef = useRef(null);
 
   //* All States
-  const [FirstName, setFirstName] = useState<string>(userData.fullName);
+  const [FirstName, setFirstName] = useState<string>(userData.full_name);
   const [BirthDateDD, setBirthDateDD] = useState<string>(
     userData.birthdate ? String(userData.birthdate).split('/')[0] : '',
   );
@@ -108,7 +108,7 @@ const IdentifyYourSelf: FC = () => {
 
     //* If all required fields are filled, update the context and navigate
     setTimeout(() => {
-      dispatch(updateField(LocalStorageFields.fullName, FirstName));
+      dispatch(updateField(LocalStorageFields.full_name, FirstName));
       dispatch(
         updateField(
           LocalStorageFields.birthdate,
@@ -119,7 +119,7 @@ const IdentifyYourSelf: FC = () => {
       dispatch(updateField(LocalStorageFields.city, CityName));
     }, 0);
 
-    // handleInputChange(LocalStorageFields.fullName, FirstName);
+    // handleInputChange(LocalStorageFields.full_name, FirstName);
     // handleInputChange(
     // LocalStorageFields.birthdate,
     // `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`,

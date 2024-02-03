@@ -237,11 +237,11 @@ const ExploreCardScreen: FC = () => {
     setIsAPILoading(true);
     setCardToSkipNumber(cardToSkipNumber + CardLimit);
     FetchAPIData(cardToSkipNumber + CardLimit);
-    showToast(
-      'All cards swiped',
-      'Feting new cards for you (Toast is just for testing)',
-      'success',
-    );
+    // showToast(
+    //   'All cards swiped',
+    //   'Feting new cards for you (Toast is just for testing)',
+    //   'success',
+    // );
   };
 
   //* This Will Just Swipe Left

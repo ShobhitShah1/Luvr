@@ -20,6 +20,7 @@ import {
   updateField,
 } from '../../Redux/Action/userActions';
 import RenderLookingView from './Components/RenderLookingView';
+import {mapApiResponseToUserDataType} from '../../Services/mapApiResponseToUserDataType';
 
 const HomeScreen = () => {
   const [IsAPIDataLoading, setIsAPIDataLoading] = useState(false);
@@ -37,6 +38,8 @@ const HomeScreen = () => {
       };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
+      const ModifyData = await mapApiResponseToUserDataType(userDataForApi);
+      console.log('ModifyData', ModifyData);
       if (APIResponse?.code === 200) {
         store.dispatch(setUserData(APIResponse.data));
         console.log('GetProfileData Data:', APIResponse.data);

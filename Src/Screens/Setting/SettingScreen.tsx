@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
 import {SettingType} from '../../Types/ProfileType';
@@ -23,11 +23,17 @@ import styles from './styles';
 import LogOutModalRenderView from './Components/LogOutModalRenderView';
 import Modal from 'react-native-modal';
 import SettingCustomModal from './Components/SettingCustomModal';
-import { Rating } from 'react-native-ratings';
+import {Rating} from 'react-native-ratings';
+import {resetUserData} from '../../Redux/Action/userActions';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 const SettingScreen = () => {
   const profile = useSelector(state => state?.user);
   // const [profile, setProfile] = useState<ProfileType>();
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [widthSeekBar, setWidthSeekBar] = useState(0);
   const UserData = useSelector((state: any) => state?.user);
   const [LogOutModalView, setLogOutModalView] = useState(false);
@@ -44,6 +50,7 @@ const SettingScreen = () => {
     longitude: UserData?.longitude,
     Location: '',
   });
+  const {replace, reset} = useNavigation<NativeStackNavigationProp<any>>();
 
   // const {showToast} = useCustomToast();
   // const [SelectedShowMe, setSelectedShowMe] = useState<string>(
@@ -104,6 +111,36 @@ const SettingScreen = () => {
     console.log('size', event.nativeEvent.layout);
   };
 
+  const LogoutPress = async () => {
+    // Your existing logout logic
+    dispatch(resetUserData());
+    setLogOutModalView(false);
+    setTimeout(() => {
+      reset({
+        index: 0,
+        routes: [
+          {
+            name: 'NumberVerification',
+          },
+        ],
+      });
+    }, 0);
+
+    const signOutFromGoogle = async () => {
+      try {
+        await GoogleSignin.revokeAccess();
+        await GoogleSignin.signOut();
+        console.log('Logged out from Google');
+      } catch (error) {
+        console.error('Error signing out from Google:', error);
+      }
+    };
+
+    if (await GoogleSignin.isSignedIn()) {
+      signOutFromGoogle();
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ProfileAndSettingHeader
@@ -126,7 +163,7 @@ const SettingScreen = () => {
               <SettingFlexView
                 isActive={false}
                 style={styles.PhoneNumberFlexStyle}
-                Item={profile?.mobileNo || profile?.mobile_no || '+0000000000'}
+                Item={profile?.mobile_no || profile?.mobile_no || '+0000000000'}
                 onPress={() => {}}
               />
             </EditProfileBoxView>
@@ -440,6 +477,7 @@ const SettingScreen = () => {
 
       <SettingCustomModal
         isVisible={LogOutModalView}
+        onActionPress={LogoutPress}
         setState={setLogOutModalView}
         title="Logout"
         description="Are you sure you want to logout?"
@@ -458,6 +496,7 @@ const SettingScreen = () => {
         }
         ButtonTitle="Delete account"
         ButtonCloseText="Cancel"
+        onActionPress={() => {}}
       />
       <SettingCustomModal
         isVisible={RateUsModalView}
@@ -489,6 +528,7 @@ const SettingScreen = () => {
         }
         ButtonTitle="Rate now"
         ButtonCloseText="Maybe later"
+        onActionPress={() => {}}
       />
     </View>
   );

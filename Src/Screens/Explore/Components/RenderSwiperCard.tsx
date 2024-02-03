@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import {useNavigation} from '@react-navigation/native';
+import {Skeleton} from 'moti/skeleton';
 import React, {FC, memo, useEffect} from 'react';
 import {
-  ActivityIndicator,
   Image,
   Text,
   TouchableOpacity,
@@ -22,8 +23,6 @@ import {DummyImage} from '../../../Config/Setting';
 import useCalculateAge from '../../../Hooks/useCalculateAge';
 import {SwiperCard} from '../../../Types/SwiperCard';
 import styles from '../styles';
-import {useNavigation} from '@react-navigation/native';
-import {Skeleton} from 'moti/skeleton';
 
 interface RenderCardProps {
   CurrentCardIndex: number;
@@ -130,7 +129,6 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
       defaultImageUrl
     );
   };
-
   return (
     <TouchableWithoutFeedback
       onPressIn={handlePressIn}
@@ -138,7 +136,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
       <View style={styles.card}>
         <Animated.View style={[styles.imageContainer, animatedStyle]}>
           <Skeleton
-            show={false} //firstImageLoading
+            show={firstImageLoading} //firstImageLoading
             colorMode="light"
             colors={COLORS.LoaderGradient}>
             <FastImage
@@ -207,12 +205,6 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
             />
           </TouchableOpacity>
         </View>
-
-        {/* {firstImageLoading && (
-          <View style={styles.LoadingImageView}>
-            <ActivityIndicator size="large" color={COLORS.Primary} />
-          </View>
-        )} */}
       </View>
     </TouchableWithoutFeedback>
   );

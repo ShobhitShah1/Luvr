@@ -4,7 +4,6 @@ import {StyleSheet, Text, View} from 'react-native';
 import {COLORS, FONTS, GROUP_FONT} from '../../../../Common/Theme';
 
 const ToastStyle = ({status, title, message}: any) => {
-  console.log('status', status);
   return (
     <View
       style={[

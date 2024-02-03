@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
-import {Alert, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
 import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
@@ -10,9 +10,9 @@ import CustomTextInput from '../../../Components/CustomTextInput';
 import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
 import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import {useCustomToast} from '../../../Utils/toastUtils';
 
 const YourEducation: FC = () => {
   const navigation =
@@ -22,17 +22,15 @@ const YourEducation: FC = () => {
   const {showToast} = useCustomToast();
   const dispatch = useDispatch();
   const [EducationDegree, setEducationDegree] = useState<string>(
-    userData.educationDegree,
+    userData.digree,
   );
-  const [CollegeName, setCollegeName] = useState<string>(userData.collegeName);
+  const [CollegeName, setCollegeName] = useState<string>(userData.college_name);
 
   const onNextPress = () => {
     if (EducationDegree && CollegeName) {
       Promise.all([
-        dispatch(
-          updateField(LocalStorageFields.educationDegree, EducationDegree),
-        ),
-        dispatch(updateField(LocalStorageFields.collegeName, CollegeName)),
+        dispatch(updateField(LocalStorageFields.digree, EducationDegree)),
+        dispatch(updateField(LocalStorageFields.college_name, CollegeName)),
       ])
         .then(() => {
           navigation.navigate('LoginStack', {

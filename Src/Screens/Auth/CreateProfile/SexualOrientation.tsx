@@ -42,7 +42,7 @@ const SexualOrientation: FC = () => {
     userData.orientation.length !== 0 ? userData.orientation : [];
 
   const [ShowOnProfile, setShowOnProfile] = useState<boolean>(
-    userData.isOrientationVisible,
+    userData.is_orientation_visible,
   );
   const [SelectedGenderIndex, setSelectedGenderIndex] = useState<string[]>(
     initialSexualOrientation,
@@ -113,7 +113,7 @@ const SexualOrientation: FC = () => {
         try {
           dispatch(updateField(LocalStorageFields.orientation, orientations));
           dispatch(
-            updateField(LocalStorageFields.isOrientationVisible, ShowOnProfile),
+            updateField(LocalStorageFields.is_orientation_visible, ShowOnProfile),
           );
         } catch (error) {
           console.log('err', error);

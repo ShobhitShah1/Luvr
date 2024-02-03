@@ -32,23 +32,49 @@ const OTPInput: React.FC<OTPInputProps> = ({
   }, [otp, onOtpFilled, length]);
 
   const handleInputChange = (index: number, value: string) => {
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
+    // Parse the input value to an integer
+    const parsedValue = parseInt(value, 10);
 
-    if (value === '' && index > 0) {
-      // Handle backspace
-      inputRefs.current[index - 1]?.focus();
-    } else if (value !== '' && index < length - 1) {
-      // Move focus to the next box if not the last box
-      inputRefs.current[index + 1]?.focus();
-    } else if (value !== '' && index === length - 1) {
-      // If updating the last box, trigger onOtpFilled
-      if (onOtpFilled) {
-        onOtpFilled(newOtp.join(''));
+    // Check if the parsed value is a valid number
+    if (!isNaN(parsedValue) && parsedValue >= 0 && parsedValue <= 9) {
+      // If valid number, update the OTP state
+      const newOtp = [...otp];
+      newOtp[index] = parsedValue.toString();
+      setOtp(newOtp);
+
+      if (value === '' && index > 0) {
+        // Handle backspace
+        inputRefs.current[index - 1]?.focus();
+      } else if (value !== '' && index < length - 1) {
+        // Move focus to the next box if not the last box
+        inputRefs.current[index + 1]?.focus();
+      } else if (value !== '' && index === length - 1) {
+        // If updating the last box, trigger onOtpFilled
+        if (onOtpFilled) {
+          onOtpFilled(newOtp.join(''));
+        }
       }
     }
   };
+
+  // const handleInputChange = (index: number, value: string) => {
+  //   const newOtp = [...otp];
+  //   newOtp[index] = value;
+  //   setOtp(newOtp);
+
+  //   if (value === '' && index > 0) {
+  //     // Handle backspace
+  //     inputRefs.current[index - 1]?.focus();
+  //   } else if (value !== '' && index < length - 1) {
+  //     // Move focus to the next box if not the last box
+  //     inputRefs.current[index + 1]?.focus();
+  //   } else if (value !== '' && index === length - 1) {
+  //     // If updating the last box, trigger onOtpFilled
+  //     if (onOtpFilled) {
+  //       onOtpFilled(newOtp.join(''));
+  //     }
+  //   }
+  // };
 
   const handleFocusChange = (index: number) => {
     inputRefs.current[index]?.focus();

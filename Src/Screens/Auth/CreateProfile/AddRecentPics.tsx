@@ -33,13 +33,14 @@ import axios from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {updateField} from '../../../Redux/Action/userActions';
+import ApiConfig from '../../../Config/ApiConfig';
+import UserService from '../../../Services/AuthService';
 
 const AddRecentPics: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{BottomTab: {}}>>();
   const {showToast} = useCustomToast();
   const userData = useSelector((state: any) => state?.user);
-  // console.log('userData', userData);
   const dispatch = useDispatch();
   const {requestCameraPermission} = useCameraPermission();
   const {requestGalleryPermission} = useGalleryPermission();
@@ -176,8 +177,8 @@ const AddRecentPics: FC = () => {
     );
   };
 
-  const onNextPress = () => {
-    setIsLoading(true);
+  const onNextPress = async () => {
+    // setIsLoading(true);
     try {
       setTimeout(() => {
         const validImages = data.filter(image => image.url);
@@ -186,16 +187,14 @@ const AddRecentPics: FC = () => {
             console.log('All images uploaded successfully:', uploadedResults);
             dispatch(updateField(LocalStorageFields.isImageUploaded, true));
             showToast(
-              'Image Uploaded',
-              'Cant Navigate To Next Screen',
+              'Congratulations! Image Uploaded',
+              'Your profile is ready to go!',
               'success',
             );
-            setTimeout(() => {
-              setIsLoading(false);
-              navigation.replace('BottomTab', {
-                screen: 'Home',
-              });
-            }, 500);
+            navigation.replace('BottomTab', {
+              screen: 'Home',
+            });
+            setIsLoading(false);
           })
           .catch(error => {
             console.error('Error during image upload:', error);
@@ -220,8 +219,18 @@ const AddRecentPics: FC = () => {
       });
 
       try {
+        // const APIResponse = await UserService.UploadImages(formData);
+        // if (APIResponse && APIResponse.code === 200) {
+        //   return APIResponse.data;
+        // } else {
+        //   showToast(
+        //     'Upload Error',
+        //     'Something went wrong while uploading image',
+        //     'error',
+        //   );
+        // }
         const response = await axios.post(
-          'https://nirvanatechlabs.in/dating/upload',
+          ApiConfig.IMAGE_UPLOAD_BASE_URL,
           formData,
           {
             headers: {
@@ -234,7 +243,7 @@ const AddRecentPics: FC = () => {
         );
 
         console.log('Upload successful:', response.data);
-        return response.data; // Return any relevant data from the response
+        return response.data;
       } catch (error: any) {
         showToast(
           'Upload Error',

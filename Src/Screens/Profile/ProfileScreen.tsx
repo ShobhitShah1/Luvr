@@ -2,7 +2,7 @@
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Skeleton} from 'moti/skeleton';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Dimensions,
   Image,
@@ -46,12 +46,10 @@ const ProfileScreen = () => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (isFocused) {
-      GetProfileData();
-    }
-  }, [isFocused]);
+    GetProfileData();
+  }, []);
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = useCallback(() => {
     setRefreshing(true);
     GetProfileData();
   }, []);
@@ -139,9 +137,9 @@ const ProfileScreen = () => {
                     {ProfileData?.recent_pik &&
                     ProfileData?.recent_pik?.length !== 0 ? (
                       <FastImage
-                        onLoadStart={() => setIsImageLoading(true)}
-                        onLoad={() => setIsImageLoading(false)}
-                        onLoadEnd={() => setIsImageLoading(false)}
+                        // onLoadStart={() => setIsImageLoading(true)}
+                        // onLoad={() => setIsImageLoading(false)}
+                        // onLoadEnd={() => setIsImageLoading(false)}
                         style={styles.ProfileImage}
                         source={{
                           uri:

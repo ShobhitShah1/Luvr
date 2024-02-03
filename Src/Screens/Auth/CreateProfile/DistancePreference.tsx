@@ -17,6 +17,7 @@ const DistancePreference: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const userData = useSelector((state: any) => state.user);
+  // console.log('userData', userData);
   const dispatch = useDispatch();
   const [milesValue, setMilesValue] = useState<number>(
     userData.radius ? userData.radius : 75,
@@ -55,7 +56,10 @@ const DistancePreference: FC = () => {
             <Text style={styles.SliderValue}>{`${milesValue} KM`}</Text>
           </View>
           <View style={styles.SliderView}>
-            <CustomSlider onProgressChange={OnChangeKM} />
+            <CustomSlider
+              defaultProgress={milesValue / 100}
+              onProgressChange={OnChangeKM}
+            />
             {/* <Slider
               step={1}
               minimumValue={0}

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+  Alert,
   Animated,
   PanResponder,
   StyleSheet,
@@ -17,7 +18,14 @@ export default class CustomSlider extends Component {
   state = {
     sliderWidth: null,
   };
-  progress = 0.25;
+
+  // Initialize progress in the constructor instead of outside the class
+  constructor(props) {
+    console.log('props', props);
+    super(props);
+    this.progress = props.defaultProgress || 0.25; // Default progress value
+  }
+
   pan = new Animated.ValueXY({x: 0, y: 0});
   scaleY = new Animated.Value(1);
   translateX = new Animated.Value(0);
@@ -40,6 +48,7 @@ export default class CustomSlider extends Component {
     },
     onPanResponderTerminate: this.animateScale,
   });
+
   setListener() {
     const {sliderWidth} = this.state;
     this.translateX.removeAllListeners();
@@ -49,6 +58,7 @@ export default class CustomSlider extends Component {
       this.progress = progress;
     });
   }
+
   onSeek = progress => {
     this.textRef.setNativeProps({text: progress.toString()});
     if (this.props?.onProgressChange) {
@@ -63,12 +73,20 @@ export default class CustomSlider extends Component {
       bounciness: 0,
     }).start();
   };
-  componentDidUpdate(_, prevState) {
+
+  componentDidUpdate(prevProps, prevState) {
     const {sliderWidth} = this.state;
     if (sliderWidth !== prevState.sliderWidth) {
+      // Calculate the new position based on the updated sliderWidth and progress
       this.pan.setValue({x: (sliderWidth - dotWidth) * this.progress, y: 0});
     }
+    if (prevProps.defaultProgress !== this.props.defaultProgress) {
+      // Update the progress and trigger a re-render
+      this.progress = this.props.defaultProgress || 0.25;
+      this.forceUpdate(); // This forces the component to re-render
+    }
   }
+
   render() {
     const {sliderWidth} = this.state;
     this.translateX = Animated.diffClamp(this.pan.x, 0, sliderWidth - dotWidth);

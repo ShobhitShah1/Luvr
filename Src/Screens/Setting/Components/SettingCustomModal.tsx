@@ -1,8 +1,8 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {FC, useState} from 'react';
+import React, {FC} from 'react';
 import {View} from 'react-native';
+import Modal from 'react-native-modal';
 import LogOutModalRenderView from './LogOutModalRenderView'; // Assuming you have this component
-import Modal, {ModalProps} from 'react-native-modal';
 
 interface ModalProps {
   isVisible: boolean;
@@ -11,6 +11,7 @@ interface ModalProps {
   description: string | JSX.Element;
   ButtonCloseText: string;
   ButtonTitle: string;
+  onActionPress: () => void;
 }
 
 const SettingCustomModal: FC<ModalProps> = ({
@@ -20,6 +21,7 @@ const SettingCustomModal: FC<ModalProps> = ({
   description,
   ButtonCloseText,
   ButtonTitle,
+  onActionPress,
 }) => {
   return (
     <Modal
@@ -43,7 +45,7 @@ const SettingCustomModal: FC<ModalProps> = ({
       <View style={{position: 'absolute', bottom: 20}}>
         <LogOutModalRenderView
           setState={setState}
-          onPress={() => {}}
+          onPress={onActionPress}
           title={title}
           description={description}
           ButtonCloseText={ButtonCloseText}

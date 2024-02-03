@@ -15,4 +15,10 @@ export const DummyImage = 'https://picsum.photos/720/1080';
 export const TotalProfilePicCanUpload = 4;
 export const TotalProfilePicCanUploadEditProfile = 6;
 
+export const JOIN_EVENT = 'Join';
+export const LIST_EVENT = 'List';
+export const MESSAGE_EVENT = 'message';
+export const CHAT_EVENT = 'chat';
+export const GET_RECIVER_SOCKET_EVENT = 'get_reciver_socket';
+
 export const APP_NAME = 'AppName';

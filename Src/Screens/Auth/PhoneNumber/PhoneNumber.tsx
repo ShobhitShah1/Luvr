@@ -40,7 +40,6 @@ const PhoneNumber: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{NumberVerification: {}}>>();
   const isFocused = useIsFocused();
-
   const userData = useSelector((state: any) => state?.user);
   const dispatch = useDispatch();
   const {showToast} = useCustomToast();
@@ -60,6 +59,7 @@ const PhoneNumber: FC = () => {
   const [FilteredCountries, setFilteredCountries] = useState(CountryWithCode);
 
   const opacity = useSharedValue(0);
+
   const PhoneNumberString: String = `${
     diallingCode || defaultDiallingCode
   }${StorePhoneNumber}`;
@@ -102,41 +102,46 @@ const PhoneNumber: FC = () => {
     setVisible(false);
   };
 
-  const renderItem = useCallback(
-    ({item, index}: any) => (
-      <RenderCountryData
-        data={item}
-        index={index}
-        onPress={handleCountryPress}
-      />
-    ),
-    [],
-  );
-
   const searchFunction = (text: string) => {
-    const filteredCountries = CountryWithCode.filter(country =>
-      country.name.toLowerCase().includes(text.toLowerCase()),
+    const filteredCountries = CountryWithCode.filter(
+      country =>
+        country.name.toLowerCase().includes(text.toLowerCase()) ||
+        country.dialling_code.toLowerCase().includes(text.toLowerCase()),
     );
     setFilteredCountries(filteredCountries);
   };
 
-  const EmptyComponent = () => {
-    return (
-      <View style={styles.ListEmptyView}>
-        <Text style={styles.ListEmptyText}>
-          No Country With Name "{SearchText}" Available
-        </Text>
-      </View>
-    );
-  };
-
-  const onNextClick = () => {
+  const onNextClick = async () => {
     if (
       StorePhoneNumber?.length >= 10 &&
       StorePhoneNumber?.length <= 12 &&
       StorePhoneNumber.match('[0-9]{10}')
     ) {
       handleSendOtp();
+      // await Promise.all([
+      //   dispatch(updateField(LocalStorageFields.mobile_no, PhoneNumberString)),
+      //   dispatch(
+      //     updateField(
+      //       LocalStorageFields.phoneNumberCountryCode,
+      //       `${diallingCode || defaultDiallingCode}`,
+      //     ),
+      //   ),
+      //   dispatch(
+      //     updateField(
+      //       LocalStorageFields.phoneNumberWithoutCode,
+      //       StorePhoneNumber,
+      //     ),
+      //   ),
+      //   dispatch(updateField(LocalStorageFields.login_type, 'non_social')),
+      // ]);
+      // setTimeout(() => {
+      //   navigation.navigate('NumberVerification', {
+      //     screen: 'OTP',
+      //     params: {
+      //       number: PhoneNumberString,
+      //     },
+      //   });
+      // }, 0);
     } else {
       showToast(
         'Invalid Phone Number',
@@ -146,7 +151,6 @@ const PhoneNumber: FC = () => {
     }
   };
 
-  //* API Calls
   const handleSendOtp = async () => {
     setIsAPILoading(true);
     try {
@@ -163,7 +167,9 @@ const PhoneNumber: FC = () => {
           'success',
         );
         await Promise.all([
-          dispatch(updateField(LocalStorageFields.mobileNo, PhoneNumberString)),
+          dispatch(
+            updateField(LocalStorageFields.mobile_no, PhoneNumberString),
+          ),
           dispatch(
             updateField(
               LocalStorageFields.phoneNumberCountryCode,
@@ -203,6 +209,27 @@ const PhoneNumber: FC = () => {
     } finally {
       setIsAPILoading(false);
     }
+  };
+
+  const renderItem = useCallback(
+    ({item, index}: any) => (
+      <RenderCountryData
+        data={item}
+        index={index}
+        onPress={handleCountryPress}
+      />
+    ),
+    [],
+  );
+
+  const EmptyComponent = () => {
+    return (
+      <View style={styles.ListEmptyView}>
+        <Text style={styles.ListEmptyText}>
+          No Country With Name "{SearchText}" Available
+        </Text>
+      </View>
+    );
   };
 
   return (
@@ -270,6 +297,7 @@ const PhoneNumber: FC = () => {
                   nestedScrollEnabled={true}
                   data={FilteredCountries}
                   initialNumToRender={20}
+                  keyboardShouldPersistTaps="handled"
                   maxToRenderPerBatch={20}
                   disableVirtualization={true}
                   removeClippedSubviews={true}

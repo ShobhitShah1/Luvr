@@ -15,10 +15,17 @@ import CommonImages from '../../Common/CommonImages';
 import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import {chatRoomData} from '../../Components/Data';
 import ApiConfig from '../../Config/ApiConfig';
-import {store} from '../../Redux/Store/store';
+import {
+  CHAT_EVENT,
+  JOIN_EVENT,
+  LIST_EVENT,
+  MESSAGE_EVENT,
+} from '../../Config/Setting';
+import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderChatRoomList from './Components/RenderChatRoomList';
-
+import {store} from '../../Redux/Store/store';
+// import {use} from 'react-redux';
 interface ChatMessage {
   senderId: string;
   message: string;
@@ -42,23 +49,48 @@ interface SocketEventHandlers {
   message: (data: any) => void;
 }
 
-const JOIN_EVENT = 'Join';
-const LIST_EVENT = 'List';
-const MESSAGE_EVENT = 'message';
-const CHAT_EVENT = 'chat';
-
 const ChatRoomScreen = () => {
   const [socket, setSocket] = useState<Socket | undefined>();
   const [messages, setMessages] = useState<MessageItem[]>([]);
   const [isSocketLoading, setIsSocketLoading] = useState(true);
-
+  const {showToast} = useCustomToast();
   const currentLoginUserId = store.getState().user?.userData?._id;
   const isFocused = useIsFocused();
 
   useEffect(() => {
     if (isFocused) {
-      const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
-      setSocket(socketInstance);
+      const socketInstance = io(ApiConfig.SOCKET_BASE_URL, {
+        reconnectionDelay: 1000,
+        reconnection: true,
+        reconnectionAttempts: 5, //Infinity
+        rejectUnauthorized: false,
+        host: ApiConfig.SOCKET_BASE_URL,
+        // transports: ['webtransport'],
+        // ['polling','websocket', 'webtransport']
+        path: ApiConfig.SOCKET_BASE_URL,
+      });
+
+      // console.log('socketInstance', socketInstance);
+
+      socketInstance.on('connect_error', error => {
+        console.log('connect_error:--:>', error.message);
+        showToast(error.name, error.message || 'Something went wrong', 'error');
+      });
+      // socketInstance.on('connect', () => {
+      //   console.log('client connected');
+      // });
+
+      // socketInstance.on('connect_error', error => {
+      //   console.log('socketInstance connect_error:', error);
+      // });
+      // console.log('socketInstance', socketInstance);
+      if (socketInstance.connected) {
+        setSocket(socketInstance);
+      } else {
+        setSocket(socketInstance);
+        setIsSocketLoading(false);
+        // showToast('Error In Socket', 'Cant Connect Socket!', 'error');
+      }
 
       return () => {
         socketInstance.disconnect();
@@ -68,7 +100,7 @@ const ChatRoomScreen = () => {
 
   useEffect(() => {
     if (isFocused && socket) {
-      setIsSocketLoading(true);
+      // setIsSocketLoading(true);
 
       // Event: Join
       socket.emit(JOIN_EVENT, {id: currentLoginUserId});
@@ -121,13 +153,13 @@ const ChatRoomScreen = () => {
       socket.on(LIST_EVENT, handleListResponse);
       socket.on(MESSAGE_EVENT, handleReceivedMessage);
       socket.on(CHAT_EVENT, handleRecivedChat);
-      setIsSocketLoading(true);
+      setIsSocketLoading(false);
       return () => {
         socket.off(LIST_EVENT, handleListResponse);
         socket.off(MESSAGE_EVENT, handleReceivedMessage);
       };
     } else {
-      setIsSocketLoading(true);
+      setIsSocketLoading(false);
     }
   }, [socket, currentLoginUserId, isFocused]);
 

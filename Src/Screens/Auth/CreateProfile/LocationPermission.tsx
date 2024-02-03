@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
-import {Image, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {Alert, Image, StatusBar, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonImages from '../../../Common/CommonImages';
 import {COLORS, FONTS} from '../../../Common/Theme';
@@ -12,13 +12,15 @@ import Geolocation from 'react-native-geolocation-service';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import UserService from '../../../Services/AuthService';
+import {transformUserDataForApi} from '../../../Services/dataTransformService';
 
 const LocationPermission: FC = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+  const navigation = useNavigation();
   const {showToast} = useCustomToast();
   const dispatch = useDispatch();
+  const userData = useSelector((state: any) => state?.user);
   const {locationPermission, requestLocationPermission} =
     useLocationPermission();
   const [IsLocationLoading, setIsLocationLoading] = useState(false);
@@ -56,10 +58,7 @@ const LocationPermission: FC = () => {
               ]);
 
               setTimeout(() => {
-                navigation.replace('LoginStack', {
-                  screen: 'IdentifyYourSelf',
-                });
-                setIsLocationLoading(false);
+                handleNavigation();
               }, 0);
             }
           },
@@ -86,6 +85,31 @@ const LocationPermission: FC = () => {
         setIsLocationLoading(false);
       }, 0);
     }
+  };
+
+  const handleNavigation = async () => {
+    const userDataForApi = transformUserDataForApi(userData);
+    console.log('userDataForApi', userDataForApi);
+
+    const userDataWithValidation = {
+      ...userDataForApi,
+      validation: true,
+    };
+    console.log('userDataWithValidation', userDataWithValidation);
+    const APIResponse = await UserService.UserRegister(userDataWithValidation);
+    console.log('APIResponse?.data?', APIResponse?.data?.token);
+
+    if (APIResponse?.data?.token) {
+      await dispatch(
+        updateField(LocalStorageFields.Token, APIResponse.data?.token),
+      );
+      setTimeout(() => {
+        navigation.replace('BottomTab');
+      }, 0);
+    } else {
+      navigation.replace('LoginStack');
+    }
+    setIsLocationLoading(false);
   };
 
   return (

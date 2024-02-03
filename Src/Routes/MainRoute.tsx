@@ -34,12 +34,14 @@ import ExploreCardDetailScreen from '../Screens/Home/ExploreCards/ExploreCardDet
 import EditProfileScreen from '../Screens/Profile/EditProfileScreen';
 import SettingScreen from '../Screens/Setting/SettingScreen';
 import NotificationScreen from '../Screens/Notification/NotificationScreen';
+import {initGoogleSignIn} from '../Services/AuthService';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
   const ReduxUserData = useSelector((state: any) => state.user);
   const isUserVerified: boolean = ReduxUserData?.isVerified;
   const [initialRoute, setInitialRoute] = useState<string>('');
+
   //* On Profile Creation Stack Check Data For All Screen Navigate To Missing Screen's (Screen With No Skip Option)
 
   // const getMissingDataScreen = () => {
@@ -51,8 +53,8 @@ export default function MainRoute() {
   //   if (!ReduxUserData.otp) {
   //     missingData.push('OTP');
   //   }
-  //   if (!ReduxUserData.fullName) {
-  //     missingData.push('fullName');
+  //   if (!ReduxUserData.full_name) {
+  //     missingData.push('full_name');
   //   }
   //   if (!ReduxUserData.hoping) {
   //     missingData.push('hoping');
@@ -61,14 +63,14 @@ export default function MainRoute() {
   //     missingData.push('radius');
   //   }
 
-  //   // if (!ReduxUserData.collegeName) {
-  //   //   missingData.push('collegeName');
+  //   // if (!ReduxUserData.college_name) {
+  //   //   missingData.push('college_name');
   //   // }
   //   // if (
-  //   //   !ReduxUserData.habitsDrink ||
-  //   //   !ReduxUserData.habitsExercise ||
-  //   //   !ReduxUserData.habitsMovies ||
-  //   //   !ReduxUserData.habitsSmoke
+  //   //   !ReduxUserData.drink ||
+  //   //   !ReduxUserData.exercise ||
+  //   //   !ReduxUserData.movies ||
+  //   //   !ReduxUserData.smoke
   //   // ) {
   //   //   missingData.push('habitsScreen');
   //   // }
@@ -79,11 +81,11 @@ export default function MainRoute() {
   //   // if (!ReduxUserData.likesInto || ReduxUserData.likesInto.length === 0) {
   //   //   missingData.push('likesInto');
   //   // }
-  //   // if (!ReduxUserData.magicalPersonCommunicationStr) {
-  //   //   missingData.push('magicalPersonCommunicationStr');
+  //   // if (!ReduxUserData.communication_stry) {
+  //   //   missingData.push('communication_stry');
   //   // }
-  //   if (!ReduxUserData.recentPik) {
-  //     missingData.push('recentPik');
+  //   if (!ReduxUserData.recent_pik) {
+  //     missingData.push('recent_pik');
   //   }
   //   console.log('missingData', missingData[0]);
 
@@ -96,23 +98,23 @@ export default function MainRoute() {
   //           return 'PhoneNumber';
   //         case 'OTP':
   //           return 'OTP';
-  //         case 'fullName':
+  //         case 'full_name':
   //           return 'IdentifyYourSelf';
   //         case 'hoping':
   //           return 'HopingToFind';
   //         // case 'identity':
   //         //   return 'IdentityScreen';
-  //         // case 'collegeName':
+  //         // case 'college_name':
   //         //   return 'CollegeNameScreen';
-  //         // case 'habitsDrink':
+  //         // case 'drink':
   //         //   return 'HabitsDrinkScreen';
   //         // case 'likesInto':
   //         //   return 'LikesIntoScreen';
-  //         // case 'magicalPersonCommunicationStr':
+  //         // case 'communication_stry':
   //         //   return 'MagicalPersonCommunicationStrScreen';
   //         case 'radius':
   //           return 'DistancePreference';
-  //         case 'recentPik':
+  //         case 'recent_pik':
   //           return 'AddRecentPics';
   //         default:
   //           return 'LoginStack';
@@ -152,7 +154,8 @@ export default function MainRoute() {
 
   useEffect(() => {
     determineInitialRoute();
-  }, [determineInitialRoute]);
+    initGoogleSignIn();
+  }, []);
 
   useEffect(() => {
     if (initialRoute) {

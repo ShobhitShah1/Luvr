@@ -30,14 +30,16 @@ const WhatAboutYou: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const userData = useSelector((state: any) => state?.user);
+  // console.log('HATAT', userData);
   const dispatch = useDispatch();
   const {showToast} = useCustomToast();
   const [selectedItems, setSelectedItems] = useState<Record<string, String>>({
-    communication_stry: userData.magicalPersonCommunicationStr,
-    education_level: userData.magicalPersonEducationLevel,
-    recived_love: userData.magicalPersonReceivedLove,
-    star_sign: userData.magicalPersonStarSign,
+    communication_stry: userData.communication_stry,
+    education_level: userData.education_level,
+    recived_love: userData.recived_love,
+    star_sign: userData.star_sign,
   });
+  // console.log('WhatAboutYou userData', userData);
 
   const [IsSendRequestLoading, setIsSendRequestLoading] =
     useState<boolean>(false);
@@ -96,10 +98,10 @@ const WhatAboutYou: FC = () => {
   };
 
   const fieldsToUpdate = [
-    LocalStorageFields.magicalPersonCommunicationStr,
-    LocalStorageFields.magicalPersonEducationLevel,
-    LocalStorageFields.magicalPersonReceivedLove,
-    LocalStorageFields.magicalPersonStarSign,
+    LocalStorageFields.communication_stry,
+    LocalStorageFields.education_level,
+    LocalStorageFields.recived_love,
+    LocalStorageFields.star_sign,
   ];
 
   const onNextPress = async () => {
@@ -123,27 +125,24 @@ const WhatAboutYou: FC = () => {
         await Promise.all([
           dispatch(
             updateField(
-              LocalStorageFields.magicalPersonCommunicationStr,
+              LocalStorageFields.communication_stry,
               selectedItems.communication_stry,
             ),
           ),
           dispatch(
             updateField(
-              LocalStorageFields.magicalPersonEducationLevel,
+              LocalStorageFields.education_level,
               selectedItems.education_level,
             ),
           ),
           dispatch(
             updateField(
-              LocalStorageFields.magicalPersonReceivedLove,
+              LocalStorageFields.recived_love,
               selectedItems.recived_love,
             ),
           ),
           dispatch(
-            updateField(
-              LocalStorageFields.magicalPersonStarSign,
-              selectedItems.star_sign,
-            ),
+            updateField(LocalStorageFields.star_sign, selectedItems.star_sign),
           ),
         ]);
 

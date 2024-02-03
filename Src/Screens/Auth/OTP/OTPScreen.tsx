@@ -1,15 +1,16 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import axios from 'axios';
 import React, {FC, useEffect, useState} from 'react';
 import {Alert, Keyboard, Text, View} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import OtpInput from '../../../Components/AuthComponents/OtpInput';
 import ApiConfig from '../../../Config/ApiConfig';
 import {useLocationPermission} from '../../../Hooks/useLocationPermission';
 import {updateField} from '../../../Redux/Action/userActions';
+import UserService from '../../../Services/AuthService';
+import {transformUserDataForApi} from '../../../Services/dataTransformService';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
@@ -22,14 +23,14 @@ const OTPScreen: FC = () => {
   const route = useRoute();
   const OTPInputs: number = 4;
   const {number} = route.params as RouteParams;
+  const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
   const dispatch = useDispatch();
-  const {locationPermission} = useLocationPermission();
+  const {locationPermission, checkLocationPermission} = useLocationPermission();
   const [otp, setOtp] = useState<string[]>(Array(OTPInputs).fill(''));
   const [IsAPILoading, setIsAPILoading] = useState(false);
 
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+  const navigation = useNavigation();
   const [DisableButton, setDisableButton] = useState<boolean>(true);
 
   useEffect(() => {
@@ -41,12 +42,27 @@ const OTPScreen: FC = () => {
     }
   }, [otp]);
 
-  const VerifyClick = () => {
+  const VerifyClick = async () => {
     if (otp.length === 4) {
       Keyboard.dismiss();
-      setTimeout(() => {
-        verifyOtp();
-      }, 0);
+      // setTimeout(() => {
+      // await Promise.all([
+      //   dispatch(updateField(LocalStorageFields.OTP, otp.join(''))),
+      //   dispatch(updateField(LocalStorageFields.isVerified, true)),
+      // ]);
+      // const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
+
+      // setTimeout(() => {
+      //   if (CHECK_NOTIFICATION_PERMISSION) {
+      //     handleNavigation();
+      //   } else {
+      //     navigation.replace('LocationStack', {screen: 'LocationPermission'});
+      //     setIsAPILoading(false);
+      //   }
+      // }, 0);
+
+      verifyOtp();
+      // }, 0);
     } else {
       showToast('Invalid OTP', 'Please Verify OTP', 'error');
     }
@@ -73,13 +89,15 @@ const OTPScreen: FC = () => {
           dispatch(updateField(LocalStorageFields.OTP, otp.join(''))),
           dispatch(updateField(LocalStorageFields.isVerified, true)),
         ]);
+        const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
 
         setTimeout(() => {
-          locationPermission
-            ? navigation.replace('LoginStack', {screen: 'IdentifyYourSelf'})
-            : navigation.replace('LocationStack', {
-                screen: 'LocationPermission',
-              });
+          if (CHECK_NOTIFICATION_PERMISSION) {
+            handleNavigation();
+          } else {
+            navigation.replace('LocationStack', {screen: 'LocationPermission'});
+            setIsAPILoading(false);
+          }
         }, 0);
       } else {
         showToast(
@@ -131,6 +149,33 @@ const OTPScreen: FC = () => {
     } finally {
       setIsAPILoading(false);
     }
+  };
+
+  const handleNavigation = async () => {
+    const userDataForApi = transformUserDataForApi(userData);
+    console.log('userDataForApi', userDataForApi);
+
+    const userDataWithValidation = {
+      ...userDataForApi,
+      validation: true,
+    };
+
+    console.log('userDataWithValidation', userDataWithValidation);
+
+    const APIResponse = await UserService.UserRegister(userDataWithValidation);
+    console.log('APIResponse?.data?', APIResponse?.data?.token);
+
+    if (APIResponse?.data?.token) {
+      await dispatch(
+        updateField(LocalStorageFields.Token, APIResponse.data?.token),
+      );
+      setTimeout(() => {
+        navigation.replace('BottomTab');
+      }, 0);
+    } else {
+      navigation.replace('LoginStack');
+    }
+    setIsAPILoading(false);
   };
 
   return (

@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {FC, useCallback, useMemo, useState} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
@@ -30,12 +30,12 @@ const YourIntro: FC = () => {
   const {showToast} = useCustomToast();
   const [IsAPILoading, setIsAPILoading] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<string[]>(
-    userData.likesInto,
+    userData.likes_into || [],
   );
-
+  console.log('selectedItems', selectedItems);
   const handleOptionPress = useCallback((YourIntoID: number, name: string) => {
     setSelectedItems(prevSelection => {
-      if (prevSelection.includes(name)) {
+      if (prevSelection?.includes(name)) {
         return prevSelection.filter(item => item !== name);
       }
 
@@ -50,7 +50,8 @@ const YourIntro: FC = () => {
   const renderItem = useMemo(
     () =>
       ({item}: {item: {id: number; name: string}}) => {
-        const selectedOption = selectedItems.includes(item.name);
+        const selectedOption =
+          selectedItems && selectedItems?.includes(item.name);
         return (
           <View style={styles.YourIntoScrollViewContainer}>
             <TouchableOpacity
@@ -79,19 +80,16 @@ const YourIntro: FC = () => {
     setIsAPILoading(true);
     try {
       if (selectedItems.length === 5) {
-        setTimeout(async () => {
-          await Promise.all([
-            dispatch(updateField(LocalStorageFields.likesInto, selectedItems)),
-            dispatch(
-              updateField(LocalStorageFields.eventName, 'app_user_register'),
-            ),
-            dispatch(updateField(LocalStorageFields.loginType, 'non_social')),
-          ]);
+        await Promise.all([
+          dispatch(updateField(LocalStorageFields.likes_into, selectedItems)),
+          dispatch(
+            updateField(LocalStorageFields.eventName, 'app_user_register'),
+          ),
+        ]);
 
-          console.log('DOne');
+        console.log('DOne');
 
-          CallUpdateProfileAPI();
-        }, 0);
+        CallUpdateProfileAPI(selectedItems);
       } else {
         showToast(
           'Validation Error',
@@ -113,12 +111,24 @@ const YourIntro: FC = () => {
     }
   };
 
-  const CallUpdateProfileAPI = async () => {
+  const CallUpdateProfileAPI = async selectedItems => {
     try {
       const userDataForApi = transformUserDataForApi(userData);
-      console.log('userDataForApi', userDataForApi);
+      // console.log('userDataForApi', userDataForApi);
 
-      const APIResponse = await UserService.UserRegister(userDataForApi);
+      const ModifyData = {
+        ...userDataForApi,
+        likes_into: selectedItems,
+        validation: false,
+        eventName:
+          userDataForApi?.login_type === 'social'
+            ? 'app_user_register_social'
+            : 'app_user_register',
+      };
+
+      console.log('ModifyData', ModifyData);
+
+      const APIResponse = await UserService.UserRegister(ModifyData);
       console.log('CallUpdateProfileAPI APIResponse', APIResponse);
       console.log(
         'CallUpdateProfileAPI APIResponse TOKEN:',
@@ -144,7 +154,7 @@ const YourIntro: FC = () => {
             : 'Unknown error occurred during registration.';
         throw new Error(errorMessage);
       }
-    } catch (error) {
+    } catch (error: any) {
       showToast(
         'Registration Error',
         `Failed to complete registration. ${error?.message}`,
@@ -152,8 +162,6 @@ const YourIntro: FC = () => {
       );
     }
   };
-
-  console.log('IsLoading', IsAPILoading);
 
   return (
     <View style={CreateProfileStyles.Container}>
@@ -194,7 +202,7 @@ const YourIntro: FC = () => {
       <View style={[CreateProfileStyles.BottomButton]}>
         <GradientButton
           isLoading={IsAPILoading}
-          Title={`Next ${selectedItems.length}/5`}
+          Title={`Next ${selectedItems?.length || 0}/5`}
           Disabled={false}
           Navigation={() => {
             setIsAPILoading(true);

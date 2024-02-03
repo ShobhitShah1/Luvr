@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "920057594155",
+    "project_id": "tinder-bce94",
+    "storage_bucket": "tinder-bce94.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:920057594155:android:9a21156fa06a7316aac56e",
+        "android_client_info": {
+          "package_name": "com.HeartSync"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "920057594155-8aq2c2fehnmgod6uem2r9mk8egiu1552.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.HeartSync",
+            "certificate_hash": "b43a528e46a0873a43a0d1f2c5d5c1695f4cb777"
+          }
+        },
+        {
+          "client_id": "920057594155-adeponms184ag5k5it791vh4gduoeajg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.HeartSync",
+            "certificate_hash": "a178493bbdd498ece4dc6486dedc38021953423b"
+          }
+        },
+        {
+          "client_id": "920057594155-arii13jpcn7vehess2te20noeclnisss.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAGAtaUNIjMxl1V6V2mPVeZcHOTjaxBRk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "920057594155-arii13jpcn7vehess2te20noeclnisss.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

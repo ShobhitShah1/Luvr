@@ -2,7 +2,6 @@
 /* eslint-disable react/react-in-jsx-scope */
 import {FC, useEffect} from 'react';
 import {
-  ActivityIndicator,
   Image,
   Keyboard,
   StyleSheet,
@@ -10,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {getCountry} from 'react-native-localize';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../Common/CommonIcons';
 import {
@@ -20,6 +18,7 @@ import {
   GROUP_FONT,
   SIZES,
 } from '../../Common/Theme';
+import {fetchCountryCode} from '../../Services/AuthService';
 import CustomTextInput from '../CustomTextInput';
 import {CountryWithCode} from '../Data';
 
@@ -47,24 +46,28 @@ const CountryPickerView: FC<CountryPickerProps> = ({
   setDefaultDiallingCode,
 }) => {
   useEffect(() => {
-    const fetchCountryCode = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true);
-        const deviceCountryCode = getCountry();
-        const country = CountryWithCode.find(c => c.code === deviceCountryCode);
+        const countryCode = await fetchCountryCode();
+        console.log('countryCode', countryCode);
+        const country = CountryWithCode.find(c => c.code === countryCode);
         if (country && !diallingCode) {
+          console.log('country.dialling_code', country.dialling_code);
           setDiallingCode(country.dialling_code);
           setDefaultDiallingCode(country.dialling_code);
         }
       } catch (error) {
-        console.error('Error fetching dialling code:', error);
+        console.error('Error in component:', error);
+        setDiallingCode('+91');
+        setDefaultDiallingCode('+91');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchCountryCode();
-  }, [setIsLoading, setDefaultDiallingCode, setDiallingCode]);
+    fetchData();
+  }, []);
 
   const OnRequestOpenCodeModal = () => {
     setVisible(!visible);
@@ -79,57 +82,57 @@ const CountryPickerView: FC<CountryPickerProps> = ({
 
   return (
     <View style={styles.Container}>
-      {isLoading ? (
+      {/* {isLoading ? (
         <View style={styles.loaderView}>
           <ActivityIndicator
             color={COLORS.Primary}
             style={styles.loadingIndicator}
           />
         </View>
-      ) : (
-        <View style={styles.CountyCodeAndNameContainer}>
+      ) : ( */}
+      <View style={styles.CountyCodeAndNameContainer}>
+        <TouchableOpacity
+          onPress={OnRequestOpenCodeModal}
+          style={styles.CountryCodeAndIconView}>
+          <Text style={styles.CountryNameText}>{diallingCode || '+00'}</Text>
+          <Image
+            resizeMethod="auto"
+            resizeMode="contain"
+            source={CommonIcons.Down}
+            style={styles.downIcon}
+          />
+        </TouchableOpacity>
+
+        <View style={styles.SapLine} />
+
+        <View style={styles.PhoneNumberTextInput}>
+          <View style={styles.TextInputView}>
+            <CustomTextInput
+              autoFocus={true}
+              value={value}
+              onChangeText={number => {
+                const numericText = number.replace(/[^0-9]/g, '');
+                setValue(numericText);
+              }}
+              keyboardType="number-pad"
+              style={styles.TextInput}
+              placeholderTextColor={COLORS.Gray}
+              placeholder={'Enter phone number'}
+            />
+          </View>
+
           <TouchableOpacity
-            onPress={OnRequestOpenCodeModal}
-            style={styles.CountryCodeAndIconView}>
-            <Text style={styles.CountryNameText}>{diallingCode || '+00'}</Text>
+            activeOpacity={ActiveOpacity}
+            onPress={OnCancelNumberPress}
+            style={styles.CancelIconView}>
             <Image
-              resizeMethod="auto"
-              resizeMode="contain"
-              source={CommonIcons.Down}
-              style={styles.downIcon}
+              source={CommonIcons.CancelPhoneNumber}
+              style={styles.CancelIcon}
             />
           </TouchableOpacity>
-
-          <View style={styles.SapLine} />
-
-          <View style={styles.PhoneNumberTextInput}>
-            <View style={styles.TextInputView}>
-              <CustomTextInput
-                autoFocus={true}
-                value={value}
-                onChangeText={number => {
-                  const numericText = number.replace(/[^0-9]/g, '');
-                  setValue(numericText);
-                }}
-                keyboardType="number-pad"
-                style={styles.TextInput}
-                placeholderTextColor={COLORS.Gray}
-                placeholder={'Enter phone number'}
-              />
-            </View>
-
-            <TouchableOpacity
-              activeOpacity={ActiveOpacity}
-              onPress={OnCancelNumberPress}
-              style={styles.CancelIconView}>
-              <Image
-                source={CommonIcons.CancelPhoneNumber}
-                style={styles.CancelIcon}
-              />
-            </TouchableOpacity>
-          </View>
         </View>
-      )}
+      </View>
+      {/* )} */}
     </View>
   );
 };
