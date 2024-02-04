@@ -76,7 +76,7 @@ const LocationPermission: FC = () => {
       showToast(
         'Something went wrong',
         String(
-          error?.message ??
+          error?.message ||
             'Unable to find your location please try gain letter',
         ),
         'error',

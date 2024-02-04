@@ -1,5 +1,5 @@
 const ApiConfig = {
-  DEBUG: true,
+  DEBUG: false,
   BASE_URL: 'https://nirvanatechlabs.in/dating/',
   IMAGE_UPLOAD_BASE_URL: 'https://nirvanatechlabs.in/dating/upload',
   GET_LOCATION_API: 'http://ip-api.com/json/?fields=countryCode',

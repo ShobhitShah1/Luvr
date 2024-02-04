@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Skeleton} from 'moti/skeleton';
 import React, {useCallback, useEffect, useState} from 'react';
@@ -39,30 +38,21 @@ const ProfileScreen = () => {
     undefined,
   );
   const [percentage, setPercentage] = useState(0);
-  // const percentage = calculateDataPercentage(ProfileData);
   const [ErrorFetchingData, setErrorFetchingData] = useState<boolean>(false);
-
-  const [refreshing, setRefreshing] = React.useState(false);
-  const isFocused = useIsFocused();
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    GetProfileData();
+    fetchProfileData();
   }, []);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    GetProfileData();
+    fetchProfileData();
   }, []);
 
-  //* User Like API
-  const GetProfileData = async () => {
+  const fetchProfileData = async () => {
     setIsAPILoading(true);
     setErrorFetchingData(false);
-
-    // Set a timeout for 2 seconds
-    // const timeoutId = setTimeout(() => {
-    //   setIsAPILoading(true);
-    // }, 500);
 
     try {
       const userDataForApi = {
@@ -70,45 +60,31 @@ const ProfileScreen = () => {
       };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
-
-      // Clear the timeout as we got the response
-      // clearTimeout(timeoutId);
-
       if (APIResponse?.code === 200) {
         setProfileData(APIResponse.data);
-        let GetPercentage = calculateDataPercentage(APIResponse.data);
-        console.log('GetPercentage', GetPercentage);
-        setPercentage(GetPercentage);
-        console.log('GetProfileData Data:', APIResponse.data);
+        console.log('APIResponse.data', APIResponse.data);
+        const ProfilePercentage = calculateDataPercentage(APIResponse.data);
+        setPercentage(ProfilePercentage);
       } else {
         showToast(
           'Something went wrong',
-          APIResponse?.message || 'Please try again letter',
+          APIResponse?.message || 'Please try again later',
           'error',
         );
         setProfileData({} as ProfileType);
       }
     } catch (error) {
-      console.log('Something Went Wrong With Feting API Data');
+      console.error('Error fetching API data:', error);
+      showToast(
+        'Error',
+        'Something went wrong. Please try again later.',
+        'error',
+      );
     } finally {
-      // Clear the timeout in case the response is received within 2 seconds
-      // clearTimeout(timeoutId);
-
       setIsAPILoading(false);
       setRefreshing(false);
     }
   };
-
-  // if (IsAPILoading) {
-  //   return (
-  //     <React.Fragment>
-  //       <BottomTabHeader />
-  //       <View style={[styles.container, styles.LoaderContainer]}>
-  //         <ActivityIndicator size={'large'} color={COLORS.Primary} />
-  //       </View>
-  //     </React.Fragment>
-  //   );
-  // }
 
   return (
     <View style={styles.container}>
@@ -209,7 +185,7 @@ const ProfileScreen = () => {
                 width={250}
                 colors={COLORS.LoaderGradient}>
                 <Text style={styles.UserCityText}>
-                  {IsAPILoading ? '' : ProfileData?.city || 'Not Specified'}
+                  {IsAPILoading ? '' : ProfileData?.city || ''}
                 </Text>
               </Skeleton>
             </View>

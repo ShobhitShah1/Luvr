@@ -13,7 +13,6 @@ import {
   Dimensions,
   FlatList,
   Image,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -29,7 +28,6 @@ import {TotalProfilePicCanUploadEditProfile} from '../../Config/Setting';
 import {useCameraPermission} from '../../Hooks/useCameraPermission';
 import {useGalleryPermission} from '../../Hooks/useGalleryPermission';
 import UserService from '../../Services/AuthService';
-// import ProfileService from '../../Services/ProfileService';
 import NetInfo from '@react-native-community/netinfo';
 import Geolocation from 'react-native-geolocation-service';
 import {useDispatch, useSelector} from 'react-redux';
@@ -51,6 +49,13 @@ const EditProfileScreen = () => {
   const yearInputRef = useRef(null);
   const monthInputRef = useRef(null);
 
+  const {requestCameraPermission} = useCameraPermission();
+  const {requestGalleryPermission} = useGalleryPermission();
+  const {showToast} = useCustomToast();
+  const dispatch = useDispatch();
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const UserData = useSelector((state: any) => state?.user);
+  const [IsFetchDataAPILoading, setIsFetchDataAPILoading] = useState(false);
   const [profile, setProfile] = useState<ProfileType>();
   const [IsInternetConnected, setIsInternetConnected] = useState(true);
   const [ChooseModalVisible, setChooseModalVisible] = useState<boolean>(false);
@@ -61,14 +66,7 @@ const EditProfileScreen = () => {
   const [EducationDegree, setEducationDegree] = useState(
     profile?.education?.digree,
   );
-  const {requestCameraPermission} = useCameraPermission();
-  const {requestGalleryPermission} = useGalleryPermission();
-  const {showToast} = useCustomToast();
-  const dispatch = useDispatch();
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
-  const UserData = useSelector((state: any) => state?.user);
-
+  // console.log('UserData', UserData);
   const Day = profile?.birthdate?.split('/')[0];
   const Month = profile?.birthdate?.split('/')[1];
   const Year = profile?.birthdate?.split('/')[2];
@@ -90,6 +88,7 @@ const EditProfileScreen = () => {
       try {
         const IsNetOn = await NetInfo.fetch().then(info => info.isConnected);
         if (IsNetOn) {
+          setIsFetchDataAPILoading(true);
           await GetProfileData();
           await CheckLocationPermission();
           setIsInternetConnected(true);
@@ -102,6 +101,7 @@ const EditProfileScreen = () => {
           error,
         );
         setIsInternetConnected(false);
+        setIsFetchDataAPILoading(false);
       }
     };
 
@@ -110,6 +110,21 @@ const EditProfileScreen = () => {
 
   const {locationPermission, requestLocationPermission} =
     useLocationPermission();
+
+  const handleTextInputChange = (
+    value,
+    setValueFunc,
+    maxLength,
+    nextInputRef,
+  ) => {
+    const numericValue = value.replace(/[^0-9]/g, ''); // Filter out non-numeric characters
+    setValueFunc(numericValue); // Set the filtered numeric value
+
+    // Check if the current input has reached its maximum length and the input is valid
+    if (numericValue.length === maxLength && nextInputRef) {
+      nextInputRef.current.focus(); // Focus on the next input
+    }
+  };
 
   //* Check User Location Permission
   const CheckLocationPermission = async () => {
@@ -152,7 +167,7 @@ const EditProfileScreen = () => {
       showToast(
         'Something went wrong',
         String(
-          error?.message ??
+          error?.message ||
             'Unable to find your location please try gain letter',
         ),
         'error',
@@ -176,9 +191,9 @@ const EditProfileScreen = () => {
         setBio(DataToStore.bio);
         setCollegeName(DataToStore.education.college_name);
         setEducationDegree(DataToStore.education.digree);
-        setBirthdateDay(DataToStore?.birthdate.split('/')[0]);
-        setBirthdateMonth(DataToStore?.birthdate.split('/')[1]);
-        setBirthdateYear(DataToStore?.birthdate.split('/')[2]);
+        setBirthdateDay(DataToStore?.birthdate?.split('/')[0]);
+        setBirthdateMonth(DataToStore?.birthdate?.split('/')[1]);
+        setBirthdateYear(DataToStore?.birthdate?.split('/')[2]);
 
         if (DataToStore?.recent_pik?.length !== 0) {
           DataToStore?.recent_pik?.forEach((res, index) => {
@@ -204,13 +219,15 @@ const EditProfileScreen = () => {
             }
           });
         }
+        setIsFetchDataAPILoading(false);
         console.log('GetProfileData Data:', APIResponse.data);
       } else {
         setProfile({} as ProfileType);
+        setIsFetchDataAPILoading(false);
       }
     } catch (error) {
       console.log('Something Went Wrong With Feting API Data');
-    } finally {
+      setIsFetchDataAPILoading(false);
     }
   };
 
@@ -314,89 +331,6 @@ const EditProfileScreen = () => {
       console.error('Error handling user selection:', error);
     }
   };
-  // console.log('profile', profile);
-
-  //* Update Profile API Call (API CALL)
-  const onUpdateProfile = async () => {
-    try {
-      if (!IsInternetConnected) {
-        showToast(
-          'Network Issue',
-          'Please check your internet connection and try again',
-          'error',
-        );
-        return;
-      }
-
-      console.log(BirthdateDay, BirthdateMonth, BirthdateYear);
-
-      // Mapping dynamic data to the new format
-      const DataToSend = {
-        eventName: 'app_user_register',
-        login_type: 'non_social',
-        user_from: 'app',
-        mobile_no: profile?.mobile_no || '', // Taken from the response
-        identity: profile?.identity || '', // Taken from the response
-        profile_image: '', // You haven't provided this data, so keeping it empty
-        full_name: profile?.full_name || '', // Taken from the response
-        birthdate:
-          `${BirthdateDay || '00'}/${BirthdateMonth || '00'}/${
-            BirthdateYear || '0000'
-          }` || profile?.birthdate,
-        bio: Bio || '',
-        gender: profile?.gender || '', // Taken from the response
-        city: profile?.city || '', // Taken from the response
-        orientation: profile?.orientation || [], // Taken from the response
-        is_orientation_visible: profile?.is_orientation_visible || false, // Taken from the response
-        hoping: profile?.hoping || '', // Taken from the response
-        education: {
-          digree: profile?.education?.digree || '', // Taken from the response
-          college_name: profile?.education?.college_name || '', // Taken from the response
-        },
-        habits: {
-          exercise: profile?.habits?.exercise || '', // Taken from the response
-          smoke: profile?.habits?.smoke || '', // Taken from the response
-          movies: profile?.habits?.movies || '', // Taken from the response
-          drink: profile?.habits?.drink || '', // Taken from the response
-        },
-        magical_person: {
-          communication_stry: profile?.magical_person?.star_sign || '', // Taken from the response
-          recived_love: profile?.magical_person?.recived_love || '', // Taken from the response
-          education_level: profile?.magical_person?.education_level || '', // Taken from the response
-          star_sign: profile?.magical_person?.star_sign || '', // Taken from the response
-        },
-        likes_into: profile?.likes_into || [], // Taken from the response
-        is_block_contact: profile?.is_block_contact, // This is not present in the response, consider how you want to handle this
-        latitude: profile?.latitude || '', // Taken from the response
-        longitude: profile?.longitude || '', // Taken from the response
-        radius: profile?.radius || 0, // Taken from the response
-        recent_pik: profile?.recent_pik, // You haven't provided this data, so keeping it empty
-      };
-
-      console.log('DataToSend', DataToSend);
-
-      // const APIResponse = await UserService.UserRegister(data);
-      // console.log('Update Profile Response :--:>', APIResponse);
-
-      // if (APIResponse.status) {
-      //   setProfile(APIResponse.data);
-      //   showToast(
-      //     'Profile Updated',
-      //     'Your profile information has been successfully updated.',
-      //     'success',
-      //   );
-      // } else {
-      //   showToast(
-      //     'Error Updating Profile',
-      //     'Oops! Something went wrong while trying to update your profile?. Please try again later or contact support if the issue persists',
-      //     'error',
-      //   );
-      //   console.log('Something went wrong');
-      // }
-    } catch (error) {
-      console.log('Something went wrong edit profile :--:>', error);
-    }
-  };
 
   //* Upload Single Image
   // const UploadImage = async (item: any) => {
@@ -435,10 +369,91 @@ const EditProfileScreen = () => {
   //   // }
   // };
 
-  console.log(profile?.likes_into);
+  //* Update Profile API Call (API CALL)
+  const onUpdateProfile = async () => {
+    setIsFetchDataAPILoading(true);
+    try {
+      if (!IsInternetConnected) {
+        showToast(
+          'Network Issue',
+          'Please check your internet connection and try again',
+          'error',
+        );
+        return;
+      }
+
+      const DataToSend = {
+        eventName: 'update_profile',
+        mobile_no: profile?.mobile_no,
+        identity: profile?.identity,
+        profile_image: profile?.profile_image,
+        full_name: profile?.full_name,
+        birthdate:
+          `${BirthdateDay || '00'}/${BirthdateMonth || '00'}/${
+            BirthdateYear || '0000'
+          }` || profile?.birthdate,
+        gender: profile?.gender,
+        city: profile?.city,
+        orientation: profile?.orientation,
+        is_orientation_visible: profile?.is_orientation_visible,
+        hoping: profile?.hoping,
+        education: {
+          digree: EducationDegree || profile?.education?.digree,
+          college_name: CollegeName || profile?.education?.college_name,
+        },
+        habits: {
+          exercise: profile?.habits?.exercise,
+          smoke: profile?.habits?.smoke,
+          movies: profile?.habits?.movies,
+          drink: profile?.habits?.drink,
+        },
+        magical_person: {
+          communication_stry: profile?.magical_person?.communication_stry,
+          recived_love: profile?.magical_person?.recived_love,
+          education_level: profile?.magical_person?.education_level,
+          star_sign: profile?.magical_person?.star_sign,
+        },
+        likes_into: profile?.likes_into,
+        is_block_contact: profile?.is_block_contact,
+        latitude: UserData?.latitude,
+        longitude: UserData?.longitude,
+        radius: profile?.radius,
+        // recent_pik: profile?.recent_pik,
+      };
+
+      console.log('DataToSend', DataToSend);
+      const APIResponse = await UserService.UserRegister(DataToSend);
+      console.log('Update Profile Response :--:>', APIResponse);
+
+      if (APIResponse.code === 200) {
+        GetProfileData();
+        showToast(
+          'Profile Updated',
+          'Your profile information has been successfully updated.',
+          'success',
+        );
+      } else {
+        showToast(
+          'Error Updating Profile',
+          'Oops! Something went wrong while trying to update your profile. Please try again later or contact support if the issue persists',
+          'error',
+        );
+        console.log('Something went wrong');
+      }
+    } catch (error) {
+      console.log('Something went wrong edit profile :--:>', error);
+    } finally {
+      setIsFetchDataAPILoading(false);
+    }
+  };
+
   return (
     <View style={styles.Container}>
-      <ProfileAndSettingHeader Title={'Edit Profile'} />
+      <ProfileAndSettingHeader
+        Title={'Edit Profile'}
+        onUpdatePress={onUpdateProfile}
+      />
+      {/* <ProfileAndSettingHeader Title={'Edit Profile'} /> */}
       <ScrollView bounces={false} style={styles.ContentView}>
         <View style={styles.ListSubView}>
           {/* Name View */}
@@ -448,9 +463,9 @@ const EditProfileScreen = () => {
               Icon={CommonIcons.ProfileTab}
               Title="Name"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <Text style={styles.UserFullNameStyle}>
-                {profile?.full_name ?? 'User'}
+                {profile?.full_name || 'User'}
               </Text>
             </EditProfileBoxView>
           </View>
@@ -462,7 +477,7 @@ const EditProfileScreen = () => {
               Icon={CommonIcons.birthday_icon}
               Title="Birthday"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <View style={styles.BirthDateContainerView}>
                 <CustomTextInput
                   ref={dayInputRef}
@@ -471,11 +486,14 @@ const EditProfileScreen = () => {
                   value={BirthdateDay}
                   cursorColor={COLORS.Primary}
                   defaultValue={profile?.birthdate?.split('/')[0]}
-                  onChangeText={value => {
-                    console.log('DayInput', value);
-                    setBirthdateDay(value);
-                    handleTextChange(value, monthInputRef);
-                  }}
+                  onChangeText={value =>
+                    handleTextInputChange(
+                      value,
+                      setBirthdateDay,
+                      2,
+                      monthInputRef,
+                    )
+                  }
                   maxLength={2}
                   placeholder="DD"
                   style={[styles.BirthDateInputStyle]}
@@ -488,11 +506,14 @@ const EditProfileScreen = () => {
                   keyboardType={'number-pad'}
                   cursorColor={COLORS.Primary}
                   defaultValue={profile?.birthdate?.split('/')[1]}
-                  onChangeText={value => {
-                    setBirthdateMonth(value);
-                    console.log('MonthInput', value);
-                    handleTextChange(value, yearInputRef);
-                  }}
+                  onChangeText={value =>
+                    handleTextInputChange(
+                      value,
+                      setBirthdateMonth,
+                      2,
+                      yearInputRef,
+                    )
+                  }
                   maxLength={2}
                   placeholder="MM"
                   style={[styles.BirthDateInputStyle]}
@@ -505,10 +526,14 @@ const EditProfileScreen = () => {
                   cursorColor={COLORS.Primary}
                   defaultValue={profile?.birthdate?.split('/')[2]}
                   keyboardType={'number-pad'}
-                  onChangeText={value => {
-                    console.log('yearInput', value);
-                    setBirthdateYear(value);
-                  }}
+                  onChangeText={value =>
+                    handleTextInputChange(
+                      value,
+                      setBirthdateYear,
+                      4,
+                      yearInputRef,
+                    )
+                  }
                   maxLength={4}
                   placeholder="YYYY"
                   style={[styles.BirthDateInputStyle]}
@@ -522,7 +547,7 @@ const EditProfileScreen = () => {
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
-              Icon={CommonIcons.birthday_icon}
+              Icon={CommonIcons.media_icon}
               Title="Media"
             />
 
@@ -571,10 +596,10 @@ const EditProfileScreen = () => {
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
-              Icon={CommonIcons.about_me_icon}
+              Icon={CommonIcons.gender_icon}
               Title="Gender"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <EditProfileCategoriesList
                 EmptyTitleText="Your gender?"
                 Item={
@@ -596,7 +621,7 @@ const EditProfileScreen = () => {
               Icon={CommonIcons.location_icon}
               Title="I’m from"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <Text style={styles.UserFullNameStyle}>
                 {profile?.city || 'Not Added Yet'}
               </Text>
@@ -610,7 +635,7 @@ const EditProfileScreen = () => {
               Icon={CommonIcons.i_like_icon}
               Title="I like"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <EditProfileCategoriesList
                 EmptyTitleText="What you like?"
                 Item={
@@ -630,7 +655,7 @@ const EditProfileScreen = () => {
               Icon={CommonIcons.looking_for_icon}
               Title="Looking for"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <EditProfileCategoriesList
                 EmptyTitleText="Add what you looking for"
                 Item={
@@ -650,7 +675,7 @@ const EditProfileScreen = () => {
               Icon={CommonIcons.interested_in_icon}
               Title="Interested in"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <EditProfileCategoriesList
                 EmptyTitleText="What's your Interest?"
                 Item={
@@ -669,10 +694,10 @@ const EditProfileScreen = () => {
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
-              Icon={CommonIcons.interested_in_icon}
+              Icon={CommonIcons.zodiac_sign_icon}
               Title="Zodiac sign"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <EditProfileCategoriesList
                 EmptyTitleText="Add Your Zodiac Sign"
                 Item={
@@ -694,7 +719,7 @@ const EditProfileScreen = () => {
               Icon={CommonIcons.education_icon}
               Title="Education"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <View>
                 <View style={styles.EducationInputView}>
                   <Text style={styles.EducationTitleText}>
@@ -732,10 +757,10 @@ const EditProfileScreen = () => {
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
-              Icon={CommonIcons.education_icon}
+              Icon={CommonIcons.communication_style_icon}
               Title="Communication style"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <EditProfileCategoriesList
                 EmptyTitleText="Add Communication Style"
                 Item={
@@ -754,10 +779,10 @@ const EditProfileScreen = () => {
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
-              Icon={CommonIcons.education_icon}
+              Icon={CommonIcons.exercise_icon}
               Title="Exercise"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <EditProfileCategoriesList
                 EmptyTitleText="How often you do Exercise?"
                 Item={
@@ -776,10 +801,10 @@ const EditProfileScreen = () => {
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
-              Icon={CommonIcons.education_icon}
+              Icon={CommonIcons.smoke_and_drinks_icon}
               Title="Smoke & drinks"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <EditProfileCategoriesList
                 EmptyTitleText="Are you into Smoke & drinks?"
                 Item={
@@ -798,10 +823,10 @@ const EditProfileScreen = () => {
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
-              Icon={CommonIcons.education_icon}
+              Icon={CommonIcons.movies_icon}
               Title="Movies"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <EditProfileCategoriesList
                 EmptyTitleText="how often you movies?"
                 Item={
@@ -820,10 +845,10 @@ const EditProfileScreen = () => {
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
-              Icon={CommonIcons.education_icon}
+              Icon={CommonIcons.drink_icon}
               Title="Drink"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <EditProfileCategoriesList
                 EmptyTitleText="What you drink dude?"
                 Item={
@@ -857,6 +882,9 @@ const EditProfileScreen = () => {
             backgroundColor: COLORS.Secondary,
           }}
           handleComponent={null}
+          // enableDismissOnClose={false}
+          // enableOverDrag={false}
+          // enablePanDownToClose={false}
           backdropComponent={props => (
             <BlurView blurAmount={2} style={props.style}>
               <BottomSheetBackdrop

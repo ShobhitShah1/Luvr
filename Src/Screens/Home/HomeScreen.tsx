@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   FlatList,
   ImageBackground,
@@ -9,18 +9,18 @@ import {
   View,
 } from 'react-native';
 import {HomeLookingForData} from '../../Components/Data';
-import BottomTabHeader from './Components/BottomTabHeader';
-import CategoryHeaderView from './Components/CategoryHeaderView';
-import styles from './styles';
-import UserService from '../../Services/AuthService';
-import {store} from '../../Redux/Store/store';
 import {
   onSwipeRight,
   setUserData,
   updateField,
 } from '../../Redux/Action/userActions';
+import {store} from '../../Redux/Store/store';
+import UserService from '../../Services/AuthService';
+import {LocalStorageFields} from '../../Types/LocalStorageFields';
+import BottomTabHeader from './Components/BottomTabHeader';
+import CategoryHeaderView from './Components/CategoryHeaderView';
 import RenderLookingView from './Components/RenderLookingView';
-import {mapApiResponseToUserDataType} from '../../Services/mapApiResponseToUserDataType';
+import styles from './styles';
 
 const HomeScreen = () => {
   const [IsAPIDataLoading, setIsAPIDataLoading] = useState(false);
@@ -31,6 +31,27 @@ const HomeScreen = () => {
     GetProfileData();
   }, []);
 
+  function flattenObject(obj: any, prefix: string = ''): Record<string, any> {
+    if (!obj || typeof obj !== 'object') {
+      return {};
+    }
+
+    return Object.entries(obj).reduce(
+      (acc: Record<string, any>, [key, value]) => {
+        const prefixedKey = key;
+        // const prefixedKey = prefix ? `${prefix}.${key}` : key;
+        if (typeof value === 'object' && !Array.isArray(value)) {
+          const flattened = flattenObject(value, prefixedKey);
+          Object.assign(acc, flattened);
+        } else {
+          acc[prefixedKey] = value;
+        }
+        return acc;
+      },
+      {},
+    );
+  }
+
   const GetProfileData = async () => {
     try {
       const userDataForApi = {
@@ -38,25 +59,36 @@ const HomeScreen = () => {
       };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
-      const ModifyData = await mapApiResponseToUserDataType(userDataForApi);
-      console.log('ModifyData', ModifyData);
       if (APIResponse?.code === 200) {
+        const flattenedData = flattenObject(APIResponse.data);
+        Object.entries(flattenedData).forEach(([field, value]) => {
+          if (field in LocalStorageFields) {
+            const validField = field as keyof typeof LocalStorageFields;
+            store.dispatch(updateField(validField, value));
+          }
+        });
         store.dispatch(setUserData(APIResponse.data));
         console.log('GetProfileData Data:', APIResponse.data);
       }
     } catch (error) {
-      console.log('Something Went Wrong With Feting API Data');
+      console.log('Something Went Wrong With Feting API Data', error);
     } finally {
       setRefreshing(false);
     }
   };
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
     setIsAPIDataLoading(true);
-    setTimeout(() => {
-      GetMyLikes();
-    }, 2000);
+
+    try {
+      await Promise.allSettled([GetMyLikes(), GetProfileData()]);
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+    } finally {
+      setRefreshing(false);
+      setIsAPIDataLoading(false);
+    }
   }, []);
 
   const GetMyLikes = async () => {
@@ -74,7 +106,7 @@ const HomeScreen = () => {
             const userIds = Array.isArray(APIResponse.data)
               ? APIResponse.data
               : [APIResponse.data];
-            console.log('userIds', userIds);
+            // console.log('userIds', userIds);
             store.dispatch(onSwipeRight(userIds));
           }
         }
@@ -139,7 +171,7 @@ const HomeScreen = () => {
   );
 
   const VerticalImageView = ({data}: any) => {
-    console.log('data?.image', data?.image);
+    // console.log('data?.image', data?.image);
     return (
       <ImageBackground
         source={data?.image}

@@ -32,7 +32,7 @@ export const fetchCountryCode = async () => {
     return response.data.countryCode;
   } catch (error) {
     console.error('Error fetching device country code:', error);
-    throw error; // Re-throw the error to handle it in the component
+    throw error;
   }
 };
 

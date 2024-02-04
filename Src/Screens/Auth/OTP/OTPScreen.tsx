@@ -46,22 +46,22 @@ const OTPScreen: FC = () => {
     if (otp.length === 4) {
       Keyboard.dismiss();
       // setTimeout(() => {
-      // await Promise.all([
-      //   dispatch(updateField(LocalStorageFields.OTP, otp.join(''))),
-      //   dispatch(updateField(LocalStorageFields.isVerified, true)),
-      // ]);
-      // const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
+      await Promise.all([
+        dispatch(updateField(LocalStorageFields.OTP, otp.join(''))),
+        dispatch(updateField(LocalStorageFields.isVerified, true)),
+      ]);
+      const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
 
-      // setTimeout(() => {
-      //   if (CHECK_NOTIFICATION_PERMISSION) {
-      //     handleNavigation();
-      //   } else {
-      //     navigation.replace('LocationStack', {screen: 'LocationPermission'});
-      //     setIsAPILoading(false);
-      //   }
-      // }, 0);
+      setTimeout(() => {
+        if (CHECK_NOTIFICATION_PERMISSION) {
+          handleNavigation();
+        } else {
+          navigation.replace('LocationStack', {screen: 'LocationPermission'});
+          setIsAPILoading(false);
+        }
+      }, 0);
 
-      verifyOtp();
+      // verifyOtp();
       // }, 0);
     } else {
       showToast('Invalid OTP', 'Please Verify OTP', 'error');

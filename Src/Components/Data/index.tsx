@@ -5227,32 +5227,38 @@ export const HomeLookingForData = [
   {
     id: 1,
     title: 'hoping',
-    image: CommonImages.WelcomeBackground,
+    image:
+      'https://images.unsplash.com/photo-1617788472008-1e524a74cf25?q=80&w=1951&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
   {
     id: 2,
     title: 'New friends',
-    image: CommonImages.WelcomeBackground,
+    image:
+      'https://images.unsplash.com/photo-1522098605161-cc0c1434c31a?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
   {
     id: 3,
     title: 'Something casual',
-    image: CommonImages.WelcomeBackground,
+    image:
+      'https://images.unsplash.com/photo-1500027014421-46ccc843776a?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
   {
     id: 4,
     title: 'Party partner',
-    image: CommonImages.WelcomeBackground,
+    image:
+      'https://images.unsplash.com/photo-1541532713592-79a0317b6b77?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
   {
     id: 5,
     title: 'Sort term relationship',
-    image: CommonImages.WelcomeBackground,
+    image:
+      'https://images.unsplash.com/photo-1520975408777-d189f6edc46d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
   {
     id: 6,
     title: 'Help',
-    image: CommonImages.WelcomeBackground,
+    image:
+      'https://images.unsplash.com/photo-1541976844346-f18aeac57b06?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
 ];
 

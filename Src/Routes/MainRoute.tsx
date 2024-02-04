@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
-import {NavigationContainer} from '@react-navigation/native';
+import {CommonActions, NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React, {useCallback, useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
@@ -35,127 +35,59 @@ import EditProfileScreen from '../Screens/Profile/EditProfileScreen';
 import SettingScreen from '../Screens/Setting/SettingScreen';
 import NotificationScreen from '../Screens/Notification/NotificationScreen';
 import {initGoogleSignIn} from '../Services/AuthService';
+import {navigationRef} from './RootNavigation';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
   const ReduxUserData = useSelector((state: any) => state.user);
   const isUserVerified: boolean = ReduxUserData?.isVerified;
   const [initialRoute, setInitialRoute] = useState<string>('');
-
-  //* On Profile Creation Stack Check Data For All Screen Navigate To Missing Screen's (Screen With No Skip Option)
-
-  // const getMissingDataScreen = () => {
-  //   const missingData = [];
-
-  //   if (!ReduxUserData.mobileNo) {
-  //     missingData.push('mobileNo');
-  //   }
-  //   if (!ReduxUserData.otp) {
-  //     missingData.push('OTP');
-  //   }
-  //   if (!ReduxUserData.full_name) {
-  //     missingData.push('full_name');
-  //   }
-  //   if (!ReduxUserData.hoping) {
-  //     missingData.push('hoping');
-  //   }
-  //   if (!ReduxUserData.radius) {
-  //     missingData.push('radius');
-  //   }
-
-  //   // if (!ReduxUserData.college_name) {
-  //   //   missingData.push('college_name');
-  //   // }
-  //   // if (
-  //   //   !ReduxUserData.drink ||
-  //   //   !ReduxUserData.exercise ||
-  //   //   !ReduxUserData.movies ||
-  //   //   !ReduxUserData.smoke
-  //   // ) {
-  //   //   missingData.push('habitsScreen');
-  //   // }
-
-  //   // if (!ReduxUserData.identity) {
-  //   //   missingData.push('identity');
-  //   // }
-  //   // if (!ReduxUserData.likesInto || ReduxUserData.likesInto.length === 0) {
-  //   //   missingData.push('likesInto');
-  //   // }
-  //   // if (!ReduxUserData.communication_stry) {
-  //   //   missingData.push('communication_stry');
-  //   // }
-  //   if (!ReduxUserData.recent_pik) {
-  //     missingData.push('recent_pik');
-  //   }
-  //   console.log('missingData', missingData[0]);
-
-  //   switch (missingData.length) {
-  //     case 0:
-  //       return 'BottomTab';
-  //     case 1:
-  //       switch (missingData[0]) {
-  //         case 'mobileNo':
-  //           return 'PhoneNumber';
-  //         case 'OTP':
-  //           return 'OTP';
-  //         case 'full_name':
-  //           return 'IdentifyYourSelf';
-  //         case 'hoping':
-  //           return 'HopingToFind';
-  //         // case 'identity':
-  //         //   return 'IdentityScreen';
-  //         // case 'college_name':
-  //         //   return 'CollegeNameScreen';
-  //         // case 'drink':
-  //         //   return 'HabitsDrinkScreen';
-  //         // case 'likesInto':
-  //         //   return 'LikesIntoScreen';
-  //         // case 'communication_stry':
-  //         //   return 'MagicalPersonCommunicationStrScreen';
-  //         case 'radius':
-  //           return 'DistancePreference';
-  //         case 'recent_pik':
-  //           return 'AddRecentPics';
-  //         default:
-  //           return 'LoginStack';
-  //       }
-  //     default:
-  //       return 'PhoneNumber';
-  //   }
-  // };
-
-  // const initialRouteName = getMissingDataScreen();
-
   const {checkLocationPermission} = useLocationPermission();
+  const [isNavigationReady, setIsNavigationReady] = useState(false);
+
+  useEffect(() => {
+    determineInitialRoute();
+    initGoogleSignIn();
+  }, []);
 
   const determineInitialRoute = useCallback(async () => {
     try {
       const checkLoginPermission = await checkLocationPermission();
       console.log('checkLoginPermission', checkLoginPermission);
 
-      if (isUserVerified) {
-        if (checkLoginPermission) {
-          if (ReduxUserData?.isImageUploaded) {
-            setInitialRoute('BottomTab');
-          } else {
-            setInitialRoute('LoginStack');
-          }
-        } else {
-          setInitialRoute('LocationStack');
-        }
-      } else {
+      if (!isUserVerified) {
         setInitialRoute('NumberVerification');
+        return;
+      }
+
+      console.log('Pass isUserVerified ✅');
+
+      if (!checkLoginPermission) {
+        setInitialRoute('LocationStack');
+        return;
+      }
+      console.log('Pass checkLoginPermission ✅');
+      console.log('isNavigationReady', isNavigationReady);
+      if (
+        ReduxUserData?.isImageUploaded ||
+        (ReduxUserData?.userData?.recent_pik &&
+          ReduxUserData?.userData?.recent_pik?.length !== 0)
+      ) {
+        console.log('Pass recent_pik ✅');
+        setInitialRoute('BottomTab');
+      } else {
+        console.log('Fail recent_pik ❌');
+        console.log('navigationRef', navigationRef.isReady());
+        setInitialRoute('LoginStack');
+        navigationRef?.navigate('LoginStack', {
+          screen: 'AddRecentPics',
+        });
       }
     } catch (error) {
       console.error('Error determining initial route:', error);
       setInitialRoute('NumberVerification');
     }
-  }, [isUserVerified]);
-
-  useEffect(() => {
-    determineInitialRoute();
-    initGoogleSignIn();
-  }, []);
+  }, [isUserVerified, navigationRef, isNavigationReady]);
 
   useEffect(() => {
     if (initialRoute) {
@@ -235,7 +167,11 @@ export default function MainRoute() {
   return (
     <React.Fragment>
       {initialRoute && (
-        <NavigationContainer>
+        <NavigationContainer
+          ref={navigationRef}
+          onReady={() => {
+            setIsNavigationReady(true);
+          }}>
           <Stack.Navigator
             screenOptions={{
               headerShown: false,

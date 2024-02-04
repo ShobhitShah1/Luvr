@@ -21,8 +21,9 @@ export const COLORS = {
   GradientViewForCards: ['rgba(217, 217, 217, 0)', 'rgba(0, 0, 0, 0.4)'],
   LoaderGradient: [
     'rgba(255, 65, 101, 0.7)',
-    'rgba(245, 113, 138, 1)',
+    'rgba(198, 198, 198, 0.3)',
     'rgba(255, 65, 101, 0.7)',
+    'rgba(198, 198, 198, 0.3)',
     'rgba(245, 113, 138, 1)',
   ],
 };

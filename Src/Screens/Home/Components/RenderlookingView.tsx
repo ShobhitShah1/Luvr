@@ -1,16 +1,18 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Skeleton} from 'moti/skeleton';
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import {
   ImageBackground,
   StyleSheet,
   Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS, GROUP_FONT} from '../../../Common/Theme';
+import FastImage from 'react-native-fast-image';
 
 interface RenderLookingViewProps {
   item: {
@@ -30,7 +32,8 @@ const RenderLookingView: FC<RenderLookingViewProps> = ({
   const navigation =
     useNavigation<NativeStackNavigationProp<{CategoryDetailCards: {}}>>();
   const marginHorizontal = index % 2 === 0 ? 0 : '3%';
-
+  const [IsImageLoading, setIsImageLoading] = useState(false)
+  console.log('item?.image', item?.image);
   return (
     <TouchableOpacity
       activeOpacity={1}
@@ -39,16 +42,30 @@ const RenderLookingView: FC<RenderLookingViewProps> = ({
       }}
       style={[styles.container, {marginHorizontal}]}>
       <Skeleton
-        // transition={{
-        //   translateX: {
-        //     type: 'timing',
-        //   },
-        // }}
-        show={IsLoading}
+        show={IsLoading || IsImageLoading}
         colorMode="light"
         colors={COLORS.LoaderGradient}>
-        <ImageBackground
-          source={item?.image}
+        <View>
+          <FastImage
+            onLoadStart={() => setIsImageLoading(true)}
+            onLoad={() => setIsImageLoading(false)}
+            onLoadEnd={() => setIsImageLoading(false)}
+            source={{uri: item?.image, priority: FastImage.priority.high}}
+            resizeMode="cover"
+            style={styles.imageView}
+          />
+          <LinearGradient
+            colors={COLORS.GradientViewForCards}
+            locations={[0, 1]}
+            style={styles.gradient}>
+            <Text numberOfLines={2} style={styles.TitleText}>
+              {item?.title}
+            </Text>
+          </LinearGradient>
+        </View>
+
+        {/* <ImageBackground
+          source={{uri: item?.image}}
           resizeMode="cover"
           style={styles.imageView}
           imageStyle={styles.imageStyle}>
@@ -58,7 +75,7 @@ const RenderLookingView: FC<RenderLookingViewProps> = ({
             style={styles.gradient}>
             <Text style={styles.TitleText}>{item?.title}</Text>
           </LinearGradient>
-        </ImageBackground>
+        </ImageBackground> */}
       </Skeleton>
     </TouchableOpacity>
   );
@@ -87,15 +104,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   gradient: {
-    flex: 0.5,
-    justifyContent: 'flex-end',
-    // borderRadius: hp('5%'),
+    bottom: 0,
+    width: '100%',
+    paddingVertical: 5,
+    overflow: 'hidden',
+    position: 'absolute',
   },
   TitleText: {
-    width: '100%',
+    width: '85%',
     ...GROUP_FONT.h2,
+    fontSize: 19,
     color: COLORS.White,
-    marginHorizontal: hp('2%'),
-    bottom: hp('2%'),
+    marginHorizontal: hp('1.5%'),
   },
 });

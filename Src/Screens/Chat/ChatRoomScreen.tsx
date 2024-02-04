@@ -60,36 +60,33 @@ const ChatRoomScreen = () => {
   useEffect(() => {
     if (isFocused) {
       const socketInstance = io(ApiConfig.SOCKET_BASE_URL, {
-        reconnectionDelay: 1000,
+        reconnectionDelay: 3000,
         reconnection: true,
-        reconnectionAttempts: 5, //Infinity
+        reconnectionAttempts: 10,
         rejectUnauthorized: false,
-        host: ApiConfig.SOCKET_BASE_URL,
-        // transports: ['webtransport'],
-        // ['polling','websocket', 'webtransport']
-        path: ApiConfig.SOCKET_BASE_URL,
+        agent: false,
+        // path: '/socket.io',
       });
 
-      // console.log('socketInstance', socketInstance);
+      console.log('socketInstance', socketInstance.connected);
+
+      socketInstance.on('connect', () => {
+        console.log('Connected to Socket.io server');
+        // Once connected, set the socket state or do other tasks
+        setSocket(socketInstance);
+        setIsSocketLoading(false);
+      });
 
       socketInstance.on('connect_error', error => {
         console.log('connect_error:--:>', error.message);
         showToast(error.name, error.message || 'Something went wrong', 'error');
       });
-      // socketInstance.on('connect', () => {
-      //   console.log('client connected');
-      // });
 
-      // socketInstance.on('connect_error', error => {
-      //   console.log('socketInstance connect_error:', error);
-      // });
-      // console.log('socketInstance', socketInstance);
       if (socketInstance.connected) {
         setSocket(socketInstance);
       } else {
         setSocket(socketInstance);
         setIsSocketLoading(false);
-        // showToast('Error In Socket', 'Cant Connect Socket!', 'error');
       }
 
       return () => {
@@ -110,6 +107,7 @@ const ChatRoomScreen = () => {
 
       // Event: List - Response
       const handleListResponse: SocketEventHandlers['List'] = data => {
+        console.log('data', data);
         try {
           if (data?.data) {
             const filteredData = data.data.filter(

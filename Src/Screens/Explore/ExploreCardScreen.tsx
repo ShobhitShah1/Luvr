@@ -152,8 +152,8 @@ const ExploreCardScreen: FC = () => {
         console.log(LeftSwipedUserIds);
         const userDataForApi = {
           limit: CardLimit,
-          unlike: [],
-          like: [],
+          unlike: LeftSwipedUserIds,
+          like: RightSwipedUserIds,
           skip: cardSkipValue || cardToSkipNumber,
           radius: userData.radius,
           eventName: 'list_neighbour',
@@ -192,7 +192,7 @@ const ExploreCardScreen: FC = () => {
         setIsAPILoading(false);
       }
     },
-    [],
+    [LeftSwipedUserIds, RightSwipedUserIds, cardToSkipNumber],
   );
 
   //* On Swipe Right Do Something

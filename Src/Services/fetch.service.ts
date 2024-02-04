@@ -178,7 +178,9 @@ async function makeRequest(
 }
 
 function initToken() {
-  const token = store.getState()?.user?.Token || '';
+  const userState = store.getState().user;
+  const token = userState && userState.Token ? userState.Token : '';
+
   if (ApiConfig.DEBUG) {
     console.log('Init Token DEBUG:', token);
   }
