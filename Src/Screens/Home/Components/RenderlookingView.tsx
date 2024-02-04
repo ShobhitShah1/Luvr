@@ -2,17 +2,11 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Skeleton} from 'moti/skeleton';
 import React, {FC, useState} from 'react';
-import {
-  ImageBackground,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS, GROUP_FONT} from '../../../Common/Theme';
-import FastImage from 'react-native-fast-image';
 
 interface RenderLookingViewProps {
   item: {
@@ -32,7 +26,7 @@ const RenderLookingView: FC<RenderLookingViewProps> = ({
   const navigation =
     useNavigation<NativeStackNavigationProp<{CategoryDetailCards: {}}>>();
   const marginHorizontal = index % 2 === 0 ? 0 : '3%';
-  const [IsImageLoading, setIsImageLoading] = useState(false)
+  const [IsImageLoading, setIsImageLoading] = useState(false);
   console.log('item?.image', item?.image);
   return (
     <TouchableOpacity
@@ -63,19 +57,6 @@ const RenderLookingView: FC<RenderLookingViewProps> = ({
             </Text>
           </LinearGradient>
         </View>
-
-        {/* <ImageBackground
-          source={{uri: item?.image}}
-          resizeMode="cover"
-          style={styles.imageView}
-          imageStyle={styles.imageStyle}>
-          <LinearGradient
-            colors={COLORS.GradientViewForCards}
-            locations={[0, 1]}
-            style={styles.gradient}>
-            <Text style={styles.TitleText}>{item?.title}</Text>
-          </LinearGradient>
-        </ImageBackground> */}
       </Skeleton>
     </TouchableOpacity>
   );

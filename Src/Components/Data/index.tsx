@@ -1,4 +1,3 @@
-import CommonImages from '../../Common/CommonImages';
 import {imageArray} from '../../Config/Setting';
 import {GenderTypes} from '../../Types/GenderTypes';
 import {ProfileType} from '../../Types/ProfileType';
@@ -4878,61 +4877,6 @@ export const GendersData: GenderTypes[] = [
     name: 'Demigirl',
     abbreviation: 'DG',
   },
-  // {
-  //   id: 9,
-  //   name: 'Two-Spirit',
-  //   abbreviation: 'TS',
-  // },
-  // {
-  //   id: 10,
-  //   name: 'Androgynous',
-  //   abbreviation: 'AND',
-  // },
-  // {
-  //   id: 11,
-  //   name: 'Pangender',
-  //   abbreviation: 'PG',
-  // },
-  // {
-  //   id: 12,
-  //   name: 'Neutrois',
-  //   abbreviation: 'NEU',
-  // },
-  // {
-  //   id: 13,
-  //   name: 'Fluid',
-  //   abbreviation: 'FL',
-  // },
-  // {
-  //   id: 14,
-  //   name: 'Multigender',
-  //   abbreviation: 'MG',
-  // },
-  // {
-  //   id: 15,
-  //   name: 'Third Gender',
-  //   abbreviation: 'TG',
-  // },
-  // {
-  //   id: 16,
-  //   name: 'Xgender',
-  //   abbreviation: 'XG',
-  // },
-  // {
-  //   id: 17,
-  //   name: 'Gender Nonconforming',
-  //   abbreviation: 'GNC',
-  // },
-  // {
-  //   id: 18,
-  //   name: 'Questioning',
-  //   abbreviation: 'Q',
-  // },
-  // {
-  //   id: 19,
-  //   name: 'Epicene',
-  //   abbreviation: 'EP',
-  // },
 ];
 
 //* Lifestyle data
@@ -4992,13 +4936,6 @@ export const LifestyleData: LifestyleType[] = [
 export interface LookingForType {
   Title: string;
 }
-// export interface LookingForType {
-//   id: number;
-//   Title: string;
-//   Emoji: string;
-//   Icon: string;
-// }
-
 export const LookingFor: string[] = [
   'A Relationship',
   'New Friends',
@@ -5006,39 +4943,6 @@ export const LookingFor: string[] = [
   "I'm Not Sure Yet",
   'Prefer Not To Say',
 ];
-
-// export const LookingFor: LookingForType[] = [
-//   {
-//     id: 0,
-//     Title: 'A Relationship',
-//     Emoji: '💘',
-//     Icon: 'M',
-//   },
-//   {
-//     id: 1,
-//     Title: 'New Friends',
-//     Emoji: '😍',
-//     Icon: 'M',
-//   },
-//   {
-//     id: 2,
-//     Title: 'Something Casual',
-//     Emoji: '🥂',
-//     Icon: 'M',
-//   },
-//   {
-//     id: 3,
-//     Title: "I'm Not Sure Yet",
-//     Emoji: '🎉',
-//     Icon: 'M',
-//   },
-//   {
-//     id: 4,
-//     Title: 'Prefer Not To Say',
-//     Emoji: '👋',
-//     Icon: 'M',
-//   },
-// ];
 
 //* What About You
 
@@ -5167,58 +5071,6 @@ export const YourIntoData: YourIntoType[] = [
   {id: 46, name: 'Salsa Dancing Pro'},
   {id: 47, name: 'Board Game Night Host'},
   {id: 48, name: 'Karaoke King/Queen'},
-  // {id: 49, name: 'Volunteer Advocate'},
-  // {id: 50, name: 'Tech Conference Regular'},
-  // {id: 51, name: 'Karate Kid'},
-  // {id: 52, name: 'Deep Sea Diver'},
-  // {id: 53, name: 'Extreme Couponer'},
-  // {id: 54, name: 'Espresso Artist'},
-  // {id: 55, name: 'Puzzle Master'},
-  // {id: 56, name: 'Podcast Enthusiast'},
-  // {id: 57, name: 'Trekkie'},
-  // {id: 58, name: 'Virtual Reality Explorer'},
-  // {id: 59, name: 'Culinary Explorer'},
-  // {id: 60, name: 'Escape Room Artist'},
-  // {id: 61, name: 'Sustainable Living Advocate'},
-  // {id: 62, name: 'Indie Film Buff'},
-  // {id: 63, name: 'Abstract Painter'},
-  // {id: 64, name: 'Skydiving Enthusiast'},
-  // {id: 65, name: 'Magic: The Gathering Player'},
-  // {id: 66, name: 'Stargazer'},
-  // {id: 67, name: 'Futurist'},
-  // {id: 68, name: 'Rock Climber'},
-  // {id: 69, name: 'Food Truck Connoisseur'},
-  // {id: 70, name: 'Political Activist'},
-  // {id: 71, name: 'Chess Grandmaster'},
-  // {id: 72, name: 'Wine Tasting Extraordinaire'},
-  // {id: 73, name: 'Camping Enthusiast'},
-  // {id: 74, name: 'Sci-Fi Writer'},
-  // {id: 75, name: 'Ghost Hunter'},
-  // {id: 76, name: 'Vintage Car Restorer'},
-  // {id: 77, name: 'Surfing Prodigy'},
-  // {id: 78, name: 'Bollywood Dance Choreographer'},
-  // {id: 79, name: 'Paddleboard Yoga Guru'},
-  // {id: 80, name: 'Urban Gardener'},
-  // {id: 81, name: 'Sourdough Bread Baker'},
-  // {id: 82, name: 'Antique Collector'},
-  // {id: 83, name: 'Stand-Up Comedy Fanatic'},
-  // {id: 84, name: 'Tarot Card Reader'},
-  // {id: 85, name: 'Astronomy Buff'},
-  // {id: 86, name: 'Archery Enthusiast'},
-  // {id: 87, name: 'Cryptocurrency Trader'},
-  // {id: 88, name: 'Unicycle Juggler'},
-  // {id: 89, name: 'Storm Chaser'},
-  // {id: 90, name: 'Meditation Guru'},
-  // {id: 91, name: 'Cosplay Artist'},
-  // {id: 92, name: 'Aquarium Aficionado'},
-  // {id: 93, name: 'TED Talk Devotee'},
-  // {id: 94, name: 'VR Game Developer'},
-  // {id: 95, name: 'Cryptic Crossword Solver'},
-  // {id: 96, name: 'Circus Acrobat'},
-  // {id: 97, name: 'Synchronized Swimmer'},
-  // {id: 98, name: 'Dungeons & Dragons Dungeon Master'},
-  // {id: 99, name: 'Bollywood Movie Buff'},
-  // {id: 100, name: 'Historical Reenactor'},
 ];
 
 //* Home Looking For Data

@@ -418,12 +418,9 @@ const EditProfileScreen = () => {
         latitude: UserData?.latitude,
         longitude: UserData?.longitude,
         radius: profile?.radius,
-        // recent_pik: profile?.recent_pik,
       };
 
-      console.log('DataToSend', DataToSend);
       const APIResponse = await UserService.UserRegister(DataToSend);
-      console.log('Update Profile Response :--:>', APIResponse);
 
       if (APIResponse.code === 200) {
         GetProfileData();
