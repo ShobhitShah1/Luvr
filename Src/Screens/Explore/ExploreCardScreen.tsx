@@ -406,10 +406,7 @@ const ExploreCardScreen: FC = () => {
               <TouchableOpacity
                 activeOpacity={ActiveOpacity}
                 onPress={() => {
-                  setCardToSkipNumber(0);
-                  FetchAPIData(0);
-                  // setCardToSkipNumber(cardToSkipNumber + CardLimit);
-                  // FetchAPIData(cardToSkipNumber + CardLimit);
+                  FetchAPIData(cardToSkipNumber);
                 }}
                 style={styles.ChangeSettingButton}>
                 <Text style={styles.ChangeSettingText}>Change Setting</Text>

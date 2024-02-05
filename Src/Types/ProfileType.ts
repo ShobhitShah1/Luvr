@@ -49,6 +49,16 @@ export type ProfileType = {
   user_from: string;
   latitude?: string | number;
   longitude?: string | number;
+  notification_token: string;
+  setting_active_status: boolean;
+  setting_age_range_min: string;
+  setting_distance_preference: string;
+  setting_notification_email: boolean;
+  setting_notification_push: boolean;
+  setting_notification_team: boolean;
+  setting_people_with_range: boolean;
+  setting_show_me: string;
+  setting_show_people_with_range: boolean;
 };
 
 export type SettingType = {

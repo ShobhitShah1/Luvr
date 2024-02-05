@@ -68,7 +68,7 @@ const MyLikesScreen = () => {
 
   return (
     <View style={styles.container}>
-      <BottomTabHeader showSetting={true} />
+      <BottomTabHeader showSetting={false} />
       <View style={styles.ContentView}>
         <FlatList
           data={tabsData}
@@ -87,7 +87,7 @@ const MyLikesScreen = () => {
           )}
           keyExtractor={(item, index) => index.toString()}
         />
-        <View>{renderContent()}</View>
+        <View style={{marginVertical: 20}}>{renderContent()}</View>
       </View>
     </View>
   );

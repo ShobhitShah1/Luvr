@@ -35,6 +35,16 @@ export const LocalStorageFields = {
   Token: 'Token',
   phoneNumberWithoutCode: 'phoneNumberWithoutCode',
   phoneNumberCountryCode: 'phoneNumberCountryCode',
+  notification_token: 'notification_token',
+  setting_active_status: 'setting_active_status',
+  setting_age_range_min: 'setting_age_range_min',
+  setting_distance_preference: 'setting_distance_preference',
+  setting_notification_email: 'setting_notification_email',
+  setting_notification_push: 'setting_notification_push',
+  setting_notification_team: 'setting_notification_team',
+  setting_people_with_range: 'setting_people_with_range',
+  setting_show_me: 'setting_show_me',
+  setting_show_people_with_range: 'setting_show_people_with_range',
 } as const;
 
 export type UserField = keyof typeof LocalStorageFields;

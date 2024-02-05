@@ -27,7 +27,6 @@ const RenderLookingView: FC<RenderLookingViewProps> = ({
     useNavigation<NativeStackNavigationProp<{CategoryDetailCards: {}}>>();
   const marginHorizontal = index % 2 === 0 ? 0 : '3%';
   const [IsImageLoading, setIsImageLoading] = useState(false);
-  console.log('item?.image', item?.image);
   return (
     <TouchableOpacity
       activeOpacity={1}

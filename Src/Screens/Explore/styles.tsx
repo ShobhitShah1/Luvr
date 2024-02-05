@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
-import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 
 const styles = StyleSheet.create({
   card: {

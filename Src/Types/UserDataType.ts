@@ -35,6 +35,16 @@ export interface UserDataType {
   [LocalStorageFields.Token]: string;
   [LocalStorageFields.isVerified]: false;
   [LocalStorageFields.isImageUploaded]: false;
+  [LocalStorageFields.notification_token]: string;
+  [LocalStorageFields.setting_active_status]: boolean;
+  [LocalStorageFields.setting_age_range_min]: string;
+  [LocalStorageFields.setting_distance_preference]: string;
+  [LocalStorageFields.setting_notification_email]: boolean;
+  [LocalStorageFields.setting_notification_push]: boolean;
+  [LocalStorageFields.setting_notification_team]: boolean;
+  [LocalStorageFields.setting_people_with_range]: boolean;
+  [LocalStorageFields.setting_show_me]: string;
+  [LocalStorageFields.setting_show_people_with_range]: boolean;
 }
 
 export default UserDataType;

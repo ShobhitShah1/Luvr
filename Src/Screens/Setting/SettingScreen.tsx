@@ -1,7 +1,10 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
-import React, {useLayoutEffect, useState} from 'react';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import React, {useEffect, useState} from 'react';
 import {
   Dimensions,
   LayoutChangeEvent,
@@ -10,24 +13,22 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {Rating} from 'react-native-ratings';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
-import {SettingType} from '../../Types/ProfileType';
+import {resetUserData} from '../../Redux/Action/userActions';
+import {ProfileType, SettingType} from '../../Types/ProfileType';
 import EditProfileBoxView from '../Profile/Components/EditProfileComponents/EditProfileBoxView';
 import EditProfileTitleView from '../Profile/Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
+import SettingCustomModal from './Components/SettingCustomModal';
 import SettingFlexView from './Components/SettingFlexView';
 import styles from './styles';
-import LogOutModalRenderView from './Components/LogOutModalRenderView';
-import Modal from 'react-native-modal';
-import SettingCustomModal from './Components/SettingCustomModal';
-import {Rating} from 'react-native-ratings';
-import {resetUserData} from '../../Redux/Action/userActions';
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import UserService from '../../Services/AuthService';
+import {useCustomToast} from '../../Utils/toastUtils';
+import NetInfo from '@react-native-community/netinfo';
 
 const SettingScreen = () => {
   const profile = useSelector(state => state?.user);
@@ -39,48 +40,70 @@ const SettingScreen = () => {
   const [LogOutModalView, setLogOutModalView] = useState(false);
   const [DeleteAccountModalView, setDeleteAccountModalView] = useState(false);
   const [RateUsModalView, setRateUsModalView] = useState(false);
-  const [UserSetting, setUserSetting] = useState<SettingType>({
-    is_direction_on: true,
-    direction: 50,
-    show_me: 'Everyone',
-    age_to: 10,
-    age_from: 50,
-    active_status: true,
-    latitude: UserData?.latitude,
-    longitude: UserData?.longitude,
-    Location: '',
-  });
+  const [UserSetting, setProfileData] = useState<ProfileType | undefined>();
   const {replace, reset} = useNavigation<NativeStackNavigationProp<any>>();
+  const {showToast} = useCustomToast();
+  const [IsInternetConnected, setIsInternetConnected] = useState(true);
+  const settingAgeRangeMin = UserSetting?.setting_age_range_min || ''; // Use an empty string if setting_age_range_min is null
+  // console.log('UserSetting', UserSetting);
 
-  // const {showToast} = useCustomToast();
-  // const [SelectedShowMe, setSelectedShowMe] = useState<string>(
-  //   UserSetting?.show_me || 'Female',
-  // );
+  let startAge = '';
+  let endAge = '';
+
+  if (settingAgeRangeMin) {
+    [startAge, endAge] = settingAgeRangeMin.split('-');
+  }
 
   const ShowMeArray = ['Male', 'Female', 'Everyone'];
 
   const handleShowMeSelect = (gender: string) => {
-    // setSelectedShowMe(gender);
-    setUserSetting(prevState => ({
+    setProfileData(prevState => ({
       ...prevState,
-      show_me: gender,
+      setting_show_me: gender,
     }));
   };
 
-  useLayoutEffect(() => {
-    GetSetting();
+  useEffect(() => {
+    const CheckConnection = async () => {
+      try {
+        const IsNetOn = await NetInfo.fetch().then(info => info.isConnected);
+        if (IsNetOn) {
+          // setIsFetchDataAPILoading(true);
+          await GetSetting();
+          setIsInternetConnected(true);
+        } else {
+          setIsInternetConnected(false);
+        }
+      } catch (error) {
+        console.error(
+          'Error fetching profile data or checking location permission:',
+          error,
+        );
+        setIsInternetConnected(false);
+        // setIsFetchDataAPILoading(false);
+      }
+    };
+
+    CheckConnection();
   }, []);
 
   const GetSetting = async () => {
     try {
-      // const APIResponse = await ProfileService.GetUserSetting();
-      // if (APIResponse?.status) {
-      //   console.log('UserSetting', APIResponse.data);
-      //   setUserSetting(APIResponse.data);
-      //   console.log('GetSetting Data:', APIResponse.data);
-      // } else {
-      //   setUserSetting({} as SettingType);
-      // }
+      const userDataForApi = {
+        eventName: 'get_profile',
+      };
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      if (APIResponse?.code === 200) {
+        setProfileData(APIResponse.data);
+        console.log('APIResponse.data', APIResponse.data);
+      } else {
+        showToast(
+          'Something went wrong',
+          APIResponse?.message || 'Please try again later',
+          'error',
+        );
+        setProfileData({} as ProfileType);
+      }
     } catch (error) {
       console.log('Something Went Wrong With Feting API Data');
     } finally {
@@ -141,12 +164,101 @@ const SettingScreen = () => {
     }
   };
 
+  //* Update Profile API Call (API CALL)
+  const onUpdateProfile = async () => {
+    // setIsFetchDataAPILoading(true);
+    try {
+      if (!IsInternetConnected) {
+        showToast(
+          'Network Issue',
+          'Please check your internet connection and try again',
+          'error',
+        );
+        return;
+      }
+
+      const DataToSend = {
+        eventName: 'update_profile',
+        mobile_no: profile?.mobile_no,
+        identity: profile?.identity,
+        profile_image: profile?.profile_image,
+        full_name: profile?.full_name,
+        birthdate: profile?.birthdate,
+        gender: profile?.gender,
+        city: profile?.city,
+        orientation: profile?.orientation,
+        is_orientation_visible: profile?.is_orientation_visible,
+        hoping: profile?.hoping,
+        education: {
+          digree: profile?.education?.digree,
+          college_name: profile?.education?.college_name,
+        },
+        habits: {
+          exercise: profile?.habits?.exercise,
+          smoke: profile?.habits?.smoke,
+          movies: profile?.habits?.movies,
+          drink: profile?.habits?.drink,
+        },
+        magical_person: {
+          communication_stry: profile?.magical_person?.communication_stry,
+          recived_love: profile?.magical_person?.recived_love,
+          education_level: profile?.magical_person?.education_level,
+          star_sign: profile?.magical_person?.star_sign,
+        },
+        likes_into: profile?.likes_into,
+        is_block_contact: profile?.is_block_contact,
+        latitude: UserData?.latitude,
+        longitude: UserData?.longitude,
+        radius: profile?.radius,
+        setting_active_status: UserSetting?.setting_active_status || true,
+        setting_age_range_min: UserSetting?.setting_age_range_min || '18-30',
+        setting_distance_preference:
+          UserSetting?.setting_distance_preference || '20',
+        setting_notification_email:
+          UserSetting?.setting_notification_email || true,
+        setting_notification_push:
+          UserSetting?.setting_notification_push || true,
+        setting_notification_team:
+          UserSetting?.setting_notification_team || true,
+        setting_people_with_range:
+          UserSetting?.setting_people_with_range || true,
+        setting_show_me: UserSetting?.setting_show_me || 'Everyone',
+        setting_show_people_with_range:
+          UserSetting?.setting_show_people_with_range || true,
+      };
+
+      const APIResponse = await UserService.UserRegister(DataToSend);
+
+      if (APIResponse.code === 200) {
+        GetSetting();
+        showToast(
+          'Profile Updated',
+          'Your profile information has been successfully updated.',
+          'success',
+        );
+      } else {
+        showToast(
+          'Error Updating Profile',
+          'Oops! Something went wrong while trying to update your profile. Please try again later or contact support if the issue persists',
+          'error',
+        );
+        console.log('Something went wrong');
+      }
+    } catch (error) {
+      console.log('Something went wrong edit profile :--:>', error);
+    } finally {
+      // setIsFetchDataAPILoading(false);
+    }
+  };
+
+  console.log(startAge || 18, endAge || 30);
+
   return (
     <View style={styles.container}>
       <ProfileAndSettingHeader
         Title={'Settings'}
         onUpdatePress={() => {
-          UpdateSetting();
+          onUpdateProfile();
         }}
       />
       <ScrollView bounces={false} style={styles.ContentView}>
@@ -163,7 +275,9 @@ const SettingScreen = () => {
               <SettingFlexView
                 isActive={false}
                 style={styles.PhoneNumberFlexStyle}
-                Item={profile?.mobile_no || profile?.mobile_no || '+0000000000'}
+                Item={
+                  profile?.mobile_no || profile?.mobile_no || 'Not Added Yet!'
+                }
                 onPress={() => {}}
               />
             </EditProfileBoxView>
@@ -184,7 +298,7 @@ const SettingScreen = () => {
                     Distance Preference
                   </Text>
                   <Text style={styles.UserAgeText}>
-                    {UserSetting.direction}
+                    {`${UserSetting?.setting_distance_preference || 20}KM`}
                   </Text>
                 </View>
                 <View
@@ -195,12 +309,14 @@ const SettingScreen = () => {
                   <MultiSlider
                     onValuesChange={v => {
                       console.log('V ---:>', v);
-                      setUserSetting(prevState => ({
+                      setProfileData(prevState => ({
                         ...prevState,
-                        direction: v[0],
+                        setting_distance_preference: v[0],
                       }));
                     }}
-                    values={[UserSetting.direction || 0]}
+                    values={[
+                      Number(UserSetting?.setting_distance_preference) || 20,
+                    ]}
                     isMarkersSeparated={true}
                     max={100}
                     // sliderLength={310}
@@ -217,13 +333,14 @@ const SettingScreen = () => {
                   />
                 </View>
                 <SettingFlexView
-                  isActive={UserSetting.is_direction_on}
+                  isActive={UserSetting?.setting_show_people_with_range || true}
                   style={styles.PhoneNumberFlexStyle}
                   Item={'Show between this distance'}
                   onSwitchPress={() => {
-                    setUserSetting(prevState => ({
+                    setProfileData(prevState => ({
                       ...prevState,
-                      is_direction_on: !UserSetting.is_direction_on,
+                      setting_show_people_with_range:
+                        !UserSetting?.setting_show_people_with_range,
                     }));
                   }}
                   IsSwitch={true}
@@ -252,10 +369,11 @@ const SettingScreen = () => {
                     {
                       width: hp('12%'),
                       backgroundColor:
-                        UserSetting?.show_me === gender
+                        UserSetting?.setting_show_me === gender
                           ? COLORS.Primary
                           : COLORS.White,
-                      borderWidth: UserSetting?.show_me === gender ? 2 : 0,
+                      borderWidth:
+                        UserSetting?.setting_show_me === gender ? 2 : 0,
                     },
                   ]}>
                   <Text
@@ -263,7 +381,7 @@ const SettingScreen = () => {
                       styles.GenderText,
                       {
                         color:
-                          UserSetting?.show_me === gender
+                          UserSetting?.setting_show_me === gender
                             ? COLORS.White
                             : COLORS.Gray,
                       },
@@ -290,9 +408,9 @@ const SettingScreen = () => {
                   <Text style={styles.DistanceAndAgeRangeTitleText}>
                     Distance Preference
                   </Text>
-                  <Text style={styles.UserAgeText}>{`${
-                    UserSetting.age_from || 0
-                  } - ${UserSetting.age_to || 0}`}</Text>
+                  <Text style={styles.UserAgeText}>{`${startAge || 18} - ${
+                    endAge || 30
+                  }`}</Text>
                 </View>
                 <View
                   style={{
@@ -302,13 +420,12 @@ const SettingScreen = () => {
                   <MultiSlider
                     onValuesChange={v => {
                       console.log('V ---:>', v);
-                      setUserSetting(prevState => ({
+                      setProfileData(prevState => ({
                         ...prevState,
-                        age_from: v[0],
-                        age_to: v[1],
+                        setting_age_range_min: `${v[0]}-${v[1]}`,
                       }));
                     }}
-                    values={[UserSetting.age_from, UserSetting.age_to]}
+                    values={[Number(startAge), Number(endAge)]}
                     isMarkersSeparated={true}
                     max={100}
                     sliderLength={Dimensions.get('window').width - 85}
@@ -337,14 +454,15 @@ const SettingScreen = () => {
             />
             <EditProfileBoxView>
               <SettingFlexView
-                isActive={UserSetting?.active_status}
+                isActive={UserSetting?.setting_active_status || true}
                 style={styles.PhoneNumberFlexStyle}
                 Item={'Show my status'}
                 onPress={() => {}}
                 onSwitchPress={() => {
-                  setUserSetting(prevState => ({
+                  setProfileData(prevState => ({
                     ...prevState,
-                    active_status: !UserSetting.active_status,
+                    setting_active_status:
+                      !UserSetting?.setting_active_status,
                   }));
                 }}
                 IsSwitch={true}
@@ -363,18 +481,32 @@ const SettingScreen = () => {
             <EditProfileBoxView>
               <View>
                 <SettingFlexView
-                  isActive={true}
+                  isActive={UserSetting?.setting_notification_push || true}
                   style={styles.NotificationFlexView}
                   Item={'Push Notification'}
                   onPress={() => {}}
                   IsSwitch={true}
+                  onSwitchPress={() => {
+                    setProfileData(prevState => ({
+                      ...prevState,
+                      setting_notification_push:
+                        !UserSetting?.setting_notification_push || true,
+                    }));
+                  }}
                 />
                 <SettingFlexView
-                  isActive={true}
+                  isActive={UserSetting?.setting_notification_email || true}
                   style={styles.NotificationFlexView}
                   Item={'Email Notification'}
                   onPress={() => {}}
                   IsSwitch={true}
+                  onSwitchPress={() => {
+                    setProfileData(prevState => ({
+                      ...prevState,
+                      setting_notification_email:
+                        !UserSetting?.setting_notification_email || true,
+                    }));
+                  }}
                 />
               </View>
             </EditProfileBoxView>

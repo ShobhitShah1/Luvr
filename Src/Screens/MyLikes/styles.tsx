@@ -10,10 +10,10 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   TabBarButtonView: {
-    width: '42%',
+    width: '45%',
     height: 52,
     justifyContent: 'center',
-    borderWidth: 1.5,
+    borderWidth: 2,
     borderRadius: 25,
   },
   TabBarButtonText: {

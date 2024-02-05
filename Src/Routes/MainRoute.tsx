@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
-import {CommonActions, NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React, {useCallback, useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
 import SplashScreen from 'react-native-splash-screen';
+import {useSelector} from 'react-redux';
 import {useLocationPermission} from '../Hooks/useLocationPermission';
 
 // ========================== AUTH SCREENS ==========================
@@ -27,14 +27,14 @@ import {
 } from '../Screens/Auth';
 
 // ========================== HOME SCREENS ==========================
-import BottomTab from './BottomTab';
 import ChatScreen from '../Screens/Chat/ChatScreen';
 import CategoryDetailCardsScreen from '../Screens/Home/ExploreCards/CategoryDetailCardsScreen';
 import ExploreCardDetailScreen from '../Screens/Home/ExploreCards/ExploreCardDetailScreen';
+import NotificationScreen from '../Screens/Notification/NotificationScreen';
 import EditProfileScreen from '../Screens/Profile/EditProfileScreen';
 import SettingScreen from '../Screens/Setting/SettingScreen';
-import NotificationScreen from '../Screens/Notification/NotificationScreen';
 import {initGoogleSignIn} from '../Services/AuthService';
+import BottomTab from './BottomTab';
 import {navigationRef} from './RootNavigation';
 
 export default function MainRoute() {
@@ -79,9 +79,10 @@ export default function MainRoute() {
         console.log('Fail recent_pik ❌');
         console.log('navigationRef', navigationRef.isReady());
         setInitialRoute('LoginStack');
-        navigationRef?.navigate('LoginStack', {
-          screen: 'AddRecentPics',
-        });
+        navigationRef &&
+          navigationRef?.navigate('LoginStack', {
+            screen: 'AddRecentPics',
+          });
       }
     } catch (error) {
       console.error('Error determining initial route:', error);

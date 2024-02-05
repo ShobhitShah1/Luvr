@@ -4,12 +4,12 @@ import {Skeleton} from 'moti/skeleton';
 import React, {FC, memo, useEffect} from 'react';
 import {
   Image,
+  Platform,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -23,6 +23,7 @@ import {DummyImage} from '../../../Config/Setting';
 import useCalculateAge from '../../../Hooks/useCalculateAge';
 import {SwiperCard} from '../../../Types/SwiperCard';
 import styles from '../styles';
+import FastImage from 'react-native-fast-image';
 
 interface RenderCardProps {
   CurrentCardIndex: number;
@@ -76,26 +77,26 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
   //   }, 700);
   // }, [currentImageIndex]);
 
-  useEffect(() => {
-    opacity.value = withSpring(1, {}, finished => {
-      if (finished) {
-        runOnJS(setFirstImageLoading)(false);
-      }
-    });
+  // useEffect(() => {
+  //   opacity.value = withSpring(1, {}, finished => {
+  //     if (finished) {
+  //       runOnJS(setFirstImageLoading)(false);
+  //     }
+  //   });
 
-    runOnJS(setFirstImageLoading)(true);
+  //   runOnJS(setFirstImageLoading)(true);
 
-    setTimeout(() => {
-      runOnJS(setFirstImageLoading)(false);
-      opacity.value = withSpring(1);
-    }, 0);
-  }, [currentImageIndex]);
+  //   setTimeout(() => {
+  //     runOnJS(setFirstImageLoading)(false);
+  //     opacity.value = withSpring(1);
+  //   }, 0);
+  // }, [currentImageIndex]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-    };
-  }, [opacity.value]);
+  // const animatedStyle = useAnimatedStyle(() => {
+  //   return {
+  //     opacity: opacity.value,
+  //   };
+  // }, [opacity.value]);
 
   const handlePressIn = () => {
     stopInterval();
@@ -122,29 +123,38 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
   ) => {
     const defaultImageUrl = DummyImage;
     const imageIndex = isFirstCard ? currentCardNumber : 0;
-
-    return (
-      (ImageCardData?.recent_pik[imageIndex] &&
-        `${ApiConfig.IMAGE_BASE_URL}${ImageCardData?.recent_pik[imageIndex]}`) ||
-      defaultImageUrl
-    );
+    const imageUrl = ImageCardData?.recent_pik[imageIndex];
+    return imageUrl
+      ? `${ApiConfig.IMAGE_BASE_URL}${imageUrl}`
+      : defaultImageUrl;
   };
+
+  function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+  }
+
   return (
     <TouchableWithoutFeedback
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}>
       <View style={styles.card}>
-        <Animated.View style={[styles.imageContainer, animatedStyle]}>
+        <Animated.View style={[styles.imageContainer]}>
           <Skeleton
-            show={firstImageLoading} //firstImageLoading
+            show={firstImageLoading}
             colorMode="light"
             colors={COLORS.LoaderGradient}>
             <FastImage
               onLoadStart={ImageLoading}
-              onLoad={ImageLoaded}
               resizeMode="cover"
+              removeClippedSubviews
+              focusable
+              onLoadEnd={ImageLoaded}
+              key={currentImageIndex + getRandomInt(cardData.recent_pik.length)}
+              fallback={Platform.OS === 'android'}
               source={{
                 uri: getCardImageUrl(cardData, IsFirstCard, currentImageIndex),
+                priority: FastImage.priority.high,
+                cache: FastImage.cacheControl.immutable,
               }}
               style={styles.ImageStyle}
             />

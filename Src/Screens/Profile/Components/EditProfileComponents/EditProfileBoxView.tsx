@@ -6,7 +6,7 @@ import {COLORS} from '../../../../Common/Theme';
 interface EditProfileBoxViewProps {
   children: React.ReactElement;
   onLayout?: (event: LayoutChangeEvent) => void;
-  IsViewLoading: boolean;
+  IsViewLoading?: boolean;
 }
 
 const EditProfileBoxView: FC<EditProfileBoxViewProps> = ({
