@@ -251,11 +251,14 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         HabitsType &
         LocationType),
     ) => {
+      console.log('value:--:>', name, value);
+      console.log(value, profile.magical_person);
       setProfile(prevProfile => {
         if (
           'magical_person' in prevProfile &&
           value in prevProfile.magical_person
         ) {
+          console.log('magical_person');
           return {
             ...prevProfile,
             magical_person: {
@@ -267,6 +270,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
           'education' in prevProfile &&
           value in prevProfile.education
         ) {
+          console.log('education');
           return {
             ...prevProfile,
             education: {
@@ -275,6 +279,8 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
             },
           };
         } else if ('habits' in prevProfile && value in prevProfile.habits) {
+          console.log('habits');
+
           return {
             ...prevProfile,
             habits: {
@@ -283,6 +289,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
             },
           };
         } else if ('location' in prevProfile && value in prevProfile.location) {
+          console.log('location');
           return {
             ...prevProfile,
             location: {

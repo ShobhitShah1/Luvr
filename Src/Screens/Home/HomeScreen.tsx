@@ -21,15 +21,27 @@ import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
 import RenderLookingView from './Components/RenderLookingView';
 import styles from './styles';
+import messaging from '@react-native-firebase/messaging';
 
 const HomeScreen = () => {
   const [IsAPIDataLoading, setIsAPIDataLoading] = useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
 
   useEffect(() => {
-    GetMyLikes();
-    GetProfileData();
+    Promise.all([GetMyLikes(), GetProfileData(), requestUserPermission()]);
   }, []);
+
+  async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    const Token = await messaging().getToken();
+    console.log('Token', Token);
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+    }
+  }
 
   function flattenObject(obj: any, prefix: string = ''): Record<string, any> {
     if (!obj || typeof obj !== 'object') {

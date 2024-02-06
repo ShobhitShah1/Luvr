@@ -7,7 +7,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.Secondary,
   },
   ContentView: {
-    paddingVertical: 20,
+    flex: 1,
+    // paddingTop: 100,
   },
   TabBarButtonView: {
     width: '45%',

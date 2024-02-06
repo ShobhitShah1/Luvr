@@ -5,6 +5,7 @@ import CommonIcons from '../../../Common/CommonIcons';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonImages from '../../../Common/CommonImages';
+import ApiConfig from '../../../Config/ApiConfig';
 
 interface LikesProps {
   LikesData: [];
@@ -13,22 +14,24 @@ interface LikesProps {
 let NOIMAGE_CONTAINER = 150;
 
 const LikesContent: FC<LikesProps> = ({LikesData}) => {
+  console.log('LikesData', LikesData.status);
   const RenderLikeView = () => {
-    let title = 'Match';
+    let title = LikesData?.status;
+    const Data = LikesData?.user_details ? LikesData?.user_details[0] : [];
     return (
       <View style={styles.Container}>
-        {title === 'Like' ? (
+        {title === 'like' ? (
           <View style={styles.DetailBoxContainerView}>
             <View style={styles.LikeImageView}>
               <Image
                 style={styles.LikeImageProfile}
-                source={CommonImages.WelcomeBackground}
+                source={{uri: ApiConfig.IMAGE_BASE_URL + Data.recent_pik[0]}}
               />
             </View>
             <View style={styles.LikeTextView}>
               <Text style={styles.TitleMatchText}>Liked you!</Text>
               <Text style={styles.DescriptionText}>
-                You and Nikita Sharma liked each other.
+                You and {Data?.full_name} liked each other.
               </Text>
             </View>
             <View style={styles.LikeButtonView}>
@@ -190,6 +193,7 @@ const styles = StyleSheet.create({
     width: '35%',
     flexDirection: 'row',
     overflow: 'hidden',
+    alignItems: 'center',
     justifyContent: 'center',
   },
   MatchCardMyProfilePic: {

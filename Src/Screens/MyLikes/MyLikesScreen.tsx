@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {ActiveOpacity, COLORS} from '../../Common/Theme';
 import {FakeUserCard} from '../../Components/Data';
@@ -7,6 +7,7 @@ import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import LikesContent from './Components/LikesContent';
 import TopPicksContent from './Components/TopPicksContent';
 import styles from './styles';
+import UserService from '../../Services/AuthService';
 
 type TabData = {title: string; index?: number};
 
@@ -42,6 +43,11 @@ const MyLikesScreen = () => {
     index: 0,
   });
   const [userLikesCount, setUserLikesCount] = useState<number>(0);
+  const [MatchAndLikeData, setMatchAndLikeData] = useState([]);
+
+  useEffect(() => {
+    FetchLikesAndMatchAPI();
+  }, []);
 
   const tabsData: TabData[] = [
     {
@@ -55,39 +61,75 @@ const MyLikesScreen = () => {
     setSelectedTabIndex(item);
   }, []);
 
-  const renderContent = useCallback(() => {
-    switch (selectedTabIndex.index) {
-      case 0:
-        return <LikesContent LikesData={[]} />;
-      case 1:
-        return <TopPicksContent TopPickData={FakeUserCard} />;
-      default:
-        return null;
+  const RenderContent = useCallback(
+    ({item, i}) => {
+      // console.log('item', item);
+      switch (selectedTabIndex.index) {
+        case 0:
+          return <LikesContent LikesData={item} />;
+        case 1:
+          return <TopPicksContent TopPickData={item} />;
+        default:
+          return null;
+      }
+    },
+    [selectedTabIndex],
+  );
+
+  const FetchLikesAndMatchAPI = async () => {
+    try {
+      const userDataForApi = {
+        eventName: 'likes_matchs',
+      };
+
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      if (APIResponse?.code === 200) {
+        setMatchAndLikeData(APIResponse.data);
+      }
+    } catch (error) {
+      console.log('Something Went Wrong With Feting API Data', error);
+      setMatchAndLikeData([]);
+    } finally {
     }
-  }, [selectedTabIndex.index]);
+  };
 
   return (
     <View style={styles.container}>
       <BottomTabHeader showSetting={false} />
       <View style={styles.ContentView}>
-        <FlatList
-          data={tabsData}
-          numColumns={2}
-          columnWrapperStyle={{
-            justifyContent: 'space-between',
-            width: '85%',
-            alignSelf: 'center',
-          }}
-          renderItem={({item}) => (
-            <RenderTopBarView
-              item={item}
-              onPress={() => onPressTab(item)}
-              isSelected={item.index === selectedTabIndex.index}
-            />
-          )}
-          keyExtractor={(item, index) => index.toString()}
-        />
-        <View style={{marginVertical: 20}}>{renderContent()}</View>
+        <View style={{flex: 0.1, top: 10}}>
+          <FlatList
+            data={tabsData}
+            numColumns={2}
+            style={{}}
+            contentContainerStyle={{
+              alignSelf: 'center',
+              justifyContent: 'center',
+            }}
+            columnWrapperStyle={{
+              justifyContent: 'space-between',
+              width: '85%',
+              alignSelf: 'center',
+            }}
+            renderItem={({item}) => (
+              <RenderTopBarView
+                item={item}
+                onPress={() => onPressTab(item)}
+                isSelected={item.index === selectedTabIndex.index}
+              />
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
+        <View style={{flex: 0.9}}>
+          <FlatList
+            data={MatchAndLikeData}
+            renderItem={({item, index}) => {
+              return <RenderContent item={item} i={index} />;
+            }}
+          />
+        </View>
+        {/* <View style={{marginVertical: 20}}>{RenderContent()}</View> */}
       </View>
     </View>
   );

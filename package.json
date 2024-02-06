@@ -11,11 +11,13 @@
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^4.6.0",
+    "@notifee/react-native": "^7.8.2",
     "@ptomasroos/react-native-multi-slider": "^2.2.2",
     "@react-native-async-storage/async-storage": "^1.21.0",
     "@react-native-community/blur": "^4.4.0",
     "@react-native-community/netinfo": "^11.2.1",
     "@react-native-firebase/app": "^18.8.0",
+    "@react-native-firebase/messaging": "^18.8.0",
     "@react-native-google-signin/google-signin": "^11.0.0",
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/material-top-tabs": "^6.6.5",

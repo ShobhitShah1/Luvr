@@ -4,6 +4,7 @@ export interface UserDataType {
   [LocalStorageFields._id]: number;
   [LocalStorageFields.eventName]: string;
   [LocalStorageFields.login_type]: string;
+  [LocalStorageFields.about]: string;
   [LocalStorageFields.user_from]: string;
   [LocalStorageFields.mobile_no]: string;
   [LocalStorageFields.identity]: string;

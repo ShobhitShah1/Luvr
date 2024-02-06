@@ -13,6 +13,7 @@ import {
   Dimensions,
   FlatList,
   Image,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -43,6 +44,8 @@ import EditProfileCategoriesList from './Components/EditProfileComponents/EditPr
 import EditProfileSheetView from './Components/EditProfileComponents/EditProfileSheetView';
 import EditProfileTitleView from './Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from './Components/ProfileAndSettingHeader';
+import ApiConfig from '../../Config/ApiConfig';
+import axios from 'axios';
 
 const EditProfileScreen = () => {
   const dayInputRef = useRef(null);
@@ -59,7 +62,7 @@ const EditProfileScreen = () => {
   const [profile, setProfile] = useState<ProfileType>();
   const [IsInternetConnected, setIsInternetConnected] = useState(true);
   const [ChooseModalVisible, setChooseModalVisible] = useState<boolean>(false);
-  const [Bio, setBio] = useState(profile?.bio);
+  const [Bio, setBio] = useState(profile?.about);
   const [CollegeName, setCollegeName] = useState(
     profile?.education?.college_name,
   );
@@ -186,9 +189,35 @@ const EditProfileScreen = () => {
       if (APIResponse?.code === 200) {
         const DataToStore: ProfileType = APIResponse?.data
           ? APIResponse?.data
-          : [];
-        setProfile(APIResponse.data);
-        setBio(DataToStore.bio);
+          : {};
+
+        // Set default values if magical_person or habits are empty
+        if (
+          !DataToStore.magical_person ||
+          Object.keys(DataToStore.magical_person).length === 0
+        ) {
+          DataToStore.magical_person = {
+            communication_stry: '',
+            education_level: '',
+            recived_love: '',
+            star_sign: '',
+          };
+        }
+
+        if (
+          !DataToStore.habits ||
+          Object.keys(DataToStore.habits).length === 0
+        ) {
+          DataToStore.habits = {
+            drink: '',
+            exercise: '',
+            movies: '',
+            smoke: '',
+          };
+        }
+
+        setProfile(DataToStore);
+        setBio(DataToStore.about);
         setCollegeName(DataToStore.education.college_name);
         setEducationDegree(DataToStore.education.digree);
         setBirthdateDay(DataToStore?.birthdate?.split('/')[0]);
@@ -220,7 +249,7 @@ const EditProfileScreen = () => {
           });
         }
         setIsFetchDataAPILoading(false);
-        console.log('GetProfileData Data:', APIResponse.data);
+        console.log('GetProfileData Data:', DataToStore);
       } else {
         setProfile({} as ProfileType);
         setIsFetchDataAPILoading(false);
@@ -270,11 +299,12 @@ const EditProfileScreen = () => {
         })) || [];
 
       if (newImages.length > 0) {
-        const newData = UserPicks.map(item =>
-          item.url === '' ? newImages.shift() || item : item,
-        );
-        setUserPicks(newData);
-        console.log('Selected Images:', newData);
+        UploadImage(newImages);
+        // const newData = UserPicks.map(item =>
+        //   item.url === '' ? newImages.shift() || item : item,
+        // );
+        // setUserPicks(newData);
+        // console.log('Selected Images:', newData);
       }
     } catch (error) {
       console.log('Image Picker Error:', error);
@@ -297,10 +327,11 @@ const EditProfileScreen = () => {
         })) || [];
 
       if (newImages.length > 0) {
-        const newData = UserPicks.map(item =>
-          item.url === '' ? newImages.shift() || item : item,
-        );
-        setUserPicks(newData);
+        UploadImage(newImages);
+        // const newData = UserPicks.map(item =>
+        //   item.url === '' ? newImages.shift() || item : item,
+        // );
+        // setUserPicks(newData);
       }
     } catch (error) {
       console.log('Image Picker Error:', error);
@@ -333,41 +364,61 @@ const EditProfileScreen = () => {
   };
 
   //* Upload Single Image
-  // const UploadImage = async (item: any) => {
-  //   console.log('item', item);
-  //   let formData = new FormData();
-  //   item &&
-  //     item.forEach(({url, type, name}: any) => {
-  //       formData.append('images', {
-  //         uri: Platform.OS === 'android' ? url : url.replace('file://', ''),
-  //         type,
-  //         name,
-  //       });
-  //     });
+  const UploadImage = async (item: any) => {
+    console.log('UserData.Token', UserData.Token);
+    let formData = new FormData();
+    item &&
+      item.forEach(({url, type, name}: any) => {
+        formData.append('file', {
+          uri: Platform.OS === 'android' ? url : url.replace('file://', ''),
+          type,
+          name,
+        });
+      });
+    formData.append('eventName', 'update_profile');
+    formData.append('file_to', 'profile_images');
 
-  //   // try {
-  //   //   const APIResponse = await ProfileService.AddUserImage(formData);
-  //   //   console.log('UploadImage APIResponse :--:>', APIResponse);
+    try {
+      // const APIResponse = await UserService.UploadImages(formData);
+      const clientMultipartToken = axios.create({
+        baseURL: ApiConfig.IMAGE_UPLOAD_BASE_URL,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${UserData.Token}`,
+        },
+        timeout: 10000,
+      });
+      const APIResponse = await clientMultipartToken.post(
+        ApiConfig.IMAGE_UPLOAD_BASE_URL,
+        formData,
+      );
+      console.log('UploadImage APIResponse :--:>', APIResponse);
+      console.log('APIResponse.status :--:>', APIResponse.status);
+      console.log('APIResponse.statusText :--:>', APIResponse.statusText);
+      console.log('APIResponse.data :--:>', APIResponse.data);
 
-  //   //   if (APIResponse.status) {
-  //   //     const newData = UserPicks.map(data =>
-  //   //       data.url === '' ? item.shift() || data : data,
-  //   //     );
+      // if (APIResponse.code === 200) {
+      //   const newData = UserPicks.map(data =>
+      //     data.url === '' ? item.shift() || data : data,
+      //   );
 
-  //   //     setUserPicks(newData);
-  //   //   } else {
-  //   //     showToast(
-  //   //       'Error',
-  //   //       'Sorry! cant delete this image right now. try again',
-  //   //       'error',
-  //   //     );
-  //   //     return false;
-  //   //   }
-  //   // } catch (error) {
-  //   //   console.log('Error on image upload :--:>', error);
-  //   //   showToast('Error!', String(error), 'error');
-  //   // }
-  // };
+      //   setUserPicks(newData);
+      // } else {
+      //   showToast(
+      //     'Error',
+      //     'Sorry! cant delete this image right now. try again',
+      //     'error',
+      //   );
+      //   return false;
+      // }
+    } catch (error) {
+      console.log('Error on image upload :--:>', error);
+      console.log('Error on image upload :--:>', error?.data);
+      console.log('Error on image upload :--:>', error?.response);
+      showToast('Error!', String(error), 'error');
+    }
+  };
 
   //* Update Profile API Call (API CALL)
   const onUpdateProfile = async () => {
@@ -385,6 +436,7 @@ const EditProfileScreen = () => {
       const DataToSend = {
         eventName: 'update_profile',
         mobile_no: profile?.mobile_no,
+        about: Bio || profile?.about,
         identity: profile?.identity,
         profile_image: profile?.profile_image,
         full_name: profile?.full_name,
@@ -418,7 +470,20 @@ const EditProfileScreen = () => {
         latitude: UserData?.latitude,
         longitude: UserData?.longitude,
         radius: profile?.radius,
+        setting_active_status: profile?.setting_active_status || true,
+        setting_age_range_min: profile?.setting_age_range_min || '18-35',
+        setting_distance_preference:
+          profile?.setting_distance_preference || '20',
+        setting_notification_email: profile?.setting_notification_email || true,
+        setting_notification_push: profile?.setting_notification_push || true,
+        setting_notification_team: profile?.setting_notification_team || true,
+        setting_people_with_range: profile?.setting_people_with_range || true,
+        setting_show_me: profile?.setting_show_me || 'Everyone',
+        setting_show_people_with_range:
+          profile?.setting_show_people_with_range || true,
       };
+      console.log('PROFILE DATA:--:>', profile);
+      console.log('DataToSend:--:>', DataToSend);
 
       const APIResponse = await UserService.UserRegister(DataToSend);
 

@@ -17,22 +17,53 @@ const excludeFields = [
   LocalStorageFields.isImageUploaded,
   LocalStorageFields.phoneNumberWithoutCode,
   LocalStorageFields.phoneNumberCountryCode,
+  LocalStorageFields.notification_token,
+  LocalStorageFields.setting_active_status,
+  LocalStorageFields.setting_age_range_min,
+  LocalStorageFields.setting_distance_preference,
+  LocalStorageFields.setting_notification_email,
+  LocalStorageFields.setting_notification_push,
+  LocalStorageFields.setting_notification_team,
+  LocalStorageFields.setting_people_with_range,
+  LocalStorageFields.setting_show_me,
+  LocalStorageFields.setting_show_people_with_range,
 ];
 
 const calculateDataPercentage = (userData: ProfileType): number => {
+  // const isFilled = (value: any): boolean => {
+  //   if (value === null || value === undefined || value === '') {
+  //     return false;
+  //   } else if (typeof value === 'object') {
+  //     if (Array.isArray(value)) {
+  //       return value.every((element: any) => isFilled(element));
+  //     } else {
+  //       for (const key in value) {
+  //         if (value.hasOwnProperty(key) && !isFilled(value[key])) {
+  //           return false;
+  //         }
+  //       }
+  //       return true;
+  //     }
+  //   } else {
+  //     return true;
+  //   }
+  // };
   const isFilled = (value: any): boolean => {
-    if (value === null || value === undefined || value === '') {
+    if (
+      value === null ||
+      value === 'null' ||
+      value === undefined ||
+      value === ''
+    ) {
       return false;
     } else if (typeof value === 'object') {
       if (Array.isArray(value)) {
         return value.every((element: any) => isFilled(element));
       } else {
-        for (const key in value) {
-          if (value.hasOwnProperty(key) && !isFilled(value[key])) {
-            return false;
-          }
-        }
-        return true;
+        // Handle case where value is an object
+        return Object.values(value).some((nestedValue: any) =>
+          isFilled(nestedValue),
+        );
       }
     } else {
       return true;

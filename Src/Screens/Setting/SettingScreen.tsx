@@ -179,39 +179,40 @@ const SettingScreen = () => {
 
       const DataToSend = {
         eventName: 'update_profile',
-        mobile_no: profile?.mobile_no,
-        identity: profile?.identity,
-        profile_image: profile?.profile_image,
-        full_name: profile?.full_name,
-        birthdate: profile?.birthdate,
-        gender: profile?.gender,
-        city: profile?.city,
-        orientation: profile?.orientation,
-        is_orientation_visible: profile?.is_orientation_visible,
-        hoping: profile?.hoping,
+        mobile_no: UserSetting?.mobile_no,
+        about: UserSetting?.about,
+        identity: UserSetting?.identity,
+        profile_image: UserSetting?.profile_image,
+        full_name: UserSetting?.full_name,
+        birthdate: UserSetting?.birthdate,
+        gender: UserSetting?.gender,
+        city: UserSetting?.city,
+        orientation: UserSetting?.orientation,
+        is_orientation_visible: UserSetting?.is_orientation_visible,
+        hoping: UserSetting?.hoping,
         education: {
-          digree: profile?.education?.digree,
-          college_name: profile?.education?.college_name,
+          digree: UserSetting?.education?.digree,
+          college_name: UserSetting?.education?.college_name,
         },
         habits: {
-          exercise: profile?.habits?.exercise,
-          smoke: profile?.habits?.smoke,
-          movies: profile?.habits?.movies,
-          drink: profile?.habits?.drink,
+          exercise: UserSetting?.habits?.exercise,
+          smoke: UserSetting?.habits?.smoke,
+          movies: UserSetting?.habits?.movies,
+          drink: UserSetting?.habits?.drink,
         },
         magical_person: {
-          communication_stry: profile?.magical_person?.communication_stry,
-          recived_love: profile?.magical_person?.recived_love,
-          education_level: profile?.magical_person?.education_level,
-          star_sign: profile?.magical_person?.star_sign,
+          communication_stry: UserSetting?.magical_person?.communication_stry,
+          recived_love: UserSetting?.magical_person?.recived_love,
+          education_level: UserSetting?.magical_person?.education_level,
+          star_sign: UserSetting?.magical_person?.star_sign,
         },
-        likes_into: profile?.likes_into,
-        is_block_contact: profile?.is_block_contact,
+        likes_into: UserSetting?.likes_into,
+        is_block_contact: UserSetting?.is_block_contact,
         latitude: UserData?.latitude,
         longitude: UserData?.longitude,
-        radius: profile?.radius,
+        radius: UserSetting?.radius,
         setting_active_status: UserSetting?.setting_active_status || true,
-        setting_age_range_min: UserSetting?.setting_age_range_min || '18-30',
+        setting_age_range_min: UserSetting?.setting_age_range_min || '18-35',
         setting_distance_preference:
           UserSetting?.setting_distance_preference || '20',
         setting_notification_email:
@@ -227,31 +228,33 @@ const SettingScreen = () => {
           UserSetting?.setting_show_people_with_range || true,
       };
 
+      console.log('DataToSend', DataToSend);
+
       const APIResponse = await UserService.UserRegister(DataToSend);
 
       if (APIResponse.code === 200) {
         GetSetting();
         showToast(
-          'Profile Updated',
-          'Your profile information has been successfully updated.',
+          'Setting Updated',
+          'Your setting information has been successfully updated.',
           'success',
         );
       } else {
         showToast(
-          'Error Updating Profile',
-          'Oops! Something went wrong while trying to update your profile. Please try again later or contact support if the issue persists',
+          'Error Updating Setting',
+          'Oops! Something went wrong while trying to update your Setting. Please try again later or contact support if the issue persists',
           'error',
         );
         console.log('Something went wrong');
       }
     } catch (error) {
-      console.log('Something went wrong edit profile :--:>', error);
+      console.log('Something went wrong edit Setting :--:>', error);
     } finally {
       // setIsFetchDataAPILoading(false);
     }
   };
 
-  console.log(startAge || 18, endAge || 30);
+  console.log(startAge, endAge);
 
   return (
     <View style={styles.container}>
@@ -276,7 +279,9 @@ const SettingScreen = () => {
                 isActive={false}
                 style={styles.PhoneNumberFlexStyle}
                 Item={
-                  profile?.mobile_no || profile?.mobile_no || 'Not Added Yet!'
+                  UserSetting?.mobile_no ||
+                  UserSetting?.mobile_no ||
+                  'Not Added Yet!'
                 }
                 onPress={() => {}}
               />
@@ -333,7 +338,7 @@ const SettingScreen = () => {
                   />
                 </View>
                 <SettingFlexView
-                  isActive={UserSetting?.setting_show_people_with_range || true}
+                  isActive={UserSetting?.setting_show_people_with_range}
                   style={styles.PhoneNumberFlexStyle}
                   Item={'Show between this distance'}
                   onSwitchPress={() => {
@@ -409,7 +414,7 @@ const SettingScreen = () => {
                     Distance Preference
                   </Text>
                   <Text style={styles.UserAgeText}>{`${startAge || 18} - ${
-                    endAge || 30
+                    endAge || 35
                   }`}</Text>
                 </View>
                 <View
@@ -425,7 +430,7 @@ const SettingScreen = () => {
                         setting_age_range_min: `${v[0]}-${v[1]}`,
                       }));
                     }}
-                    values={[Number(startAge), Number(endAge)]}
+                    values={[Number(startAge || 18), Number(endAge || 35)]}
                     isMarkersSeparated={true}
                     max={100}
                     sliderLength={Dimensions.get('window').width - 85}
@@ -454,15 +459,14 @@ const SettingScreen = () => {
             />
             <EditProfileBoxView>
               <SettingFlexView
-                isActive={UserSetting?.setting_active_status || true}
+                isActive={UserSetting?.setting_active_status}
                 style={styles.PhoneNumberFlexStyle}
                 Item={'Show my status'}
                 onPress={() => {}}
                 onSwitchPress={() => {
                   setProfileData(prevState => ({
                     ...prevState,
-                    setting_active_status:
-                      !UserSetting?.setting_active_status,
+                    setting_active_status: !UserSetting?.setting_active_status,
                   }));
                 }}
                 IsSwitch={true}
@@ -481,7 +485,7 @@ const SettingScreen = () => {
             <EditProfileBoxView>
               <View>
                 <SettingFlexView
-                  isActive={UserSetting?.setting_notification_push || true}
+                  isActive={UserSetting?.setting_notification_push}
                   style={styles.NotificationFlexView}
                   Item={'Push Notification'}
                   onPress={() => {}}
@@ -495,7 +499,7 @@ const SettingScreen = () => {
                   }}
                 />
                 <SettingFlexView
-                  isActive={UserSetting?.setting_notification_email || true}
+                  isActive={UserSetting?.setting_notification_email}
                   style={styles.NotificationFlexView}
                   Item={'Email Notification'}
                   onPress={() => {}}
