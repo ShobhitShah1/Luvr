@@ -59,14 +59,7 @@ const ChatRoomScreen = () => {
 
   useEffect(() => {
     if (isFocused) {
-      const socketInstance = io(ApiConfig.SOCKET_BASE_URL, {
-        reconnectionDelay: 3000,
-        reconnection: true,
-        reconnectionAttempts: 10,
-        rejectUnauthorized: false,
-        agent: false,
-        // path: '/socket.io',
-      });
+      const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
 
       console.log('socketInstance', socketInstance.connected);
 

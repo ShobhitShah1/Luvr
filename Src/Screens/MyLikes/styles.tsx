@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import {COLORS, FONTS, SIZES} from '../../Common/Theme';
+import {COLORS, FONTS} from '../../Common/Theme';
 
 const styles = StyleSheet.create({
   container: {
@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
   },
   ContentView: {
     flex: 1,
-    // paddingTop: 100,
+    height: '100%',
   },
   TabBarButtonView: {
     width: '45%',

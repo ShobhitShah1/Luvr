@@ -27,7 +27,11 @@ import {SwiperCard} from '../../Types/SwiperCard';
 import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderSwiperCard from './Components/RenderSwiperCard';
-import {onSwipeLeft, onSwipeRight} from '../../Redux/Action/userActions';
+import {
+  onSwipeLeft,
+  onSwipeRight,
+  resetSwiperData,
+} from '../../Redux/Action/userActions';
 import {store} from '../../Redux/Store/store';
 import {
   useFocusEffect,
@@ -91,9 +95,13 @@ const ExploreCardScreen: FC = () => {
   }, [ItsMatchModalView]);
 
   useEffect(() => {
+    // if (isScreenFocused) {
+    // setIsAPILoading(true);
     setIsAPILoading(true);
     FetchAPIData(0);
     setCardToSkipNumber(0);
+    setCurrentCardIndex(0);
+    // }
   }, []);
 
   //* Blur Screen useEffect
@@ -148,12 +156,18 @@ const ExploreCardScreen: FC = () => {
 
   const FetchAPIData = useCallback(
     async (cardSkipValue: number | undefined) => {
+      setCurrentCardIndex(0);
+      // let timeoutId: NodeJS.Timeout | null = null;
+
       try {
+        // timeoutId = setTimeout(() => {
+        // }, 2000); // Start loader after 2 seconds
+
         console.log(LeftSwipedUserIds);
         const userDataForApi = {
           limit: CardLimit,
-          unlike: LeftSwipedUserIds,
-          like: RightSwipedUserIds,
+          unlike: LeftSwipedUserIds, //LeftSwipedUserIds
+          like: RightSwipedUserIds, //RightSwipedUserIds
           skip: cardSkipValue || cardToSkipNumber,
           radius: userData.radius,
           eventName: 'list_neighbour',
@@ -189,15 +203,20 @@ const ExploreCardScreen: FC = () => {
       } catch (error) {
         console.log('Something Went Wrong With Fetching API Data');
       } finally {
+        // Clear the timeout and stop loader if API call finishes before 2 seconds
+        // if (timeoutId) {
+        // clearTimeout(timeoutId);
+        // }
         setIsAPILoading(false);
       }
     },
-    [LeftSwipedUserIds, RightSwipedUserIds, cardToSkipNumber],
+    [LeftSwipedUserIds, RightSwipedUserIds, cardToSkipNumber, userData],
   );
 
   //* On Swipe Right Do Something
   const OnSwipeRight = (cardIndex: number) => {
     if (cards && cards[CurrentCardIndex]?._id) {
+      console.log(cards[CurrentCardIndex]?._id, CurrentCardIndex);
       LikeUserAPI(String(cards[CurrentCardIndex]?._id));
       store.dispatch(onSwipeRight(String(cards[CurrentCardIndex]?._id)));
     }
@@ -332,7 +351,7 @@ const ExploreCardScreen: FC = () => {
           <Swiper
             ref={swipeRef}
             cards={cards}
-            // cardIndex={CurrentCardIndex}
+            cardIndex={CurrentCardIndex}
             stackSize={2}
             stackSeparation={0}
             horizontalThreshold={width / 2.5}
@@ -411,6 +430,16 @@ const ExploreCardScreen: FC = () => {
                 style={styles.ChangeSettingButton}>
                 <Text style={styles.ChangeSettingText}>Change Setting</Text>
               </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={ActiveOpacity}
+                onPress={() => {
+                  store.dispatch(resetSwiperData());
+                  FetchAPIData(0);
+                }}
+                style={styles.ChangeSettingButton}>
+                <Text style={styles.ChangeSettingText}>Clear Data</Text>
+              </TouchableOpacity>
             </View>
           )
         )}
@@ -440,6 +469,24 @@ const ExploreCardScreen: FC = () => {
               style={styles.LikeButton}
               source={CommonIcons.like_button}
             />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{
+              justifyContent: 'center',
+              alignSelf: 'center',
+              width: 60,
+              height: 60,
+              borderRadius: 500,
+              backgroundColor: 'red',
+            }}
+            onPress={() => {
+              store.dispatch(resetSwiperData());
+              FetchAPIData(0);
+            }}>
+            <Text style={{textAlign: 'center', color: COLORS.White}}>
+              Clear Data
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -584,7 +631,7 @@ const styles = StyleSheet.create({
     color: COLORS.Primary,
   },
   ChangeSettingButton: {
-    top: 20,
+    marginTop: 20,
     width: 250,
     height: 50,
     alignItems: 'center',

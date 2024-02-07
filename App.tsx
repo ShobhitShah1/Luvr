@@ -17,8 +17,8 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log('Hy, Got Notification:--:>', remoteMessage);
       onDisplayNotification();
-      // Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
     });
 
     async function onDisplayNotification() {

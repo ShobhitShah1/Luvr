@@ -3,6 +3,7 @@ import {LocalStorageFields} from '../../Types/LocalStorageFields';
 export const UPDATE_FIELD = 'UPDATE_FIELD';
 export const SET_USER_DATA = 'SET_USER_DATA';
 export const RESET = 'RESET';
+export const RESET_SWIPER_KEYS = 'RESET_SWIPER_KEYS';
 export const ON_SWIPE_LEFT = 'ON_SWIPE_LEFT';
 export const ON_SWIPE_RIGHT = 'ON_SWIPE_RIGHT';
 
@@ -57,4 +58,8 @@ export const onSwipeRight = (
 
 export const resetUserData = () => ({
   type: RESET,
+});
+
+export const resetSwiperData = () => ({
+  type: RESET_SWIPER_KEYS,
 });

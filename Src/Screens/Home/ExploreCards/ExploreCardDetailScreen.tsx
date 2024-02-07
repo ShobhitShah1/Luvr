@@ -130,6 +130,13 @@ const ExploreCardDetailScreen = () => {
     }
   };
 
+  console.log(
+    CardData?.likes_into &&
+      Array.isArray(CardData?.likes_into) &&
+      CardData?.likes_into?.length > 0,
+    CardData?.likes_into,
+  );
+
   if (IsAPILoading) {
     return (
       <React.Fragment>
@@ -214,7 +221,7 @@ const ExploreCardDetailScreen = () => {
           </View>
 
           {/* About Me */}
-          {CardData?.bio && (
+          {CardData?.about && (
             <View style={styles.DetailBoxContainerView}>
               <View style={styles.TitleAndIconView}>
                 <Image
@@ -226,9 +233,7 @@ const ExploreCardDetailScreen = () => {
                   About me
                 </Text>
               </View>
-              <Text style={styles.DetailText}>
-                {CardData?.bio || 'Write BIO'}
-              </Text>
+              <Text style={styles.DetailText}>{CardData?.about}</Text>
             </View>
           )}
 
@@ -333,32 +338,31 @@ const ExploreCardDetailScreen = () => {
             )}
 
           {/* I like */}
-          {CardData?.likes_into && CardData?.likes_into?.length !== 0 && (
-            <View style={styles.DetailBoxContainerView}>
-              <View style={styles.TitleAndIconView}>
-                <Image
-                  style={styles.DetailIconsView}
-                  resizeMode="contain"
-                  source={CommonIcons.i_like_icon}
-                />
-                <Text style={styles.TitleText} numberOfLines={1}>
-                  I like
-                </Text>
+          {CardData?.likes_into &&
+            Array.isArray(CardData?.likes_into) &&
+            CardData?.likes_into[0]?.length > 0 && (
+              <View style={styles.DetailBoxContainerView}>
+                <View style={styles.TitleAndIconView}>
+                  <Image
+                    style={styles.DetailIconsView}
+                    resizeMode="contain"
+                    source={CommonIcons.i_like_icon}
+                  />
+                  <Text style={styles.TitleText} numberOfLines={1}>
+                    I like
+                  </Text>
+                </View>
+                <View style={styles.MultipleBoxFlexView}>
+                  {CardData?.likes_into?.map((ILikeItem, index) => (
+                    <View key={index} style={styles.MultipleBoxView}>
+                      <Text style={styles.MultipleDetailText}>
+                        {`${ILikeItem}` || ''}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
               </View>
-              <View style={styles.MultipleBoxFlexView}>
-                {CardData?.likes_into &&
-                  CardData?.likes_into?.map((ILikeItem, index) => {
-                    return (
-                      <View key={index} style={styles.MultipleBoxView}>
-                        <Text style={styles.MultipleDetailText} key={index}>
-                          {`${ILikeItem}` || ''}
-                        </Text>
-                      </View>
-                    );
-                  })}
-              </View>
-            </View>
-          )}
+            )}
 
           {/* Block And Report Profile */}
           <View style={styles.BlockAndReportProfileView}>

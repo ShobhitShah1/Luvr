@@ -39,16 +39,20 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({Title, onUpdatePress}) => {
         <View style={styles.TitleView}>
           <Text style={styles.Title}>{Title}</Text>
         </View>
-        <TouchableOpacity
-          style={styles.ModalSubmitButton}
-          onPress={onUpdatePress}
-          activeOpacity={ActiveOpacity}>
-          <Image
-            source={CommonIcons.Check}
-            tintColor={COLORS.White}
-            style={styles.ModalSubmitIcon}
-          />
-        </TouchableOpacity>
+        {Title !== 'Notification' ? (
+          <TouchableOpacity
+            style={styles.ModalSubmitButton}
+            onPress={onUpdatePress}
+            activeOpacity={ActiveOpacity}>
+            <Image
+              source={CommonIcons.Check}
+              tintColor={COLORS.White}
+              style={styles.ModalSubmitIcon}
+            />
+          </TouchableOpacity>
+        ) : (
+          <View />
+        )}
         {/* <TouchableOpacity
           onPress={onUpdatePress}
           disabled={false}

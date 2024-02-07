@@ -1,3 +1,5 @@
+import {ProfileType} from './ProfileType';
+
 export interface SwiperCard {
   _id: string | number;
   birthdate: string;
@@ -22,4 +24,12 @@ export interface SwiperCard {
   recent_pik: string[];
   user_from: string;
   location?: string;
+}
+
+export interface LikeAndMatchTypes {
+  _id: string;
+  first_approch: string;
+  second_approch: string;
+  status: string;
+  user_details: ProfileType[];
 }

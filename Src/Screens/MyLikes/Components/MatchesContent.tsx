@@ -16,7 +16,7 @@ interface LikesProps {
 
 let NOIMAGE_CONTAINER = 150;
 
-const LikesContent: FC<LikesProps> = ({LikesData}) => {
+const MatchesContent: FC<LikesProps> = ({LikesData}) => {
   const navigation = useNavigation();
   const userData = useSelector((state: any) => state?.user);
   let title = LikesData?.status;
@@ -31,42 +31,58 @@ const LikesContent: FC<LikesProps> = ({LikesData}) => {
   } else {
     Data = [];
   }
-
-  if (title === 'like') {
+  if (title === 'match') {
     return (
       <View style={styles.Container}>
         <View style={styles.DetailBoxContainerView}>
-          <View style={styles.LikeImageView}>
+          <View style={styles.MatchImageView}>
             <Image
-              style={styles.LikeImageProfile}
+              style={styles.MatchCardMyProfilePic}
+              source={{
+                uri:
+                  ApiConfig.IMAGE_BASE_URL + userData?.userData?.recent_pik[0],
+              }}
+            />
+            <Image
+              style={styles.LikeButtonInMiddleIcon}
+              source={CommonIcons.like_button}
+            />
+            <Image
+              style={styles.MatchCardOpponentProfilePic}
               source={
-                Data.recent_pik && Data.recent_pik[0]
-                  ? {uri: ApiConfig.IMAGE_BASE_URL + Data.recent_pik[0]}
+                Data?.recent_pik && Data?.recent_pik[0]
+                  ? {uri: ApiConfig.IMAGE_BASE_URL + Data?.recent_pik[0]}
                   : CommonImages.WelcomeBackground
               }
             />
           </View>
-          <View style={styles.LikeTextView}>
+          <View style={styles.MatchTextView}>
             <Text numberOfLines={1} style={styles.TitleMatchText}>
-              Liked you!
+              It's a match!
             </Text>
             <Text numberOfLines={2} style={styles.DescriptionText}>
-              {Data?.full_name || 'User'} liked you.
+              You and {Data?.full_name || 'User'} liked each other.
             </Text>
           </View>
-          <View style={styles.LikeButtonView}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Chat', {
+                id: Data?._id,
+              });
+            }}
+            style={styles.LikeButtonView}>
             <Image
               style={styles.LikeButtonIcon}
-              source={CommonIcons.like_button}
+              source={CommonIcons.message_button}
             />
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     );
   }
 };
 
-export default LikesContent;
+export default MatchesContent;
 
 const styles = StyleSheet.create({
   ListEmptyComponentView: {
@@ -129,22 +145,6 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.SemiBold,
     color: COLORS.Black,
   },
-
-  // Like Box
-  LikeImageView: {
-    width: '20%',
-    justifyContent: 'center',
-  },
-  LikeImageProfile: {
-    width: 60,
-    height: 60,
-    borderRadius: 500,
-  },
-  LikeTextView: {
-    width: '65%',
-    paddingHorizontal: 10,
-    justifyContent: 'center',
-  },
   LikeButtonView: {
     width: '15%',
     alignItems: 'center',
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
 
   // Match Box
   MatchImageView: {
-    width: '33%',
+    width: '32%',
     flexDirection: 'row',
     overflow: 'hidden',
     alignItems: 'center',

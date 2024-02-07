@@ -4,6 +4,7 @@ import {
   ON_SWIPE_LEFT,
   ON_SWIPE_RIGHT,
   RESET,
+  RESET_SWIPER_KEYS,
   SET_USER_DATA,
   UPDATE_FIELD,
 } from '../Action/userActions';
@@ -53,6 +54,12 @@ const userReducer = (
       return {
         ...state,
         swipedRightUserIds: Array.from(uniqueUserIds),
+      };
+    case RESET_SWIPER_KEYS:
+      return {
+        ...state,
+        swipedLeftUserIds: [],
+        swipedRightUserIds: [],
       };
     case RESET:
       return initialState;

@@ -9,8 +9,9 @@ const data = [
   {
     id: 0,
     image: DummyImage,
-    title: 'Hello',
-    description: 'description here',
+    title: 'App Name',
+    description:
+      'Add more pics & complete your bio to get the most from your experience.',
     time: new Date(),
   },
 ];
@@ -21,7 +22,7 @@ const NotificationScreen = () => {
       <ProfileAndSettingHeader
         Title={'Notification'}
         onUpdatePress={() => {
-          //   UpdateSetting();
+          // UpdateSetting();
         }}
       />
       <View style={styles.NotificationViewContainer}>

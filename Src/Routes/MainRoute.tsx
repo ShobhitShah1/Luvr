@@ -36,6 +36,10 @@ import SettingScreen from '../Screens/Setting/SettingScreen';
 import {initGoogleSignIn} from '../Services/AuthService';
 import BottomTab from './BottomTab';
 import {navigationRef} from './RootNavigation';
+import messaging from '@react-native-firebase/messaging';
+import {store} from '../Redux/Store/store';
+import {LocalStorageFields} from '../Types/LocalStorageFields';
+import {updateField} from '../Redux/Action/userActions';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -46,9 +50,26 @@ export default function MainRoute() {
   const [isNavigationReady, setIsNavigationReady] = useState(false);
 
   useEffect(() => {
-    determineInitialRoute();
-    initGoogleSignIn();
+    Promise.all([
+      determineInitialRoute(),
+      initGoogleSignIn(),
+      HandleNotificationPermisstion(),
+    ]);
   }, []);
+
+  const HandleNotificationPermisstion = async () => {
+    const authStatus = await messaging().requestPermission();
+    console.log('authStatus', authStatus);
+
+    if (authStatus === 1) {
+      const Token = await messaging().getToken();
+      if (Token) {
+        store.dispatch(
+          updateField(LocalStorageFields.notification_token, Token),
+        );
+      }
+    }
+  };
 
   const determineInitialRoute = useCallback(async () => {
     try {

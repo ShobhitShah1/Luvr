@@ -214,7 +214,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
               style={styles.ViewProfileIcon}
             />
           </TouchableOpacity>
-        </View>
+        </View> 
       </View>
     </TouchableWithoutFeedback>
   );
