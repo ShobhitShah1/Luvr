@@ -151,8 +151,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   LikeButtonIcon: {
-    width: 50,
-    height: 50,
+    width: hp(6.5),
+    height: hp(6.5),
   },
 
   // Match Box

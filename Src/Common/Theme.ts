@@ -10,6 +10,7 @@ export const COLORS = {
   DisableButtonBackground: 'rgba(184, 184, 184, 1)',
   White: 'rgba(255, 255, 255, 1)',
   Brown: 'rgba(68, 65, 66, 1)',
+  DescriptionGray: 'rgba(108, 108, 108, 1)',
   Silver: 'rgba(130, 134, 147, 1)',
   Black: 'rgba(0, 0, 0, 0.9)',
   Blue: 'rgba(26,120,221,255)', //* Use For UnderLine And Link Text's

@@ -53,11 +53,11 @@ export default function MainRoute() {
     Promise.all([
       determineInitialRoute(),
       initGoogleSignIn(),
-      HandleNotificationPermisstion(),
+      HandleNotificationPermission(),
     ]);
   }, []);
 
-  const HandleNotificationPermisstion = async () => {
+  const HandleNotificationPermission = async () => {
     const authStatus = await messaging().requestPermission();
     console.log('authStatus', authStatus);
 

@@ -9,6 +9,11 @@ const ApiConfig = {
   SOCKET_BASE_URL: 'http://nirvanatechlabs.in:1111/',
   GOOGLE_WEB_CLIENT_ID:
     '920057594155-arii13jpcn7vehess2te20noeclnisss.apps.googleusercontent.com',
+
+  //* EventName's
+
+  BlockProfile: 'block_users',
+  ReportProfile: 'report_users',
 };
 
 export default ApiConfig;

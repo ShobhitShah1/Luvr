@@ -21,10 +21,10 @@ import {
   LIST_EVENT,
   MESSAGE_EVENT,
 } from '../../Config/Setting';
+import {store} from '../../Redux/Store/store';
 import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderChatRoomList from './Components/RenderChatRoomList';
-import {store} from '../../Redux/Store/store';
 // import {use} from 'react-redux';
 interface ChatMessage {
   senderId: string;
@@ -61,11 +61,16 @@ const ChatRoomScreen = () => {
     if (isFocused) {
       const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
 
-      console.log('socketInstance', socketInstance.connected);
+      socketInstance.on('reconnect_attempt', () => {
+        console.log('Reconnecting');
+      });
+
+      socketInstance.on('reconnect', () => {
+        console.log('reconnect');
+      });
 
       socketInstance.on('connect', () => {
-        console.log('Connected to Socket.io server');
-        // Once connected, set the socket state or do other tasks
+        console.log('socketInstance', socketInstance.connected);
         setSocket(socketInstance);
         setIsSocketLoading(false);
       });
@@ -78,7 +83,7 @@ const ChatRoomScreen = () => {
       if (socketInstance.connected) {
         setSocket(socketInstance);
       } else {
-        setSocket(socketInstance);
+        setSocket(undefined);
         setIsSocketLoading(false);
       }
 
@@ -107,7 +112,7 @@ const ChatRoomScreen = () => {
               (item: MessageItem) => item.to !== currentLoginUserId,
             );
             const combinedData = combineSameIdData(filteredData);
-            console.log('combinedData', combinedData);
+            // console.log('combinedData', combinedData);
             setMessages(combinedData);
           } else {
             setMessages([]);
@@ -133,8 +138,8 @@ const ChatRoomScreen = () => {
         }
       };
 
-      const handleRecivedChat = (chat: any) => {
-        console.log('HandelRecivedChat: --->', chat, chat.from);
+      const handleReceivedChat = (chat: any) => {
+        console.log('HandelReceivedChat: --->', chat, chat.from);
         setMessages(previousMessages => {
           const combinedData = combineSameIdData([...previousMessages, chat]);
           return combinedData;
@@ -143,7 +148,7 @@ const ChatRoomScreen = () => {
 
       socket.on(LIST_EVENT, handleListResponse);
       socket.on(MESSAGE_EVENT, handleReceivedMessage);
-      socket.on(CHAT_EVENT, handleRecivedChat);
+      socket.on(CHAT_EVENT, handleReceivedChat);
       setIsSocketLoading(false);
       return () => {
         socket.off(LIST_EVENT, handleListResponse);
@@ -155,7 +160,7 @@ const ChatRoomScreen = () => {
   }, [socket, currentLoginUserId, isFocused]);
 
   const combineSameIdData = (data: MessageItem[]): MessageItem[] => {
-    console.log('combineSameIdData:--:>', data);
+    // console.log('combineSameIdData:--:>', data);
     const combinedData: MessageItem[] = [];
     const idMap = new Map<string, MessageItem>();
 

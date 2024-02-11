@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import CommonIcons from '../../Common/CommonIcons';
-import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
+import {ActiveOpacity, COLORS} from '../../Common/Theme';
 import UserService from '../../Services/AuthService';
 import {LikeAndMatchTypes} from '../../Types/SwiperCard';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';

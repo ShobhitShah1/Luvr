@@ -24,6 +24,7 @@ import FastImage from 'react-native-fast-image';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import ReportUserModalView from '../../../Components/ReportUserModalView';
 import ApiConfig from '../../../Config/ApiConfig';
 import {DummyImage} from '../../../Config/Setting';
 import {onSwipeLeft, onSwipeRight} from '../../../Redux/Action/userActions';
@@ -37,10 +38,7 @@ type DetailCardRouteParams = {
   props: ProfileType;
 };
 
-// const screenWidth = Dimensions.get('window').width;
-
 const ExploreCardDetailScreen = () => {
-  // const carouselWidth = screenWidth * 0.9;
   const CardDetail =
     useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -52,6 +50,9 @@ const ExploreCardDetailScreen = () => {
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [IsImageLoading, setIsImageLoading] = useState(false);
   const navigation = useNavigation();
+  const [SelectedReportReason, setSelectedReportReason] = useState<string>('');
+  const [ShowReportModalView, setShowReportModalView] =
+    useState<boolean>(false);
   useEffect(() => {
     if (IsFocused) {
       GetUserData();
@@ -130,12 +131,50 @@ const ExploreCardDetailScreen = () => {
     }
   };
 
-  console.log(
-    CardData?.likes_into &&
-      Array.isArray(CardData?.likes_into) &&
-      CardData?.likes_into?.length > 0,
-    CardData?.likes_into,
-  );
+  const onBlockProfileClick = async () => {
+    const BlockData = {
+      eventName: ApiConfig.BlockProfile,
+      blocked_to: UserID,
+    };
+    const APIResponse = await UserService.UserRegister(BlockData);
+
+    console.log('Block APIResponse', APIResponse);
+
+    if (APIResponse && APIResponse?.code === 200) {
+      await store.dispatch(onSwipeLeft(String(UserID)));
+      showToast(
+        'User Blocked',
+        `Your request to block ${CardDetail.params?.props?.full_name} is successfully send`,
+        'success',
+      );
+      navigation.goBack();
+    } else {
+      showToast('Error', 'Something went wrong', 'error');
+    }
+  };
+
+  const onReportProfileClick = async () => {
+    setShowReportModalView(false);
+    const BlockData = {
+      eventName: ApiConfig.ReportProfile,
+      blocked_to: UserID,
+      reason: SelectedReportReason,
+    };
+    const APIResponse = await UserService.UserRegister(BlockData);
+
+    console.log('Report APIResponse', APIResponse);
+
+    if (APIResponse && APIResponse?.code === 200) {
+      // navigation.goBack();
+      showToast(
+        'Success!',
+        `Your report against ${CardDetail.params?.props?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${SelectedReportReason}`,
+        'success',
+      );
+    } else {
+      showToast('Error', 'Something went wrong', 'error');
+    }
+  };
 
   if (IsAPILoading) {
     return (
@@ -368,6 +407,7 @@ const ExploreCardDetailScreen = () => {
           <View style={styles.BlockAndReportProfileView}>
             {/* Block Profile */}
             <TouchableOpacity
+              onPress={onBlockProfileClick}
               activeOpacity={ActiveOpacity}
               style={styles.BlockAndReportButtonView}>
               <Image
@@ -380,6 +420,7 @@ const ExploreCardDetailScreen = () => {
 
             {/* Report Profile */}
             <TouchableOpacity
+              onPress={() => setShowReportModalView(!ShowReportModalView)}
               activeOpacity={ActiveOpacity}
               style={styles.BlockAndReportButtonView}>
               <Image
@@ -417,6 +458,14 @@ const ExploreCardDetailScreen = () => {
               />
             </TouchableOpacity>
           </View>
+
+          <ReportUserModalView
+            Visible={ShowReportModalView}
+            setVisibility={setShowReportModalView}
+            onReportPress={onReportProfileClick}
+            SelectedReportReason={SelectedReportReason}
+            setSelectedReportReason={setSelectedReportReason}
+          />
         </ScrollView>
       </View>
     </View>
@@ -490,7 +539,8 @@ const styles = StyleSheet.create({
   },
   MultipleBoxFlexView: {
     flexDirection: 'row',
-    width: '92.5%',
+    width: '92%',
+    flexWrap: 'wrap',
     alignSelf: 'flex-end',
   },
   MultipleBoxView: {

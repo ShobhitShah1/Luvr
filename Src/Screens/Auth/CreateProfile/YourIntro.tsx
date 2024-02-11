@@ -86,9 +86,6 @@ const YourIntro: FC = () => {
             updateField(LocalStorageFields.eventName, 'app_user_register'),
           ),
         ]);
-
-        console.log('DOne');
-
         CallUpdateProfileAPI(selectedItems);
       } else {
         showToast(

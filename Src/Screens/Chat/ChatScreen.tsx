@@ -29,7 +29,7 @@ import {Socket, io} from 'socket.io-client';
 import ApiConfig from '../../Config/ApiConfig';
 import {
   CHAT_EVENT,
-  GET_RECIVER_SOCKET_EVENT,
+  GET_RECEIVER_SOCKET_EVENT,
   JOIN_EVENT,
   LIST_EVENT,
   MESSAGE_EVENT,
@@ -61,7 +61,7 @@ const ChatScreen: FC = () => {
     useState<ProfileType>();
   const IsFocused = useIsFocused();
   const [socket, setSocket] = useState<Socket>();
-  const [ReciverSocketId, setReciverSocketId] = useState(null);
+  const [ReceiverSocketId, setReceiverSocketId] = useState('');
   const generateRandomId = () => {
     return Math.random().toString(36).substr(2, 9);
   };
@@ -190,7 +190,7 @@ const ChatScreen: FC = () => {
     socket.emit(JOIN_EVENT, {id: CurrentLoginUserId});
 
     // Event: Get Receiver Socket
-    socket.emit(GET_RECIVER_SOCKET_EVENT, {
+    socket.emit(GET_RECEIVER_SOCKET_EVENT, {
       to: params?.id,
     });
 
@@ -228,7 +228,7 @@ const ChatScreen: FC = () => {
       // setMessages(prevMessages => [...prevMessages, data]);
     };
 
-    const handleRecivedChat = (chat: any) => {
+    const handleReceiverChat = (chat: any) => {
       const giftedChatMessages = StoreSingleChatFormat(chat);
       // console.log('SINGLE: giftedChatMessages:', giftedChatMessages);
 
@@ -239,7 +239,7 @@ const ChatScreen: FC = () => {
 
     const handleReceiverSocketId = (data: {to_socket_id: string}) => {
       console.log('handleReceiverSocketId:', data, data?.to_socket_id);
-      setReciverSocketId(data?.to_socket_id);
+      setReceiverSocketId(data?.to_socket_id);
     };
 
     const handleJoinResponse = (data: any) => {
@@ -248,22 +248,22 @@ const ChatScreen: FC = () => {
       // Check if the response contains data and if the ID matches params?.id
       if (data && data.id === params?.id) {
         // If there's a match, set the receiver's socket ID
-        setReciverSocketId(data.socket_id);
+        setReceiverSocketId(data.socket_id);
       }
     };
 
     socket.on(JOIN_EVENT, handleJoinResponse);
     socket.on(LIST_EVENT, handleListResponse);
     socket.on(MESSAGE_EVENT, handleReceivedMessage);
-    socket.on(CHAT_EVENT, handleRecivedChat);
-    socket.on(GET_RECIVER_SOCKET_EVENT, handleReceiverSocketId);
+    socket.on(CHAT_EVENT, handleReceiverChat);
+    socket.on(GET_RECEIVER_SOCKET_EVENT, handleReceiverSocketId);
 
     return () => {
       socket.off(JOIN_EVENT, handleJoinResponse);
       socket.off(LIST_EVENT, handleListResponse);
       socket.off(MESSAGE_EVENT, handleReceivedMessage);
-      socket.off(CHAT_EVENT, handleRecivedChat);
-      socket.off(GET_RECIVER_SOCKET_EVENT, handleReceiverSocketId);
+      socket.off(CHAT_EVENT, handleReceiverChat);
+      socket.off(GET_RECEIVER_SOCKET_EVENT, handleReceiverSocketId);
     };
   }, [socket, params]);
 
@@ -295,25 +295,25 @@ const ChatScreen: FC = () => {
       //   'userMessage.length:-->',
       //   userMessage.length,
       //   CountMessage,
-      //   ReciverSocketId,
+      //   ReceiverSocketId,
       // );
       // let SOCKET_ID;
 
       // const handleReceiverSocketId = (data: any) => {
       //   // console.log('handleReceiverSocketId:--:>', data, data?.to_socket_id);
       //   SOCKET_ID = data?.to_socket_id;
-      //   // setReciverSocketId(data?.to_socket_id);
+      //   // setReceiverSocketId(data?.to_socket_id);
       // };
 
       // if (socket) {
-      //   socket.on(GET_RECIVER_SOCKET_EVENT, handleReceiverSocketId);
+      //   socket.on(GET_RECEIVER_SOCKET_EVENT, handleReceiverSocketId);
       // }
 
       if (socket) {
         const chatData = {
           // ...(CountMessage === 0 ? {is_first: 1} : {}),
           to: params?.id,
-          reciver_socket_id: ReciverSocketId || null,
+          reciver_socket_id: ReceiverSocketId || null,
           from_name: CurrentLoginUserFullName,
           to_name: OtherUserProfileData?.full_name,
           message: messages[0].text,
@@ -346,7 +346,7 @@ const ChatScreen: FC = () => {
       CurrentLoginUserId,
       OtherUserProfileData,
       CurrentLoginUserFullName,
-      ReciverSocketId,
+      ReceiverSocketId,
       CountMessage,
     ],
   );

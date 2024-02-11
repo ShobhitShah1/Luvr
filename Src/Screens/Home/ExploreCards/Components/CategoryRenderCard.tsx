@@ -17,16 +17,15 @@ import CommonImages from '../../../../Common/CommonImages';
 import {ActiveOpacity, COLORS, FONTS} from '../../../../Common/Theme';
 import ApiConfig from '../../../../Config/ApiConfig';
 import useCalculateAge from '../../../../Hooks/useCalculateAge';
-import {SwiperCard} from '../../../../Types/SwiperCard';
 import {ProfileType} from '../../../../Types/ProfileType';
 
-interface RenderlookingViewProps {
+interface RenderLookingViewProps {
   item: ProfileType;
   index: number;
   isRecentlyActive?: boolean;
 }
 
-const CategoryRenderCard: FC<RenderlookingViewProps> = ({
+const CategoryRenderCard: FC<RenderLookingViewProps> = ({
   item,
   index,
   isRecentlyActive,
@@ -50,7 +49,6 @@ const CategoryRenderCard: FC<RenderlookingViewProps> = ({
       : CommonImages.WelcomeBackground;
 
   const Age = useCalculateAge(item.birthdate);
-
   return (
     <TouchableOpacity
       activeOpacity={1}

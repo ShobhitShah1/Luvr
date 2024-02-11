@@ -1,13 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import NetInfo from '@react-native-community/netinfo';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Animated,
   Image,
   Platform,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -15,6 +14,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
+import Modal from 'react-native-modal';
 import {Easing} from 'react-native-reanimated';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useSelector} from 'react-redux';
@@ -22,24 +22,18 @@ import CommonIcons from '../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, GROUP_FONT} from '../../Common/Theme';
 import {CardDelay, CardLimit} from '../../Config/Setting';
 import useInterval from '../../Hooks/useInterval';
-import UserService from '../../Services/AuthService';
-import {SwiperCard} from '../../Types/SwiperCard';
-import {useCustomToast} from '../../Utils/toastUtils';
-import BottomTabHeader from '../Home/Components/BottomTabHeader';
-import RenderSwiperCard from './Components/RenderSwiperCard';
 import {
   onSwipeLeft,
   onSwipeRight,
   resetSwiperData,
 } from '../../Redux/Action/userActions';
 import {store} from '../../Redux/Store/store';
-import {
-  useFocusEffect,
-  useIsFocused,
-  useNavigation,
-} from '@react-navigation/native';
-import Modal from 'react-native-modal';
+import UserService from '../../Services/AuthService';
+import {SwiperCard} from '../../Types/SwiperCard';
+import {useCustomToast} from '../../Utils/toastUtils';
+import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
+import RenderSwiperCard from './Components/RenderSwiperCard';
 
 const ExploreCardScreen: FC = () => {
   const {width} = useWindowDimensions() || {};
@@ -94,15 +88,15 @@ const ExploreCardScreen: FC = () => {
     }
   }, [ItsMatchModalView]);
 
-  useEffect(() => {
-    // if (isScreenFocused) {
-    // setIsAPILoading(true);
-    setIsAPILoading(true);
-    FetchAPIData(0);
-    setCardToSkipNumber(0);
-    setCurrentCardIndex(0);
-    // }
-  }, []);
+  // useEffect(() => {
+  //   if (isScreenFocused) {
+  //     // setIsAPILoading(true);
+  //     setIsAPILoading(true);
+  //     FetchAPIData(0);
+  //     setCardToSkipNumber(0);
+  //     setCurrentCardIndex(0);
+  //   }
+  // }, [isScreenFocused]);
 
   //* Blur Screen useEffect
   useEffect(() => {
@@ -118,7 +112,10 @@ const ExploreCardScreen: FC = () => {
   useEffect(() => {
     const _unsubscribe = navigation.addListener('focus', () => {
       startInterval();
+      setIsAPILoading(true);
       FetchAPIData(0);
+      setCardToSkipNumber(0);
+      setCurrentCardIndex(0);
     });
     return () => _unsubscribe();
   }, []);
@@ -163,7 +160,7 @@ const ExploreCardScreen: FC = () => {
         // timeoutId = setTimeout(() => {
         // }, 2000); // Start loader after 2 seconds
 
-        console.log(LeftSwipedUserIds);
+        console.log('LeftSwipedUserIds:', LeftSwipedUserIds);
         const userDataForApi = {
           limit: CardLimit,
           unlike: LeftSwipedUserIds, //LeftSwipedUserIds
@@ -229,25 +226,10 @@ const ExploreCardScreen: FC = () => {
     }
   };
 
-  //* Card Swiped
+  //* All Card Swiped
   const OnSwiped = (cardIndex: any) => {
     setCurrentCardIndex(cardIndex + 1);
     setCurrentImageIndex(0);
-
-    // Load new cards when user swipes half of the existing cards
-    // const halfCardsIndex = Math.floor(cards.length / 2);
-    // console.log('halfCardsIndex', halfCardsIndex, cardIndex);
-    // if (cardIndex === halfCardsIndex) {
-    //   setCardToSkipNumber(0);
-    //   FetchAPIData(0);
-    //   // setCardToSkipNumber(cardToSkipNumber + CardLimit);
-    //   // FetchAPIData(cardToSkipNumber + CardLimit);
-    //   showToast(
-    //     'Loading more cards',
-    //     'Fetching new cards for you (Toast is just for testing)',
-    //     'success',
-    //   );
-    // }
   };
 
   //* When Swipe All Card Fetch New
@@ -256,23 +238,16 @@ const ExploreCardScreen: FC = () => {
     setIsAPILoading(true);
     setCardToSkipNumber(cardToSkipNumber + CardLimit);
     FetchAPIData(cardToSkipNumber + CardLimit);
-    // showToast(
-    //   'All cards swiped',
-    //   'Feting new cards for you (Toast is just for testing)',
-    //   'success',
-    // );
   };
 
   //* This Will Just Swipe Left
   const SwipeLeft = () => {
     swipeRef.current?.swipeLeft();
-    // setItsMatchModalView(true);
   };
 
   //* This Will Just Swipe Right
   const SwipeRight = () => {
     swipeRef.current?.swipeRight();
-    // setItsMatchModalView(true);
   };
 
   //* User Like API
