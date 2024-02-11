@@ -51,9 +51,11 @@ const RenderLookingView: FC<RenderLookingViewProps> = ({
             colors={COLORS.GradientViewForCards}
             locations={[0, 1]}
             style={styles.gradient}>
-            <Text numberOfLines={2} style={styles.TitleText}>
-              {item?.title}
-            </Text>
+            {!IsLoading && !IsImageLoading && (
+              <Text numberOfLines={2} style={styles.TitleText}>
+                {item?.title}
+              </Text>
+            )}
           </LinearGradient>
         </View>
       </Skeleton>

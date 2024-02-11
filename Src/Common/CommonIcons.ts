@@ -39,6 +39,7 @@ const movies_icon = require('../../Assets/Icons/movies_icon.png');
 const smoke_and_drinks_icon = require('../../Assets/Icons/smoke_&_drinks_icon.png');
 const zodiac_sign_icon = require('../../Assets/Icons/zodiac_sign_icon.png');
 const media_icon = require('../../Assets/Icons/media_icon.png');
+const sync = require('../../Assets/Icons/sync.png');
 
 // Home
 const HomeTab = require('../../Assets/Icons/home_icon_select.png');
@@ -93,6 +94,7 @@ export default {
   smoke_and_drinks_icon,
   zodiac_sign_icon,
   media_icon,
+  sync,
 
   //* Home
   HomeTab,

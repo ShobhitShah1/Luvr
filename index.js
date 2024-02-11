@@ -12,10 +12,6 @@ import messaging from '@react-native-firebase/messaging';
 Text.defaultProps = Text.defaultProps || {};
 Text.defaultProps.allowFontScaling = false;
 
-// if (!__DEV__) {
-//   console.log = () => {};
-// }
-
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
 });

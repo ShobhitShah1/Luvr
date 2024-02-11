@@ -30,24 +30,6 @@ const excludeFields = [
 ];
 
 const calculateDataPercentage = (userData: ProfileType): number => {
-  // const isFilled = (value: any): boolean => {
-  //   if (value === null || value === undefined || value === '') {
-  //     return false;
-  //   } else if (typeof value === 'object') {
-  //     if (Array.isArray(value)) {
-  //       return value.every((element: any) => isFilled(element));
-  //     } else {
-  //       for (const key in value) {
-  //         if (value.hasOwnProperty(key) && !isFilled(value[key])) {
-  //           return false;
-  //         }
-  //       }
-  //       return true;
-  //     }
-  //   } else {
-  //     return true;
-  //   }
-  // };
   const isFilled = (value: any): boolean => {
     if (
       value === null ||
@@ -56,15 +38,12 @@ const calculateDataPercentage = (userData: ProfileType): number => {
       value === ''
     ) {
       return false;
-    } else if (typeof value === 'object') {
-      if (Array.isArray(value)) {
-        return value.every((element: any) => isFilled(element));
-      } else {
-        // Handle case where value is an object
-        return Object.values(value).some((nestedValue: any) =>
-          isFilled(nestedValue),
-        );
-      }
+    } else if (typeof value === 'object' && !Array.isArray(value)) {
+      // Treat null values as filled only for object fields
+      return true;
+    } else if (typeof value === 'object' || Array.isArray(value)) {
+      // For arrays and object values, check if every element is filled
+      return value.every((element: any) => isFilled(element));
     } else {
       return true;
     }

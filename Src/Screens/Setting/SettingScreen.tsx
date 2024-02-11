@@ -6,9 +6,11 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {useEffect, useState} from 'react';
 import {
+  Alert,
   Dimensions,
   LayoutChangeEvent,
   ScrollView,
+  Share,
   Text,
   TouchableOpacity,
   View,
@@ -254,7 +256,37 @@ const SettingScreen = () => {
     }
   };
 
-  console.log(startAge, endAge);
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        message: `Unlock the door to endless possibilities 💖 Swipe, match, and let serendipity take the lead. Join our vibrant dating community today! ✨ #FindYourSpark
+
+Download now:
+
+  📱 [App Store](#),
+  📱 [Google Play](#)
+
+Stay connected with us:
+
+  🌟 [Facebook](#),
+  🌟 [Instagram](#),
+  🌟 [Twitter](#)
+
+Let's make every moment count together! #LoveConnects`,
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error: any) {
+      Alert.alert(error.message);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -568,7 +600,7 @@ const SettingScreen = () => {
                   isActive={false}
                   Item={'Share app'}
                   style={styles.ShareFlexViewStyle}
-                  onPress={() => {}}
+                  onPress={() => onShare()}
                 />
                 <SettingFlexView
                   isActive={false}
