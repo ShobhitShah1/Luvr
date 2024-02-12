@@ -219,16 +219,6 @@ const AddRecentPics: FC = () => {
       });
 
       try {
-        // const APIResponse = await UserService.UploadImages(formData);
-        // if (APIResponse && APIResponse.code === 200) {
-        //   return APIResponse.data;
-        // } else {
-        //   showToast(
-        //     'Upload Error',
-        //     'Something went wrong while uploading image',
-        //     'error',
-        //   );
-        // }
         const response = await axios.post(
           ApiConfig.IMAGE_UPLOAD_BASE_URL,
           formData,

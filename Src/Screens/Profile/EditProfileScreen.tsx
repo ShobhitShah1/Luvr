@@ -365,10 +365,10 @@ const EditProfileScreen = () => {
 
   //* Upload Single Image
   const UploadImage = async (item: any) => {
-    console.log('UserData.Token', UserData.Token);
     let formData = new FormData();
     item &&
       item.forEach(({url, type, name}: any) => {
+        console.log(url, type, name);
         formData.append('file', {
           uri: Platform.OS === 'android' ? url : url.replace('file://', ''),
           type,
@@ -379,24 +379,32 @@ const EditProfileScreen = () => {
     formData.append('file_to', 'profile_images');
 
     try {
-      // const APIResponse = await UserService.UploadImages(formData);
-      const clientMultipartToken = axios.create({
-        baseURL: ApiConfig.IMAGE_UPLOAD_BASE_URL,
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${UserData.Token}`,
-        },
-        timeout: 10000,
-      });
-      const APIResponse = await clientMultipartToken.post(
+      // let APIResponse = await fetch(ApiConfig.IMAGE_UPLOAD_BASE_URL, {
+      //   method: 'POST',
+      //   body: formData,
+      //   mode: 'no-cors',
+      //   headers: {
+      //     Authorization: `Bearer ${UserData.Token}`,
+      //     app_secret: '_d_a_t_i_n_g_',
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      // });
+      const APIResponse = await axios.post(
         ApiConfig.IMAGE_UPLOAD_BASE_URL,
         formData,
+        {
+          // data: formData,
+          headers: {
+            Authorization: `Bearer ${UserData.Token}`,
+            app_secret: '_d_a_t_i_n_g_',
+            'Content-Type': 'multipart/form-data',
+            // 'content-type': 'application/json',
+          },
+        },
       );
       console.log('UploadImage APIResponse :--:>', APIResponse);
-      console.log('APIResponse.status :--:>', APIResponse.status);
-      console.log('APIResponse.statusText :--:>', APIResponse.statusText);
-      console.log('APIResponse.data :--:>', APIResponse.data);
+      console.log('APIResponse.data :--:>', APIResponse.response);
+      console.log('APIResponse.data :--:>', APIResponse.response?.data);
 
       // if (APIResponse.code === 200) {
       //   const newData = UserPicks.map(data =>
@@ -414,6 +422,7 @@ const EditProfileScreen = () => {
       // }
     } catch (error) {
       console.log('Error on image upload :--:>', error);
+      console.log('Error on image upload :--:>', error?.message);
       console.log('Error on image upload :--:>', error?.data);
       console.log('Error on image upload :--:>', error?.response);
       showToast('Error!', String(error), 'error');

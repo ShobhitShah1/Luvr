@@ -40,6 +40,8 @@ const smoke_and_drinks_icon = require('../../Assets/Icons/smoke_&_drinks_icon.pn
 const zodiac_sign_icon = require('../../Assets/Icons/zodiac_sign_icon.png');
 const media_icon = require('../../Assets/Icons/media_icon.png');
 const sync = require('../../Assets/Icons/sync.png');
+const rating_star_icon_select = require('../../Assets/Icons/rating_star_icon_select.png');
+const rating_star_icon_unselect = require('../../Assets/Icons/rating_star_icon_unselect.png');
 
 // Home
 const HomeTab = require('../../Assets/Icons/home_icon_select.png');
@@ -95,6 +97,8 @@ export default {
   zodiac_sign_icon,
   media_icon,
   sync,
+  rating_star_icon_select,
+  rating_star_icon_unselect,
 
   //* Home
   HomeTab,

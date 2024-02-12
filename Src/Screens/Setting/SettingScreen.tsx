@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Rating} from 'react-native-ratings';
+import {AirbnbRating, Rating} from 'react-native-ratings';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
@@ -31,6 +31,7 @@ import styles from './styles';
 import UserService from '../../Services/AuthService';
 import {useCustomToast} from '../../Utils/toastUtils';
 import NetInfo from '@react-native-community/netinfo';
+import OpenURL from '../../Components/OpenURL';
 
 const SettingScreen = () => {
   const profile = useSelector(state => state?.user);
@@ -44,6 +45,7 @@ const SettingScreen = () => {
   const [RateUsModalView, setRateUsModalView] = useState(false);
   const [UserSetting, setProfileData] = useState<ProfileType | undefined>();
   const {replace, reset} = useNavigation<NativeStackNavigationProp<any>>();
+  const [RatingCount, setRatingCount] = useState(3);
   const {showToast} = useCustomToast();
   const [IsInternetConnected, setIsInternetConnected] = useState(true);
   const settingAgeRangeMin = UserSetting?.setting_age_range_min || ''; // Use an empty string if setting_age_range_min is null
@@ -562,25 +564,33 @@ Let's make every moment count together! #LoveConnects`,
                   isActive={false}
                   Item={'Community guidelines'}
                   style={styles.ShareFlexViewStyle}
-                  onPress={() => {}}
+                  onPress={() => {
+                    OpenURL({URL: 'https://github.com/ShobhitShah1'});
+                  }}
                 />
                 <SettingFlexView
                   isActive={false}
                   style={styles.ShareFlexViewStyle}
                   Item={'Safety tips'}
-                  onPress={() => {}}
+                  onPress={() => {
+                    OpenURL({URL: 'https://github.com/ShobhitShah1'});
+                  }}
                 />
                 <SettingFlexView
                   isActive={false}
                   Item={'Privacy policy'}
                   style={styles.ShareFlexViewStyle}
-                  onPress={() => {}}
+                  onPress={() => {
+                    OpenURL({URL: 'https://github.com/ShobhitShah1'});
+                  }}
                 />
                 <SettingFlexView
                   isActive={false}
                   style={styles.ShareFlexViewStyle}
                   Item={'Terms of use'}
-                  onPress={() => {}}
+                  onPress={() => {
+                    OpenURL({URL: 'https://github.com/ShobhitShah1'});
+                  }}
                 />
               </View>
             </EditProfileBoxView>
@@ -674,7 +684,7 @@ Let's make every moment count together! #LoveConnects`,
         //   'If you enjoy this app, would you mind taking a moment to rate it? It Won’t take more than a minute. Thanks for your support!'
         // }
         description={
-          <>
+          <React.Fragment>
             <Text
               style={{
                 fontSize: 14.5,
@@ -687,16 +697,36 @@ Let's make every moment count together! #LoveConnects`,
               It Won’t take more than a minute. Thanks for your support!
             </Text>
             <Rating
-              // showRating={false}
-              onFinishRating={() => {}}
-              // showReadOnlyText
-              style={{paddingVertical: 10, marginHorizontal: 10}}
+              onFinishRating={value => {
+                console.log(value);
+                setRatingCount(value);
+              }}
+              onSwipeRating={value => {
+                console.log('NEW', value);
+                setRatingCount(value);
+              }}
+              startingValue={RatingCount}
+              ratingColor="rgba(255, 184, 0, 1)"
+              ratingBackgroundColor="rgba(255, 184, 0, 1)"
+              ratingImage={CommonIcons.rating_star_icon_unselect}
+              style={{paddingVertical: 10, marginHorizontal: 15}}
             />
-          </>
+          </React.Fragment>
         }
         ButtonTitle="Rate now"
         ButtonCloseText="Maybe later"
-        onActionPress={() => {}}
+        onActionPress={() => {
+          setRateUsModalView(false);
+          setTimeout(() => {
+            console.log('RatingCount', RatingCount);
+            if (RatingCount >= 3) {
+              Alert.alert('Rating Above 3');
+            } else {
+              Alert.alert('Success!', 'Thanks for the review ❤️');
+            }
+            setRatingCount(3);
+          }, 0);
+        }}
       />
     </View>
   );
