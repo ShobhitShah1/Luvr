@@ -1,14 +1,12 @@
-import React, {FC} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {FC, useState} from 'react';
+import {ActivityIndicator, Image, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {useSelector} from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
 import CommonImages from '../../../Common/CommonImages';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import {ProfileType} from '../../../Types/ProfileType';
 import {LikeAndMatchTypes} from '../../../Types/SwiperCard';
-import {useNavigation} from '@react-navigation/native';
 
 interface LikesProps {
   LikesData: LikeAndMatchTypes;
@@ -17,8 +15,7 @@ interface LikesProps {
 let NOIMAGE_CONTAINER = 150;
 
 const LikesContent: FC<LikesProps> = ({LikesData}) => {
-  const navigation = useNavigation();
-  const userData = useSelector((state: any) => state?.user);
+  const [IsImageLoading, setIsImageLoading] = useState(false);
   let title = LikesData?.status;
   let Data: ProfileType | [] = [];
 
@@ -41,17 +38,33 @@ const LikesContent: FC<LikesProps> = ({LikesData}) => {
               style={styles.LikeImageProfile}
               source={
                 Data.recent_pik && Data.recent_pik[0]
-                  ? {uri: ApiConfig.IMAGE_BASE_URL + Data.recent_pik[0]}
+                  ? {
+                      uri: ApiConfig.IMAGE_BASE_URL + Data.recent_pik[0],
+                      cache: 'force-cache',
+                    }
                   : CommonImages.WelcomeBackground
               }
+              onLoadStart={() => setIsImageLoading(true)}
+              onLoad={() => setIsImageLoading(false)}
+              onLoadEnd={() => setIsImageLoading(false)}
             />
+            {IsImageLoading && (
+              <View style={styles.ImageLoadingView}>
+                <ActivityIndicator size={30} color={COLORS.Primary} />
+              </View>
+            )}
           </View>
           <View style={styles.LikeTextView}>
             <Text numberOfLines={1} style={styles.TitleMatchText}>
-              Liked you!
+              You Made a Move!
             </Text>
             <Text numberOfLines={2} style={styles.DescriptionText}>
-              {Data?.full_name || 'User'} liked you.
+              You've taken the first step! You liked{' '}
+              <Text style={{fontFamily: FONTS.Bold, color: COLORS.Primary}}>
+                {Data?.full_name || 'User'}
+              </Text>
+              's profile.
+              {/* {Data?.full_name || 'User'} liked you. */}
             </Text>
           </View>
           <View style={styles.LikeButtonView}>
@@ -133,7 +146,15 @@ const styles = StyleSheet.create({
   // Like Box
   LikeImageView: {
     width: '20%',
+    // backgroundColor: 'yellow',
+    alignItems: 'center',
     justifyContent: 'center',
+  },
+  ImageLoadingView: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
   },
   LikeImageProfile: {
     width: 60,
@@ -142,7 +163,8 @@ const styles = StyleSheet.create({
   },
   LikeTextView: {
     width: '65%',
-    paddingHorizontal: 10,
+    // backgroundColor: 'red',
+    paddingHorizontal: 5,
     justifyContent: 'center',
   },
   LikeButtonView: {

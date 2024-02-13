@@ -39,11 +39,15 @@ const userReducer = (
         [action.field]: action.value,
       };
     case ON_SWIPE_LEFT:
+      console.log('Received ON_SWIPE_LEFT action with userId:', action.userId);
+
       return {
         ...state,
         swipedLeftUserIds: [...(state?.swipedLeftUserIds || []), action.userId],
       };
     case ON_SWIPE_RIGHT:
+      console.log('Received ON_SWIPE_RIGHT action with userId:', action.userId);
+
       const newUserId =
         action.userId instanceof Array ? action.userId : [action.userId];
       const uniqueUserIds = new Set([

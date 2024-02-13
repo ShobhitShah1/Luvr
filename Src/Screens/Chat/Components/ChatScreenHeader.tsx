@@ -11,9 +11,9 @@ import {
 import FastImage from 'react-native-fast-image';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
+import CommonImages from '../../../Common/CommonImages';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
-import {DummyImage} from '../../../Config/Setting';
 import {ProfileType} from '../../../Types/ProfileType';
 
 interface ChatHeaderProps {
@@ -22,15 +22,6 @@ interface ChatHeaderProps {
 
 const ChatScreenHeader: FC<ChatHeaderProps> = ({data}) => {
   const navigation = useNavigation();
-  // console.log(
-  //   'data?.recent_pik',
-  //   data?.recent_pik && data?.recent_pik?.length !== 0
-  //     ? {
-  //         uri: ApiConfig.IMAGE_BASE_URL + data?.recent_pik[0],
-  //         priority: FastImage.priority.high,
-  //       }
-  //     : DummyImage,
-  // );
   return (
     <View style={styles.Container}>
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.White} />
@@ -49,18 +40,19 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({data}) => {
             <View style={styles.ProfileImageView}>
               <FastImage
                 style={styles.ProfileImage}
-                source={{
-                  uri:
-                    data?.recent_pik && data?.recent_pik?.length !== 0
-                      ? ApiConfig.IMAGE_BASE_URL + data?.recent_pik[0]
-                      : DummyImage,
-                  priority: FastImage.priority.high,
-                }}
+                source={
+                  data?.recent_pik && data?.recent_pik?.length !== 0
+                    ? {
+                        uri: ApiConfig.IMAGE_BASE_URL + data?.recent_pik[0],
+                        priority: FastImage.priority.high,
+                      }
+                    : CommonImages.WelcomeBackground
+                }
               />
             </View>
             <View style={styles.ProfileNameView}>
               <Text numberOfLines={1} style={styles.ProfileNameText}>
-                {data?.full_name}
+                {data?.full_name || 'Loading....'}
               </Text>
               <Image
                 source={CommonIcons.Verification_Icon}

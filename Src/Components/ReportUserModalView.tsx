@@ -34,7 +34,7 @@ const ReportUserModalView: FC<ReportUserProps> = ({
       <BlurView
         style={styles.blurView}
         blurAmount={5}
-        blurType="dark"
+        blurType="ultraThinMaterialDark"
         reducedTransparencyFallbackColor="transparent"
       />
     </View>
@@ -43,6 +43,8 @@ const ReportUserModalView: FC<ReportUserProps> = ({
   return (
     <Modal
       isVisible={Visible}
+      useNativeDriver
+      useNativeDriverForBackdrop
       onBackdropPress={() => setVisibility(false)}
       hasBackdrop
       customBackdrop={<BlurredBackdrop />}>

@@ -39,6 +39,7 @@ import UserService from '../../Services/AuthService';
 import {ProfileType} from '../../Types/ProfileType';
 import {chatRoomDataType} from '../../Types/chatRoomDataType';
 import ChatScreenHeader from './Components/ChatScreenHeader';
+import CommonImages from '../../Common/CommonImages';
 
 interface ChatData {
   params: {
@@ -54,11 +55,9 @@ const ChatScreen: FC = () => {
   // const chatData = params?.ChatData || {};
   const CurrentLoginUserId = store.getState().user?.userData?._id;
   const CurrentLoginUserFullName = store.getState().user?.userData?.full_name;
-  // const userData = useSelector((state: any) => state?.user);
   const [userMessage, setUserMessages] = useState<IMessage[]>([]);
   const [CountMessage, setCountMessage] = useState(0);
-  const [OtherUserProfileData, setOtherUserProfileData] =
-    useState<ProfileType>();
+  const [OtherUserProfileData, setOtherUserProfileData] = useState();
   const IsFocused = useIsFocused();
   const [socket, setSocket] = useState<Socket>();
   const [ReceiverSocketId, setReceiverSocketId] = useState('');
@@ -66,9 +65,23 @@ const ChatScreen: FC = () => {
     return Math.random().toString(36).substr(2, 9);
   };
 
+  const Avatar =
+    OtherUserProfileData &&
+    OtherUserProfileData?.recent_pik &&
+    OtherUserProfileData?.recent_pik[0]
+      ? ApiConfig.IMAGE_BASE_URL + OtherUserProfileData?.recent_pik[0]
+      : CommonImages.WelcomeBackground;
+
   useEffect(() => {
-    console.log('CountMessage: --:>', CountMessage);
-  }, [userMessage, CountMessage]);
+    if (IsFocused) {
+      getOtherUserDataCall();
+      const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
+      setSocket(socketInstance);
+      return () => {
+        socketInstance.disconnect();
+      };
+    }
+  }, [IsFocused]);
 
   const transformDataForGiftedChat = (apiData: any) => {
     let dataArray = Array.isArray(apiData) ? apiData : [apiData];
@@ -100,8 +113,7 @@ const ChatScreen: FC = () => {
           _id: message.id === CurrentLoginUserId ? 1 : 0,
           name:
             message.id === CurrentLoginUserId ? CurrentLoginUserFullName : '',
-          avatar:
-            ApiConfig.IMAGE_BASE_URL + OtherUserProfileData?.recent_pik[0],
+          avatar: Avatar,
         },
       };
     });
@@ -111,44 +123,14 @@ const ChatScreen: FC = () => {
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
     );
 
-    console.log('sortedMessages', sortedMessages);
+    // console.log('sortedMessages', sortedMessages);
 
     return sortedMessages;
   };
 
-  // const transformDataForGiftedChat = (apiData: any) => {
-  //   const data = apiData;
-  //   // console.log('data', data);
-  //   let dataArray = Array.isArray(data) ? data : [data];
-
-  //   const giftedChatMessages = dataArray?.flatMap(chatItem => {
-  //     return chatItem?.chat?.map((message: any) => {
-  //       setCountMessage(1);
-  //       return {
-  //         _id: generateRandomId(),
-  //         text: message?.message,
-  //         createdAt: new Date(message?.time),
-  //         user: {
-  //           _id: message?.id === CurrentLoginUserId ? 1 : 0,
-  //           name:
-  //             message?.id === CurrentLoginUserId
-  //               ? CurrentLoginUserFullName
-  //               : chatItem?.name,
-  //         },
-  //       };
-  //     });
-  //   });
-
-  //   // Sort messages by createdAt in descending order (most recent first)
-  //   const sortedMessages = giftedChatMessages.sort(
-  //     (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-  //   );
-
-  //   return sortedMessages;
-  // };
-
   const StoreSingleChatFormat = (message: any) => {
-    // console.log('StoreSingleChatFormat message:', message);
+    console.log('OTHER', OtherUserProfileData);
+
     setCountMessage(1);
 
     const singleChatMessage = {
@@ -161,25 +143,13 @@ const ChatScreen: FC = () => {
           message?.from === CurrentLoginUserId
             ? CurrentLoginUserFullName
             : message?.from_name,
-        avatar: ApiConfig.IMAGE_BASE_URL + OtherUserProfileData?.recent_pik[0],
+        avatar: Avatar,
       },
     };
-
+    // console.log('singleChatMessage', singleChatMessage);
     // Return an array with the single chat message
     return [singleChatMessage];
   };
-
-  useEffect(() => {
-    if (IsFocused) {
-      const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
-      setSocket(socketInstance);
-      getOtherUserDataCall();
-
-      return () => {
-        socketInstance.disconnect();
-      };
-    }
-  }, [IsFocused]);
 
   useEffect(() => {
     if (!socket) {
@@ -224,26 +194,39 @@ const ChatScreen: FC = () => {
 
     // Event: Receive Message
     const handleReceivedMessage = (data: any) => {
-      console.log('Received Message:', data);
+      // console.log('Received Message:', data);
       // setMessages(prevMessages => [...prevMessages, data]);
     };
 
-    const handleReceiverChat = (chat: any) => {
+    const handleReceiverChat = async (chat: any) => {
+      if (!OtherUserProfileData) {
+        // If not available, fetch OtherUserProfileData
+        await getOtherUserDataCall();
+      }
       const giftedChatMessages = StoreSingleChatFormat(chat);
-      // console.log('SINGLE: giftedChatMessages:', giftedChatMessages);
+      console.log('HANDLE RECIVE:', OtherUserProfileData);
+      if (giftedChatMessages) {
+        const updatedMessages = giftedChatMessages.map((message: any) => ({
+          ...message,
+          user: {
+            ...message.user,
+            avatar: Avatar,
+          },
+        }));
 
-      setUserMessages(previousMessages =>
-        GiftedChat.append(previousMessages, ...giftedChatMessages?.flat()),
-      );
+        setUserMessages(previousMessages =>
+          GiftedChat.append(previousMessages, ...updatedMessages.flat()),
+        );
+      }
     };
 
     const handleReceiverSocketId = (data: {to_socket_id: string}) => {
-      console.log('handleReceiverSocketId:', data, data?.to_socket_id);
+      // console.log('handleReceiverSocketId:', data, data?.to_socket_id);
       setReceiverSocketId(data?.to_socket_id);
     };
 
     const handleJoinResponse = (data: any) => {
-      console.log('handleJoinResponse:', data);
+      // console.log('handleJoinResponse:', data);
 
       // Check if the response contains data and if the ID matches params?.id
       if (data && data.id === params?.id) {
@@ -276,8 +259,8 @@ const ChatScreen: FC = () => {
 
       const apiResponse = await UserService.UserRegister(data);
 
-      if (apiResponse?.code === 200) {
-        // console.log('APIResponse', apiResponse.data);
+      if (apiResponse?.code === 200 && apiResponse.data) {
+        console.log('get_other_profile', apiResponse.data);
         setOtherUserProfileData(apiResponse.data);
       }
     } catch (error) {
@@ -286,32 +269,19 @@ const ChatScreen: FC = () => {
   };
 
   const onSend = useCallback(
-    (messages: IMessage[]) => {
+    async (messages: IMessage[]) => {
       setUserMessages(previousMessages =>
         GiftedChat.append(previousMessages, messages),
       );
       setCountMessage(1);
-      // console.log(
-      //   'userMessage.length:-->',
-      //   userMessage.length,
-      //   CountMessage,
-      //   ReceiverSocketId,
-      // );
-      // let SOCKET_ID;
-
-      // const handleReceiverSocketId = (data: any) => {
-      //   // console.log('handleReceiverSocketId:--:>', data, data?.to_socket_id);
-      //   SOCKET_ID = data?.to_socket_id;
-      //   // setReceiverSocketId(data?.to_socket_id);
-      // };
-
-      // if (socket) {
-      //   socket.on(GET_RECEIVER_SOCKET_EVENT, handleReceiverSocketId);
-      // }
+      // console.log('OtherUserProfileData', OtherUserProfileData);
+      if (!OtherUserProfileData || OtherUserProfileData === undefined) {
+        await getOtherUserDataCall();
+      }
 
       if (socket) {
         const chatData = {
-          // ...(CountMessage === 0 ? {is_first: 1} : {}),
+          ...(CountMessage === 0 ? {is_first: 1} : {}),
           to: params?.id,
           reciver_socket_id: ReceiverSocketId || null,
           from_name: CurrentLoginUserFullName,
@@ -319,7 +289,7 @@ const ChatScreen: FC = () => {
           message: messages[0].text,
         };
 
-        console.log(chatData, userMessage.length);
+        // console.log(chatData, userMessage.length);
 
         socket.emit(CHAT_EVENT, chatData, (err, responses) => {
           console.log('err, responses', err, responses);
@@ -491,11 +461,6 @@ const ChatScreen: FC = () => {
     );
   };
 
-  // console.log(
-  //   'OtherUserProfileData',
-  //   ApiConfig.IMAGE_BASE_URL + OtherUserProfileData?.recent_pik[0],
-  // );
-
   return (
     <View style={styles.Container}>
       <ChatScreenHeader data={OtherUserProfileData} />
@@ -510,30 +475,8 @@ const ChatScreen: FC = () => {
           onSend={messages => onSend(messages)}
           user={{
             _id: 1,
-            avatar:
-              ApiConfig.IMAGE_BASE_URL + OtherUserProfileData?.recent_pik[0],
+            avatar: Avatar,
           }}
-          // renderAvatar={props => {
-          //   const {avatarProps} = props.;
-
-          //   return (
-          //     <Image
-          //       source={{
-          //         uri:
-          //           ApiConfig.IMAGE_BASE_URL +
-          //           OtherUserProfileData?.recent_pik[0],
-          //       }}
-          //       style={{
-          //         width: 20,
-          //         height: 20,
-          //         borderRadius: 500,
-          //       }}
-          //     />
-          //   );
-          // }}
-          // showUserAvatar
-          // showUserAvatar={true}
-          // renderAvatar={() => {}}
           isTyping={false}
           messagesContainerStyle={styles.messagesContainer}
           maxComposerHeight={100}
@@ -551,10 +494,6 @@ const ChatScreen: FC = () => {
               // bottom: 10,
             },
           }}
-          // renderUsernameOnMessage
-          // renderTime={() => {
-          //   return null;
-          // }}
         />
       </View>
       {Platform.OS && <KeyboardAvoidingView behavior="height" />}

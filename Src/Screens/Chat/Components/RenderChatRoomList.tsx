@@ -1,13 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
-import {TouchableOpacity, Image, StyleSheet, Text, View} from 'react-native';
-import FastImage from 'react-native-fast-image';
 import {useNavigation} from '@react-navigation/native';
-import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
-import {store} from '../../../Redux/Store/store';
+import React, {useEffect} from 'react';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import FastImage from 'react-native-fast-image';
 import CommonIcons from '../../../Common/CommonIcons';
 import CommonImages from '../../../Common/CommonImages';
-import {DummyImage} from '../../../Config/Setting';
+import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
 
 interface MessageType {
   id: string;
@@ -31,7 +29,10 @@ interface ChatRoomProps {
 
 const RenderChatRoomList = ({item, index}: ChatRoomProps) => {
   const navigation = useNavigation();
-  console.log('RenderChatRoomList:--:>', item);
+
+  useEffect(() => {
+    console.log('RenderChatRoomList:--:>', item);
+  }, [item]);
 
   // Ensure item is not null and has the expected structure
   if (!item || !item.chat || !Array.isArray(item.chat)) {

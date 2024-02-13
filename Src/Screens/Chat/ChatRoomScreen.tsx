@@ -20,12 +20,13 @@ import {
   JOIN_EVENT,
   LIST_EVENT,
   MESSAGE_EVENT,
+  READ_ALL,
 } from '../../Config/Setting';
 import {store} from '../../Redux/Store/store';
 import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderChatRoomList from './Components/RenderChatRoomList';
-// import {use} from 'react-redux';
+
 interface ChatMessage {
   senderId: string;
   message: string;
@@ -52,27 +53,19 @@ interface SocketEventHandlers {
 const ChatRoomScreen = () => {
   const [socket, setSocket] = useState<Socket | undefined>();
   const [messages, setMessages] = useState<MessageItem[]>([]);
-  const [isSocketLoading, setIsSocketLoading] = useState(true);
+  const [isSocketLoading, setIsSocketLoading] = useState(false);
   const {showToast} = useCustomToast();
   const currentLoginUserId = store.getState().user?.userData?._id;
   const isFocused = useIsFocused();
 
   useEffect(() => {
     if (isFocused) {
+      setIsSocketLoading(true);
       const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
-
-      socketInstance.on('reconnect_attempt', () => {
-        console.log('Reconnecting');
-      });
-
-      socketInstance.on('reconnect', () => {
-        console.log('reconnect');
-      });
 
       socketInstance.on('connect', () => {
         console.log('socketInstance', socketInstance.connected);
         setSocket(socketInstance);
-        setIsSocketLoading(false);
       });
 
       socketInstance.on('connect_error', error => {
@@ -86,24 +79,34 @@ const ChatRoomScreen = () => {
         setSocket(undefined);
         setIsSocketLoading(false);
       }
-
-      return () => {
-        socketInstance.disconnect();
-      };
     }
   }, [isFocused]);
 
   useEffect(() => {
     if (isFocused && socket) {
-      // setIsSocketLoading(true);
-
-      // Event: Join
+      //* Event: Join
       socket.emit(JOIN_EVENT, {id: currentLoginUserId});
 
-      // Event: List
+      //* Event: List
       socket.emit(LIST_EVENT, {id: currentLoginUserId});
 
-      // Event: List - Response
+      //* Event: List - Response
+      // const handleListResponse: SocketEventHandlers['List'] = data => {
+      //   console.log('data', data);
+      //   try {
+      //     if (data?.data) {
+      //       const filteredData = data.data.filter(
+      //         (item: MessageItem) => item.to !== currentLoginUserId,
+      //       );
+      //       const combinedData = combineSameIdData(filteredData);
+      //       setMessages(combinedData);
+      //     } else {
+      //       setMessages([]);
+      //     }
+      //   } catch (error) {
+      //     console.error('Error handling list response:', error);
+      //   }
+      // };
       const handleListResponse: SocketEventHandlers['List'] = data => {
         console.log('data', data);
         try {
@@ -111,68 +114,73 @@ const ChatRoomScreen = () => {
             const filteredData = data.data.filter(
               (item: MessageItem) => item.to !== currentLoginUserId,
             );
-            const combinedData = combineSameIdData(filteredData);
-            // console.log('combinedData', combinedData);
-            setMessages(combinedData);
+            setMessages(prevMessages => {
+              const combinedData = combineSameIdData([
+                ...prevMessages,
+                ...filteredData,
+              ]);
+              return combinedData;
+            });
           } else {
             setMessages([]);
           }
-          setTimeout(() => {
-            setIsSocketLoading(false);
-          }, 0);
         } catch (error) {
           console.error('Error handling list response:', error);
-          setTimeout(() => {
-            setIsSocketLoading(false);
-          }, 0);
         }
       };
 
-      // Event: Receive Message
+      //* Event: Receive Message
       const handleReceivedMessage: SocketEventHandlers['message'] = data => {
         try {
           console.log('Received Message:', data);
-          // setMessages(data);
         } catch (error) {
           console.error('Error handling received message:', error);
         }
       };
 
       const handleReceivedChat = (chat: any) => {
-        console.log('HandelReceivedChat: --->', chat, chat.from);
+        console.log('chat', chat);
         setMessages(previousMessages => {
           const combinedData = combineSameIdData([...previousMessages, chat]);
           return combinedData;
         });
+        setTimeout(() => {
+          setIsSocketLoading(false);
+        }, 0);
       };
 
       socket.on(LIST_EVENT, handleListResponse);
       socket.on(MESSAGE_EVENT, handleReceivedMessage);
       socket.on(CHAT_EVENT, handleReceivedChat);
+
       setIsSocketLoading(false);
+
       return () => {
         socket.off(LIST_EVENT, handleListResponse);
         socket.off(MESSAGE_EVENT, handleReceivedMessage);
+        socket.off(CHAT_EVENT, handleReceivedChat);
       };
     } else {
       setIsSocketLoading(false);
     }
-  }, [socket, currentLoginUserId, isFocused]);
+  }, [socket, isFocused, currentLoginUserId]);
 
   const combineSameIdData = (data: MessageItem[]): MessageItem[] => {
-    // console.log('combineSameIdData:--:>', data);
     const combinedData: MessageItem[] = [];
     const idMap = new Map<string, MessageItem>();
 
     data?.forEach(item => {
       const id = item?.to;
 
-      if (idMap.has(id)) {
-        // If the item already exists, update its chat data
-        idMap.get(id)!.chat = [...idMap.get(id)!.chat, ...item.chat];
-      } else {
-        // If the item doesn't exist, add it to the map
-        idMap.set(id, {...item});
+      if (id) {
+        // Check if id is defined
+        if (idMap.has(id)) {
+          // If the item already exists, update its chat data
+          idMap.get(id)!.chat = [...idMap.get(id)!.chat, ...item.chat];
+        } else {
+          // If the item doesn't exist, add it to the map
+          idMap.set(id, {...item});
+        }
       }
     });
 
@@ -181,7 +189,7 @@ const ChatRoomScreen = () => {
       combinedData.push(value);
     });
 
-    return combinedData;
+    return combinedData; // Return the combined data
   };
 
   const ListEmptyView = () => {
@@ -218,18 +226,21 @@ const ChatRoomScreen = () => {
       <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
 
       <View style={styles.ListChatView}>
-        <FlatList
-          data={messages}
-          contentContainerStyle={{
-            flex: 1,
-            justifyContent: chatRoomData.length === 0 ? 'center' : undefined,
-          }}
-          maxToRenderPerBatch={10}
-          renderItem={({item, index}) => {
-            return <RenderChatRoomList item={item} index={index} />;
-          }}
-          ListEmptyComponent={<ListEmptyView />}
-        />
+        {!isSocketLoading && (
+          <FlatList
+            data={messages}
+            contentContainerStyle={{
+              flex: 1,
+              justifyContent: chatRoomData.length === 0 ? 'center' : undefined,
+            }}
+            maxToRenderPerBatch={10}
+            renderItem={({item, index}) => {
+              // console.log('Message ITEM', item);
+              return <RenderChatRoomList item={item} index={index} />;
+            }}
+            ListEmptyComponent={<ListEmptyView />}
+          />
+        )}
       </View>
     </View>
   );

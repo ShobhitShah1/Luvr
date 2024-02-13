@@ -141,6 +141,7 @@ const ExploreCardDetailScreen = () => {
     console.log('Block APIResponse', APIResponse);
 
     if (APIResponse && APIResponse?.code === 200) {
+      console.log('String(UserID)', String(UserID));
       await store.dispatch(onSwipeLeft(String(UserID)));
       showToast(
         'User Blocked',

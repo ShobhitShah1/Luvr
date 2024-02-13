@@ -14,7 +14,6 @@ import {
 import CommonIcons from '../../Common/CommonIcons';
 import {ActiveOpacity, COLORS} from '../../Common/Theme';
 import UserService from '../../Services/AuthService';
-import {LikeAndMatchTypes} from '../../Types/SwiperCard';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import LikesContent from './Components/LikesContent';
 import MatchesContent from './Components/MatchesContent';
@@ -55,7 +54,10 @@ const MyLikesScreen = () => {
   });
   const [userLikesCount, setUserLikesCount] = useState<number>(0);
   const [userMatchesCount, setUserMatchesCount] = useState<number>(0);
-  const [matchAndLikeData, setMatchAndLikeData] = useState([]);
+  const [matchAndLikeData, setMatchAndLikeData] = useState<{
+    likes: any[];
+    matches: any[];
+  }>({likes: [], matches: []});
   const [refreshing, setRefreshing] = useState(false);
   const [isAPILoading, setIsAPILoading] = useState(false);
 
@@ -117,24 +119,16 @@ const MyLikesScreen = () => {
       if (APIResponse?.code === 200) {
         console.log('APIResponse.data', APIResponse.data);
         const data = APIResponse.data;
-        let likesCount = 0;
-        let matchesCount = 0;
 
-        data.forEach((item: LikeAndMatchTypes) => {
-          if (item.status === 'like') {
-            likesCount++;
-          } else if (item.status === 'match') {
-            matchesCount++;
-          }
-        });
+        let combinedData = [...data.like, ...data.match]; // Combine likes and matches data
 
-        setUserLikesCount(likesCount);
-        setUserMatchesCount(matchesCount);
-        setMatchAndLikeData(data);
+        setUserLikesCount(data.like.length);
+        setUserMatchesCount(data.match.length);
+        setMatchAndLikeData(combinedData);
       }
     } catch (error) {
       console.log('Error fetching API data:', error);
-      setMatchAndLikeData([]);
+      setMatchAndLikeData({likes: [], matches: []});
     } finally {
       setRefreshing(false);
       setIsAPILoading(false);
@@ -143,10 +137,6 @@ const MyLikesScreen = () => {
 
   const onPressTab = useCallback((item: TabData) => {
     setSelectedTabIndex(item);
-    console.log(item.index, selectedTabIndex.index);
-    // if (item.index !== selectedTabIndex.index) {
-    //   fetchLikesAndMatchAPI();
-    // }
   }, []);
 
   const onRefresh = useCallback(() => {
@@ -222,6 +212,7 @@ const MyLikesScreen = () => {
                 renderItem={({item, index}) => (
                   <RenderContent item={item} index={index} />
                 )}
+                keyExtractor={(item, index) => index.toString()}
               />
             ) : (
               <ListEmptyLikeView />

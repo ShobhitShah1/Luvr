@@ -37,19 +37,24 @@ import RenderSwiperCard from './Components/RenderSwiperCard';
 
 const ExploreCardScreen: FC = () => {
   const {width} = useWindowDimensions() || {};
+
   const swipeRef = useRef<Swiper<SwiperCard>>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
-  const navigation = useNavigation();
   const slideDownAnimation = useRef(new Animated.Value(1)).current;
+
+  const navigation = useNavigation();
   const isScreenFocused = useIsFocused();
+
   const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
+
   const LeftSwipedUserIds = useSelector(
     state => state?.user?.swipedLeftUserIds || [],
   );
   const RightSwipedUserIds = useSelector(
     state => state?.user?.swipedRightUserIds || [],
   );
+
   const [cards, setCards] = useState<SwiperCard[]>([]);
   const [cardToSkipNumber, setCardToSkipNumber] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -88,16 +93,6 @@ const ExploreCardScreen: FC = () => {
     }
   }, [ItsMatchModalView]);
 
-  // useEffect(() => {
-  //   if (isScreenFocused) {
-  //     // setIsAPILoading(true);
-  //     setIsAPILoading(true);
-  //     FetchAPIData(0);
-  //     setCardToSkipNumber(0);
-  //     setCurrentCardIndex(0);
-  //   }
-  // }, [isScreenFocused]);
-
   //* Blur Screen useEffect
   useEffect(() => {
     const _unsubscribe = navigation.addListener('blur', () => {
@@ -110,15 +105,24 @@ const ExploreCardScreen: FC = () => {
 
   //* Focus Screen useEffect
   useEffect(() => {
-    const _unsubscribe = navigation.addListener('focus', () => {
+    if (isScreenFocused) {
       startInterval();
       setIsAPILoading(true);
       FetchAPIData(0);
       setCardToSkipNumber(0);
       setCurrentCardIndex(0);
-    });
-    return () => _unsubscribe();
-  }, []);
+    }
+  }, [isScreenFocused]);
+  // useEffect(() => {
+  //   const _unsubscribe = navigation.addListener('focus', () => {
+  //     startInterval();
+  //     setIsAPILoading(true);
+  //     FetchAPIData(0);
+  //     setCardToSkipNumber(0);
+  //     setCurrentCardIndex(0);
+  //   });
+  //   return () => _unsubscribe();
+  // }, []);
 
   useEffect(() => {
     if (cards?.length === 0) {
@@ -130,48 +134,33 @@ const ExploreCardScreen: FC = () => {
     }
   }, [cards, slideDownAnimation]);
 
-  // const CheckConnectionAndFetchAPI = useCallback(() => {
-  //   setIsAPILoading(true);
-  //   NetInfo.addEventListener(async state => {
-  //     if (state.isConnected) {
-  //       setIsNetConnected(state.isConnected);
-  //     }
-
-  //     if (state.isConnected) {
-  //       FetchAPIData(cardToSkipNumber);
-  //     } else {
-  //       showToast(
-  //         'No Internet Connection',
-  //         'Please check your internet connection',
-  //         'error',
-  //       );
-  //       setIsAPILoading(false);
-  //       setCards([]);
-  //     }
-  //   });
-  // }, []);
-
   const FetchAPIData = useCallback(
     async (cardSkipValue: number | undefined) => {
       setCurrentCardIndex(0);
-      // let timeoutId: NodeJS.Timeout | null = null;
-
       try {
-        // timeoutId = setTimeout(() => {
-        // }, 2000); // Start loader after 2 seconds
-
-        console.log('LeftSwipedUserIds:', LeftSwipedUserIds);
+        console.log(
+          'LeftSwipedUserIds:',
+          LeftSwipedUserIds,
+          'LEFT DATA:',
+          store.getState().user?.swipedLeftUserIds,
+        );
+        console.log(
+          'RightSwipedUserIds:',
+          RightSwipedUserIds,
+          'RIGHT SWIPE:',
+          store.getState().user?.swipedRightUserIds,
+        );
         const userDataForApi = {
           limit: CardLimit,
-          unlike: LeftSwipedUserIds, //LeftSwipedUserIds
-          like: RightSwipedUserIds, //RightSwipedUserIds
+          unlike: LeftSwipedUserIds,
+          like: RightSwipedUserIds,
           skip: cardSkipValue || cardToSkipNumber,
           radius: userData.radius,
           eventName: 'list_neighbour',
           latitude: userData.latitude,
           longitude: userData.longitude,
         };
-
+        console.log('userDataForApi', userDataForApi);
         const APIResponse = await UserService.UserRegister(userDataForApi);
 
         if (APIResponse?.code === 200 && Array.isArray(APIResponse.data)) {
@@ -200,14 +189,18 @@ const ExploreCardScreen: FC = () => {
       } catch (error) {
         console.log('Something Went Wrong With Fetching API Data');
       } finally {
-        // Clear the timeout and stop loader if API call finishes before 2 seconds
-        // if (timeoutId) {
-        // clearTimeout(timeoutId);
-        // }
         setIsAPILoading(false);
       }
     },
-    [LeftSwipedUserIds, RightSwipedUserIds, cardToSkipNumber, userData],
+    [
+      LeftSwipedUserIds,
+      RightSwipedUserIds,
+      cardToSkipNumber,
+      userData,
+      CardLimit,
+      store.getState().user?.swipedLeftUserIds,
+      store.getState().user?.swipedRightUserIds,
+    ],
   );
 
   //* On Swipe Right Do Something
@@ -266,11 +259,11 @@ const ExploreCardScreen: FC = () => {
         }
         // setItsMatchModalView(true);
         swipeRef.current?.forceUpdate();
-        showToast(
-          'Swipe Right Success',
-          'You swiped right! Waiting for the other user to match.',
-          'success',
-        );
+        // showToast(
+        //   'Swipe Right Success',
+        //   'You swiped right! Waiting for the other user to match.',
+        //   'success',
+        // );
       } else {
         showToast(
           'Something went wrong',
@@ -408,9 +401,12 @@ const ExploreCardScreen: FC = () => {
 
               <TouchableOpacity
                 activeOpacity={ActiveOpacity}
-                onPress={() => {
-                  store.dispatch(resetSwiperData());
-                  FetchAPIData(0);
+                onPress={async () => {
+                  await store.dispatch(resetSwiperData());
+                  setTimeout(() => {
+                    FetchAPIData(0);
+                    setCardToSkipNumber(0);
+                  }, 0);
                 }}
                 style={styles.ChangeSettingButton}>
                 <Text style={styles.ChangeSettingText}>Clear Data</Text>
@@ -455,9 +451,12 @@ const ExploreCardScreen: FC = () => {
               borderRadius: 500,
               backgroundColor: 'red',
             }}
-            onPress={() => {
-              store.dispatch(resetSwiperData());
-              FetchAPIData(0);
+            onPress={async () => {
+              await store.dispatch(resetSwiperData());
+              setCardToSkipNumber(0);
+              setTimeout(() => {
+                FetchAPIData(0);
+              }, 200);
             }}>
             <Text style={{textAlign: 'center', color: COLORS.White}}>
               Clear Data
@@ -481,16 +480,9 @@ const ExploreCardScreen: FC = () => {
         onBackButtonPress={() => {
           setItsMatchModalView(false);
         }}
-        // statusBarTranslucent
-        // backdropColor="rgba(0,0,0,0.7)"
-        // presentationStyle="overFullScreen"
         style={{
           flex: 1,
-          // padding: 0,
           margin: 0,
-          // alignItems: 'center',
-          // alignSelf: 'center',
-          // justifyContent: 'center',
         }}>
         <ItsAMatch
           user={cards && cards[CurrentCardIndex - 1]}
