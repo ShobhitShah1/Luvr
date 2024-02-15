@@ -9,6 +9,7 @@ const transformUserDataForApi = (
     login_type: userData[LocalStorageFields.login_type] || '',
     user_from: userData[LocalStorageFields.user_from] || 'app',
     mobile_no: userData[LocalStorageFields.mobile_no] || '',
+    about: userData[LocalStorageFields.about] || '',
     identity: userData[LocalStorageFields.identity] || '',
     profile_image: userData[LocalStorageFields.profile_image] || '',
     full_name: userData[LocalStorageFields.full_name] || '',

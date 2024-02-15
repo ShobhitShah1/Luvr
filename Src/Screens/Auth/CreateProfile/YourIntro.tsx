@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -32,7 +33,7 @@ const YourIntro: FC = () => {
   const [selectedItems, setSelectedItems] = useState<string[]>(
     userData.likes_into || [],
   );
-  console.log('selectedItems', selectedItems);
+
   const handleOptionPress = useCallback((YourIntoID: number, name: string) => {
     setSelectedItems(prevSelection => {
       if (prevSelection?.includes(name)) {
@@ -167,9 +168,6 @@ const YourIntro: FC = () => {
         Skip={true}
         handleSkipPress={() => {
           onPressNext();
-          // navigation.navigate('LoginStack', {
-          //   screen: 'AddRecentPics',
-          // });
         }}
       />
       <View style={styles.DataViewContainer}>

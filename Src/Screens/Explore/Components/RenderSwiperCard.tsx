@@ -140,14 +140,13 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
       <View style={styles.card}>
         <Animated.View style={[styles.imageContainer]}>
           <Skeleton
-            show={firstImageLoading}
+            show={false} //firstImageLoading
             colorMode="light"
             colors={COLORS.LoaderGradient}>
             <FastImage
               onLoadStart={ImageLoading}
               resizeMode="cover"
               removeClippedSubviews
-              focusable
               onLoadEnd={ImageLoaded}
               key={currentImageIndex + getRandomInt(cardData.recent_pik.length)}
               fallback={Platform.OS === 'android'}
@@ -214,7 +213,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
               style={styles.ViewProfileIcon}
             />
           </TouchableOpacity>
-        </View> 
+        </View>
       </View>
     </TouchableWithoutFeedback>
   );

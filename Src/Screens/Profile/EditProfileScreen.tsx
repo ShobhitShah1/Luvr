@@ -393,12 +393,10 @@ const EditProfileScreen = () => {
         ApiConfig.IMAGE_UPLOAD_BASE_URL,
         formData,
         {
-          // data: formData,
           headers: {
             Authorization: `Bearer ${UserData.Token}`,
             app_secret: '_d_a_t_i_n_g_',
             'Content-Type': 'multipart/form-data',
-            // 'content-type': 'application/json',
           },
         },
       );

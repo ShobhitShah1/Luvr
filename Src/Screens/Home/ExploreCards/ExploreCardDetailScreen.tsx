@@ -33,6 +33,7 @@ import UserService from '../../../Services/AuthService';
 import {ProfileType} from '../../../Types/ProfileType';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import DetailCardHeader from './Components/DetailCardHeader';
+import Paginator from '../../../Components/Paginator';
 
 type DetailCardRouteParams = {
   props: ProfileType;
@@ -54,9 +55,9 @@ const ExploreCardDetailScreen = () => {
   const [ShowReportModalView, setShowReportModalView] =
     useState<boolean>(false);
   useEffect(() => {
-    if (IsFocused) {
-      GetUserData();
-    }
+    // if (IsFocused) {
+    //   GetUserData();
+    // }
   }, [IsFocused]);
 
   const GetUserData = async () => {
@@ -188,6 +189,8 @@ const ExploreCardDetailScreen = () => {
     );
   }
 
+  // console.log('CardData?.recent_pik', CardData?.recent_pik);
+
   return (
     <View style={styles.Container}>
       <DetailCardHeader props={CardData} />
@@ -199,12 +202,12 @@ const ExploreCardDetailScreen = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.ScrollViewContentContainerStyle}>
           <View style={styles.ProfileImageView}>
-            {IsImageLoading && (
+            {/* {IsImageLoading && (
               <View style={styles.ImageLoaderView}>
                 <ActivityIndicator size={40} color={COLORS.Primary} />
               </View>
-            )}
-            {CardData?.recent_pik?.length !== 0 ? (
+            )} */}
+            {CardData?.recent_pik?.length !== 0 && (
               <FlatList
                 horizontal
                 style={{flex: 1}}
@@ -212,21 +215,20 @@ const ExploreCardDetailScreen = () => {
                 showsHorizontalScrollIndicator={false}
                 data={CardData?.recent_pik}
                 renderItem={({item, index}) => {
+                  console.log(`${ApiConfig.IMAGE_BASE_URL}${item}`);
                   return (
-                    <View>
-                      <FastImage
-                        onLoadStart={() => setIsImageLoading(true)}
-                        onLoadEnd={() => setIsImageLoading(false)}
-                        key={index}
-                        resizeMode="cover"
-                        style={styles.UserProfileImages}
-                        source={{
-                          uri: item
-                            ? `${ApiConfig.IMAGE_BASE_URL}${item}`
-                            : DummyImage,
-                        }}
-                      />
-                    </View>
+                    <FastImage
+                      onLoadStart={() => setIsImageLoading(true)}
+                      onLoadEnd={() => setIsImageLoading(false)}
+                      key={index}
+                      resizeMode="cover"
+                      style={styles.UserProfileImages}
+                      source={{
+                        uri: item
+                          ? `${ApiConfig.IMAGE_BASE_URL}${item}`
+                          : DummyImage,
+                      }}
+                    />
                   );
                 }}
                 onScroll={Animated.event(
@@ -239,16 +241,6 @@ const ExploreCardDetailScreen = () => {
                 onViewableItemsChanged={viewableItemsChanged}
                 viewabilityConfig={viewConfig}
               />
-            ) : (
-              <View>
-                <Image
-                  resizeMode="cover"
-                  onLoadStart={() => setIsImageLoading(true)}
-                  onLoadEnd={() => setIsImageLoading(false)}
-                  style={styles.UserProfileImages}
-                  source={{uri: DummyImage}}
-                />
-              </View>
             )}
           </View>
           <View
@@ -257,207 +249,215 @@ const ExploreCardDetailScreen = () => {
               alignItems: 'center',
               flex: 1,
             }}>
-            {/* <Paginator data={CardData?.recent_pik || 0} scrollX={scrollX} /> */}
+            {/* {CardData?.recent_pik?.length !== 0 && (
+              <Paginator data={CardData?.recent_pik || 0} scrollX={scrollX} />
+            )} */}
           </View>
 
-          {/* About Me */}
-          {CardData?.about && (
-            <View style={styles.DetailBoxContainerView}>
-              <View style={styles.TitleAndIconView}>
-                <Image
-                  style={styles.DetailIconsView}
-                  resizeMode="contain"
-                  source={CommonIcons.about_me_icon}
-                />
-                <Text style={styles.TitleText} numberOfLines={1}>
-                  About me
-                </Text>
-              </View>
-              <Text style={styles.DetailText}>{CardData?.about}</Text>
-            </View>
-          )}
-
-          {/* Birthday */}
-          {CardData?.birthdate && (
-            <View style={styles.DetailBoxContainerView}>
-              <View style={styles.TitleAndIconView}>
-                <Image
-                  style={styles.DetailIconsView}
-                  resizeMode="contain"
-                  source={CommonIcons.birthday_icon}
-                />
-                <Text style={styles.TitleText} numberOfLines={1}>
-                  Birthday
-                </Text>
-              </View>
-              <Text style={styles.DetailText}>{CardData?.birthdate || 0}</Text>
-            </View>
-          )}
-
-          {/* Looking for */}
-          {CardData?.hoping && (
-            <View style={styles.DetailBoxContainerView}>
-              <View style={styles.TitleAndIconView}>
-                <Image
-                  style={styles.DetailIconsView}
-                  resizeMode="contain"
-                  source={CommonIcons.looking_for_icon}
-                />
-                <Text style={styles.TitleText} numberOfLines={1}>
-                  Looking for
-                </Text>
-              </View>
-              <Text style={styles.DetailText}>{CardData?.hoping}</Text>
-            </View>
-          )}
-
-          {/* Interested in */}
-          {CardData?.orientation?.length !== 0 && (
-            <View style={styles.DetailBoxContainerView}>
-              <View style={styles.TitleAndIconView}>
-                <Image
-                  style={styles.DetailIconsView}
-                  resizeMode="contain"
-                  source={CommonIcons.interested_in_icon}
-                />
-                <Text style={styles.TitleText} numberOfLines={1}>
-                  Interested in
-                </Text>
-              </View>
-              <View style={styles.MultipleBoxFlexView}>
-                {CardData?.orientation &&
-                  CardData?.orientation?.map((orientation, index) => {
-                    return (
-                      <View key={index} style={styles.MultipleBoxView}>
-                        <Text style={styles.MultipleDetailText} key={index}>
-                          {`${orientation}` || ''}
-                        </Text>
-                      </View>
-                    );
-                  })}
-              </View>
-            </View>
-          )}
-
-          {/* Location */}
-          {CardData?.city && (
-            <View style={styles.DetailBoxContainerView}>
-              <View style={styles.TitleAndIconView}>
-                <Image
-                  style={styles.DetailIconsView}
-                  resizeMode="contain"
-                  source={CommonIcons.location_icon}
-                />
-                <Text style={styles.TitleText} numberOfLines={1}>
-                  Location
-                </Text>
-              </View>
-              <Text style={styles.DetailText}>{CardData?.city || 'City'}</Text>
-            </View>
-          )}
-
-          {/* Education */}
-          {CardData?.education?.college_name &&
-            CardData?.education?.college_name && (
+          <View style={styles.UserInfoContainerView}>
+            {/* About Me */}
+            {CardData?.about && (
               <View style={styles.DetailBoxContainerView}>
                 <View style={styles.TitleAndIconView}>
                   <Image
                     style={styles.DetailIconsView}
                     resizeMode="contain"
-                    source={CommonIcons.education_icon}
+                    source={CommonIcons.about_me_icon}
                   />
                   <Text style={styles.TitleText} numberOfLines={1}>
-                    Education
+                    About me
+                  </Text>
+                </View>
+                <Text style={styles.DetailText}>{CardData?.about}</Text>
+              </View>
+            )}
+
+            {/* Birthday */}
+            {CardData?.birthdate && (
+              <View style={styles.DetailBoxContainerView}>
+                <View style={styles.TitleAndIconView}>
+                  <Image
+                    style={styles.DetailIconsView}
+                    resizeMode="contain"
+                    source={CommonIcons.birthday_icon}
+                  />
+                  <Text style={styles.TitleText} numberOfLines={1}>
+                    Birthday
                   </Text>
                 </View>
                 <Text style={styles.DetailText}>
-                  {CardData?.education?.college_name || ''},{' '}
-                  {CardData?.education?.digree || ''}
+                  {CardData?.birthdate || 0}
                 </Text>
               </View>
             )}
 
-          {/* I like */}
-          {CardData?.likes_into &&
-            Array.isArray(CardData?.likes_into) &&
-            CardData?.likes_into[0]?.length > 0 && (
+            {/* Looking for */}
+            {CardData?.hoping && (
               <View style={styles.DetailBoxContainerView}>
                 <View style={styles.TitleAndIconView}>
                   <Image
                     style={styles.DetailIconsView}
                     resizeMode="contain"
-                    source={CommonIcons.i_like_icon}
+                    source={CommonIcons.looking_for_icon}
                   />
                   <Text style={styles.TitleText} numberOfLines={1}>
-                    I like
+                    Looking for
+                  </Text>
+                </View>
+                <Text style={styles.DetailText}>{CardData?.hoping}</Text>
+              </View>
+            )}
+
+            {/* Interested in */}
+            {CardData?.orientation?.length !== 0 && (
+              <View style={styles.DetailBoxContainerView}>
+                <View style={styles.TitleAndIconView}>
+                  <Image
+                    style={styles.DetailIconsView}
+                    resizeMode="contain"
+                    source={CommonIcons.interested_in_icon}
+                  />
+                  <Text style={styles.TitleText} numberOfLines={1}>
+                    Interested in
                   </Text>
                 </View>
                 <View style={styles.MultipleBoxFlexView}>
-                  {CardData?.likes_into?.map((ILikeItem, index) => (
-                    <View key={index} style={styles.MultipleBoxView}>
-                      <Text style={styles.MultipleDetailText}>
-                        {`${ILikeItem}` || ''}
-                      </Text>
-                    </View>
-                  ))}
+                  {CardData?.orientation &&
+                    CardData?.orientation?.map((orientation, index) => {
+                      return (
+                        <View key={index} style={styles.MultipleBoxView}>
+                          <Text style={styles.MultipleDetailText} key={index}>
+                            {`${orientation}` || ''}
+                          </Text>
+                        </View>
+                      );
+                    })}
                 </View>
               </View>
             )}
 
-          {/* Block And Report Profile */}
-          <View style={styles.BlockAndReportProfileView}>
-            {/* Block Profile */}
-            <TouchableOpacity
-              onPress={onBlockProfileClick}
-              activeOpacity={ActiveOpacity}
-              style={styles.BlockAndReportButtonView}>
-              <Image
-                resizeMode="contain"
-                style={styles.BlockAndReportIcon}
-                source={CommonIcons.block_profile_icon}
-              />
-              <Text style={styles.BlockAndReportText}>Block Profile</Text>
-            </TouchableOpacity>
+            {/* Location */}
+            {CardData?.city && (
+              <View style={styles.DetailBoxContainerView}>
+                <View style={styles.TitleAndIconView}>
+                  <Image
+                    style={styles.DetailIconsView}
+                    resizeMode="contain"
+                    source={CommonIcons.location_icon}
+                  />
+                  <Text style={styles.TitleText} numberOfLines={1}>
+                    Location
+                  </Text>
+                </View>
+                <Text style={styles.DetailText}>
+                  {CardData?.city || 'City'}
+                </Text>
+              </View>
+            )}
 
-            {/* Report Profile */}
-            <TouchableOpacity
-              onPress={() => setShowReportModalView(!ShowReportModalView)}
-              activeOpacity={ActiveOpacity}
-              style={styles.BlockAndReportButtonView}>
-              <Image
-                resizeMode="contain"
-                style={styles.BlockAndReportIcon}
-                source={CommonIcons.report_profile_icon}
-              />
-              <Text style={styles.BlockAndReportText}>Report Profile</Text>
-            </TouchableOpacity>
-          </View>
+            {/* Education */}
+            {CardData?.education?.college_name &&
+              CardData?.education?.college_name && (
+                <View style={styles.DetailBoxContainerView}>
+                  <View style={styles.TitleAndIconView}>
+                    <Image
+                      style={styles.DetailIconsView}
+                      resizeMode="contain"
+                      source={CommonIcons.education_icon}
+                    />
+                    <Text style={styles.TitleText} numberOfLines={1}>
+                      Education
+                    </Text>
+                  </View>
+                  <Text style={styles.DetailText}>
+                    {CardData?.education?.college_name || ''},{' '}
+                    {CardData?.education?.digree || ''}
+                  </Text>
+                </View>
+              )}
 
-          {/* Like And Reject View */}
-          <View style={styles.LikeAndRejectView}>
-            {/* Reject Button */}
-            <TouchableOpacity
-              onPress={onRejectPress}
-              activeOpacity={ActiveOpacity}
-              style={styles.LikeAndRejectButtonView}>
-              <Image
-                resizeMode="contain"
-                style={styles.DislikeButton}
-                source={CommonIcons.dislike_button}
-              />
-            </TouchableOpacity>
+            {/* I like */}
+            {CardData?.likes_into &&
+              Array.isArray(CardData?.likes_into) &&
+              CardData?.likes_into[0]?.length > 0 && (
+                <View style={styles.DetailBoxContainerView}>
+                  <View style={styles.TitleAndIconView}>
+                    <Image
+                      style={styles.DetailIconsView}
+                      resizeMode="contain"
+                      source={CommonIcons.i_like_icon}
+                    />
+                    <Text style={styles.TitleText} numberOfLines={1}>
+                      I like
+                    </Text>
+                  </View>
+                  <View style={styles.MultipleBoxFlexView}>
+                    {CardData?.likes_into?.map((ILikeItem, index) => (
+                      <View key={index} style={styles.MultipleBoxView}>
+                        <Text style={styles.MultipleDetailText}>
+                          {`${ILikeItem}` || ''}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
 
-            {/* Like Button */}
-            <TouchableOpacity
-              onPress={onLikePress}
-              activeOpacity={ActiveOpacity}
-              style={styles.LikeAndRejectButtonView}>
-              <Image
-                resizeMode="contain"
-                style={styles.LikeButton}
-                source={CommonIcons.like_button}
-              />
-            </TouchableOpacity>
+            {/* Block And Report Profile */}
+            <View style={styles.BlockAndReportProfileView}>
+              {/* Block Profile */}
+              <TouchableOpacity
+                onPress={onBlockProfileClick}
+                activeOpacity={ActiveOpacity}
+                style={styles.BlockAndReportButtonView}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.BlockAndReportIcon}
+                  source={CommonIcons.block_profile_icon}
+                />
+                <Text style={styles.BlockAndReportText}>Block Profile</Text>
+              </TouchableOpacity>
+
+              {/* Report Profile */}
+              <TouchableOpacity
+                onPress={() => setShowReportModalView(!ShowReportModalView)}
+                activeOpacity={ActiveOpacity}
+                style={styles.BlockAndReportButtonView}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.BlockAndReportIcon}
+                  source={CommonIcons.report_profile_icon}
+                />
+                <Text style={styles.BlockAndReportText}>Report Profile</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Like And Reject View */}
+            <View style={styles.LikeAndRejectView}>
+              {/* Reject Button */}
+              <TouchableOpacity
+                onPress={onRejectPress}
+                activeOpacity={ActiveOpacity}
+                style={styles.LikeAndRejectButtonView}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.DislikeButton}
+                  source={CommonIcons.dislike_button}
+                />
+              </TouchableOpacity>
+
+              {/* Like Button */}
+              <TouchableOpacity
+                onPress={onLikePress}
+                activeOpacity={ActiveOpacity}
+                style={styles.LikeAndRejectButtonView}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.LikeButton}
+                  source={CommonIcons.like_button}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <ReportUserModalView
@@ -489,27 +489,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: hp('2%'),
   },
+  UserInfoContainerView: {
+    width: '90%',
+    alignSelf: 'center',
+  },
   ContentView: {
     width: '100%',
     alignSelf: 'center',
+    paddingVertical: 10,
   },
   ScrollViewContentContainerStyle: {
-    width: '90%',
+    width: '100%',
     alignSelf: 'center',
     paddingBottom: hp('10%'),
   },
   ProfileImageView: {
-    flex: 1,
-    width: '100%',
     height: 350,
-    marginTop: 15,
-    borderRadius: 30,
-    overflow: 'hidden',
-    marginVertical: 10,
-    justifyContent: 'center',
+    width: '100%',
   },
   DetailBoxContainerView: {
-    // width: '100%',
     borderRadius: hp('4%'),
     marginVertical: hp('1%'),
     paddingVertical: hp('1.5%'),
@@ -561,8 +559,8 @@ const styles = StyleSheet.create({
     color: 'rgba(108, 108, 108, 1)',
   },
   UserProfileImages: {
-    width: Dimensions.get('screen').width - 41,
-    height: '100%',
+    height: 350,
+    width: Dimensions.get('screen').width,
   },
   BlockAndReportProfileView: {
     width: '100%',
