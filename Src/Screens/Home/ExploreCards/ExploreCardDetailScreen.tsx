@@ -20,20 +20,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import Paginator from '../../../Components/Paginator';
 import ReportUserModalView from '../../../Components/ReportUserModalView';
 import ApiConfig from '../../../Config/ApiConfig';
-import {DummyImage} from '../../../Config/Setting';
 import {onSwipeLeft, onSwipeRight} from '../../../Redux/Action/userActions';
 import {store} from '../../../Redux/Store/store';
 import UserService from '../../../Services/AuthService';
 import {ProfileType} from '../../../Types/ProfileType';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import DetailCardHeader from './Components/DetailCardHeader';
-import Paginator from '../../../Components/Paginator';
+import RenderUserImagesView from './Components/RenderUserImagesView';
 
 type DetailCardRouteParams = {
   props: ProfileType;
@@ -42,6 +41,7 @@ type DetailCardRouteParams = {
 const ExploreCardDetailScreen = () => {
   const CardDetail =
     useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
+
   const scrollX = useRef(new Animated.Value(0)).current;
   const {showToast} = useCustomToast();
   const UserID = CardDetail.params.props?._id || {};
@@ -49,15 +49,15 @@ const ExploreCardDetailScreen = () => {
   const [CurrentIndex, setCurrentIndex] = useState<number>(0);
   const [CardData, setCardData] = useState<ProfileType>();
   const [IsAPILoading, setIsAPILoading] = useState(false);
-  const [IsImageLoading, setIsImageLoading] = useState(false);
   const navigation = useNavigation();
   const [SelectedReportReason, setSelectedReportReason] = useState<string>('');
   const [ShowReportModalView, setShowReportModalView] =
     useState<boolean>(false);
+
   useEffect(() => {
-    // if (IsFocused) {
-    //   GetUserData();
-    // }
+    if (IsFocused) {
+      GetUserData();
+    }
   }, [IsFocused]);
 
   const GetUserData = async () => {
@@ -189,8 +189,6 @@ const ExploreCardDetailScreen = () => {
     );
   }
 
-  // console.log('CardData?.recent_pik', CardData?.recent_pik);
-
   return (
     <View style={styles.Container}>
       <DetailCardHeader props={CardData} />
@@ -202,34 +200,15 @@ const ExploreCardDetailScreen = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.ScrollViewContentContainerStyle}>
           <View style={styles.ProfileImageView}>
-            {/* {IsImageLoading && (
-              <View style={styles.ImageLoaderView}>
-                <ActivityIndicator size={40} color={COLORS.Primary} />
-              </View>
-            )} */}
             {CardData?.recent_pik?.length !== 0 && (
               <FlatList
                 horizontal
-                style={{flex: 1}}
                 pagingEnabled
+                style={{flex: 1}}
                 showsHorizontalScrollIndicator={false}
                 data={CardData?.recent_pik}
                 renderItem={({item, index}) => {
-                  console.log(`${ApiConfig.IMAGE_BASE_URL}${item}`);
-                  return (
-                    <FastImage
-                      onLoadStart={() => setIsImageLoading(true)}
-                      onLoadEnd={() => setIsImageLoading(false)}
-                      key={index}
-                      resizeMode="cover"
-                      style={styles.UserProfileImages}
-                      source={{
-                        uri: item
-                          ? `${ApiConfig.IMAGE_BASE_URL}${item}`
-                          : DummyImage,
-                      }}
-                    />
-                  );
+                  return <RenderUserImagesView Images={item} />;
                 }}
                 onScroll={Animated.event(
                   [{nativeEvent: {contentOffset: {x: scrollX}}}],
@@ -242,16 +221,9 @@ const ExploreCardDetailScreen = () => {
                 viewabilityConfig={viewConfig}
               />
             )}
-          </View>
-          <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              flex: 1,
-            }}>
-            {/* {CardData?.recent_pik?.length !== 0 && (
+            {CardData && CardData?.recent_pik?.length !== 0 && (
               <Paginator data={CardData?.recent_pik || 0} scrollX={scrollX} />
-            )} */}
+            )}
           </View>
 
           <View style={styles.UserInfoContainerView}>
@@ -505,7 +477,11 @@ const styles = StyleSheet.create({
   },
   ProfileImageView: {
     height: 350,
-    width: '100%',
+    width: '90%',
+    borderRadius: 20,
+    overflow: 'hidden',
+    alignSelf: 'center',
+    alignItems: 'center',
   },
   DetailBoxContainerView: {
     borderRadius: hp('4%'),

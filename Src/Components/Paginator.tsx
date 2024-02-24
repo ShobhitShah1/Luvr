@@ -13,7 +13,7 @@ const Paginator: FC<PaginatorProps> = ({data, scrollX}) => {
   return (
     <View style={styles.container}>
       {data &&
-        data.length !== 0 &&
+        data?.length !== 0 &&
         data.map((_, i) => {
           const inputRange = [(i - 1) * width, i * width, (i + 1) * width];
           const dotWidth = scrollX.interpolate({
@@ -24,13 +24,13 @@ const Paginator: FC<PaginatorProps> = ({data, scrollX}) => {
 
           const opacity = scrollX.interpolate({
             inputRange,
-            outputRange: [0.3, 1, 0.3],
+            outputRange: [0.4, 1, 0.4],
             extrapolate: 'clamp',
           });
 
           return (
             <Animated.View
-              style={[styles.Dot, {width: dotWidth, opacity}]}
+              style={[styles.dot, {width: dotWidth, opacity}]}
               key={i.toString()}
             />
           );
@@ -45,12 +45,16 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     flexDirection: 'row',
+    position: 'absolute',
+    top: 5,
+    left: 0,
+    right: 0,
+    zIndex: 9999,
   },
-  Dot: {
-    width: 10,
-    height: 10,
+  dot: {
+    height: 8,
     borderRadius: 50,
     marginHorizontal: 4,
-    backgroundColor: COLORS.Primary,
+    backgroundColor: COLORS.White,
   },
 });

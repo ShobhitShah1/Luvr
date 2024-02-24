@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 import {useIsFocused} from '@react-navigation/native';
@@ -20,7 +21,6 @@ import {
   JOIN_EVENT,
   LIST_EVENT,
   MESSAGE_EVENT,
-  READ_ALL,
 } from '../../Config/Setting';
 import {store} from '../../Redux/Store/store';
 import {useCustomToast} from '../../Utils/toastUtils';
@@ -59,109 +59,101 @@ const ChatRoomScreen = () => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (isFocused) {
-      setIsSocketLoading(true);
-      const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
+    // if (isFocused) {
+    setIsSocketLoading(true);
+    const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
 
-      socketInstance.on('connect', () => {
-        console.log('socketInstance', socketInstance.connected);
-        setSocket(socketInstance);
-      });
+    socketInstance.on('connect', () => {
+      console.log('socketInstance', socketInstance.connected);
+      setSocket(socketInstance);
+    });
 
-      socketInstance.on('connect_error', error => {
-        console.log('connect_error:--:>', error.message);
-        showToast(error.name, error.message || 'Something went wrong', 'error');
-      });
+    socketInstance.on('connect_error', error => {
+      console.log('connect_error:--:>', error.message);
+      showToast(error.name, error.message || 'Something went wrong', 'error');
+    });
 
-      if (socketInstance.connected) {
-        setSocket(socketInstance);
-      } else {
-        setSocket(undefined);
-        setIsSocketLoading(false);
-      }
+    if (socketInstance.connected) {
+      setSocket(socketInstance);
+    } else {
+      setSocket(undefined);
+      // setIsSocketLoading(false);
     }
-  }, [isFocused]);
+    // }
+  }, []);
 
   useEffect(() => {
-    if (isFocused && socket) {
-      //* Event: Join
-      socket.emit(JOIN_EVENT, {id: currentLoginUserId});
+    try {
+      if (isFocused && socket) {
+        //* Event: Join
+        socket.emit(JOIN_EVENT, {id: currentLoginUserId});
 
-      //* Event: List
-      socket.emit(LIST_EVENT, {id: currentLoginUserId});
+        //* Event: List
+        socket.emit(LIST_EVENT, {id: currentLoginUserId});
 
-      //* Event: List - Response
-      // const handleListResponse: SocketEventHandlers['List'] = data => {
-      //   console.log('data', data);
-      //   try {
-      //     if (data?.data) {
-      //       const filteredData = data.data.filter(
-      //         (item: MessageItem) => item.to !== currentLoginUserId,
-      //       );
-      //       const combinedData = combineSameIdData(filteredData);
-      //       setMessages(combinedData);
-      //     } else {
-      //       setMessages([]);
-      //     }
-      //   } catch (error) {
-      //     console.error('Error handling list response:', error);
-      //   }
-      // };
-      const handleListResponse: SocketEventHandlers['List'] = data => {
-        console.log('data', data);
-        try {
-          if (data?.data) {
-            const filteredData = data.data.filter(
-              (item: MessageItem) => item.to !== currentLoginUserId,
-            );
-            setMessages(prevMessages => {
-              const combinedData = combineSameIdData([
-                ...prevMessages,
-                ...filteredData,
-              ]);
-              return combinedData;
-            });
-          } else {
-            setMessages([]);
+        //* Event: List - Response
+        const handleListResponse: SocketEventHandlers['List'] = data => {
+          console.log('data', data);
+          try {
+            if (data && data?.data) {
+              const filteredData = data.data.filter(
+                (item: MessageItem) => item.to !== currentLoginUserId,
+              );
+              setMessages(prevMessages => {
+                const combinedData = combineSameIdData([
+                  ...prevMessages,
+                  ...filteredData,
+                ]);
+                return combinedData;
+              });
+            } else {
+              // setMessages([]);
+            }
+          } catch (error) {
+            console.error('Error handling list response:', error);
+          } finally {
+            setIsSocketLoading(false);
           }
-        } catch (error) {
-          console.error('Error handling list response:', error);
-        }
-      };
+        };
 
-      //* Event: Receive Message
-      const handleReceivedMessage: SocketEventHandlers['message'] = data => {
-        try {
-          console.log('Received Message:', data);
-        } catch (error) {
-          console.error('Error handling received message:', error);
-        }
-      };
+        //* Event: Receive Message
+        const handleReceivedMessage: SocketEventHandlers['message'] = data => {
+          try {
+            console.log('Received Message:', data);
+          } catch (error) {
+            console.error('Error handling received message:', error);
+          } finally {
+            setIsSocketLoading(false);
+          }
+        };
 
-      const handleReceivedChat = (chat: any) => {
-        console.log('chat', chat);
-        setMessages(previousMessages => {
-          const combinedData = combineSameIdData([...previousMessages, chat]);
-          return combinedData;
-        });
-        setTimeout(() => {
+        const handleReceivedChat = (chat: any) => {
+          console.log('chat', chat);
+          setMessages(previousMessages => {
+            const combinedData = combineSameIdData([...previousMessages, chat]);
+            return combinedData;
+          });
           setIsSocketLoading(false);
-        }, 0);
-      };
+        };
 
-      socket.on(LIST_EVENT, handleListResponse);
-      socket.on(MESSAGE_EVENT, handleReceivedMessage);
-      socket.on(CHAT_EVENT, handleReceivedChat);
+        socket.on(LIST_EVENT, handleListResponse);
+        socket.on(MESSAGE_EVENT, handleReceivedMessage);
+        socket.on(CHAT_EVENT, handleReceivedChat);
 
-      setIsSocketLoading(false);
+        // setIsSocketLoading(false);
 
-      return () => {
-        socket.off(LIST_EVENT, handleListResponse);
-        socket.off(MESSAGE_EVENT, handleReceivedMessage);
-        socket.off(CHAT_EVENT, handleReceivedChat);
-      };
-    } else {
-      setIsSocketLoading(false);
+        return () => {
+          socket.off(LIST_EVENT, handleListResponse);
+          socket.off(MESSAGE_EVENT, handleReceivedMessage);
+          socket.off(CHAT_EVENT, handleReceivedChat);
+        };
+      } else {
+        // setIsSocketLoading(false);
+      }
+    } catch (error) {
+      console.log('SOCKET CATCH ERROR', error);
+    } finally {
+      // setIsSocketLoading(false);
     }
   }, [socket, isFocused, currentLoginUserId]);
 
@@ -189,7 +181,7 @@ const ChatRoomScreen = () => {
       combinedData.push(value);
     });
 
-    return combinedData; // Return the combined data
+    return combinedData;
   };
 
   const ListEmptyView = () => {
@@ -235,7 +227,6 @@ const ChatRoomScreen = () => {
             }}
             maxToRenderPerBatch={10}
             renderItem={({item, index}) => {
-              // console.log('Message ITEM', item);
               return <RenderChatRoomList item={item} index={index} />;
             }}
             ListEmptyComponent={<ListEmptyView />}

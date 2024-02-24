@@ -8,6 +8,7 @@ import {
 } from '@react-navigation/native';
 import React, {FC, useCallback, useEffect, useState} from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   StatusBar,
@@ -33,6 +34,7 @@ import {
   JOIN_EVENT,
   LIST_EVENT,
   MESSAGE_EVENT,
+  READ_ALL,
 } from '../../Config/Setting';
 import {store} from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
@@ -57,7 +59,8 @@ const ChatScreen: FC = () => {
   const CurrentLoginUserFullName = store.getState().user?.userData?.full_name;
   const [userMessage, setUserMessages] = useState<IMessage[]>([]);
   const [CountMessage, setCountMessage] = useState(0);
-  const [OtherUserProfileData, setOtherUserProfileData] = useState();
+  const [OtherUserProfileData, setOtherUserProfileData] =
+    useState<ProfileType>();
   const IsFocused = useIsFocused();
   const [socket, setSocket] = useState<Socket>();
   const [ReceiverSocketId, setReceiverSocketId] = useState('');
@@ -156,16 +159,19 @@ const ChatScreen: FC = () => {
       return;
     }
 
-    // Event: Join
+    //* Event: Join
     socket.emit(JOIN_EVENT, {id: CurrentLoginUserId});
 
-    // Event: Get Receiver Socket
+    //* Event: Get Receiver Socket
     socket.emit(GET_RECEIVER_SOCKET_EVENT, {
       to: params?.id,
     });
 
-    // Event: List
+    //* Event: List
     socket.emit(LIST_EVENT, {id: CurrentLoginUserId});
+
+    //* Read Chat (Read Receipts)
+    socket.emit(READ_ALL, {id: CurrentLoginUserId});
 
     // Event: List - Response
     const handleListResponse = (data: {data: any}) => {
@@ -204,7 +210,7 @@ const ChatScreen: FC = () => {
         await getOtherUserDataCall();
       }
       const giftedChatMessages = StoreSingleChatFormat(chat);
-      console.log('HANDLE RECIVE:', OtherUserProfileData);
+      console.log('OtherUserProfileData:', OtherUserProfileData);
       if (giftedChatMessages) {
         const updatedMessages = giftedChatMessages.map((message: any) => ({
           ...message,

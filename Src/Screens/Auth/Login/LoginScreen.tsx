@@ -1,17 +1,21 @@
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import {ImageBackground, ScrollView, StatusBar, Text, View} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 import CommonImages from '../../../Common/CommonImages';
 import CommonLogos from '../../../Common/CommonLogos';
 import LoginButton from '../../../Components/AuthComponents/LoginButton';
-import styles from './styles';
-import UserService, {signInWithGoogle} from '../../../Services/AuthService';
-import {useDispatch, useSelector} from 'react-redux';
 import {updateField} from '../../../Redux/Action/userActions';
+import UserService from '../../../Services/AuthService';
+import {transformUserDataForApi} from '../../../Services/dataTransformService';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
-import {transformUserDataForApi} from '../../../Services/dataTransformService';
+import styles from './styles';
 
 const LoginScreen: FC = () => {
   const navigation =
@@ -19,76 +23,73 @@ const LoginScreen: FC = () => {
   const {showToast} = useCustomToast();
   const dispatch = useDispatch();
   const userData = useSelector((state: any) => state?.user);
+  const [IsSocialLoginLoading, setIsSocialLoginLoading] = useState({
+    Google: false,
+    Facebook: false,
+  });
 
   const handleGoogleLogin = async () => {
-    const GoogleData = await signInWithGoogle();
-    // console.log('GoogleData', GoogleData);
-    const GoogleUserData = GoogleData?.user;
-    if (GoogleUserData) {
-      console.log('GoogleUserData', GoogleUserData);
-      await Promise.all([
-        dispatch(
-          updateField(LocalStorageFields.identity, GoogleUserData.email),
-        ),
-        dispatch(
-          updateField(
-            LocalStorageFields.full_name,
-            GoogleUserData.name || GoogleUserData.givenName,
-          ),
-        ),
-        dispatch(updateField(LocalStorageFields.login_type, 'social')),
-        dispatch(
-          updateField(LocalStorageFields.eventName, 'app_user_register_social'),
-        ),
-        dispatch(updateField(LocalStorageFields.isVerified, true)),
-      ]);
+    try {
+      console.log('Initiating Google login...');
+      setIsSocialLoginLoading({...IsSocialLoginLoading, Google: true});
 
-      // API Go Here
-      setTimeout(() => {
-        handleNavigation(
-          GoogleUserData.email,
-          GoogleUserData.name || GoogleUserData.givenName || '',
-        );
-      }, 0);
-    } else {
-      // showToast(
-      //   'Error!',
-      //   'Something went wrong while fetching your data',
-      //   'error',
-      // );
+      await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
+      const GoogleUserData = await GoogleSignin.signIn();
+      console.log('Google login successful:', GoogleUserData);
+
+      // Proceed with your logic for successful login
+      console.log('Updating fields and navigating...');
+      handleNavigation(
+        GoogleUserData.user.email,
+        GoogleUserData.user.name || GoogleUserData.user.givenName || '',
+      );
+    } catch (error: any) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // showToast('Error!', 'User cancelled the login flow', 'error');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        showToast('Error!', 'Operation is in progress already', 'error');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        showToast('Error!', 'Play services not available or outdated', 'error');
+      } else {
+        showToast('Error!', 'An error occurred during Google login', 'error');
+      }
+      setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
     }
   };
 
   const handleNavigation = async (email: string, name: string) => {
-    const userDataForApi = transformUserDataForApi(userData);
-    console.log('userDataForApi', userDataForApi);
+    try {
+      const userDataForApi = transformUserDataForApi(userData);
+      const userDataWithValidation = {
+        ...userDataForApi,
+        eventName: 'app_user_register_social',
+        login_type: 'social',
+        validation: true,
+        identity: email,
+        full_name: name,
+      };
 
-    const userDataWithValidation = {
-      ...userDataForApi,
-      eventName: 'app_user_register_social',
-      login_type: 'social',
-      validation: true,
-      identity: email,
-      full_name: name,
-    };
-
-    console.log('userDataWithValidation', userDataWithValidation);
-
-    const APIResponse = await UserService.UserRegister(userDataWithValidation);
-    console.log('APIResponse?.data?', APIResponse?.data?.token);
-
-    if (APIResponse?.data?.token) {
-      await dispatch(
-        updateField(LocalStorageFields.Token, APIResponse.data?.token),
+      const APIResponse = await UserService.UserRegister(
+        userDataWithValidation,
       );
-      setTimeout(() => {
+
+      if (APIResponse?.data?.token) {
+        await dispatch(
+          updateField(LocalStorageFields.Token, APIResponse.data.token),
+        );
+        await dispatch(updateField(LocalStorageFields.isVerified, true));
         navigation.replace('BottomTab');
-      }, 0);
-    } else {
+      } else {
+        throw new Error('Token not found in API response');
+      }
+    } catch (error) {
+      console.error('Navigation error:', error);
       navigation.replace('LoginStack');
+    } finally {
+      setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
     }
-    // // setSocialLoginLoading(false);
   };
+
   return (
     <ImageBackground
       resizeMode="cover"
@@ -113,6 +114,7 @@ const LoginScreen: FC = () => {
 
           <View style={styles.ButtonView}>
             <LoginButton
+              IsLoading={false}
               Title="LOGIN WITH PHONE NUMBER"
               Icon={CommonLogos.EmailLoginLogo}
               onPress={() => {
@@ -122,6 +124,7 @@ const LoginScreen: FC = () => {
               }}
             />
             <LoginButton
+              IsLoading={IsSocialLoginLoading.Google}
               Title="LOGIN WITH GOOGLE"
               Icon={CommonLogos.GoogleLogo}
               onPress={() => {
@@ -129,6 +132,7 @@ const LoginScreen: FC = () => {
               }}
             />
             <LoginButton
+              IsLoading={IsSocialLoginLoading.Facebook}
               Title="LOGIN WITH FACEBOOK"
               Icon={CommonLogos.FacebookLogo}
               onPress={() => {
