@@ -9,7 +9,6 @@ interface PaginatorProps {
 
 const Paginator: FC<PaginatorProps> = ({data, scrollX}) => {
   const {width} = useWindowDimensions();
-
   return (
     <View style={styles.container}>
       {data &&
@@ -46,7 +45,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     position: 'absolute',
-    top: 5,
+    top: 10,
     left: 0,
     right: 0,
     zIndex: 9999,

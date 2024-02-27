@@ -29,9 +29,9 @@ interface ChatRoomProps {
 
 const RenderChatRoomList = ({item, index}: ChatRoomProps) => {
   const navigation = useNavigation();
-
+  // console.log('item', item);
   useEffect(() => {
-    console.log('RenderChatRoomList:--:>', item);
+    // console.log('RenderChatRoomList:--:>', item);
   }, [item]);
 
   // Ensure item is not null and has the expected structure

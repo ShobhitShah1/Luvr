@@ -1,4 +1,5 @@
-import React, {FC} from 'react';
+import {useNavigation} from '@react-navigation/native';
+import React, {FC, useCallback, useEffect} from 'react';
 import {
   Image,
   StatusBar,
@@ -7,22 +8,64 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, FONTS} from '../../../Common/Theme';
-import {useNavigation} from '@react-navigation/native';
-import {APP_NAME} from '../../../Config/Setting';
+import {APP_NAME, DonationIconAnimationTime} from '../../../Config/Setting';
 
 interface BottomTabHeaderProps {
   hideSettingAndNotification?: boolean;
   showSetting?: boolean;
 }
 
+const ANGLE = 10;
+const TIME = 100;
+const EASING = Easing.elastic(1.5);
+
 const BottomTabHeader: FC<BottomTabHeaderProps> = ({
   hideSettingAndNotification,
   showSetting,
 }) => {
   const navigation = useNavigation();
+  const rotation = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{rotateZ: `${rotation.value}deg`}],
+  }));
+
+  const playAnimation = useCallback(() => {
+    rotation.value = withSequence(
+      // deviate left to start from -ANGLE
+      withTiming(-ANGLE, {duration: TIME / 2, easing: EASING}),
+      // wobble between -ANGLE and ANGLE 7 times
+      withRepeat(
+        withTiming(ANGLE, {
+          duration: TIME,
+          easing: EASING,
+        }),
+        7,
+        true,
+      ),
+      // go back to 0 at the end
+      withTiming(0, {duration: TIME / 2, easing: EASING}),
+    );
+  }, []);
+
+  useEffect(() => {
+    const intervalId = setInterval(playAnimation, DonationIconAnimationTime);
+
+    return () => clearInterval(intervalId);
+  }, [playAnimation]);
+
   return (
     <View style={styles.Container}>
       <StatusBar
@@ -37,6 +80,20 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
 
         {/* {hideSettingAndNotification === false && showSetting === true && ( */}
         <View style={styles.IconsView}>
+          <TouchableOpacity
+            activeOpacity={ActiveOpacity}
+            onPress={() => {
+              navigation.navigate('Donation');
+            }}
+            style={[styles.DonationContainer]}>
+            <Animated.View style={[styles.IconWrapper, animatedStyle]}>
+              <Image
+                style={styles.DonateIcon}
+                resizeMode="contain"
+                source={CommonIcons.donate_icon}
+              />
+            </Animated.View>
+          </TouchableOpacity>
           {hideSettingAndNotification === false && (
             <TouchableOpacity
               activeOpacity={ActiveOpacity}
@@ -91,6 +148,9 @@ const styles = StyleSheet.create({
 
     elevation: 10,
   },
+  DonationContainer: {
+    // flex: 1,
+  },
   ContentView: {
     width: '90%',
     alignSelf: 'center',
@@ -117,5 +177,9 @@ const styles = StyleSheet.create({
   Icons: {
     width: hp('3.5%'),
     height: hp('3%'),
+  },
+  DonateIcon: {
+    width: 32,
+    height: 32,
   },
 });

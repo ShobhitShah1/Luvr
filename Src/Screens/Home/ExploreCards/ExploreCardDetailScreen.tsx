@@ -221,9 +221,11 @@ const ExploreCardDetailScreen = () => {
                 viewabilityConfig={viewConfig}
               />
             )}
-            {CardData && CardData?.recent_pik?.length !== 0 && (
-              <Paginator data={CardData?.recent_pik || 0} scrollX={scrollX} />
-            )}
+            {CardData &&
+              CardData?.recent_pik?.length !== 0 &&
+              CardData?.recent_pik?.length > 1 && (
+                <Paginator data={CardData?.recent_pik || 0} scrollX={scrollX} />
+              )}
           </View>
 
           <View style={styles.UserInfoContainerView}>
@@ -351,6 +353,7 @@ const ExploreCardDetailScreen = () => {
             {/* I like */}
             {CardData?.likes_into &&
               Array.isArray(CardData?.likes_into) &&
+              CardData?.likes_into[0] !== '' &&
               CardData?.likes_into[0]?.length > 0 && (
                 <View style={styles.DetailBoxContainerView}>
                   <View style={styles.TitleAndIconView}>
@@ -476,7 +479,7 @@ const styles = StyleSheet.create({
     paddingBottom: hp('10%'),
   },
   ProfileImageView: {
-    height: 350,
+    height: 380,
     width: '90%',
     borderRadius: 20,
     overflow: 'hidden',

@@ -1,6 +1,10 @@
 import {useState} from 'react';
 import {Alert, BackHandler, Linking, Platform} from 'react-native';
 import {PERMISSIONS, RESULTS, check, request} from 'react-native-permissions';
+import {store} from '../Redux/Store/store';
+import {updateField} from '../Redux/Action/userActions';
+import {LocalStorageFields} from '../Types/LocalStorageFields';
+import Geolocation from 'react-native-geolocation-service';
 
 export const useLocationPermission = () => {
   const [locationPermission, setLocationPermission] = useState(false);
@@ -32,8 +36,10 @@ export const useLocationPermission = () => {
           : PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
 
       const result = await check(permission);
+      console.log('result', result);
       if (result === RESULTS.GRANTED) {
         setLocationPermission(true);
+        StoreLetAndLong();
         return true;
       } else {
         const requestPermission = await request(permission);
@@ -46,6 +52,8 @@ export const useLocationPermission = () => {
 
         if (!isPermissionGranted) {
           showAlertAndNavigateToSettings();
+        } else {
+          StoreLetAndLong();
         }
 
         return isPermissionGranted;
@@ -54,6 +62,29 @@ export const useLocationPermission = () => {
       console.error('Error requesting location permission:', error);
       return false;
     }
+  };
+
+  const StoreLetAndLong = async () => {
+    Geolocation.getCurrentPosition(
+      async position => {
+        const {coords} = position;
+        console.log('coords', coords);
+        if (coords) {
+          await Promise.all([
+            store.dispatch(
+              updateField(LocalStorageFields.longitude, coords.longitude),
+            ),
+            store.dispatch(
+              updateField(LocalStorageFields.latitude, coords.latitude),
+            ),
+          ]);
+        }
+      },
+      error => {
+        console.log('LOCATION ERROR:', error);
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
   };
 
   const showAlertAndNavigateToSettings = () => {

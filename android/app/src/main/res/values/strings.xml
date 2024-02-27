@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">HeartSync</string>
+    <string name="facebook_app_id">1072075284080018</string>
+    <string name="facebook_client_token">56789</string>
 </resources>

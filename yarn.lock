@@ -1820,18 +1820,23 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-11.3.0.tgz#9d99ba00138b38350a794eab5eca436f6e209114"
   integrity sha512-mR9iqUi0GzuC8ut+goI/lLkgG+a2OViI1mjSdXHKZnkfdJVjHblyWX3xoA8GE4GH8X4r0X/PNM3Vvyf2FH9mVg==
 
-"@react-native-firebase/app@^18.8.0":
-  version "18.8.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-18.8.0.tgz#54864f4c54fa0b938ddece67598dc401aecd1e9a"
-  integrity sha512-bVwjop3zLKV1G+ZxyxrdSXVutdSHSM9mngk3qG9W1swmAdeTjvWWIFpyJBf6KlkbKzWbDmLeK7Q+Yc+HLJlg7A==
+"@react-native-firebase/app@^19.0.0":
+  version "19.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-19.0.0.tgz#a0368a46d7a142512a47bb645f0e7e4a604c5724"
+  integrity sha512-QcT4fJQjoEmvmRKDiEsLf5MBAgejlBGCAuAgXT/TBxE8/lrLubhlHVokodQvP0trjcVoA8L+HSEQFX2eIc3BPA==
   dependencies:
     opencollective-postinstall "^2.0.3"
     superstruct "^0.6.2"
 
-"@react-native-firebase/messaging@^18.8.0":
-  version "18.8.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-18.8.0.tgz#96fb7ab88e1057bbfb6034585e09686172d10d4a"
-  integrity sha512-MJVJ4dvczCEdPWER1vF7rhBMI78HpuMmGg7qsahERfho3dETNroust82DNqBSawsGTz4vVMOFpDSzs0Kt2WgSQ==
+"@react-native-firebase/messaging@^19.0.0":
+  version "19.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-19.0.0.tgz#f949dd100e1c391bc0949729e18a83ef03a94276"
+  integrity sha512-KeGQHLhnDThCZZqWm67Qf4NI7qMsUF9eNbrJ39OFeqbinJK2TSQcTZcRPNwfwreCZfkkBdeV3sk0YNPoddlx/w==
+
+"@react-native-firebase/remote-config@^19.0.0":
+  version "19.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/remote-config/-/remote-config-19.0.0.tgz#1f2c8f129642768fe89b2ca84cdd4d45d289d09a"
+  integrity sha512-FQ+kTVp2e+JFejvDbORZZC/yFm2RSffXWb/wBaInPygrDv0BhlOHG2iRg1aBMbLw9LEHnUZqfbgKffhLqmGJKQ==
 
 "@react-native-google-signin/google-signin@^11.0.0":
   version "11.0.0"
@@ -1918,12 +1923,12 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@react-navigation/bottom-tabs@^6.5.12":
-  version "6.5.12"
-  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-6.5.12.tgz#73adce8b147debe909985257bf436757894e99f6"
-  integrity sha512-8gBHHvgmJSRGfQ5fcFUgDFcXj1MzDzEZJ/llDYvcSb6ZxgN5xVq+4oVkwPMxOM6v+Qm2nKvXiUKuB/YydhzpLw==
+"@react-navigation/bottom-tabs@^6.5.14":
+  version "6.5.14"
+  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-6.5.14.tgz#8e09c30c66cc9adb0cc281b4db7313a1197b1f79"
+  integrity sha512-3gDVwuaPQIxkJm3PI5vATDr9Un3Z0tplfkzM/TWL2igE0Kd/hymWz0jZppBJbuKi+Q25i/74b+3VOVKuiE43AQ==
   dependencies:
-    "@react-navigation/elements" "^1.3.22"
+    "@react-navigation/elements" "^1.3.24"
     color "^4.2.3"
     warn-once "^0.1.0"
 
@@ -1943,6 +1948,11 @@
   version "1.3.22"
   resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-1.3.22.tgz#37e25e46ca4715049795471056a9e7e58ac4a14e"
   integrity sha512-HYKucs0TwQT8zMvgoZbJsY/3sZfzeP8Dk9IDv4agst3zlA7ReTx4+SROCG6VGC7JKqBCyQykHIwkSwxhapoc+Q==
+
+"@react-navigation/elements@^1.3.24":
+  version "1.3.24"
+  resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-1.3.24.tgz#184eabb869338dd268761e9d0f3a4c96f8e322f3"
+  integrity sha512-zgZV50qjlv3/N+MzNV0DIRmtg30IZcR0+LaTQRP/OxLtveQkgUG6wIEKl6SXO2ykC9yF9V82msdCzKl9uPSQCA==
 
 "@react-navigation/material-top-tabs@^6.6.6":
   version "6.6.6"
@@ -6664,6 +6674,11 @@ react-native-fast-image@^8.6.3:
   version "8.6.3"
   resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.6.3.tgz#6edc3f9190092a909d636d93eecbcc54a8822255"
   integrity sha512-Sdw4ESidXCXOmQ9EcYguNY2swyoWmx53kym2zRsvi+VeFCHEdkO+WG1DK+6W81juot40bbfLNhkc63QnWtesNg==
+
+react-native-fbsdk-next@^12.1.4:
+  version "12.1.4"
+  resolved "https://registry.yarnpkg.com/react-native-fbsdk-next/-/react-native-fbsdk-next-12.1.4.tgz#b5525df79ca3181f3e1868eb3c7fa316c6297a8d"
+  integrity sha512-6fC+RTG0kwkZkjO/FYNvva1O60EmmvK/8+ifLmLf+eOHybkjKdcSsnbEk7iODyjZALhyAvDaYYyq27yyJo1X5Q==
 
 react-native-geolocation-service@^5.3.1:
   version "5.3.1"

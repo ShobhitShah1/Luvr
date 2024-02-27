@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import NetInfo from '@react-native-community/netinfo';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -15,42 +16,55 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {AirbnbRating, Rating} from 'react-native-ratings';
+import {Rating} from 'react-native-ratings';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
+import OpenURL from '../../Components/OpenURL';
 import {resetUserData} from '../../Redux/Action/userActions';
-import {ProfileType, SettingType} from '../../Types/ProfileType';
+import UserService from '../../Services/AuthService';
+import {ProfileType} from '../../Types/ProfileType';
+import {useCustomToast} from '../../Utils/toastUtils';
 import EditProfileBoxView from '../Profile/Components/EditProfileComponents/EditProfileBoxView';
 import EditProfileTitleView from '../Profile/Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
 import SettingCustomModal from './Components/SettingCustomModal';
 import SettingFlexView from './Components/SettingFlexView';
 import styles from './styles';
-import UserService from '../../Services/AuthService';
-import {useCustomToast} from '../../Utils/toastUtils';
-import NetInfo from '@react-native-community/netinfo';
-import OpenURL from '../../Components/OpenURL';
+import remoteConfig from '@react-native-firebase/remote-config';
 
 const SettingScreen = () => {
-  const profile = useSelector(state => state?.user);
+  const GETDistancePreference = remoteConfig().getValue('test');
+  const parameters = remoteConfig().getAll();
+
+  console.log('parameters', parameters, GETDistancePreference);
+
+  useEffect(() => {
+    Object.entries(parameters).forEach($ => {
+      const [key, entry] = $;
+      console.log('Key: ', key);
+      console.log('Source: ', entry.getSource());
+      console.log('Value: ', entry.asString());
+    });
+    // console.log('GETDistancePreference', GETDistancePreference.getSource());
+  }, [parameters]);
+
+  // const profile = useSelector(state => state?.user);
   // const [profile, setProfile] = useState<ProfileType>();
   const dispatch = useDispatch();
-  const navigation = useNavigation();
   const [widthSeekBar, setWidthSeekBar] = useState(0);
   const UserData = useSelector((state: any) => state?.user);
   const [LogOutModalView, setLogOutModalView] = useState(false);
   const [DeleteAccountModalView, setDeleteAccountModalView] = useState(false);
   const [RateUsModalView, setRateUsModalView] = useState(false);
   const [UserSetting, setProfileData] = useState<ProfileType | undefined>();
-  const {replace, reset} = useNavigation<NativeStackNavigationProp<any>>();
+  const {reset} = useNavigation<NativeStackNavigationProp<any>>();
   const [RatingCount, setRatingCount] = useState(3);
   const {showToast} = useCustomToast();
   const [IsInternetConnected, setIsInternetConnected] = useState(true);
-  const settingAgeRangeMin = UserSetting?.setting_age_range_min || ''; // Use an empty string if setting_age_range_min is null
-  // console.log('UserSetting', UserSetting);
-
+  const settingAgeRangeMin = UserSetting?.setting_age_range_min || '';
+  const [IsSettingLoading, setIsSettingLoading] = useState(false);
   let startAge = '';
   let endAge = '';
 
@@ -92,6 +106,7 @@ const SettingScreen = () => {
   }, []);
 
   const GetSetting = async () => {
+    setIsSettingLoading(true);
     try {
       const userDataForApi = {
         eventName: 'get_profile',
@@ -111,25 +126,7 @@ const SettingScreen = () => {
     } catch (error) {
       console.log('Something Went Wrong With Feting API Data');
     } finally {
-    }
-  };
-
-  const UpdateSetting = async () => {
-    try {
-      // const APIResponse = await ProfileService.UpdateUserSetting(UserSetting);
-      // if (APIResponse?.status) {
-      //   console.log('GetSetting Data:', APIResponse.data);
-      //   showToast('All Set', 'User Setting Updated Successfully', 'success');
-      // } else {
-      //   showToast(
-      //     'Error!',
-      //     APIResponse.message || 'Something went wrong',
-      //     'error',
-      //   );
-      // }
-    } catch (error) {
-      console.log('Something Went Wrong With Feting API Data');
-    } finally {
+      setIsSettingLoading(false);
     }
   };
 
@@ -183,38 +180,39 @@ const SettingScreen = () => {
 
       const DataToSend = {
         eventName: 'update_profile',
-        mobile_no: UserSetting?.mobile_no,
-        about: UserSetting?.about,
-        identity: UserSetting?.identity,
-        profile_image: UserSetting?.profile_image,
-        full_name: UserSetting?.full_name,
-        birthdate: UserSetting?.birthdate,
-        gender: UserSetting?.gender,
-        city: UserSetting?.city,
-        orientation: UserSetting?.orientation,
-        is_orientation_visible: UserSetting?.is_orientation_visible,
-        hoping: UserSetting?.hoping,
+        mobile_no: UserSetting?.mobile_no || '',
+        about: UserSetting?.about || '',
+        identity: UserSetting?.identity || '',
+        profile_image: UserSetting?.profile_image || '',
+        full_name: UserSetting?.full_name || '',
+        birthdate: UserSetting?.birthdate || '00/00/0000',
+        gender: UserSetting?.gender || '',
+        city: UserSetting?.city || '',
+        orientation: UserSetting?.orientation || [],
+        is_orientation_visible: UserSetting?.is_orientation_visible || false,
+        hoping: UserSetting?.hoping || '',
         education: {
-          digree: UserSetting?.education?.digree,
-          college_name: UserSetting?.education?.college_name,
+          digree: UserSetting?.education?.digree || '',
+          college_name: UserSetting?.education?.college_name || '',
         },
         habits: {
-          exercise: UserSetting?.habits?.exercise,
-          smoke: UserSetting?.habits?.smoke,
-          movies: UserSetting?.habits?.movies,
-          drink: UserSetting?.habits?.drink,
+          exercise: UserSetting?.habits?.exercise || '',
+          smoke: UserSetting?.habits?.smoke || '',
+          movies: UserSetting?.habits?.movies || '',
+          drink: UserSetting?.habits?.drink || '',
         },
         magical_person: {
-          communication_stry: UserSetting?.magical_person?.communication_stry,
-          recived_love: UserSetting?.magical_person?.recived_love,
-          education_level: UserSetting?.magical_person?.education_level,
-          star_sign: UserSetting?.magical_person?.star_sign,
+          communication_stry:
+            UserSetting?.magical_person?.communication_stry || '',
+          recived_love: UserSetting?.magical_person?.recived_love || '',
+          education_level: UserSetting?.magical_person?.education_level || '',
+          star_sign: UserSetting?.magical_person?.star_sign || '',
         },
-        likes_into: UserSetting?.likes_into,
-        is_block_contact: UserSetting?.is_block_contact,
-        latitude: UserData?.latitude,
-        longitude: UserData?.longitude,
-        radius: UserSetting?.radius,
+        likes_into: UserSetting?.likes_into || [],
+        is_block_contact: UserSetting?.is_block_contact || false,
+        latitude: UserData?.latitude || '',
+        longitude: UserData?.longitude || '',
+        radius: UserSetting?.radius || 0,
         setting_active_status: UserSetting?.setting_active_status || true,
         setting_age_range_min: UserSetting?.setting_age_range_min || '18-35',
         setting_distance_preference:
@@ -295,7 +293,9 @@ Let's make every moment count together! #LoveConnects`,
       <ProfileAndSettingHeader
         Title={'Settings'}
         onUpdatePress={() => {
-          onUpdateProfile();
+          if (!IsSettingLoading) {
+            onUpdateProfile();
+          }
         }}
       />
       <ScrollView bounces={false} style={styles.ContentView}>

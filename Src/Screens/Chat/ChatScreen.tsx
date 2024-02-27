@@ -67,13 +67,13 @@ const ChatScreen: FC = () => {
   const generateRandomId = () => {
     return Math.random().toString(36).substr(2, 9);
   };
+  const [avatarUrl, setAvatarUrl] = useState<string>('');
 
-  const Avatar =
-    OtherUserProfileData &&
-    OtherUserProfileData?.recent_pik &&
-    OtherUserProfileData?.recent_pik[0]
-      ? ApiConfig.IMAGE_BASE_URL + OtherUserProfileData?.recent_pik[0]
-      : CommonImages.WelcomeBackground;
+  // const Avatar =
+  //   OtherUserProfileData &&
+  //   OtherUserProfileData?.recent_pik &&
+  //   OtherUserProfileData?.recent_pik[0] &&
+  //   ApiConfig.IMAGE_BASE_URL + OtherUserProfileData?.recent_pik[0];
 
   useEffect(() => {
     if (IsFocused) {
@@ -116,7 +116,7 @@ const ChatScreen: FC = () => {
           _id: message.id === CurrentLoginUserId ? 1 : 0,
           name:
             message.id === CurrentLoginUserId ? CurrentLoginUserFullName : '',
-          avatar: Avatar,
+          avatar: avatarUrl,
         },
       };
     });
@@ -132,7 +132,7 @@ const ChatScreen: FC = () => {
   };
 
   const StoreSingleChatFormat = (message: any) => {
-    console.log('OTHER', OtherUserProfileData);
+    // console.log('OTHER', OtherUserProfileData);
 
     setCountMessage(1);
 
@@ -146,7 +146,7 @@ const ChatScreen: FC = () => {
           message?.from === CurrentLoginUserId
             ? CurrentLoginUserFullName
             : message?.from_name,
-        avatar: Avatar,
+        avatar: avatarUrl,
       },
     };
     // console.log('singleChatMessage', singleChatMessage);
@@ -189,6 +189,8 @@ const ChatScreen: FC = () => {
         return;
       }
 
+      // console.log('giftedChatMessages', giftedChatMessages);
+
       if (giftedChatMessages.length !== 0) {
         // console.log('giftedChatMessages', giftedChatMessages);
         setUserMessages(previousMessages => [
@@ -210,13 +212,13 @@ const ChatScreen: FC = () => {
         await getOtherUserDataCall();
       }
       const giftedChatMessages = StoreSingleChatFormat(chat);
-      console.log('OtherUserProfileData:', OtherUserProfileData);
+      // console.log('OtherUserProfileData:', OtherUserProfileData);
       if (giftedChatMessages) {
         const updatedMessages = giftedChatMessages.map((message: any) => ({
           ...message,
           user: {
             ...message.user,
-            avatar: Avatar,
+            avatar: avatarUrl,
           },
         }));
 
@@ -254,7 +256,11 @@ const ChatScreen: FC = () => {
       socket.off(CHAT_EVENT, handleReceiverChat);
       socket.off(GET_RECEIVER_SOCKET_EVENT, handleReceiverSocketId);
     };
-  }, [socket, params]);
+  }, [socket, params, avatarUrl]);
+
+  // useEffect(() => {
+  //   console.log('userMessage', userMessage);
+  // }, [userMessage]);
 
   const getOtherUserDataCall = async () => {
     try {
@@ -268,6 +274,11 @@ const ChatScreen: FC = () => {
       if (apiResponse?.code === 200 && apiResponse.data) {
         console.log('get_other_profile', apiResponse.data);
         setOtherUserProfileData(apiResponse.data);
+        if (apiResponse.data && apiResponse.data?.recent_pik) {
+          setAvatarUrl(
+            ApiConfig.IMAGE_BASE_URL + apiResponse.data?.recent_pik[0],
+          );
+        }
       }
     } catch (error) {
       console.error('Error in getOtherUserDataCall:', error);
@@ -303,7 +314,7 @@ const ChatScreen: FC = () => {
             // some clients did not acknowledge the event in the given delay
           } else {
             // acknowledgment is the data sent back by the server
-            console.log('Message acknowledgment:', responses);
+            // console.log('Message acknowledgment:', responses);
 
             // You can handle the acknowledgment as needed
             if (responses && responses.success) {
@@ -481,7 +492,7 @@ const ChatScreen: FC = () => {
           onSend={messages => onSend(messages)}
           user={{
             _id: 1,
-            avatar: Avatar,
+            avatar: avatarUrl,
           }}
           isTyping={false}
           messagesContainerStyle={styles.messagesContainer}

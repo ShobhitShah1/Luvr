@@ -9,6 +9,7 @@ import {
 import React, {FC} from 'react';
 import {ActiveOpacity, COLORS, FONTS} from '../../../Common/Theme';
 import CommonIcons from '../../../Common/CommonIcons';
+import Button from '../../../Components/Button';
 
 interface SettingModalProps {
   onPress: () => void;
@@ -46,12 +47,13 @@ const LogOutModalRenderView: FC<SettingModalProps> = ({
         </View>
 
         <View style={styles.ButtonContainer}>
-          <TouchableOpacity
+          <Button onPress={onPress} ButtonTitle={ButtonTitle} />
+          {/* <TouchableOpacity
             onPress={onPress}
             activeOpacity={ActiveOpacity}
             style={styles.LogoutButtonContainer}>
             <Text style={styles.LogoutButtonText}>{ButtonTitle}</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <Text onPress={() => setState(false)} style={styles.NoButtonText}>
             {ButtonCloseText}
           </Text>

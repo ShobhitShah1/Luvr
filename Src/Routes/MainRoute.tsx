@@ -40,6 +40,7 @@ import messaging from '@react-native-firebase/messaging';
 import {store} from '../Redux/Store/store';
 import {LocalStorageFields} from '../Types/LocalStorageFields';
 import {updateField} from '../Redux/Action/userActions';
+import DonationScreen from '../Screens/Donation/DonationScreen';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -218,6 +219,7 @@ export default function MainRoute() {
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             <Stack.Screen name="Setting" component={SettingScreen} />
             <Stack.Screen name="Notification" component={NotificationScreen} />
+            <Stack.Screen name="Donation" component={DonationScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       )}

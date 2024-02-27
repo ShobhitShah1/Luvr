@@ -1,14 +1,8 @@
-/* eslint-disable react/no-unstable-nested-components */
+import messaging from '@react-native-firebase/messaging';
 import React, {useCallback, useEffect, useState} from 'react';
-import {
-  FlatList,
-  ImageBackground,
-  RefreshControl,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import {FlatList, RefreshControl, ScrollView, View} from 'react-native';
 import {HomeLookingForData} from '../../Components/Data';
+import {useLocationPermission} from '../../Hooks/useLocationPermission';
 import {
   onSwipeRight,
   setUserData,
@@ -21,15 +15,26 @@ import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
 import RenderLookingView from './Components/RenderLookingView';
 import styles from './styles';
-import messaging from '@react-native-firebase/messaging';
 
 const HomeScreen = () => {
   const [IsAPIDataLoading, setIsAPIDataLoading] = useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
+  const {requestLocationPermission, locationPermission} =
+    useLocationPermission();
 
   useEffect(() => {
     Promise.all([GetMyLikes(), GetProfileData(), requestUserPermission()]);
   }, []);
+
+  useEffect(() => {
+    handleLocationPermissionRequest();
+  }, []);
+
+  const handleLocationPermissionRequest = async () => {
+    console.log('locationPermission', locationPermission);
+
+    requestLocationPermission();
+  };
 
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
@@ -80,7 +85,7 @@ const HomeScreen = () => {
           }
         });
         store.dispatch(setUserData(APIResponse.data));
-        console.log('GetProfileData Data:', APIResponse.data);
+        // console.log('GetProfileData Data:', APIResponse.data);
       }
     } catch (error) {
       console.log('Something Went Wrong With Feting API Data', error);
@@ -202,11 +207,15 @@ const HomeScreen = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        showsVerticalScrollIndicator={false}
         bounces={false}>
         <FlatList
           numColumns={2}
           style={styles.FlatListStyle}
+          bounces={false}
           data={HomeLookingForData}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item, index) => index.toString()}
           renderItem={({item, index}) => {
             return (
               <RenderLookingView

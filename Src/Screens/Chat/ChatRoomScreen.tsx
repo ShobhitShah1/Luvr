@@ -93,9 +93,10 @@ const ChatRoomScreen = () => {
 
         //* Event: List - Response
         const handleListResponse: SocketEventHandlers['List'] = data => {
-          console.log('data', data);
+          // console.log('data', data);
           try {
             if (data && data?.data) {
+              console.log('data?.data', data?.data);
               const filteredData = data.data.filter(
                 (item: MessageItem) => item.to !== currentLoginUserId,
               );
@@ -128,7 +129,7 @@ const ChatRoomScreen = () => {
         };
 
         const handleReceivedChat = (chat: any) => {
-          console.log('chat', chat);
+          // console.log('chat', chat);
           setMessages(previousMessages => {
             const combinedData = combineSameIdData([...previousMessages, chat]);
             return combinedData;
@@ -158,6 +159,7 @@ const ChatRoomScreen = () => {
   }, [socket, isFocused, currentLoginUserId]);
 
   const combineSameIdData = (data: MessageItem[]): MessageItem[] => {
+    // console.log('data', data);
     const combinedData: MessageItem[] = [];
     const idMap = new Map<string, MessageItem>();
 

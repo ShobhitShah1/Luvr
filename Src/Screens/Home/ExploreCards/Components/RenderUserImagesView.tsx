@@ -2,14 +2,13 @@ import React, {FC, useState} from 'react';
 import {
   ActivityIndicator,
   Dimensions,
-  Platform,
+  Image,
   StyleSheet,
   View,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import {COLORS} from '../../../../Common/Theme';
 import ApiConfig from '../../../../Config/ApiConfig';
 import {DummyImage} from '../../../../Config/Setting';
-import {COLORS} from '../../../../Common/Theme';
 
 interface UserImagesProps {
   Images: string;
@@ -19,16 +18,17 @@ const RenderUserImagesView: FC<UserImagesProps> = ({Images}) => {
   const [IsImageLoading, setIsImageLoading] = useState(false);
   return (
     <View>
-      <FastImage
+      <Image
         onLoadStart={() => setIsImageLoading(true)}
         onLoadEnd={() => setIsImageLoading(false)}
         resizeMode="cover"
         style={styles.UserProfileImages}
         source={{
           uri: Images ? `${ApiConfig.IMAGE_BASE_URL}${Images}` : DummyImage,
-          priority: FastImage.priority.high,
+          cache: 'force-cache',
         }}
-        fallback={Platform.OS === 'android'}
+        resizeMethod="resize"
+        progressiveRenderingEnabled
       />
       {IsImageLoading && (
         <View style={styles.Loader}>
@@ -43,7 +43,8 @@ export default RenderUserImagesView;
 
 const styles = StyleSheet.create({
   UserProfileImages: {
-    height: 350,
+    height: 380,
+    resizeMode: 'cover',
     width: Dimensions.get('window').width * 0.9,
   },
   Loader: {

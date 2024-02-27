@@ -42,6 +42,9 @@ const media_icon = require('../../Assets/Icons/media_icon.png');
 const sync = require('../../Assets/Icons/sync.png');
 const rating_star_icon_select = require('../../Assets/Icons/rating_star_icon_select.png');
 const rating_star_icon_unselect = require('../../Assets/Icons/rating_star_icon_unselect.png');
+const donate_icon = require('../../Assets/Icons/donate_icon.png');
+const thanks_for_your_support = require('../../Assets/Icons/thanks_for_your_support!_icon.png');
+const ic_donate = require('../../Assets/Icons/ic_donate.png');
 
 // Home
 const HomeTab = require('../../Assets/Icons/home_icon_select.png');
@@ -99,6 +102,9 @@ export default {
   sync,
   rating_star_icon_select,
   rating_star_icon_unselect,
+  donate_icon,
+  thanks_for_your_support,
+  ic_donate,
 
   //* Home
   HomeTab,

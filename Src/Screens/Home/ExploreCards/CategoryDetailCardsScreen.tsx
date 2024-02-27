@@ -25,6 +25,7 @@ interface CategoryDetailCardsProps {
 const CategoryDetailCardsScreen: FC = () => {
   const {params} = useRoute<CategoryDetailCardsProps>();
   const userData = useSelector((state: any) => state?.user);
+  // console.log('userData', userData);
   const {showToast} = useCustomToast();
   const LeftSwipedUserIds = useSelector(
     state => state?.user?.swipedLeftUserIds || [],
@@ -40,22 +41,22 @@ const CategoryDetailCardsScreen: FC = () => {
     CheckConnectionAndFetchAPI();
   }, []);
 
-  const CheckConnectionAndFetchAPI = () => {
+  const CheckConnectionAndFetchAPI = async () => {
     setIsAPILoading(true);
-    NetInfo.addEventListener(state => {
-      if (state.isConnected) {
-        FetchAPIData();
-        setIsNetConnected(true);
-      } else {
-        showToast(
-          'No Internet Connection',
-          'Please check your internet connection',
-          'error',
-        );
-        setIsNetConnected(true);
-        setIsAPILoading(false);
-      }
-    });
+    const isConnected = (await NetInfo.fetch()).isConnected;
+
+    if (isConnected) {
+      setIsNetConnected(true);
+      FetchAPIData();
+    } else {
+      setIsNetConnected(false);
+      setIsAPILoading(false);
+      showToast(
+        'No Internet Connection',
+        'Please check your internet connection',
+        'error',
+      );
+    }
   };
 
   const FetchAPIData = async () => {
@@ -71,7 +72,7 @@ const CategoryDetailCardsScreen: FC = () => {
         skip: 0,
         limit: 0,
       };
-
+      console.log('userDataForApi', userDataForApi);
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
         setCategoryData(APIResponse?.data || []);
@@ -83,6 +84,7 @@ const CategoryDetailCardsScreen: FC = () => {
           'error',
         );
       }
+      setIsAPILoading(false);
     } catch (error) {
       console.log('Something Went Wrong With Feting API Data');
     } finally {

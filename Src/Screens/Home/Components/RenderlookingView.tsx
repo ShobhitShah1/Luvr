@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
     width: '85%',
     ...GROUP_FONT.h2,
     fontSize: 19,
+    lineHeight: 21,
     color: COLORS.White,
     marginHorizontal: hp('1.5%'),
   },
