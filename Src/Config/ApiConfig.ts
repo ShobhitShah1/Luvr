@@ -9,6 +9,8 @@ const ApiConfig = {
   SOCKET_BASE_URL: 'http://nirvanatechlabs.in:1111/',
   GOOGLE_WEB_CLIENT_ID:
     '920057594155-arii13jpcn7vehess2te20noeclnisss.apps.googleusercontent.com',
+  FACEBOOK_GRAPH_API:
+    'https://graph.facebook.com/v2.5/me?fields=email,name,picture,birthday,gender&access_token=',
 
   //* EventName's
 

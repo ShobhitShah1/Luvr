@@ -11,12 +11,39 @@ import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import CommonIcons from '../../Common/CommonIcons';
 import Button from '../../Components/Button';
 import {useNavigation} from '@react-navigation/native';
+import UserService from '../../Services/AuthService';
+import {useCustomToast} from '../../Utils/toastUtils';
 
 const BackgroundImageSize = 150;
 const DonationScreen = () => {
   const navigation = useNavigation();
   const [PaymentSuccess, setPaymentSuccess] = useState(false);
+  const {showToast} = useCustomToast();
 
+  const DonationAPICall = async () => {
+    try {
+      const userDataForApi = {
+        eventName: 'donation',
+        donation_amount: 0,
+      };
+
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      console.log('APIResponse', APIResponse);
+      if (APIResponse?.code === 200) {
+        console.log('Donation API Data:', APIResponse.data);
+        setPaymentSuccess(!PaymentSuccess);
+        showToast(
+          'Success',
+          APIResponse?.message || 'Thanks for your donation',
+          'success',
+        );
+      }
+    } catch (error) {
+      console.log('Something Went Wrong With Feting API Data', error);
+    } finally {
+      //  setRefreshing(false);
+    }
+  };
   return (
     <View style={styles.container}>
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.Secondary} />
@@ -48,7 +75,9 @@ const DonationScreen = () => {
 
         <View style={styles.DonateButtonContainer}>
           <Button
-            onPress={() => setPaymentSuccess(!PaymentSuccess)}
+            onPress={() => {
+              DonationAPICall();
+            }}
             ButtonTitle={
               PaymentSuccess ? 'Make another donation' : 'Donate now $5'
             }

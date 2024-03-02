@@ -4,7 +4,7 @@ import {
 } from '@react-native-google-signin/google-signin';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {ImageBackground, ScrollView, StatusBar, Text, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import CommonImages from '../../../Common/CommonImages';
@@ -16,6 +16,8 @@ import {transformUserDataForApi} from '../../../Services/dataTransformService';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import styles from './styles';
+import {AccessToken, LoginManager, Settings} from 'react-native-fbsdk-next';
+import ApiConfig from '../../../Config/ApiConfig';
 
 const LoginScreen: FC = () => {
   const navigation =
@@ -27,6 +29,11 @@ const LoginScreen: FC = () => {
     Google: false,
     Facebook: false,
   });
+
+  useEffect(() => {
+    Settings.setAppID('1072075284080018');
+    Settings.initializeSDK();
+  }, []);
 
   const handleGoogleLogin = async () => {
     try {
@@ -45,7 +52,7 @@ const LoginScreen: FC = () => {
       );
     } catch (error: any) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // showToast('Error!', 'User cancelled the login flow', 'error');
+        showToast('Error!', 'You cancelled the login flow', 'error');
       } else if (error.code === statusCodes.IN_PROGRESS) {
         showToast('Error!', 'Operation is in progress already', 'error');
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
@@ -54,6 +61,51 @@ const LoginScreen: FC = () => {
         showToast('Error!', 'An error occurred during Google login', 'error');
       }
       setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
+    }
+  };
+
+  const handleFacebookLogin = async () => {
+    try {
+      LoginManager.logInWithPermissions(['public_profile']).then(
+        function (result) {
+          if (result.isCancelled) {
+            console.log('Login cancelled');
+          } else {
+            console.log(
+              'Login success with permissions: ' +
+                result?.grantedPermissions?.toString(),
+            );
+
+            AccessToken.getCurrentAccessToken().then(data => {
+              console.log('Facebook Data:', data);
+              if (data?.accessToken) {
+                fetch(ApiConfig.FACEBOOK_GRAPH_API + data.accessToken)
+                  .then(response => response.json())
+                  .then(json => {
+                    console.log('FACEBOOK JSON DATA:', json);
+                    // handleNavigation(
+                    //   GoogleUserData.user.email,
+                    //   GoogleUserData.user.name ||
+                    //     GoogleUserData.user.givenName ||
+                    //     '',
+                    // );
+                  })
+                  .catch(() => {
+                    console.error('ERROR GETTING DATA FROM FACEBOOK');
+                  });
+              } else {
+                showToast('Error', 'Could not get access token', 'error');
+              }
+            });
+          }
+        },
+        function (error) {
+          console.log('Login fail with error: ' + error);
+        },
+      );
+    } catch (error) {
+      console.log('Facebook Login Error', error);
+      showToast('Error', String(error || 'Facebook Login Error'), 'error');
     }
   };
 
@@ -139,6 +191,7 @@ const LoginScreen: FC = () => {
                 // navigation.navigate('NumberVerification', {
                 //   screen: 'PhoneNumber',
                 // });
+                handleFacebookLogin();
               }}
             />
           </View>
