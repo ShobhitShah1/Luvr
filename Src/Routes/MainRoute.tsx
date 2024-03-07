@@ -1,87 +1,228 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React from 'react';
-import CreateAccount from '../Screens/Auth/CreateAccount/CreateAccount';
-import MyBirthDate from '../Screens/Auth/CreateProfile/MyBirthDate';
-import MyFirstName from '../Screens/Auth/CreateProfile/MyFirstName';
-import LoginScreen from '../Screens/Auth/Login/LoginScreen';
-import OTPScreen from '../Screens/Auth/OTP/OTPScreen';
-import PhoneNumber from '../Screens/Auth/PhoneNumber/PhoneNumber';
-import WelcomeScreen from '../Screens/Auth/Welcome/WelcomeScreen';
-import HomeScreen from '../Screens/Home/HomeScreen';
-import SplashScreen from '../Screens/Splash/SplashScreen';
-import CreateProfile from '../Screens/Auth/CreateProfile';
-import SexualOrientation from '../Screens/Auth/CreateProfile/SexualOrientation';
-import ImLookingFor from '../Screens/Auth/CreateProfile/ImLookingFor';
-import DistancePreference from '../Screens/Auth/CreateProfile/DistancePreference';
-import YourStudy from '../Screens/Auth/CreateProfile/YourStudy';
-import AddLifestyle from '../Screens/Auth/CreateProfile/AddLifestyle';
-import WhatElseExtra from '../Screens/Auth/CreateProfile/WhatElseExtra';
-import YourIntro from '../Screens/Auth/CreateProfile/YourIntro';
-import AddRecentPics from '../Screens/Auth/CreateProfile/AddRecentPics';
+import React, {useCallback, useEffect, useState} from 'react';
+import SplashScreen from 'react-native-splash-screen';
+import {useSelector} from 'react-redux';
+import {useLocationPermission} from '../Hooks/useLocationPermission';
+
+// ========================== AUTH SCREENS ==========================
+import {
+  AddDailyHabits,
+  AddRecentPics,
+  AvoidContacts,
+  DistancePreference,
+  HopingToFind,
+  IdentifyYourSelf,
+  LocationPermission,
+  LoginScreen,
+  ManageContacts,
+  OTPScreen,
+  PhoneNumber,
+  SexualOrientation,
+  WhatAboutYou,
+  YourEducation,
+  YourIntro,
+} from '../Screens/Auth';
+
+// ========================== HOME SCREENS ==========================
+import ChatScreen from '../Screens/Chat/ChatScreen';
+import CategoryDetailCardsScreen from '../Screens/Home/ExploreCards/CategoryDetailCardsScreen';
+import ExploreCardDetailScreen from '../Screens/Home/ExploreCards/ExploreCardDetailScreen';
+import NotificationScreen from '../Screens/Notification/NotificationScreen';
+import EditProfileScreen from '../Screens/Profile/EditProfileScreen';
+import SettingScreen from '../Screens/Setting/SettingScreen';
+import {initGoogleSignIn} from '../Services/AuthService';
+import BottomTab from './BottomTab';
+import {navigationRef} from './RootNavigation';
+import messaging from '@react-native-firebase/messaging';
+import {store} from '../Redux/Store/store';
+import {LocalStorageFields} from '../Types/LocalStorageFields';
+import {updateField} from '../Redux/Action/userActions';
+import DonationScreen from '../Screens/Donation/DonationScreen';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
+  const ReduxUserData = useSelector((state: any) => state.user);
+  const isUserVerified: boolean = ReduxUserData?.isVerified;
+  const [initialRoute, setInitialRoute] = useState<string>('');
+  const {checkLocationPermission} = useLocationPermission();
+  const [isNavigationReady, setIsNavigationReady] = useState(false);
 
-  const LoginStack = () => {
+  useEffect(() => {
+    Promise.all([
+      determineInitialRoute(),
+      initGoogleSignIn(),
+      HandleNotificationPermission(),
+    ]);
+  }, []);
+
+  const HandleNotificationPermission = async () => {
+    const authStatus = await messaging().requestPermission();
+    console.log('authStatus', authStatus);
+
+    if (authStatus === 1) {
+      const Token = await messaging().getToken();
+      if (Token) {
+        store.dispatch(
+          updateField(LocalStorageFields.notification_token, Token),
+        );
+      }
+    }
+  };
+
+  const determineInitialRoute = useCallback(async () => {
+    try {
+      const checkLoginPermission = await checkLocationPermission();
+      console.log('checkLoginPermission', checkLoginPermission);
+
+      if (!isUserVerified) {
+        setInitialRoute('NumberVerification');
+        return;
+      }
+
+      console.log('Pass isUserVerified ✅');
+
+      if (!checkLoginPermission) {
+        setInitialRoute('LocationStack');
+        return;
+      }
+      console.log('Pass checkLoginPermission ✅');
+      console.log('isNavigationReady', isNavigationReady);
+      if (
+        ReduxUserData?.isImageUploaded ||
+        (ReduxUserData?.userData?.recent_pik &&
+          ReduxUserData?.userData?.recent_pik?.length !== 0)
+      ) {
+        console.log('Pass recent_pik ✅');
+        setInitialRoute('BottomTab');
+      } else {
+        console.log('Fail recent_pik ❌');
+        console.log('navigationRef', navigationRef.isReady());
+        setInitialRoute('LoginStack');
+        navigationRef &&
+          navigationRef?.navigate('LoginStack', {
+            screen: 'AddRecentPics',
+          });
+      }
+    } catch (error) {
+      console.error('Error determining initial route:', error);
+      setInitialRoute('NumberVerification');
+    }
+  }, [isUserVerified, navigationRef, isNavigationReady]);
+
+  useEffect(() => {
+    if (initialRoute) {
+      SplashScreen.hide();
+      console.log('📄 UserData Splash Screen:', ReduxUserData);
+      console.log('🆔 User Verified:', isUserVerified ? '✅' : '❌');
+      console.log('📱 Screen Will Show:', initialRoute);
+      console.log('--------------- SPLASH END ----------------');
+    }
+  }, [initialRoute, isUserVerified]);
+
+  const NumberVerificationStack = () => {
     return (
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          animation: 'none',
-          statusBarAnimation: 'fade',
+          // animation: 'slide_from_right',
+          // statusBarAnimation: 'fade',
+          // animationTypeForReplace: 'push',
         }}>
         <Stack.Screen component={LoginScreen} name="Login" />
-        <Stack.Screen component={WelcomeScreen} name="Welcome" />
-        <Stack.Screen component={CreateAccount} name="CreateAccount" />
         <Stack.Screen component={PhoneNumber} name="PhoneNumber" />
         <Stack.Screen component={OTPScreen} name="OTP" />
-
-        {/* CreateProfile: Why Added Here? Its Part Of Login */}
-        <Stack.Screen component={CreateProfile} name="CreateProfile" />
-        <Stack.Screen component={MyFirstName} name="MyFirstName" />
-        <Stack.Screen component={MyBirthDate} name="MyBirthDate" />
-        <Stack.Screen
-          component={SexualOrientation}
-          name="SexualOrientationScreen"
-        />
-        <Stack.Screen component={ImLookingFor} name="ImLookingFor" />
-        <Stack.Screen
-          component={DistancePreference}
-          name="DistancePreference"
-        />
-        <Stack.Screen component={YourStudy} name="YourStudy" />
-        <Stack.Screen component={AddLifestyle} name="AddLifestyle" />
-        <Stack.Screen component={WhatElseExtra} name="WhatElseExtra" />
-        <Stack.Screen component={YourIntro} name="YourIntro" />
-        <Stack.Screen component={AddRecentPics} name="AddRecentPics" />
       </Stack.Navigator>
     );
   };
 
-  const HomeStack = () => {
+  const LocationStack = () => {
     return (
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
+          // animation: 'slide_from_right',
+          // statusBarAnimation: 'fade',
+          // animationTypeForReplace: 'push',
         }}>
-        <Stack.Screen component={HomeScreen} name="Home" />
+        <Stack.Screen
+          component={LocationPermission}
+          name="LocationPermission"
+        />
       </Stack.Navigator>
+    );
+  };
+
+  const LoginStack = () => {
+    return (
+      <React.Fragment>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            // animation: 'slide_from_right',
+            // statusBarAnimation: 'fade',
+            // animationTypeForReplace: 'push',
+          }}>
+          <Stack.Screen component={IdentifyYourSelf} name="IdentifyYourSelf" />
+          <Stack.Screen
+            component={SexualOrientation}
+            name="SexualOrientationScreen"
+          />
+          <Stack.Screen component={HopingToFind} name="HopingToFind" />
+          <Stack.Screen
+            component={DistancePreference}
+            name="DistancePreference"
+          />
+          <Stack.Screen component={YourEducation} name="YourEducation" />
+          <Stack.Screen component={AddDailyHabits} name="AddDailyHabits" />
+          <Stack.Screen component={WhatAboutYou} name="WhatAboutYou" />
+          <Stack.Screen component={YourIntro} name="YourIntro" />
+          <Stack.Screen component={AddRecentPics} name="AddRecentPics" />
+          <Stack.Screen component={AvoidContacts} name="AvoidContacts" />
+          <Stack.Screen component={ManageContacts} name="ManageContacts" />
+        </Stack.Navigator>
+      </React.Fragment>
     );
   };
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          customAnimationOnGesture: true,
-        }}>
-        <Stack.Screen name="Splash" component={SplashScreen} />
-        <Stack.Screen name="LoginStack" component={LoginStack} />
-        <Stack.Screen name="HomeStack" component={HomeStack} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <React.Fragment>
+      {initialRoute && (
+        <NavigationContainer
+          ref={navigationRef}
+          onReady={() => {
+            setIsNavigationReady(true);
+          }}>
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}
+            initialRouteName={initialRoute}>
+            <Stack.Screen
+              name="NumberVerification"
+              component={NumberVerificationStack}
+            />
+            <Stack.Screen name="LocationStack" component={LocationStack} />
+            <Stack.Screen name="LoginStack" component={LoginStack} />
+            <Stack.Screen name="BottomTab" component={BottomTab} />
+            <Stack.Screen
+              name="CategoryDetailCards"
+              component={CategoryDetailCardsScreen}
+            />
+            <Stack.Screen
+              name="ExploreCardDetail"
+              component={ExploreCardDetailScreen}
+            />
+            <Stack.Screen name="Chat" component={ChatScreen} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="Setting" component={SettingScreen} />
+            <Stack.Screen name="Notification" component={NotificationScreen} />
+            <Stack.Screen name="Donation" component={DonationScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      )}
+    </React.Fragment>
   );
 }

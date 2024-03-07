@@ -31,7 +31,7 @@ local.properties
 *.iml
 *.hprof
 .cxx/
-*.keystore
+# *.keystore
 !debug.keystore
 
 # node.js
@@ -39,6 +39,11 @@ local.properties
 node_modules/
 npm-debug.log
 yarn-error.log
+
+# Custom
+.vscode/
+.bundle/
+__tests__
 
 # fastlane
 #

@@ -1,65 +1,72 @@
 import {StyleSheet} from 'react-native';
-import {COLORS, FONTS} from '../../../Common/Theme';
-import {CommonSize} from '../../../Common/CommonSize';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
+    zIndex: 9999,
+    justifyContent: 'space-between',
   },
-  SubContainer: {
-    width: '90%',
-    alignSelf: 'center',
+  BGImageStyle: {
+    flex: 1,
+  },
+  ContentView: {
+    flexGrow: 1,
+  },
+  ScrollViewContainContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  AppNameTitleView: {
+    paddingHorizontal: hp('3%'),
+    marginVertical: hp('3%'),
     justifyContent: 'center',
-    // marginTop: CommonSize(33),
-    marginTop: hp('4.5%'),
+    maxHeight: '20%',
   },
-  TinderLogoView: {
-    height: '30%',
-    alignSelf: 'center',
-  },
-  TinderLogo: {
-    height: hp('4.9%'),
-    // height: CommonSize(35),
-  },
-  LoginBottomView: {
-    width: '90%',
-    alignSelf: 'center',
-    position: 'absolute',
-    bottom: CommonSize(35),
-    justifyContent: 'flex-end',
-  },
-  PolicyTextView: {
-    alignSelf: 'center',
-    justifyContent: 'center',
-  },
-  PolicyText: {
-    textAlign: 'center',
+  AppNameTitle: {
+    ...GROUP_FONT.h1,
     color: COLORS.White,
-    fontSize: hp('1.9%'),
-    // fontSize: CommonSize(13.3),
+  },
+  LoginAndSignInTitleTextView: {
+    alignSelf: 'center',
+  },
+  ButtonView: {
+    paddingVertical: hp('1%'),
+  },
+  LoginBoxContainer: {
+    overflow: 'hidden',
+    padding: hp('3%'),
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    marginHorizontal: hp('3%'),
+    borderRadius: SIZES.radius,
+    marginBottom: hp('3%'),
+    paddingVertical: 0,
+    paddingTop: hp('1%'),
+    paddingBottom: hp('2%'),
+  },
+  LoginTitleText: {
+    textAlign: 'center',
+    ...GROUP_FONT.h2,
+    color: COLORS.White,
+  },
+  SignInTitleText: {
+    textAlign: 'center',
+    ...GROUP_FONT.body3,
+    color: COLORS.White,
+  },
+  TermsView: {
+    marginTop: hp('1.5%'),
+  },
+  TermsViewText: {
+    textAlign: 'center',
     fontFamily: FONTS.Medium,
-    lineHeight: hp('2.8%'),
-    // lineHeight: CommonSize(16),
-  },
-  PolicyLinkText: {
-    textDecorationLine: 'underline',
-  },
-  TroubleView: {
-    alignSelf: 'center',
-    top: CommonSize(20),
-    marginBottom: CommonSize(13),
-    justifyContent: 'center',
-  },
-  TroubleText: {
-    textAlign: 'center',
+    fontSize: hp('1.5%'),
     color: COLORS.White,
-    fontSize: hp('2%'),
-    // fontSize: CommonSize(15),
+  },
+  UnderLineText: {
     fontFamily: FONTS.Bold,
+    textDecorationLine: 'underline',
   },
 });
 

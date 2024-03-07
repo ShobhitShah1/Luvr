@@ -1,30 +1,47 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {CommonSize} from '../../Common/CommonSize';
 import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 
 interface LoginButtonProps {
   Title: string;
   onPress: () => void;
   Icon: any;
+  IsLoading: boolean;
 }
 
-const LoginButton: React.FC<LoginButtonProps> = ({Title, onPress, Icon}) => {
+const LoginButton: React.FC<LoginButtonProps> = ({
+  Title,
+  onPress,
+  Icon,
+  IsLoading,
+}) => {
   return (
     <TouchableOpacity
       activeOpacity={ActiveOpacity}
       onPress={onPress}
       style={styles.LoginButtonContainer}>
-      <View style={styles.ItemWarper}>
-        <Image resizeMode="contain" source={Icon} style={styles.IconView} />
-        <View style={styles.ButtonTextView}>
-          <Text style={styles.ButtonTitleText}>{Title}</Text>
+      {IsLoading ? (
+        <ActivityIndicator size={25} color={COLORS.Primary} />
+      ) : (
+        <View style={styles.ItemWarper}>
+          <Image resizeMode="contain" source={Icon} style={styles.IconView} />
+
+          <View style={styles.ButtonTextView}>
+            <Text numberOfLines={2} style={styles.ButtonTitleText}>
+              {Title}
+            </Text>
+          </View>
         </View>
-      </View>
+      )}
     </TouchableOpacity>
   );
 };
@@ -34,8 +51,8 @@ export default LoginButton;
 const styles = StyleSheet.create({
   LoginButtonContainer: {
     width: '100%',
-    height: hp('6%'),
-    // height: CommonSize(45),
+    height: hp('7%'),
+    justifyContent: 'center',
     borderColor: COLORS.White,
     marginTop: CommonSize(15),
     borderWidth: CommonSize(2),
@@ -49,8 +66,8 @@ const styles = StyleSheet.create({
   },
   IconView: {
     alignSelf: 'center',
-    width: CommonSize(16),
-    height: CommonSize(16),
+    width: CommonSize(19),
+    height: CommonSize(19),
     justifyContent: 'center',
   },
   ButtonTextView: {
@@ -64,7 +81,6 @@ const styles = StyleSheet.create({
     color: COLORS.Black,
     fontFamily: FONTS.Bold,
     justifyContent: 'center',
-    fontSize: hp('2.2%'),
-    // fontSize: CommonSize(14.5),
+    fontSize: hp('1.8%'),
   },
 });

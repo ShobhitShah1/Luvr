@@ -9,7 +9,7 @@ import {
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
-    backgroundColor: COLORS.White,
+    backgroundColor: COLORS.Secondary,
   },
   SubContainerView: {
     marginHorizontal: hp('2.7%'),
@@ -24,15 +24,22 @@ const styles = StyleSheet.create({
     marginHorizontal: hp('2.7%'),
   },
   MyCodeText: {
-    fontSize: hp('2.7%'),
+    color: COLORS.Primary,
+    fontSize: hp('3.3%'),
     fontFamily: FONTS.Bold,
+  },
+  DescText: {
+    marginVertical: hp('1.5%'),
+    fontSize: hp('1.8%'),
+    fontFamily: FONTS.Medium,
     color: COLORS.Black,
   },
   NumberText: {
     marginVertical: hp('1.5%'),
     fontSize: hp('1.9%'),
-    fontFamily: FONTS.Medium,
-    color: COLORS.Silver,
+    fontFamily: FONTS.Bold,
+    color: COLORS.Primary,
+    textDecorationLine: 'underline',
   },
   borderStyleHighLighted: {
     borderColor: '#03DAC6',
@@ -40,8 +47,25 @@ const styles = StyleSheet.create({
   VerifyOTPButtonView: {
     width: '90%',
     alignSelf: 'center',
-    top: hp('4.1%'),
+    top: hp('5.9%'),
     justifyContent: 'center',
+  },
+  ResendView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: hp(3),
+  },
+  NoCodeText: {
+    fontSize: hp('1.7%'),
+    fontFamily: FONTS.Medium,
+    color: COLORS.Black,
+  },
+  ResendText: {
+    fontSize: hp('1.6%'),
+    fontFamily: FONTS.Bold,
+    color: COLORS.Primary,
+    textDecorationLine: 'underline',
+    paddingTop: hp(0.5),
   },
 });
 

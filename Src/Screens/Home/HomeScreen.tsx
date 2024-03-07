@@ -1,141 +1,251 @@
-/* eslint-disable react-native/no-inline-styles */
-import React, { FC, useRef, useState } from 'react';
+import messaging from '@react-native-firebase/messaging';
+import React, {useCallback, useEffect, useState} from 'react';
+import {FlatList, RefreshControl, ScrollView, View} from 'react-native';
+import {HomeLookingForData} from '../../Components/Data';
+import {useLocationPermission} from '../../Hooks/useLocationPermission';
 import {
-  ImageBackground,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import Swiper from 'react-native-deck-swiper';
+  onSwipeRight,
+  setUserData,
+  updateField,
+} from '../../Redux/Action/userActions';
+import {store} from '../../Redux/Store/store';
+import UserService from '../../Services/AuthService';
+import {LocalStorageFields} from '../../Types/LocalStorageFields';
+import BottomTabHeader from './Components/BottomTabHeader';
+import CategoryHeaderView from './Components/CategoryHeaderView';
+import RenderLookingView from './Components/RenderLookingView';
+import styles from './styles';
 
-const HomeScreen: FC = () => {
-  const generateDummyData = () => {
-    const data = [];
-    for (let i = 0; i < 50; i++) {
-      const dummyPerson = {
-        id: i + 1,
-        name: `Person ${i + 1}`,
-        age: Math.floor(Math.random() * 50) + 18,
-        images: [
-          'https://media.istockphoto.com/id/1446806057/photo/young-happy-woman-student-using-laptop-watching-webinar-writing-at-home.jpg?s=1024x1024&w=is&k=20&c=ICSLSiYaIZ-Cvk9MF3iF2JmrVRmE6br6dYjCEtyjLYs=',
-          'https://cdn.pixabay.com/photo/2014/09/20/23/44/website-454460_1280.jpg',
-          'https://cdn.pixabay.com/photo/2020/09/19/19/37/landscape-5585247_1280.jpg',
-          'https://cdn.pixabay.com/photo/2015/09/30/01/48/turkey-964831_1280.jpg',
-        ],
-      };
-      data.push(dummyPerson);
-    }
-    return data;
+const HomeScreen = () => {
+  const [IsAPIDataLoading, setIsAPIDataLoading] = useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const {requestLocationPermission, locationPermission} =
+    useLocationPermission();
+
+  useEffect(() => {
+    Promise.all([GetMyLikes(), GetProfileData(), requestUserPermission()]);
+  }, []);
+
+  useEffect(() => {
+    handleLocationPermissionRequest();
+  }, []);
+
+  const handleLocationPermissionRequest = async () => {
+    console.log('locationPermission', locationPermission);
+
+    requestLocationPermission();
   };
 
-  const dummyData = generateDummyData();
+  async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    const Token = await messaging().getToken();
+    if (enabled) {
+      console.log('Token', Token);
+      console.log('Authorization status:', authStatus);
+    }
+  }
 
-  const swiper = useRef(null);
-
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
-  const [CardIndex, setCardIndex] = useState<number>(0);
-
-  const [clickPosition, setClickPosition] = useState('');
-
-  const handleCardPress = (event: any, images: any) => {
-    const cardWidth = 200; // Set your card width here
-    const touchX = event.nativeEvent.locationX; // X coordinate of the touch event
-
-    // Calculate the click position based on touchX and card width
-    const position = touchX / cardWidth;
-
-    let newSelectedImageIndex = selectedImageIndex;
-
-    if (position < 0.3 && selectedImageIndex > 0) {
-      setClickPosition('Left');
-      newSelectedImageIndex = selectedImageIndex - 1;
-    } else if (position > 0.7 && selectedImageIndex < images.length - 1) {
-      setClickPosition('Right');
-      newSelectedImageIndex = selectedImageIndex + 1;
+  function flattenObject(obj: any, prefix: string = ''): Record<string, any> {
+    if (!obj || typeof obj !== 'object') {
+      return {};
     }
 
-    setSelectedImageIndex(newSelectedImageIndex);
-
-    console.log('selectedImages', newSelectedImageIndex);
-  };
-
-  const renderCard = (card: any, index: number) => {
-    const imageIndex =
-      index === 0 && CardIndex === 0 && selectedImageIndex >= 0
-        ? selectedImageIndex
-        : 0;
-
-    return (
-      <ImageBackground
-        source={{uri: card.images[imageIndex]}}
-        style={styles.card}>
-        <TouchableOpacity
-          style={{flex: 1, justifyContent: 'center'}}
-          activeOpacity={1}
-          onPress={event => handleCardPress(event, card.images)}>
-          <Text style={styles.text}>{index}</Text>
-          <Text style={styles.text}>{clickPosition}</Text>
-        </TouchableOpacity>
-      </ImageBackground>
+    return Object.entries(obj).reduce(
+      (acc: Record<string, any>, [key, value]) => {
+        const prefixedKey = key;
+        // const prefixedKey = prefix ? `${prefix}.${key}` : key;
+        if (typeof value === 'object' && !Array.isArray(value)) {
+          const flattened = flattenObject(value, prefixedKey);
+          Object.assign(acc, flattened);
+        } else {
+          acc[prefixedKey] = value;
+        }
+        return acc;
+      },
+      {},
     );
+  }
+
+  const GetProfileData = async () => {
+    try {
+      const userDataForApi = {
+        eventName: 'get_profile',
+      };
+
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      if (APIResponse?.code === 200) {
+        const flattenedData = flattenObject(APIResponse.data);
+        Object.entries(flattenedData).forEach(([field, value]) => {
+          if (field in LocalStorageFields) {
+            const validField = field as keyof typeof LocalStorageFields;
+            store.dispatch(updateField(validField, value));
+          }
+        });
+        store.dispatch(setUserData(APIResponse.data));
+      }
+    } catch (error) {
+      console.log('Something Went Wrong With Feting API Data', error);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
-  const onSwiped = (type: any, index: number) => {
-    console.log(`on swiped ${type}`);
-    console.log(`on swiped Index ${index}`);
-    setCardIndex(0);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    setIsAPIDataLoading(true);
+
+    try {
+      await Promise.allSettled([GetMyLikes(), GetProfileData()]);
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+    } finally {
+      setRefreshing(false);
+      setIsAPIDataLoading(false);
+    }
+  }, []);
+
+  const GetMyLikes = async () => {
+    setIsAPIDataLoading(true);
+    try {
+      setTimeout(async () => {
+        const userDataForApi = {
+          eventName: 'my_likes',
+        };
+
+        const APIResponse = await UserService.UserRegister(userDataForApi);
+        if (APIResponse?.code === 200) {
+          // console.log('Get My Like Data:', APIResponse.data);
+          if (APIResponse?.code === 200 && APIResponse?.data) {
+            const userIds = Array.isArray(APIResponse.data)
+              ? APIResponse.data
+              : [APIResponse.data];
+            // console.log('userIds', userIds);
+            store.dispatch(onSwipeRight(userIds));
+          }
+        }
+      }, 2000);
+    } catch (error) {
+      console.log('Something Went Wrong With Feting API Data', error);
+    } finally {
+      setIsAPIDataLoading(false);
+      setRefreshing(false);
+    }
   };
+
+  // const modifyData = (arr: any) => {
+  //   let finalData = [];
+  //   let type1 = true;
+
+  //   let i = 0;
+  //   while (i < arr.length) {
+  //     let data = [];
+
+  //     for (let j = 0; j < (type1 ? 2 : 1) && i < arr.length; j++) {
+  //       data.push(arr[i]);
+  //       i += 1;
+  //     }
+
+  //     finalData.push({
+  //       id: Math.random().toString(),
+  //       data,
+  //       type: type1 ? 1 : 2,
+  //     });
+
+  //     type1 = !type1;
+  //   }
+
+  //   return finalData;
+  // };
+
+  // const DataToRenderForYou = modifyData(HomeLookingForData);
+
+  // const renderForYouView = ({item, index}: any) => {
+  //   console.log('item', item?.type);
+  //   if (item.type === 1) {
+  //     return <HorizontalViewForYou item={item} index={index} />;
+  //   }
+  //   if (item.type === 2 && item.data.length === 1) {
+  //     return <VerticalViewForYou item={item} />;
+  //   }
+  // };
+
+  // const HorizontalViewForYou = ({item, index}: any) => (
+  //   <View style={styles.row}>
+  //     <RenderlookingView item={item.data[0]} index={index} />
+  //     <View style={styles.LeftMargin} />
+  //     <RenderlookingView item={item.data[1]} index={index} />
+  //   </View>
+  // );
+
+  // const VerticalViewForYou = ({item}: any) => (
+  //   <View key={item.data[0].id} style={styles.item2}>
+  //     <VerticalImageView data={item.data[0]} />
+  //   </View>
+  // );
+
+  // const VerticalImageView = ({data}: any) => {
+  //   // console.log('data?.image', data?.image);
+  //   return (
+  //     <ImageBackground
+  //       source={data?.image}
+  //       resizeMode="cover"
+  //       style={styles.item1Inner}>
+  //       <Text style={styles.VerticalImageViewText}>{data?.title}</Text>
+  //     </ImageBackground>
+  //   );
+  // };
 
   return (
-    <View style={styles.container}>
-      <Swiper
-        ref={swiper}
-        onSwiped={index => onSwiped('general', index)}
-        onSwipedLeft={index => onSwiped('left', index)}
-        onSwipedRight={index => onSwiped('right', index)}
-        onSwipedTop={index => onSwiped('top', index)}
-        onSwipedBottom={index => onSwiped('bottom', index)}
-        onTapCard={() => {}}
-        cards={dummyData}
-        cardIndex={CardIndex}
-        cardVerticalMargin={80}
-        renderCard={renderCard}
-        stackSize={3}
-        stackSeparation={15}
-        disableBottomSwipe
-        swipeBackCard
-      />
+    <View style={styles.Container}>
+      <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
+
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        showsVerticalScrollIndicator={false}
+        bounces={false}>
+        <FlatList
+          numColumns={2}
+          style={styles.FlatListStyle}
+          bounces={false}
+          data={HomeLookingForData}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({item, index}) => {
+            return (
+              <RenderLookingView
+                item={item}
+                index={index}
+                IsLoading={IsAPIDataLoading}
+              />
+            );
+          }}
+          ListHeaderComponent={
+            <CategoryHeaderView
+              Title="Welcome to explore"
+              Description="I’m looking for..."
+            />
+          }
+        />
+        {/* <FlatList
+          style={[styles.FlatListStyle]}
+          data={DataToRenderForYou}
+          renderItem={renderForYouView}
+          keyExtractor={item => item.id.toString()}
+          ListHeaderComponent={
+            <CategoryHeaderView
+              Title="For you"
+              Description="Based on your profile"
+            />
+          }
+        /> */}
+      </ScrollView>
     </View>
   );
 };
 
 export default HomeScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  card: {
-    flex: 1,
-    borderRadius: 4,
-    borderWidth: 2,
-    // borderColor: '#E8E8E8',
-    justifyContent: 'center',
-    // backgroundColor: 'red',
-  },
-  text: {
-    textAlign: 'center',
-    fontSize: 50,
-    backgroundColor: 'transparent',
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  done: {
-    textAlign: 'center',
-    fontSize: 30,
-    color: 'white',
-    backgroundColor: 'transparent',
-  },
-});

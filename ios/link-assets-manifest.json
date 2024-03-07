@@ -24,6 +24,10 @@
     {
       "path": "Assets/Fonts/OpenSans-SemiBold.ttf",
       "sha1": "96b49e2ee8d4d25996146841eaaebdbb5894ed33"
+    },
+    {
+      "path": "Assets/Fonts/Pacifico-Regular.ttf",
+      "sha1": "baca1fca7fe74b61cb33aa0da48ec1a3a77bcf49"
     }
   ]
 }

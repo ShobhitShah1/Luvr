@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Tinder</string>
+    <string name="app_name">HeartSync</string>
+    <string name="facebook_app_id">1072075284080018</string>
+    <string name="facebook_client_token">e02e83d38265244dd8ca08523ee778d5</string>
 </resources>
