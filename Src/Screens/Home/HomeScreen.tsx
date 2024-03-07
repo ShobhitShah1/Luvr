@@ -42,8 +42,8 @@ const HomeScreen = () => {
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
     const Token = await messaging().getToken();
-    console.log('Token', Token);
     if (enabled) {
+      console.log('Token', Token);
       console.log('Authorization status:', authStatus);
     }
   }
@@ -85,7 +85,6 @@ const HomeScreen = () => {
           }
         });
         store.dispatch(setUserData(APIResponse.data));
-        // console.log('GetProfileData Data:', APIResponse.data);
       }
     } catch (error) {
       console.log('Something Went Wrong With Feting API Data', error);

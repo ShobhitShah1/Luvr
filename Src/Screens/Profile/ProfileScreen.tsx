@@ -62,7 +62,6 @@ const ProfileScreen = () => {
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
         setProfileData(APIResponse.data);
-        console.log('APIResponse.data', APIResponse.data);
         const ProfilePercentage = calculateDataPercentage(APIResponse.data);
         setPercentage(ProfilePercentage);
       } else {

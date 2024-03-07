@@ -119,7 +119,6 @@ const AddRecentPics: FC = () => {
 
   //* Manage Image Select Button Click
   const HandleOnImagePress = (item: {key: string; url: string}) => {
-    console.log('item', item);
     if (item.url.length === 0) {
       OnToggleModal();
     } else {

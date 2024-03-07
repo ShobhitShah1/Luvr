@@ -149,7 +149,6 @@ const EditProfileScreen = () => {
         Geolocation.getCurrentPosition(
           async position => {
             const {coords} = position;
-            console.log('coords', coords);
             if (coords) {
               await Promise.all([
                 dispatch(
@@ -249,7 +248,6 @@ const EditProfileScreen = () => {
           });
         }
         setIsFetchDataAPILoading(false);
-        console.log('GetProfileData Data:', DataToStore);
       } else {
         setProfile({} as ProfileType);
         setIsFetchDataAPILoading(false);
@@ -400,10 +398,6 @@ const EditProfileScreen = () => {
           },
         },
       );
-      console.log('UploadImage APIResponse :--:>', APIResponse);
-      console.log('APIResponse.data :--:>', APIResponse.response);
-      console.log('APIResponse.data :--:>', APIResponse.response?.data);
-
       // if (APIResponse.code === 200) {
       //   const newData = UserPicks.map(data =>
       //     data.url === '' ? item.shift() || data : data,
@@ -420,9 +414,6 @@ const EditProfileScreen = () => {
       // }
     } catch (error) {
       console.log('Error on image upload :--:>', error);
-      console.log('Error on image upload :--:>', error?.message);
-      console.log('Error on image upload :--:>', error?.data);
-      console.log('Error on image upload :--:>', error?.response);
       showToast('Error!', String(error), 'error');
     }
   };
@@ -489,9 +480,6 @@ const EditProfileScreen = () => {
         setting_show_people_with_range:
           profile?.setting_show_people_with_range || true,
       };
-      console.log('PROFILE DATA:--:>', profile);
-      console.log('DataToSend:--:>', DataToSend);
-
       const APIResponse = await UserService.UserRegister(DataToSend);
 
       if (APIResponse.code === 200) {

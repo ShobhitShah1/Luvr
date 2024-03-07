@@ -117,7 +117,6 @@ const MyLikesScreen = () => {
       const APIResponse = await UserService.UserRegister(userDataForApi);
 
       if (APIResponse?.code === 200) {
-        console.log('APIResponse.data', APIResponse.data);
         const data = APIResponse.data;
 
         let combinedData = [...data.like, ...data.match]; // Combine likes and matches data

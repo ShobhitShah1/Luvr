@@ -112,7 +112,6 @@ const YourIntro: FC = () => {
   const CallUpdateProfileAPI = async selectedItems => {
     try {
       const userDataForApi = transformUserDataForApi(userData);
-      // console.log('userDataForApi', userDataForApi);
 
       const ModifyData = {
         ...userDataForApi,
@@ -124,14 +123,7 @@ const YourIntro: FC = () => {
             : 'app_user_register',
       };
 
-      console.log('ModifyData', ModifyData);
-
       const APIResponse = await UserService.UserRegister(ModifyData);
-      console.log('CallUpdateProfileAPI APIResponse', APIResponse);
-      console.log(
-        'CallUpdateProfileAPI APIResponse TOKEN:',
-        APIResponse.data?.token,
-      );
 
       if (APIResponse && APIResponse.code === 200) {
         showToast(

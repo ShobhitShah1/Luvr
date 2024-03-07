@@ -45,24 +45,24 @@ const OTPScreen: FC = () => {
   const VerifyClick = async () => {
     if (otp.length === 4) {
       Keyboard.dismiss();
-      // setTimeout(() => {
-      await Promise.all([
-        dispatch(updateField(LocalStorageFields.OTP, otp.join(''))),
-        dispatch(updateField(LocalStorageFields.isVerified, true)),
-      ]);
-      const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
-
       setTimeout(() => {
-        if (CHECK_NOTIFICATION_PERMISSION) {
-          handleNavigation();
-        } else {
-          navigation.replace('LocationStack', {screen: 'LocationPermission'});
-          setIsAPILoading(false);
-        }
-      }, 0);
+        // await Promise.all([
+        //   dispatch(updateField(LocalStorageFields.OTP, otp.join(''))),
+        //   dispatch(updateField(LocalStorageFields.isVerified, true)),
+        // ]);
+        // const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
 
-      // verifyOtp();
-      // }, 0);
+        // setTimeout(() => {
+        //   if (CHECK_NOTIFICATION_PERMISSION) {
+        //     handleNavigation();
+        //   } else {
+        //     navigation.replace('LocationStack', {screen: 'LocationPermission'});
+        //     setIsAPILoading(false);
+        //   }
+        // }, 0);
+
+        verifyOtp();
+      }, 0);
     } else {
       showToast('Invalid OTP', 'Please Verify OTP', 'error');
     }
@@ -75,8 +75,6 @@ const OTPScreen: FC = () => {
       const OTP = otp.join('');
       const otpVerificationUrl = `${ApiConfig.OTP_BASE_URL}VERIFY3/${number}/${OTP}`;
       const response = await axios.get(otpVerificationUrl);
-
-      console.log('OTP Verification Response:', JSON.stringify(response.data));
 
       if (response.data?.Status === 'Success') {
         showToast(
@@ -95,7 +93,9 @@ const OTPScreen: FC = () => {
           if (CHECK_NOTIFICATION_PERMISSION) {
             handleNavigation();
           } else {
-            navigation.replace('LocationStack', {screen: 'LocationPermission'});
+            navigation.replace('LocationStack', {
+              screen: 'LocationPermission',
+            });
             setIsAPILoading(false);
           }
         }, 0);
@@ -124,7 +124,6 @@ const OTPScreen: FC = () => {
       const url = `${ApiConfig.OTP_BASE_URL}${number}/AUTOGEN3/OTP1`;
 
       const response = await axios.get(url);
-      console.log('response', response);
       if (response.data?.Status === 'Success') {
         showToast(
           'OTP Resend Successfully',
@@ -153,17 +152,13 @@ const OTPScreen: FC = () => {
 
   const handleNavigation = async () => {
     const userDataForApi = transformUserDataForApi(userData);
-    console.log('userDataForApi', userDataForApi);
 
     const userDataWithValidation = {
       ...userDataForApi,
       validation: true,
     };
 
-    console.log('userDataWithValidation', userDataWithValidation);
-
     const APIResponse = await UserService.UserRegister(userDataWithValidation);
-    console.log('APIResponse?.data?', APIResponse?.data?.token);
 
     if (APIResponse?.data?.token) {
       await dispatch(

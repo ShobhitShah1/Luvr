@@ -33,7 +33,6 @@ const AddDailyHabits: FC = () => {
   const requiredHabits = ['drink', 'exercise', 'movies', 'smoke'];
   const {showToast} = useCustomToast();
   const userData = useSelector((state: any) => state?.user);
-  console.log('userData', userData);
   const dispatch = useDispatch();
   const [IsSendRequestLoading, setIsSendRequestLoading] =
     useState<boolean>(false);
@@ -134,11 +133,6 @@ const AddDailyHabits: FC = () => {
       if (allHabitsSelected) {
         await Promise.all([
           requiredHabits.forEach(habit => {
-            console.log(
-              'habit:--:>',
-              `${habit.charAt(0) + habit.slice(1)}`,
-              selectedItems[habit],
-            );
             dispatch(
               updateField(
                 LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}`],

@@ -36,17 +36,13 @@ export const useLocationPermission = () => {
           : PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
 
       const result = await check(permission);
-      console.log('result', result);
       if (result === RESULTS.GRANTED) {
         setLocationPermission(true);
         StoreLetAndLong();
         return true;
       } else {
         const requestPermission = await request(permission);
-        console.log(
-          '📍 Location Permission Request Status:',
-          requestPermission,
-        );
+
         const isPermissionGranted = requestPermission === RESULTS.GRANTED;
         setLocationPermission(isPermissionGranted);
 
@@ -68,7 +64,6 @@ export const useLocationPermission = () => {
     Geolocation.getCurrentPosition(
       async position => {
         const {coords} = position;
-        console.log('coords', coords);
         if (coords) {
           await Promise.all([
             store.dispatch(

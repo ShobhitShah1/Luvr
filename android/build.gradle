@@ -10,6 +10,9 @@ buildscript {
         ndkVersion = "23.1.7779620"
         supportLibVersion = "28.0.0"
         googlePlayServicesAuthVersion = "20.7.0"
+        supportLibVersion = "28.0.0"
+        androidXAnnotation = "1.1.0"
+        androidXBrowser = "1.0.0"
     }
     repositories {
         google()

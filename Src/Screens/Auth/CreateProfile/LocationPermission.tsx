@@ -89,15 +89,11 @@ const LocationPermission: FC = () => {
 
   const handleNavigation = async () => {
     const userDataForApi = transformUserDataForApi(userData);
-    console.log('userDataForApi', userDataForApi);
-
     const userDataWithValidation = {
       ...userDataForApi,
       validation: true,
     };
-    console.log('userDataWithValidation', userDataWithValidation);
     const APIResponse = await UserService.UserRegister(userDataWithValidation);
-    console.log('APIResponse?.data?', APIResponse?.data?.token);
 
     if (APIResponse?.data?.token) {
       await dispatch(

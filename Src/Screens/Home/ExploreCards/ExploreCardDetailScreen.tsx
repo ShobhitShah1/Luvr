@@ -71,7 +71,6 @@ const ExploreCardDetailScreen = () => {
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
         setCardData(APIResponse.data);
-        console.log('GetProfileData Data:', APIResponse.data);
       } else {
         showToast(
           'Something went wrong',
@@ -139,10 +138,7 @@ const ExploreCardDetailScreen = () => {
     };
     const APIResponse = await UserService.UserRegister(BlockData);
 
-    console.log('Block APIResponse', APIResponse);
-
     if (APIResponse && APIResponse?.code === 200) {
-      console.log('String(UserID)', String(UserID));
       await store.dispatch(onSwipeLeft(String(UserID)));
       showToast(
         'User Blocked',
@@ -283,32 +279,33 @@ const ExploreCardDetailScreen = () => {
             )}
 
             {/* Interested in */}
-            {CardData?.orientation?.length !== 0 && (
-              <View style={styles.DetailBoxContainerView}>
-                <View style={styles.TitleAndIconView}>
-                  <Image
-                    style={styles.DetailIconsView}
-                    resizeMode="contain"
-                    source={CommonIcons.interested_in_icon}
-                  />
-                  <Text style={styles.TitleText} numberOfLines={1}>
-                    Interested in
-                  </Text>
+            {CardData?.orientation !== undefined &&
+              CardData?.orientation?.length !== 0 && (
+                <View style={styles.DetailBoxContainerView}>
+                  <View style={styles.TitleAndIconView}>
+                    <Image
+                      style={styles.DetailIconsView}
+                      resizeMode="contain"
+                      source={CommonIcons.interested_in_icon}
+                    />
+                    <Text style={styles.TitleText} numberOfLines={1}>
+                      Interested in
+                    </Text>
+                  </View>
+                  <View style={styles.MultipleBoxFlexView}>
+                    {CardData?.orientation &&
+                      CardData?.orientation?.map((orientation, index) => {
+                        return (
+                          <View key={index} style={styles.MultipleBoxView}>
+                            <Text style={styles.MultipleDetailText} key={index}>
+                              {`${orientation}` || ''}
+                            </Text>
+                          </View>
+                        );
+                      })}
+                  </View>
                 </View>
-                <View style={styles.MultipleBoxFlexView}>
-                  {CardData?.orientation &&
-                    CardData?.orientation?.map((orientation, index) => {
-                      return (
-                        <View key={index} style={styles.MultipleBoxView}>
-                          <Text style={styles.MultipleDetailText} key={index}>
-                            {`${orientation}` || ''}
-                          </Text>
-                        </View>
-                      );
-                    })}
-                </View>
-              </View>
-            )}
+              )}
 
             {/* Location */}
             {CardData?.city && (

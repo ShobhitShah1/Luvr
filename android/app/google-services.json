@@ -7,26 +7,26 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:920057594155:android:9a21156fa06a7316aac56e",
+        "mobilesdk_app_id": "1:920057594155:android:ad434e58c8df1336aac56e",
         "android_client_info": {
-          "package_name": "com.HeartSync"
+          "package_name": "com.soulmatefinder"
         }
       },
       "oauth_client": [
         {
-          "client_id": "920057594155-8aq2c2fehnmgod6uem2r9mk8egiu1552.apps.googleusercontent.com",
+          "client_id": "920057594155-b7t4agjbibjdohlc6iatl16svkall4gt.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.HeartSync",
-            "certificate_hash": "b43a528e46a0873a43a0d1f2c5d5c1695f4cb777"
+            "package_name": "com.soulmatefinder",
+            "certificate_hash": "a178493bbdd498ece4dc6486dedc38021953423b"
           }
         },
         {
-          "client_id": "920057594155-adeponms184ag5k5it791vh4gduoeajg.apps.googleusercontent.com",
+          "client_id": "920057594155-h1avkf1t1do5se23tfk26p07u6ll66au.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.HeartSync",
-            "certificate_hash": "a178493bbdd498ece4dc6486dedc38021953423b"
+            "package_name": "com.soulmatefinder",
+            "certificate_hash": "b43a528e46a0873a43a0d1f2c5d5c1695f4cb777"
           }
         },
         {

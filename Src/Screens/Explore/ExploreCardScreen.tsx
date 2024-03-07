@@ -22,11 +22,7 @@ import CommonIcons from '../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, GROUP_FONT} from '../../Common/Theme';
 import {CardDelay, CardLimit} from '../../Config/Setting';
 import useInterval from '../../Hooks/useInterval';
-import {
-  onSwipeLeft,
-  onSwipeRight,
-  resetSwiperData,
-} from '../../Redux/Action/userActions';
+import {onSwipeLeft, onSwipeRight} from '../../Redux/Action/userActions';
 import {store} from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
 import {SwiperCard} from '../../Types/SwiperCard';
@@ -160,7 +156,6 @@ const ExploreCardScreen: FC = () => {
           latitude: userData.latitude,
           longitude: userData.longitude,
         };
-        console.log('userDataForApi', userDataForApi);
         const APIResponse = await UserService.UserRegister(userDataForApi);
 
         if (APIResponse?.code === 200 && Array.isArray(APIResponse.data)) {
@@ -292,7 +287,10 @@ const ExploreCardScreen: FC = () => {
   if (!IsNetConnected && !IsAPILoading) {
     return (
       <React.Fragment>
-        <BottomTabHeader />
+        <BottomTabHeader
+          showSetting={true}
+          hideSettingAndNotification={false}
+        />
         <View style={[styles.container, styles.LoaderContainer]}>
           <Text style={styles.NoNetText}>
             Unable to establish an internet connection at the moment. Please
@@ -399,7 +397,7 @@ const ExploreCardScreen: FC = () => {
                 <Text style={styles.ChangeSettingText}>Change Setting</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 activeOpacity={ActiveOpacity}
                 onPress={async () => {
                   await store.dispatch(resetSwiperData());
@@ -410,7 +408,7 @@ const ExploreCardScreen: FC = () => {
                 }}
                 style={styles.ChangeSettingButton}>
                 <Text style={styles.ChangeSettingText}>Clear Data</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           )
         )}
@@ -442,7 +440,7 @@ const ExploreCardScreen: FC = () => {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={{
               justifyContent: 'center',
               alignSelf: 'center',
@@ -461,7 +459,7 @@ const ExploreCardScreen: FC = () => {
             <Text style={{textAlign: 'center', color: COLORS.White}}>
               Clear Data
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       )}
 

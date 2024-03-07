@@ -72,11 +72,9 @@ const CategoryDetailCardsScreen: FC = () => {
         skip: 0,
         limit: 0,
       };
-      console.log('userDataForApi', userDataForApi);
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
         setCategoryData(APIResponse?.data || []);
-        console.log('APIResponse.data', APIResponse.data);
       } else {
         showToast(
           'Something went wrong',

@@ -114,7 +114,6 @@ const SettingScreen = () => {
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
         setProfileData(APIResponse.data);
-        console.log('APIResponse.data', APIResponse.data);
       } else {
         showToast(
           'Something went wrong',

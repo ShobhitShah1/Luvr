@@ -64,12 +64,10 @@ const ChatRoomScreen = () => {
     const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
 
     socketInstance.on('connect', () => {
-      console.log('socketInstance', socketInstance.connected);
       setSocket(socketInstance);
     });
 
     socketInstance.on('connect_error', error => {
-      console.log('connect_error:--:>', error.message);
       showToast(error.name, error.message || 'Something went wrong', 'error');
     });
 
@@ -93,10 +91,8 @@ const ChatRoomScreen = () => {
 
         //* Event: List - Response
         const handleListResponse: SocketEventHandlers['List'] = data => {
-          // console.log('data', data);
           try {
             if (data && data?.data) {
-              console.log('data?.data', data?.data);
               const filteredData = data.data.filter(
                 (item: MessageItem) => item.to !== currentLoginUserId,
               );

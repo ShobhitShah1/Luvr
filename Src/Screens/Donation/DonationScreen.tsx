@@ -28,9 +28,7 @@ const DonationScreen = () => {
       };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
-      console.log('APIResponse', APIResponse);
       if (APIResponse?.code === 200) {
-        console.log('Donation API Data:', APIResponse.data);
         setPaymentSuccess(!PaymentSuccess);
         showToast(
           'Success',
