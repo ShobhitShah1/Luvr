@@ -118,30 +118,6 @@ const PhoneNumber: FC = () => {
       StorePhoneNumber.match('[0-9]{10}')
     ) {
       handleSendOtp();
-      // await Promise.all([
-      //   dispatch(updateField(LocalStorageFields.mobile_no, PhoneNumberString)),
-      //   dispatch(
-      //     updateField(
-      //       LocalStorageFields.phoneNumberCountryCode,
-      //       `${diallingCode || defaultDiallingCode}`,
-      //     ),
-      //   ),
-      //   dispatch(
-      //     updateField(
-      //       LocalStorageFields.phoneNumberWithoutCode,
-      //       StorePhoneNumber,
-      //     ),
-      //   ),
-      //   dispatch(updateField(LocalStorageFields.login_type, 'non_social')),
-      // ]);
-      // setTimeout(() => {
-      //   navigation.navigate('NumberVerification', {
-      //     screen: 'OTP',
-      //     params: {
-      //       number: PhoneNumberString,
-      //     },
-      //   });
-      // }, 0);
     } else {
       showToast(
         'Invalid Phone Number',

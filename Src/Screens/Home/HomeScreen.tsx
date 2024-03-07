@@ -13,8 +13,8 @@ import UserService from '../../Services/AuthService';
 import {LocalStorageFields} from '../../Types/LocalStorageFields';
 import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
-import RenderLookingView from './Components/RenderLookingView';
-import styles from './styles';
+ import styles from './styles';
+import RenderLookingView from './Components/RenderlookingView';
 
 const HomeScreen = () => {
   const [IsAPIDataLoading, setIsAPIDataLoading] = useState(false);

@@ -32,6 +32,28 @@ const OTPScreen: FC = () => {
 
   const navigation = useNavigation();
   const [DisableButton, setDisableButton] = useState<boolean>(true);
+  const [ResendDisabled, setResendDisabled] = useState<boolean>(false);
+  const [ResendTimer, setResendTimer] = useState<number>(0); // Timer in seconds
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (ResendDisabled) {
+      interval = setInterval(() => {
+        setResendTimer(prevTimer => {
+          console.log('prevTimer', prevTimer);
+          if (prevTimer === 0) {
+            clearInterval(interval); // Clear interval when timer is over
+            setResendDisabled(false); // Reset ResendDisabled to false
+            return 0;
+          }
+          return prevTimer - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      clearInterval(interval);
+    };
+  }, [ResendDisabled]);
 
   useEffect(() => {
     const filledOtp = otp.join('');
@@ -46,21 +68,6 @@ const OTPScreen: FC = () => {
     if (otp.length === 4) {
       Keyboard.dismiss();
       setTimeout(() => {
-        // await Promise.all([
-        //   dispatch(updateField(LocalStorageFields.OTP, otp.join(''))),
-        //   dispatch(updateField(LocalStorageFields.isVerified, true)),
-        // ]);
-        // const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
-
-        // setTimeout(() => {
-        //   if (CHECK_NOTIFICATION_PERMISSION) {
-        //     handleNavigation();
-        //   } else {
-        //     navigation.replace('LocationStack', {screen: 'LocationPermission'});
-        //     setIsAPILoading(false);
-        //   }
-        // }, 0);
-
         verifyOtp();
       }, 0);
     } else {
@@ -130,6 +137,8 @@ const OTPScreen: FC = () => {
           'Please check your device for OTP',
           'success',
         );
+        setResendDisabled(true);
+        setResendTimer(10); // Reset timer to 10 seconds when resend is clicked
       } else {
         showToast(
           'Server Error',
@@ -197,9 +206,21 @@ const OTPScreen: FC = () => {
 
         <View style={styles.ResendView}>
           <Text style={styles.NoCodeText}>Didn't you received any code?</Text>
-          <Text onPress={handleSendOtp} style={styles.ResendText}>
-            Resend a new code
-          </Text>
+          {ResendTimer > 0 ? (
+            <Text style={styles.ResendText}>
+              Resend in {ResendTimer} seconds
+            </Text>
+          ) : (
+            <Text
+              onPress={() => {
+                if (!ResendDisabled) {
+                  handleSendOtp();
+                }
+              }}
+              style={[styles.ResendText, ResendDisabled && {opacity: 0.5}]}>
+              Resend a new code
+            </Text>
+          )}
         </View>
       </View>
 

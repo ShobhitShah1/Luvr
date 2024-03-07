@@ -18,6 +18,8 @@ import {useCustomToast} from '../../../Utils/toastUtils';
 import styles from './styles';
 import {AccessToken, LoginManager, Settings} from 'react-native-fbsdk-next';
 import ApiConfig from '../../../Config/ApiConfig';
+import remoteConfig from '@react-native-firebase/remote-config';
+import OpenURL from '../../../Components/OpenURL';
 
 const LoginScreen: FC = () => {
   const navigation =
@@ -29,11 +31,47 @@ const LoginScreen: FC = () => {
     Google: false,
     Facebook: false,
   });
+  const [privacyLinks, setPrivacyLinks] = useState<{[key: string]: string}>({
+    PrivacyPolicy: '',
+    TermsOfService: '',
+  });
 
   useEffect(() => {
-    Settings.setAppID('1072075284080018');
-    Settings.initializeSDK();
+    async function initializeRemoteConfig() {
+      await Settings.setAppID('1072075284080018');
+      await Settings.initializeSDK();
+      await RemoteConfig();
+    }
+    initializeRemoteConfig();
   }, []);
+
+  const RemoteConfig = async () => {
+    try {
+      await remoteConfig().fetchAndActivate();
+      const privacyPolicy = remoteConfig().getValue('PrivacyPolicy').asString();
+      const termsOfService = remoteConfig()
+        .getValue('TermsOfService')
+        .asString();
+
+      // Validate fetched config values before setting state
+      if (validateConfig(privacyPolicy) && validateConfig(termsOfService)) {
+        setPrivacyLinks({
+          PrivacyPolicy: privacyPolicy,
+          TermsOfService: termsOfService,
+        });
+      } else {
+        console.log('Invalid config values');
+      }
+    } catch (error) {
+      console.error('Error fetching remote config', error);
+    }
+  };
+
+  // Example validation function, you can adjust it based on your requirements
+  const validateConfig = (configValue: string): boolean => {
+    // Add your validation logic here, e.g., check if configValue is not empty
+    return configValue.trim().length > 0;
+  };
 
   const handleGoogleLogin = async () => {
     try {
@@ -199,8 +237,26 @@ const LoginScreen: FC = () => {
           <View style={styles.TermsView}>
             <Text style={styles.TermsViewText}>
               By Login, you agree to our{'\n'}
-              <Text style={styles.UnderLineText}>Terms of Service</Text> and
-              <Text style={styles.UnderLineText}> Privacy Policy</Text>
+              <Text
+                onPress={() => {
+                  if (privacyLinks?.TermsOfService) {
+                    OpenURL({URL: String(privacyLinks?.TermsOfService)});
+                  }
+                }}
+                style={styles.UnderLineText}>
+                Terms of Service
+              </Text>{' '}
+              and
+              <Text
+                onPress={() => {
+                  if (privacyLinks?.PrivacyPolicy) {
+                    OpenURL({URL: String(privacyLinks?.PrivacyPolicy)});
+                  }
+                }}
+                style={styles.UnderLineText}>
+                {' '}
+                Privacy Policy
+              </Text>
             </Text>
           </View>
         </View>
