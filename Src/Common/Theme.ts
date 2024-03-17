@@ -2,8 +2,8 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {CommonSize} from './CommonSize';
 
 export const COLORS = {
-  Primary: 'rgba(255, 65, 101, 1)',
-  Secondary: 'rgba(255, 229, 234, 1)',
+  Primary: 'rgba(255, 65, 101, 1)', // #ff4165
+  Secondary: 'rgba(255, 229, 234, 1)', //#ffe5ea
   Gradient: ['rgba(255, 229, 234, 1)', 'rgba(255, 65, 101, 1)'],
   ButtonGradient: ['rgba(234, 64, 128, 1)', 'rgba(255, 229, 234, 1)'],
   DisableButtonGradient: ['rgba(233, 235, 240, 1)', 'rgba(233, 235, 240, 1)'],

@@ -1,6 +1,6 @@
 import React from 'react';
 import {FlatList, View} from 'react-native';
-import {DummyImage} from '../../Config/Setting';
+import {APP_NAME, DummyImage} from '../../Config/Setting';
 import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
 import RenderNotificationView from './Components/RenderNotificationView';
 import styles from './styles';
@@ -9,7 +9,7 @@ const data = [
   {
     id: 0,
     image: DummyImage,
-    title: 'App Name',
+    title: APP_NAME,
     description:
       'Add more pics & complete your bio to get the most from your experience.',
     time: new Date(),

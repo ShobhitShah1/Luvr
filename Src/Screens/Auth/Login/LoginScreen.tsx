@@ -16,10 +16,10 @@ import {transformUserDataForApi} from '../../../Services/dataTransformService';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import styles from './styles';
-import {AccessToken, LoginManager, Settings} from 'react-native-fbsdk-next';
-import ApiConfig from '../../../Config/ApiConfig';
+// import {AccessToken, LoginManager, Settings} from 'react-native-fbsdk-next';
 import remoteConfig from '@react-native-firebase/remote-config';
 import OpenURL from '../../../Components/OpenURL';
+import {APP_NAME} from '../../../Config/Setting';
 
 const LoginScreen: FC = () => {
   const navigation =
@@ -38,9 +38,11 @@ const LoginScreen: FC = () => {
 
   useEffect(() => {
     async function initializeRemoteConfig() {
-      await Settings.setAppID('1072075284080018');
-      await Settings.initializeSDK();
-      await RemoteConfig();
+      await Promise.all([
+        // Settings.setAppID('1072075284080018'),
+        // Settings.initializeSDK(),
+        RemoteConfig(),
+      ]);
     }
     initializeRemoteConfig();
   }, []);
@@ -89,6 +91,7 @@ const LoginScreen: FC = () => {
         GoogleUserData.user.name || GoogleUserData.user.givenName || '',
       );
     } catch (error: any) {
+      console.log('Google Login:', error);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         showToast('Error!', 'You cancelled the login flow', 'error');
       } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -103,48 +106,47 @@ const LoginScreen: FC = () => {
   };
 
   const handleFacebookLogin = async () => {
-    try {
-      LoginManager.logInWithPermissions(['public_profile']).then(
-        function (result) {
-          if (result.isCancelled) {
-            console.log('Login cancelled');
-          } else {
-            console.log(
-              'Login success with permissions: ' +
-                result?.grantedPermissions?.toString(),
-            );
-
-            AccessToken.getCurrentAccessToken().then(data => {
-              console.log('Facebook Data:', data);
-              if (data?.accessToken) {
-                fetch(ApiConfig.FACEBOOK_GRAPH_API + data.accessToken)
-                  .then(response => response.json())
-                  .then(json => {
-                    console.log('FACEBOOK JSON DATA:', json);
-                    // handleNavigation(
-                    //   GoogleUserData.user.email,
-                    //   GoogleUserData.user.name ||
-                    //     GoogleUserData.user.givenName ||
-                    //     '',
-                    // );
-                  })
-                  .catch(() => {
-                    console.error('ERROR GETTING DATA FROM FACEBOOK');
-                  });
-              } else {
-                showToast('Error', 'Could not get access token', 'error');
-              }
-            });
-          }
-        },
-        function (error) {
-          console.log('Login fail with error: ' + error);
-        },
-      );
-    } catch (error) {
-      console.log('Facebook Login Error', error);
-      showToast('Error', String(error || 'Facebook Login Error'), 'error');
-    }
+    // try {
+    //   LoginManager.logInWithPermissions(['public_profile']).then(
+    //     function (result) {
+    //       if (result.isCancelled) {
+    //         console.log('Login cancelled');
+    //       } else {
+    //         console.log(
+    //           'Login success with permissions: ' +
+    //             result?.grantedPermissions?.toString(),
+    //         );
+    //         AccessToken.getCurrentAccessToken().then(data => {
+    //           console.log('Facebook Data:', data);
+    //           if (data?.accessToken) {
+    //             fetch(ApiConfig.FACEBOOK_GRAPH_API + data.accessToken)
+    //               .then(response => response.json())
+    //               .then(json => {
+    //                 console.log('FACEBOOK JSON DATA:', json);
+    //                 // handleNavigation(
+    //                 //   GoogleUserData.user.email,
+    //                 //   GoogleUserData.user.name ||
+    //                 //     GoogleUserData.user.givenName ||
+    //                 //     '',
+    //                 // );
+    //               })
+    //               .catch(() => {
+    //                 console.error('ERROR GETTING DATA FROM FACEBOOK');
+    //               });
+    //           } else {
+    //             showToast('Error', 'Could not get access token', 'error');
+    //           }
+    //         });
+    //       }
+    //     },
+    //     function (error) {
+    //       console.log('Login fail with error: ' + error);
+    //     },
+    //   );
+    // } catch (error) {
+    //   console.log('Facebook Login Error', error);
+    //   showToast('Error', String(error || 'Facebook Login Error'), 'error');
+    // }
   };
 
   const handleNavigation = async (email: string, name: string) => {
@@ -193,7 +195,7 @@ const LoginScreen: FC = () => {
         style={styles.ContentView}
         contentContainerStyle={styles.ScrollViewContainContainer}>
         <View style={styles.AppNameTitleView}>
-          <Text style={styles.AppNameTitle}>Welcome to the{'\n'}App Name</Text>
+          <Text style={styles.AppNameTitle}>Welcome to the {APP_NAME}</Text>
         </View>
 
         <View style={styles.LoginBoxContainer}>
@@ -221,7 +223,7 @@ const LoginScreen: FC = () => {
                 handleGoogleLogin();
               }}
             />
-            <LoginButton
+            {/* <LoginButton
               IsLoading={IsSocialLoginLoading.Facebook}
               Title="LOGIN WITH FACEBOOK"
               Icon={CommonLogos.FacebookLogo}
@@ -231,7 +233,7 @@ const LoginScreen: FC = () => {
                 // });
                 handleFacebookLogin();
               }}
-            />
+            /> */}
           </View>
 
           <View style={styles.TermsView}>

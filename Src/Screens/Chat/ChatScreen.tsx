@@ -304,6 +304,7 @@ const ChatScreen: FC = () => {
           from_name: CurrentLoginUserFullName,
           to_name: OtherUserProfileData?.full_name,
           message: messages[0].text,
+          to_profile: OtherUserProfileData?.recent_pik[0],
         };
 
         // console.log(chatData, userMessage.length);
