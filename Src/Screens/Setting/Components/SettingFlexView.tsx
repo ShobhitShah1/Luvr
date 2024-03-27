@@ -24,6 +24,7 @@ interface SettingFlexViewProps {
   rightArrowIconStyle?: ImageStyle;
   isActive: boolean;
   onSwitchPress?: () => void;
+  hideRightIcon?: boolean;
 }
 
 const SettingFlexView: FC<SettingFlexViewProps> = ({
@@ -36,6 +37,7 @@ const SettingFlexView: FC<SettingFlexViewProps> = ({
   rightArrowIconStyle,
   isActive,
   onSwitchPress,
+  hideRightIcon,
 }) => {
   const [localIsActive, setLocalIsActive] = useState(isActive);
 
@@ -48,22 +50,23 @@ const SettingFlexView: FC<SettingFlexViewProps> = ({
       onPress={onPress}
       style={[styles.SettingView, style]}>
       <Text style={[styles.ItemTextStyle, itemStyle]}>{Item}</Text>
-      {IsSwitch ? (
-        <SwitchComponent
-          onPress={onSwitchPress}
-          // setSetIsActive={() => setLocalIsActive(!localIsActive)}
-          isActive={localIsActive}
-          size={38}
-        />
-      ) : (
-        <View style={[styles.RightIconView, rightIconViewStyle]}>
-          <Image
-            resizeMode="contain"
-            source={CommonIcons.RightArrow}
-            style={[styles.RightArrowIcon, rightArrowIconStyle]}
+      {!hideRightIcon &&
+        (IsSwitch ? (
+          <SwitchComponent
+            onPress={onSwitchPress}
+            // setSetIsActive={() => setLocalIsActive(!localIsActive)}
+            isActive={localIsActive}
+            size={38}
           />
-        </View>
-      )}
+        ) : (
+          <View style={[styles.RightIconView, rightIconViewStyle]}>
+            <Image
+              resizeMode="contain"
+              source={CommonIcons.RightArrow}
+              style={[styles.RightArrowIcon, rightArrowIconStyle]}
+            />
+          </View>
+        ))}
     </TouchableOpacity>
   );
 };

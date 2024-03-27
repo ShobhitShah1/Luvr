@@ -42,6 +42,8 @@ import {LocalStorageFields} from '../Types/LocalStorageFields';
 import {updateField} from '../Redux/Action/userActions';
 import DonationScreen from '../Screens/Donation/DonationScreen';
 
+// SplashScreen.show();
+
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
   const ReduxUserData = useSelector((state: any) => state.user);
@@ -53,8 +55,8 @@ export default function MainRoute() {
   useEffect(() => {
     Promise.all([
       determineInitialRoute(),
-      initGoogleSignIn(),
       HandleNotificationPermission(),
+      initGoogleSignIn(),
     ]);
   }, []);
 
@@ -83,9 +85,23 @@ export default function MainRoute() {
       }
 
       console.log('Pass isUserVerified ✅');
+      console.log('ReduxUserData', ReduxUserData);
+      console.log(
+        'ReduxUserData.mobile_no',
+        ReduxUserData.mobile_no,
+        ReduxUserData.mobile_no.length === 0,
+      );
 
       if (!checkLoginPermission) {
         setInitialRoute('LocationStack');
+        return;
+      }
+      if (!ReduxUserData.mobile_no || ReduxUserData.mobile_no.length === 0) {
+        setInitialRoute('NumberVerification');
+        navigationRef &&
+          navigationRef?.navigate('NumberVerification', {
+            screen: 'PhoneNumber',
+          });
         return;
       }
       console.log('Pass checkLoginPermission ✅');
@@ -121,6 +137,13 @@ export default function MainRoute() {
       console.log('--------------- SPLASH END ----------------');
     }
   }, [initialRoute, isUserVerified]);
+
+  // Add another useEffect to hide the splash screen when navigation is ready and initial setup is done
+  // useEffect(() => {
+  //   if (isNavigationReady && initialRoute && navigationRef) {
+  //     SplashScreen.hide();
+  //   }
+  // }, [isNavigationReady, initialRoute]);
 
   const NumberVerificationStack = () => {
     return (

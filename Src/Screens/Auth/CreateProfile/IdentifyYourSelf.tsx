@@ -16,7 +16,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
-import {COLORS, FONTS, SIZES} from '../../../Common/Theme';
+import {ActiveOpacity, COLORS, FONTS, SIZES} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
 import {MainGenders} from '../../../Components/Data';
@@ -25,12 +25,14 @@ import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import {useCustomToast} from '../../../Utils/toastUtils';
 
 const IdentifyYourSelf: FC = () => {
   //* Get Key Name. From Where You Want To Store Data
   const KeyboardVisible = useKeyboardVisibility();
   const userData = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
+  const {showToast} = useCustomToast();
   //* Ref's
   const ScrollViewRef = useRef<ScrollView>(null);
   const dayInputRef = useRef(null);
@@ -67,12 +69,6 @@ const IdentifyYourSelf: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
-  const handleTextChange = (value: string, nextInputRef: any) => {
-    if (value.length === 2) {
-      nextInputRef.current.focus();
-    }
-  };
-
   //* On Next Click This Will Call And Store Data
   // const handleInputChange = useCallback(
   //   (field: string, value: string | boolean) => {
@@ -85,52 +81,94 @@ const IdentifyYourSelf: FC = () => {
     setSelectedGender(gender);
   };
 
-  //* Modal Button Navigate To Screen
-  const OnLetsGoButtonPress = useCallback(() => {
-    Keyboard.dismiss();
+  const calculateAge = inputDate => {
+    const [day, month, year] = inputDate
+      .split(',')
+      .map(item => parseInt(item.trim(), 10));
 
-    //* Check if required fields are filled
-    if (
-      !FirstName ||
-      !BirthDateDD ||
-      !BirthDateMM ||
-      !BirthDateYYYY ||
-      !selectedGender ||
-      !CityName
-    ) {
-      //* Show an alert with a proper message
-      Alert.alert(
-        'Incomplete Information',
-        'Please fill in all required fields.',
-      );
-      return;
+    // Validation for month (1-12)
+    if (month < 1 || month > 12) {
+      throw new Error('Invalid month. Month must be between 1 and 12.');
     }
 
-    //* If all required fields are filled, update the context and navigate
-    setTimeout(() => {
-      dispatch(updateField(LocalStorageFields.full_name, FirstName));
-      dispatch(
-        updateField(
-          LocalStorageFields.birthdate,
-          `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`,
-        ),
+    const today = new Date();
+    const birthDate = new Date(year, month - 1, day);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+    return age;
+  };
+
+  const isEligible = age => {
+    return age >= 18 && age < 100;
+  };
+
+  //* Modal Button Navigate To Screen
+  const OnLetsGoButtonPress = useCallback(() => {
+    try {
+      Keyboard.dismiss();
+
+      //* Check if required fields are filled
+      if (
+        !FirstName ||
+        !BirthDateDD ||
+        !BirthDateMM ||
+        !BirthDateYYYY ||
+        !selectedGender ||
+        !CityName
+      ) {
+        //* Show an alert with a proper message
+        Alert.alert(
+          'Incomplete Information',
+          'Please fill in all required fields.',
+        );
+        return;
+      }
+
+      const age = calculateAge(
+        `${BirthDateDD},${BirthDateMM},${BirthDateYYYY}`,
       );
-      dispatch(updateField(LocalStorageFields.gender, selectedGender));
-      dispatch(updateField(LocalStorageFields.city, CityName));
-    }, 0);
+      if (isEligible(age)) {
+        console.log('User is eligible.');
+      } else {
+        showToast('Error', 'Please enter a valid age.', 'Error');
+        console.log('User is not eligible.');
+        return;
+      }
 
-    // handleInputChange(LocalStorageFields.full_name, FirstName);
-    // handleInputChange(
-    // LocalStorageFields.birthdate,
-    // `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`,
-    // );
-    // handleInputChange(LocalStorageFields.gender, selectedGender);
-    // handleInputChange(LocalStorageFields.city, CityName);
+      //* If all required fields are filled, update the context and navigate
+      setTimeout(() => {
+        dispatch(updateField(LocalStorageFields.full_name, FirstName));
+        dispatch(
+          updateField(
+            LocalStorageFields.birthdate,
+            `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`,
+          ),
+        );
+        dispatch(updateField(LocalStorageFields.gender, selectedGender));
+        dispatch(updateField(LocalStorageFields.city, CityName));
+      }, 0);
 
-    //* Use navigation.navigate callback to update context after navigation
-    navigation.navigate('LoginStack', {
-      screen: 'SexualOrientationScreen',
-    });
+      // handleInputChange(LocalStorageFields.full_name, FirstName);
+      // handleInputChange(
+      // LocalStorageFields.birthdate,
+      // `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`,
+      // );
+      // handleInputChange(LocalStorageFields.gender, selectedGender);
+      // handleInputChange(LocalStorageFields.city, CityName);
+
+      //* Use navigation.navigate callback to update context after navigation
+      navigation.navigate('LoginStack', {
+        screen: 'SexualOrientationScreen',
+      });
+    } catch (error) {
+      showToast('Error', String(error), 'Error');
+    }
   }, [
     navigation,
     FirstName,
@@ -183,8 +221,17 @@ const IdentifyYourSelf: FC = () => {
                 keyboardType={'number-pad'}
                 value={BirthDateDD}
                 onChangeText={value => {
-                  setBirthDateDD(value);
-                  handleTextChange(value, monthInputRef);
+                  // Allow the user to remove the input
+                  if (
+                    value === '' ||
+                    (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 31)
+                  ) {
+                    setBirthDateDD(value);
+                    if (value.length === 2) {
+                      // Move focus to the next input field
+                      monthInputRef?.current?.focus();
+                    }
+                  }
                 }}
                 maxLength={2}
                 placeholder="DD"
@@ -196,8 +243,17 @@ const IdentifyYourSelf: FC = () => {
                 value={BirthDateMM}
                 keyboardType={'number-pad'}
                 onChangeText={value => {
-                  setBirthDateMM(value);
-                  handleTextChange(value, yearInputRef);
+                  // Allow the user to remove the input
+                  if (
+                    value === '' ||
+                    (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 12)
+                  ) {
+                    setBirthDateMM(value);
+                    if (value.length === 2) {
+                      // Move focus to the next input field
+                      yearInputRef?.current?.focus();
+                    }
+                  }
                 }}
                 maxLength={2}
                 placeholder="MM"
@@ -225,6 +281,7 @@ const IdentifyYourSelf: FC = () => {
             <View style={styles.BirthdayInputView}>
               {MainGenders.map((gender, index) => (
                 <TouchableOpacity
+                  activeOpacity={ActiveOpacity}
                   key={index}
                   onPress={() => handleGenderSelection(gender)}
                   style={[

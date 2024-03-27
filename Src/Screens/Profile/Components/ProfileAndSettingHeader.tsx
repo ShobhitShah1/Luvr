@@ -16,9 +16,14 @@ import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
 interface HeaderProps {
   Title: string;
   onUpdatePress?: () => void;
+  isLoading?: boolean;
 }
 
-const ProfileAndSettingHeader: FC<HeaderProps> = ({Title, onUpdatePress}) => {
+const ProfileAndSettingHeader: FC<HeaderProps> = ({
+  Title,
+  onUpdatePress,
+  isLoading,
+}) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
@@ -27,6 +32,7 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({Title, onUpdatePress}) => {
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.White} />
       <View style={styles.ContentView}>
         <TouchableOpacity
+          disabled={isLoading}
           activeOpacity={ActiveOpacity}
           onPress={() => navigation.goBack()}
           style={styles.ViewStyle}>
@@ -41,6 +47,7 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({Title, onUpdatePress}) => {
         </View>
         {Title !== 'Notification' ? (
           <TouchableOpacity
+            disabled={isLoading}
             style={styles.ModalSubmitButton}
             onPress={onUpdatePress}
             activeOpacity={ActiveOpacity}>

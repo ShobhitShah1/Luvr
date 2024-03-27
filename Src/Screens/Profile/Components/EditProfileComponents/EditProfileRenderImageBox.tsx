@@ -20,10 +20,12 @@ type EditProfileRenderImageBoxProps = {
   picture: Picture;
   onDelete?: () => void;
   onAdd?: () => void;
+  isLoading?: boolean;
 };
 
 const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
   picture,
+  isLoading,
 }) => {
   const hasPicture = !!picture?.url;
   const [IsImageLoading, setIsImageLoading] = useState<boolean>(false);
@@ -33,7 +35,7 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
         <Skeleton
           width={'100%'}
           height={'100%'}
-          show={IsImageLoading ? true : false}
+          show={IsImageLoading || isLoading ? true : false}
           colors={COLORS.LoaderGradient}>
           <View
             style={{

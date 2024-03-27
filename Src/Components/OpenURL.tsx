@@ -8,7 +8,8 @@ interface OpenURLProps {
 
 type AsyncFC<P> = (props: P) => Promise<void>;
 
-const OpenURL: AsyncFC<OpenURLProps> = async ({URL}) => {
+const OpenURL: AsyncFC<OpenURLProps> = async ({ URL }) => {
+  console.log('URL', URL);
   try {
     if (await InAppBrowser.isAvailable()) {
       await InAppBrowser.open(URL, {

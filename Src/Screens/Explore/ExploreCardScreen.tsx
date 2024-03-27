@@ -276,7 +276,10 @@ const ExploreCardScreen: FC = () => {
   if (IsAPILoading) {
     return (
       <React.Fragment>
-        <BottomTabHeader />
+        <BottomTabHeader
+          showSetting={true}
+          hideSettingAndNotification={false}
+        />
         <View style={[styles.container, styles.LoaderContainer]}>
           <ActivityIndicator size={'large'} color={COLORS.Primary} />
         </View>

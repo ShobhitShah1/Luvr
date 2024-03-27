@@ -177,7 +177,7 @@ const AddRecentPics: FC = () => {
   };
 
   const onNextPress = async () => {
-    // setIsLoading(true);
+    setIsLoading(true);
     try {
       setTimeout(() => {
         const validImages = data.filter(image => image.url);

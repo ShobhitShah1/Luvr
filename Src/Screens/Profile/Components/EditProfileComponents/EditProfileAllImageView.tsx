@@ -9,9 +9,6 @@ import {
   sortByUrl,
 } from '../../../../Utils/ImagePickerUtils';
 import EditProfileRenderImageBox from './EditProfileRenderImageBox';
-// import {alertData} from '../../../../Components/Data';
-import UserService from '../../../../Services/AuthService';
-// import ProfileService from '../../../../Services/ProfileService';
 
 interface EditProfileAllImageViewProps {
   item: {
@@ -30,6 +27,7 @@ interface EditProfileAllImageViewProps {
   index: number;
   OnToggleModal: () => void;
   showToast: Function;
+  isLoading: boolean;
 }
 
 const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
@@ -39,6 +37,7 @@ const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
   UserPicks,
   OnToggleModal,
   showToast,
+  isLoading,
 }) => {
   const DeleteImage = async (id: string) => {
     // const APIResponse = await ProfileService.DeleteUserImage(id);
@@ -76,34 +75,35 @@ const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
           'error',
         );
       } else {
-        Alert.alert(
-          'Image Removal Alert!',
-          'Thinking about removing this image from your profile? Deleting it is like saying goodbye to a moment captured in the digital journey. Still want to proceed?',
-          [
-            {
-              text: 'Keep it',
-              onPress: () => {},
-            },
-            {
-              text: 'Yes, delete it',
-              onPress: async () => {
-                // const IsDeleted = await DeleteImage(item.key);
-                // if (IsDeleted) {
-                const newPics = UserPicks.map(deleteUrlFromItem(item)).sort(
-                  sortByUrl,
-                );
-                setUserPicks(newPics);
-                // }
-              },
-            },
-          ],
-        );
+        // Alert.alert(
+        //   'Image Removal Alert!',
+        //   'Thinking about removing this image from your profile? Deleting it is like saying goodbye to a moment captured in the digital journey. Still want to proceed?',
+        //   [
+        //     {
+        //       text: 'Keep it',
+        //       onPress: () => {},
+        //     },
+        //     {
+        //       text: 'Yes, delete it',
+        //       onPress: async () => {
+        //         // const IsDeleted = await DeleteImage(item.key);
+        //         // if (IsDeleted) {
+        //         const newPics = UserPicks.map(deleteUrlFromItem(item)).sort(
+        //           sortByUrl,
+        //         );
+        //         setUserPicks(newPics);
+        //         // }
+        //       },
+        //     },
+        //   ],
+        // );
       }
     }
   };
   return (
     <TouchableOpacity
       key={index}
+      disabled={isLoading}
       activeOpacity={ActiveOpacity}
       onPress={() => {
         HandleOnImagePress(item);
@@ -111,16 +111,17 @@ const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
       style={styles.AddUserPhotoView}>
       <EditProfileRenderImageBox
         onDelete={() => {
-          const newPics = UserPicks.map(deleteUrlFromItem(item))?.sort(
-            sortByUrl,
-          );
-          setUserPicks(newPics);
+          // const newPics = UserPicks.map(deleteUrlFromItem(item))?.sort(
+          //   sortByUrl,
+          // );
+          // setUserPicks(newPics);
         }}
         onAdd={() => {
           const newPics = UserPicks.map(addUrlToItem(item)).sort(sortByUrl);
           setUserPicks(newPics);
         }}
         picture={item}
+        isLoading={isLoading}
       />
     </TouchableOpacity>
   );

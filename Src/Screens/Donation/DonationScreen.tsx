@@ -7,12 +7,13 @@ import {
   View,
 } from 'react-native';
 import React, {useState} from 'react';
-import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
+import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import CommonIcons from '../../Common/CommonIcons';
 import Button from '../../Components/Button';
 import {useNavigation} from '@react-navigation/native';
 import UserService from '../../Services/AuthService';
 import {useCustomToast} from '../../Utils/toastUtils';
+import CommonImages from '../../Common/CommonImages';
 
 const BackgroundImageSize = 150;
 const DonationScreen = () => {
@@ -45,6 +46,16 @@ const DonationScreen = () => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.Secondary} />
+      <TouchableOpacity
+        style={{left: 20, position: 'absolute', top: 20}}
+        activeOpacity={ActiveOpacity}
+        onPress={() => navigation.goBack()}>
+        <Image
+          source={CommonIcons.Back}
+          resizeMode="contain"
+          style={{width: 28, height: 28}}
+        />
+      </TouchableOpacity>
       <View style={styles.ItemContainerView}>
         <View style={styles.TitleAndImageView}>
           <View style={styles.DonateIconView}>

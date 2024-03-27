@@ -155,8 +155,8 @@ async function makeRequest(
   handleLogs(url, params);
 
   // Retrieve token from Redux store
-  const token = store.getState().user?.Token;
-  // console.log('TToken', token);
+  const token = store.getState()?.user?.Token;
+  // console.log('TToken', token, url, params);
   // Set the token in the headers
   const headers = {
     ...commonConfig.headers,

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {useNavigation} from '@react-navigation/native';
 import {Skeleton} from 'moti/skeleton';
-import React, {FC, memo, useEffect} from 'react';
+import React, {FC, memo} from 'react';
 import {
   Image,
   Platform,
@@ -10,12 +10,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import Animated, {
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import FastImage from 'react-native-fast-image';
+import Animated, {useSharedValue} from 'react-native-reanimated';
 import CommonIcons from '../../../Common/CommonIcons';
 import {ActiveOpacity, COLORS} from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
@@ -23,7 +19,6 @@ import {DummyImage} from '../../../Config/Setting';
 import useCalculateAge from '../../../Hooks/useCalculateAge';
 import {SwiperCard} from '../../../Types/SwiperCard';
 import styles from '../styles';
-import FastImage from 'react-native-fast-image';
 
 interface RenderCardProps {
   CurrentCardIndex: number;
@@ -146,7 +141,6 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
             <FastImage
               onLoadStart={ImageLoading}
               resizeMode="cover"
-              removeClippedSubviews
               onLoadEnd={ImageLoaded}
               key={currentImageIndex + getRandomInt(cardData.recent_pik.length)}
               fallback={Platform.OS === 'android'}

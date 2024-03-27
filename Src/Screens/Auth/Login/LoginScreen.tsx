@@ -11,7 +11,7 @@ import CommonImages from '../../../Common/CommonImages';
 import CommonLogos from '../../../Common/CommonLogos';
 import LoginButton from '../../../Components/AuthComponents/LoginButton';
 import {updateField} from '../../../Redux/Action/userActions';
-import UserService from '../../../Services/AuthService';
+import UserService, {initGoogleSignIn} from '../../../Services/AuthService';
 import {transformUserDataForApi} from '../../../Services/dataTransformService';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
@@ -20,6 +20,7 @@ import styles from './styles';
 import remoteConfig from '@react-native-firebase/remote-config';
 import OpenURL from '../../../Components/OpenURL';
 import {APP_NAME} from '../../../Config/Setting';
+import {ProfileType} from '../../../Types/ProfileType';
 
 const LoginScreen: FC = () => {
   const navigation =
@@ -41,6 +42,7 @@ const LoginScreen: FC = () => {
       await Promise.all([
         // Settings.setAppID('1072075284080018'),
         // Settings.initializeSDK(),
+        initGoogleSignIn(),
         RemoteConfig(),
       ]);
     }
@@ -82,7 +84,7 @@ const LoginScreen: FC = () => {
 
       await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
       const GoogleUserData = await GoogleSignin.signIn();
-      console.log('Google login successful:', GoogleUserData);
+      // console.log('Google login successful:', GoogleUserData);
 
       // Proceed with your logic for successful login
       console.log('Updating fields and navigating...');
@@ -105,49 +107,49 @@ const LoginScreen: FC = () => {
     }
   };
 
-  const handleFacebookLogin = async () => {
-    // try {
-    //   LoginManager.logInWithPermissions(['public_profile']).then(
-    //     function (result) {
-    //       if (result.isCancelled) {
-    //         console.log('Login cancelled');
-    //       } else {
-    //         console.log(
-    //           'Login success with permissions: ' +
-    //             result?.grantedPermissions?.toString(),
-    //         );
-    //         AccessToken.getCurrentAccessToken().then(data => {
-    //           console.log('Facebook Data:', data);
-    //           if (data?.accessToken) {
-    //             fetch(ApiConfig.FACEBOOK_GRAPH_API + data.accessToken)
-    //               .then(response => response.json())
-    //               .then(json => {
-    //                 console.log('FACEBOOK JSON DATA:', json);
-    //                 // handleNavigation(
-    //                 //   GoogleUserData.user.email,
-    //                 //   GoogleUserData.user.name ||
-    //                 //     GoogleUserData.user.givenName ||
-    //                 //     '',
-    //                 // );
-    //               })
-    //               .catch(() => {
-    //                 console.error('ERROR GETTING DATA FROM FACEBOOK');
-    //               });
-    //           } else {
-    //             showToast('Error', 'Could not get access token', 'error');
-    //           }
-    //         });
-    //       }
-    //     },
-    //     function (error) {
-    //       console.log('Login fail with error: ' + error);
-    //     },
-    //   );
-    // } catch (error) {
-    //   console.log('Facebook Login Error', error);
-    //   showToast('Error', String(error || 'Facebook Login Error'), 'error');
-    // }
-  };
+  // const handleFacebookLogin = async () => {
+  //   // try {
+  //   //   LoginManager.logInWithPermissions(['public_profile']).then(
+  //   //     function (result) {
+  //   //       if (result.isCancelled) {
+  //   //         console.log('Login cancelled');
+  //   //       } else {
+  //   //         console.log(
+  //   //           'Login success with permissions: ' +
+  //   //             result?.grantedPermissions?.toString(),
+  //   //         );
+  //   //         AccessToken.getCurrentAccessToken().then(data => {
+  //   //           console.log('Facebook Data:', data);
+  //   //           if (data?.accessToken) {
+  //   //             fetch(ApiConfig.FACEBOOK_GRAPH_API + data.accessToken)
+  //   //               .then(response => response.json())
+  //   //               .then(json => {
+  //   //                 console.log('FACEBOOK JSON DATA:', json);
+  //   //                 // handleNavigation(
+  //   //                 //   GoogleUserData.user.email,
+  //   //                 //   GoogleUserData.user.name ||
+  //   //                 //     GoogleUserData.user.givenName ||
+  //   //                 //     '',
+  //   //                 // );
+  //   //               })
+  //   //               .catch(() => {
+  //   //                 console.error('ERROR GETTING DATA FROM FACEBOOK');
+  //   //               });
+  //   //           } else {
+  //   //             showToast('Error', 'Could not get access token', 'error');
+  //   //           }
+  //   //         });
+  //   //       }
+  //   //     },
+  //   //     function (error) {
+  //   //       console.log('Login fail with error: ' + error);
+  //   //     },
+  //   //   );
+  //   // } catch (error) {
+  //   //   console.log('Facebook Login Error', error);
+  //   //   showToast('Error', String(error || 'Facebook Login Error'), 'error');
+  //   // }
+  // };
 
   const handleNavigation = async (email: string, name: string) => {
     try {
@@ -161,22 +163,54 @@ const LoginScreen: FC = () => {
         full_name: name,
       };
 
+      console.log('userDataWithValidation', userDataWithValidation);
+
       const APIResponse = await UserService.UserRegister(
         userDataWithValidation,
       );
 
+      console.log('API Response:', APIResponse);
+
       if (APIResponse?.data?.token) {
-        await dispatch(
-          updateField(LocalStorageFields.Token, APIResponse.data.token),
-        );
-        await dispatch(updateField(LocalStorageFields.isVerified, true));
-        navigation.replace('BottomTab');
+        await Promise.all([
+          dispatch(updateField(LocalStorageFields.login_type, 'social')),
+          dispatch(
+            updateField(LocalStorageFields.Token, APIResponse.data.token),
+          ),
+          dispatch(updateField(LocalStorageFields.identity, email)),
+          dispatch(updateField(LocalStorageFields.isVerified, true)),
+        ]);
+        console.log('Login Is Email Stored', email);
+        CheckDataAndNavigateToNumber();
       } else {
         throw new Error('Token not found in API response');
       }
     } catch (error) {
       console.error('Navigation error:', error);
-      navigation.replace('LoginStack');
+      navigation?.replace('NumberVerification', {
+        screen: 'PhoneNumber',
+      });
+      setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
+    }
+  };
+
+  const CheckDataAndNavigateToNumber = async () => {
+    try {
+      const userDataToSend = {
+        eventName: 'get_profile',
+      };
+      const APIResponse = await UserService.UserRegister(userDataToSend);
+      const Data: ProfileType = APIResponse?.data;
+      console.log('Data.mobile_no:', Data, Data.mobile_no);
+      if (Data.mobile_no) {
+        navigation?.replace('BottomTab');
+      } else {
+        navigation?.replace('NumberVerification', {
+          screen: 'PhoneNumber',
+        });
+      }
+    } catch {
+      console.log('Error in CheckDataAndNavigateToNumber');
     } finally {
       setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
     }

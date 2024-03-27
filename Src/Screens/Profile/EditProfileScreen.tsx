@@ -47,6 +47,19 @@ import ProfileAndSettingHeader from './Components/ProfileAndSettingHeader';
 import ApiConfig from '../../Config/ApiConfig';
 import axios from 'axios';
 
+export interface ViewPositionsProps {
+  Gender: number;
+  CommunicationStyle: number;
+  ImInto: number;
+  LookingFor: number;
+  ZodiacSign: number;
+  SmokeAndDrink: number;
+  Exercise: number;
+  InterestedIn: number;
+  Movie: number;
+  Drink: number;
+}
+
 const EditProfileScreen = () => {
   const dayInputRef = useRef(null);
   const yearInputRef = useRef(null);
@@ -63,6 +76,8 @@ const EditProfileScreen = () => {
   const [IsInternetConnected, setIsInternetConnected] = useState(true);
   const [ChooseModalVisible, setChooseModalVisible] = useState<boolean>(false);
   const [Bio, setBio] = useState(profile?.about);
+  const [UserName, setUserName] = useState(profile?.full_name);
+  const [City, setCity] = useState(profile?.city);
   const [CollegeName, setCollegeName] = useState(
     profile?.education?.college_name,
   );
@@ -86,18 +101,35 @@ const EditProfileScreen = () => {
     })),
   );
 
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const [viewPositions, setViewPositions] = useState({
+    Gender: 0,
+    ImInto: 126.0952377319336,
+    LookingFor: 1344.3809814453125,
+    InterestedIn: 1757.3333740234375,
+    ZodiacSign: 2447.619140625,
+    CommunicationStyle: 2801.90478515625,
+    Exercise: 2940.1904296875,
+    SmokeAndDrink: 3078.47607421875,
+    Movie: 3216.761962890625,
+    Drink: 3355.047607421875,
+  });
+
+  const [ClickCategoryName, setClickCategoryName] = useState('');
+
   useEffect(() => {
-    const CheckConnection = async () => {
+    const CheckConnection = () => {
       try {
-        const IsNetOn = await NetInfo.fetch().then(info => info.isConnected);
-        if (IsNetOn) {
-          setIsFetchDataAPILoading(true);
-          await GetProfileData();
-          await CheckLocationPermission();
-          setIsInternetConnected(true);
-        } else {
-          setIsInternetConnected(false);
-        }
+        NetInfo.fetch().then(info => {
+          if (info.isConnected) {
+            setIsFetchDataAPILoading(true);
+            setIsInternetConnected(true);
+            Promise.all([GetProfileData(), CheckLocationPermission()]);
+          } else {
+            setIsInternetConnected(false);
+          }
+        });
       } catch (error) {
         console.error(
           'Error fetching profile data or checking location permission:',
@@ -113,6 +145,33 @@ const EditProfileScreen = () => {
 
   const {locationPermission, requestLocationPermission} =
     useLocationPermission();
+
+  const calculateAge = inputDate => {
+    const [day, month, year] = inputDate
+      .split(',')
+      .map(item => parseInt(item.trim(), 10));
+
+    // Validation for month (1-12)
+    if (month < 1 || month > 12) {
+      throw new Error('Invalid month. Month must be between 1 and 12.');
+    }
+
+    const today = new Date();
+    const birthDate = new Date(year, month - 1, day);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+    return age;
+  };
+
+  const isEligible = age => {
+    return age >= 18 && age < 100;
+  };
 
   const handleTextInputChange = (
     value,
@@ -190,6 +249,8 @@ const EditProfileScreen = () => {
           ? APIResponse?.data
           : {};
 
+        console.log('recent_pik:', DataToStore.recent_pik);
+
         // Set default values if magical_person or habits are empty
         if (
           !DataToStore.magical_person ||
@@ -217,6 +278,8 @@ const EditProfileScreen = () => {
 
         setProfile(DataToStore);
         setBio(DataToStore.about);
+        setUserName(DataToStore?.full_name);
+        setCity(DataToStore?.city);
         setCollegeName(DataToStore.education.college_name);
         setEducationDegree(DataToStore.education.digree);
         setBirthdateDay(DataToStore?.birthdate?.split('/')[0]);
@@ -265,13 +328,38 @@ const EditProfileScreen = () => {
     }
   };
 
-  const handlePresentModalPress = useCallback(() => {
+  //* Handle Sheet Open/Close
+  const handlePresentModalPress = useCallback((name: string) => {
     bottomSheetModalRef.current?.present();
+    setClickCategoryName(name);
   }, []);
 
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
+  const handleSheetChanges = useCallback(
+    (index: number) => {
+      console.log('handleSheetChanges', index);
+      console.log('ClickCategoryName', ClickCategoryName);
+      console.log('viewPositions', viewPositions);
+      console.log(
+        'viewPositions[ClickCategoryName]:',
+        viewPositions[ClickCategoryName as keyof typeof viewPositions], // Use type assertion
+      );
+
+      // setTimeout(() => {
+      if (
+        index === 0 &&
+        viewPositions[ClickCategoryName as keyof typeof viewPositions] !==
+          undefined
+      ) {
+        scrollViewRef.current?.scrollTo({
+          x: 0,
+          y: viewPositions[ClickCategoryName as keyof typeof viewPositions],
+          animated: true,
+        });
+      }
+      // }, 0);
+    },
+    [ClickCategoryName, viewPositions, bottomSheetModalRef, scrollViewRef],
+  );
 
   //* Toggle Modal Open
   const OnToggleModal = () => {
@@ -361,60 +449,87 @@ const EditProfileScreen = () => {
     }
   };
 
+  // Convert FormData to an object
+  function formDataToObject(formData) {
+    const object = {};
+    formData &&
+      formData?.forEach((value, key) => {
+        if (!object.hasOwnProperty(key)) {
+          object[key] = value;
+        } else {
+          if (!Array.isArray(object[key])) {
+            object[key] = [object[key]];
+          }
+          object[key].push(value);
+        }
+      });
+    return object;
+  }
+
   //* Upload Single Image
   const UploadImage = async (item: any) => {
+    // console.log('UploadImage Item:', item);
+    setIsFetchDataAPILoading(true);
     let formData = new FormData();
-    item &&
-      item.forEach(({url, type, name}: any) => {
-        console.log(url, type, name);
-        formData.append('file', {
-          uri: Platform.OS === 'android' ? url : url.replace('file://', ''),
-          type,
-          name,
-        });
+
+    // Ensure item is an array and not null
+    if (Array.isArray(item)) {
+      item.forEach(({url, type, name}) => {
+        console.log('URL TYPE AND NAME:', url, type, name);
+        // Check if URL exists and is a string
+        formData.append('eventName', 'update_profile');
+        formData.append('file_to', 'profile_images');
+        if (url && typeof url === 'string') {
+          formData.append('file', {
+            uri: Platform.OS === 'android' ? url : url.replace('file://', ''),
+            type,
+            name: 'testname.jpg',
+          });
+        } else {
+          console.error('Invalid URL:', url);
+        }
       });
-    formData.append('eventName', 'update_profile');
-    formData.append('file_to', 'profile_images');
 
-    try {
-      // let APIResponse = await fetch(ApiConfig.IMAGE_UPLOAD_BASE_URL, {
-      //   method: 'POST',
-      //   body: formData,
-      //   mode: 'no-cors',
-      //   headers: {
-      //     Authorization: `Bearer ${UserData.Token}`,
-      //     app_secret: '_d_a_t_i_n_g_',
-      //     'Content-Type': 'multipart/form-data',
-      //   },
-      // });
-      const APIResponse = await axios.post(
-        ApiConfig.IMAGE_UPLOAD_BASE_URL,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${UserData.Token}`,
-            app_secret: '_d_a_t_i_n_g_',
-            'Content-Type': 'multipart/form-data',
+      console.log('FormData:', formData);
+
+      try {
+        const APIResponse = await axios.post(
+          ApiConfig.IMAGE_UPLOAD_BASE_URL,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${UserData.Token}`,
+              app_secret: '_d_a_t_i_n_g_',
+              'Content-Type': 'multipart/form-data',
+            },
           },
-        },
-      );
-      // if (APIResponse.code === 200) {
-      //   const newData = UserPicks.map(data =>
-      //     data.url === '' ? item.shift() || data : data,
-      //   );
-
-      //   setUserPicks(newData);
-      // } else {
-      //   showToast(
-      //     'Error',
-      //     'Sorry! cant delete this image right now. try again',
-      //     'error',
-      //   );
-      //   return false;
-      // }
-    } catch (error) {
-      console.log('Error on image upload :--:>', error);
-      showToast('Error!', String(error), 'error');
+        );
+        // if (APIResponse.code === 200) {
+        //   const newData = UserPicks.map(data =>
+        //     data.url === '' ? item.shift() || data : data,
+        //   );
+        console.log('APIResponse?.code', APIResponse?.code);
+        console.log('APIResponse?.data', APIResponse?.data);
+        if (APIResponse?.data?.code === 200) {
+          GetProfileData();
+          showToast(
+            'Image Uploaded',
+            'Your Image has been uploaded successfully.',
+            'success',
+          );
+          // Handle API response here
+        } else {
+          showToast('Error', 'Error while uploaded image', 'error');
+        }
+      } catch (error) {
+        console.error('API Error:', error);
+        // Handle error
+      } finally {
+        setIsFetchDataAPILoading(false);
+      }
+    } else {
+      console.error('Invalid item:', item);
+      setIsFetchDataAPILoading(false);
     }
   };
 
@@ -431,19 +546,32 @@ const EditProfileScreen = () => {
         return;
       }
 
+      const age = calculateAge(
+        `${BirthdateDay},${BirthdateMonth},${BirthdateYear}`,
+      );
+      const isValid = isEligible(age);
+      // const age = calculateAge(BirthdateDay, BirthdateMonth, BirthdateYear);
+      if (isValid) {
+        console.log('User is eligible.');
+      } else {
+        showToast('Error', 'Please enter a valid age.', 'Error');
+        console.log('User is not eligible.');
+        return;
+      }
+
       const DataToSend = {
         eventName: 'update_profile',
         mobile_no: profile?.mobile_no,
         about: Bio || profile?.about,
-        identity: profile?.identity,
+        identity: UserData?.identity || '',
         profile_image: profile?.profile_image,
-        full_name: profile?.full_name,
+        full_name: UserName,
         birthdate:
           `${BirthdateDay || '00'}/${BirthdateMonth || '00'}/${
             BirthdateYear || '0000'
           }` || profile?.birthdate,
         gender: profile?.gender,
-        city: profile?.city,
+        city: City,
         orientation: profile?.orientation,
         is_orientation_visible: profile?.is_orientation_visible,
         hoping: profile?.hoping,
@@ -480,6 +608,8 @@ const EditProfileScreen = () => {
         setting_show_people_with_range:
           profile?.setting_show_people_with_range || true,
       };
+
+      console.log('DataToSend', DataToSend);
       const APIResponse = await UserService.UserRegister(DataToSend);
 
       if (APIResponse.code === 200) {
@@ -499,9 +629,18 @@ const EditProfileScreen = () => {
       }
     } catch (error) {
       console.log('Something went wrong edit profile :--:>', error);
+      showToast('Error', String(error), 'Error');
     } finally {
       setIsFetchDataAPILoading(false);
     }
+  };
+
+  const storeViewPosition = (viewName: string, position: number) => {
+    console.log('STORING:', viewName, position);
+    setViewPositions(prevState => ({
+      ...prevState,
+      [viewName]: position,
+    }));
   };
 
   return (
@@ -509,6 +648,7 @@ const EditProfileScreen = () => {
       <ProfileAndSettingHeader
         Title={'Edit Profile'}
         onUpdatePress={onUpdateProfile}
+        isLoading={IsFetchDataAPILoading}
       />
       {/* <ProfileAndSettingHeader Title={'Edit Profile'} /> */}
       <ScrollView bounces={false} style={styles.ContentView}>
@@ -520,11 +660,22 @@ const EditProfileScreen = () => {
               Icon={CommonIcons.ProfileTab}
               Title="Name"
             />
-            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
+            <EditProfileBoxView
+              value={UserName}
+              withTextInput
+              children={<></>}
+              onChangeText={setUserName}
+              maxLength={20}
+              TextInputContainerStyle={{justifyContent: 'center'}}
+              TextInputStyle={styles.UserFullNameStyle}
+              IsViewLoading={IsFetchDataAPILoading}
+              PlaceholderText="What's your full name?"
+            />
+            {/* <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <Text style={styles.UserFullNameStyle}>
                 {profile?.full_name || 'User'}
               </Text>
-            </EditProfileBoxView>
+            </EditProfileBoxView> */}
           </View>
 
           {/* Age View */}
@@ -543,14 +694,27 @@ const EditProfileScreen = () => {
                   value={BirthdateDay}
                   cursorColor={COLORS.Primary}
                   defaultValue={profile?.birthdate?.split('/')[0]}
-                  onChangeText={value =>
-                    handleTextInputChange(
-                      value,
-                      setBirthdateDay,
-                      2,
-                      monthInputRef,
-                    )
-                  }
+                  // onChangeText={value =>
+                  //   handleTextInputChange(
+                  //     value,
+                  //     setBirthdateDay,
+                  //     2,
+                  //     monthInputRef,
+                  //   )
+                  // }
+                  onChangeText={value => {
+                    // Allow the user to remove the input
+                    if (
+                      value === '' ||
+                      (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 31)
+                    ) {
+                      setBirthdateDay(value);
+                      if (value.length === 2) {
+                        // Move focus to the next input field
+                        monthInputRef?.current?.focus();
+                      }
+                    }
+                  }}
                   maxLength={2}
                   placeholder="DD"
                   style={[styles.BirthDateInputStyle]}
@@ -563,14 +727,27 @@ const EditProfileScreen = () => {
                   keyboardType={'number-pad'}
                   cursorColor={COLORS.Primary}
                   defaultValue={profile?.birthdate?.split('/')[1]}
-                  onChangeText={value =>
-                    handleTextInputChange(
-                      value,
-                      setBirthdateMonth,
-                      2,
-                      yearInputRef,
-                    )
-                  }
+                  // onChangeText={value =>
+                  //   handleTextInputChange(
+                  //     value,
+                  //     setBirthdateMonth,
+                  //     2,
+                  //     yearInputRef,
+                  //   )
+                  // }
+                  onChangeText={value => {
+                    // Allow the user to remove the input
+                    if (
+                      value === '' ||
+                      (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 12)
+                    ) {
+                      setBirthdateMonth(value);
+                      if (value.length === 2) {
+                        // Move focus to the next input field
+                        yearInputRef?.current?.focus();
+                      }
+                    }
+                  }}
                   maxLength={2}
                   placeholder="MM"
                   style={[styles.BirthDateInputStyle]}
@@ -620,6 +797,7 @@ const EditProfileScreen = () => {
                     setUserPicks={setUserPicks}
                     UserPicks={UserPicks}
                     OnToggleModal={OnToggleModal}
+                    isLoading={IsFetchDataAPILoading}
                   />
                 );
               }}
@@ -633,20 +811,19 @@ const EditProfileScreen = () => {
               Icon={CommonIcons.about_me_icon}
               Title="About me"
             />
-            <View style={styles.AboutMeCustomView}>
-              <TextInput
-                multiline
-                value={Bio}
-                defaultValue={Bio}
-                editable={true}
-                cursorColor={COLORS.Primary}
-                onChangeText={setBio}
-                style={styles.AboutMeTextViewStyle}
-                placeholderTextColor={COLORS.Placeholder}
-                placeholder="Write something about you..."
-              />
-              <Text style={styles.TotalWordCount}>{'454/500'}</Text>
-            </View>
+            <EditProfileBoxView
+              value={Bio}
+              withTextInput
+              children={<></>}
+              onChangeText={setBio}
+              maxLength={500}
+              IsViewLoading={IsFetchDataAPILoading}
+              TextInputChildren={
+                <Text
+                  style={styles.TotalWordCount}>{`${Bio?.length}/500`}</Text>
+              }
+              PlaceholderText="Write something about you..."
+            />
           </View>
 
           {/* Gender View */}
@@ -666,7 +843,7 @@ const EditProfileScreen = () => {
                       : [profile?.gender]
                     : []
                 }
-                onPress={() => handlePresentModalPress()}
+                onPress={() => handlePresentModalPress('Gender')}
               />
             </EditProfileBoxView>
           </View>
@@ -678,11 +855,22 @@ const EditProfileScreen = () => {
               Icon={CommonIcons.location_icon}
               Title="I’m from"
             />
-            <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
+            <EditProfileBoxView
+              value={City}
+              withTextInput
+              children={<></>}
+              onChangeText={setCity}
+              maxLength={20}
+              TextInputContainerStyle={{justifyContent: 'center'}}
+              TextInputStyle={styles.UserFullNameStyle}
+              IsViewLoading={IsFetchDataAPILoading}
+              PlaceholderText="Where are you from?"
+            />
+            {/* <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <Text style={styles.UserFullNameStyle}>
                 {profile?.city || 'Not Added Yet'}
               </Text>
-            </EditProfileBoxView>
+            </EditProfileBoxView> */}
           </View>
 
           {/* I like View */}
@@ -700,7 +888,7 @@ const EditProfileScreen = () => {
                     ? profile?.likes_into?.filter(item => item.trim() !== '')
                     : [profile?.likes_into || []]
                 }
-                onPress={() => handlePresentModalPress()}
+                onPress={() => handlePresentModalPress('ImInto')}
               />
             </EditProfileBoxView>
           </View>
@@ -720,7 +908,7 @@ const EditProfileScreen = () => {
                     ? profile?.hoping?.filter(item => item.trim() !== '')
                     : [profile?.hoping || []]
                 }
-                onPress={() => handlePresentModalPress()}
+                onPress={() => handlePresentModalPress('LookingFor')}
               />
             </EditProfileBoxView>
           </View>
@@ -742,7 +930,7 @@ const EditProfileScreen = () => {
                       : [profile?.orientation]
                     : []
                 }
-                onPress={() => handlePresentModalPress()}
+                onPress={() => handlePresentModalPress('InterestedIn')}
               />
             </EditProfileBoxView>
           </View>
@@ -764,7 +952,7 @@ const EditProfileScreen = () => {
                       : [profile?.magical_person?.star_sign]
                     : []
                 }
-                onPress={() => handlePresentModalPress()}
+                onPress={() => handlePresentModalPress('ZodiacSign')}
               />
             </EditProfileBoxView>
           </View>
@@ -827,7 +1015,7 @@ const EditProfileScreen = () => {
                       : [profile?.magical_person?.communication_stry]
                     : []
                 }
-                onPress={() => handlePresentModalPress()}
+                onPress={() => handlePresentModalPress('CommunicationStyle')}
               />
             </EditProfileBoxView>
           </View>
@@ -849,7 +1037,7 @@ const EditProfileScreen = () => {
                       : [profile?.habits?.exercise]
                     : []
                 }
-                onPress={() => handlePresentModalPress()}
+                onPress={() => handlePresentModalPress('Exercise')}
               />
             </EditProfileBoxView>
           </View>
@@ -871,7 +1059,7 @@ const EditProfileScreen = () => {
                       : [profile?.habits?.smoke]
                     : []
                 }
-                onPress={() => handlePresentModalPress()}
+                onPress={() => handlePresentModalPress('SmokeAndDrink')}
               />
             </EditProfileBoxView>
           </View>
@@ -893,7 +1081,7 @@ const EditProfileScreen = () => {
                       : [profile?.habits?.movies]
                     : []
                 }
-                onPress={() => handlePresentModalPress()}
+                onPress={() => handlePresentModalPress('Movie')}
               />
             </EditProfileBoxView>
           </View>
@@ -915,7 +1103,7 @@ const EditProfileScreen = () => {
                       : [profile?.habits?.drink]
                     : []
                 }
-                onPress={() => handlePresentModalPress()}
+                onPress={() => handlePresentModalPress('Drink')}
               />
             </EditProfileBoxView>
           </View>
@@ -974,6 +1162,7 @@ const EditProfileScreen = () => {
                 />
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={IsFetchDataAPILoading}
                 onPress={() => onUpdateProfile()}
                 style={styles.ModalSubmitButton}
                 activeOpacity={ActiveOpacity}>
@@ -984,8 +1173,13 @@ const EditProfileScreen = () => {
                 />
               </TouchableOpacity>
             </View>
-            <BottomSheetScrollView>
-              <EditProfileSheetView profile={profile} setProfile={setProfile} />
+            <BottomSheetScrollView style={{}} ref={scrollViewRef}>
+              <EditProfileSheetView
+                profile={profile}
+                setProfile={setProfile}
+                viewPositions={viewPositions}
+                storeViewPosition={storeViewPosition}
+              />
             </BottomSheetScrollView>
           </View>
         </BottomSheetModal>

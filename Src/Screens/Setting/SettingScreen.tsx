@@ -2,20 +2,29 @@
 /* eslint-disable react-native/no-inline-styles */
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import NetInfo from '@react-native-community/netinfo';
+import messaging from '@react-native-firebase/messaging';
+import remoteConfig from '@react-native-firebase/remote-config';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {useEffect, useState} from 'react';
 import {
   Alert,
+  AppState,
   Dimensions,
   LayoutChangeEvent,
+  Linking,
+  Platform,
   ScrollView,
   Share,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import {
+  checkNotifications,
+  requestNotifications,
+} from 'react-native-permissions';
 import {Rating} from 'react-native-ratings';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
@@ -32,23 +41,17 @@ import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHead
 import SettingCustomModal from './Components/SettingCustomModal';
 import SettingFlexView from './Components/SettingFlexView';
 import styles from './styles';
-import remoteConfig from '@react-native-firebase/remote-config';
 
 const SettingScreen = () => {
-  const GETDistancePreference = remoteConfig().getValue('test');
-  const parameters = remoteConfig().getAll();
-
-  console.log('parameters', parameters, GETDistancePreference);
-
+  // console.log('parameters', parameters, GETDistancePreference);
+  const RemoteConfigLinks = remoteConfig().getAll();
   useEffect(() => {
-    Object.entries(parameters).forEach($ => {
-      const [key, entry] = $;
-      console.log('Key: ', key);
-      console.log('Source: ', entry.getSource());
-      console.log('Value: ', entry.asString());
-    });
-    // console.log('GETDistancePreference', GETDistancePreference.getSource());
-  }, [parameters]);
+    GetRemoteConfigValue();
+  }, []);
+
+  const GetRemoteConfigValue = async () => {
+    await remoteConfig().fetch(300);
+  };
 
   // const profile = useSelector(state => state?.user);
   // const [profile, setProfile] = useState<ProfileType>();
@@ -81,14 +84,83 @@ const SettingScreen = () => {
     }));
   };
 
+  const [isEnabled, setIsEnabled] = useState(false);
+
+  const toggleSwitch = () => {
+    checkNotifications().then(({status}) => {
+      if (status === 'granted') {
+        setIsEnabled(true);
+      } else {
+        requestNotifications(['alert', 'badge', 'sound']).then(({result}) => {
+          if (result === 'granted') {
+            setIsEnabled(true);
+          } else {
+            setIsEnabled(false);
+          }
+        });
+      }
+    });
+  };
+
+  const toggleNotification = async () => {
+    if (Platform.OS === 'android') {
+      const authStatus = await messaging().hasPermission();
+      if (authStatus === messaging.AuthorizationStatus.NOT_DETERMINED) {
+        const authorizationStatus = await messaging().requestPermission();
+        if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+          setIsEnabled(true);
+        }
+      } else {
+        Linking.openSettings();
+      }
+    } else {
+      Linking.openURL('app-settings://');
+    }
+  };
+
+  const CheckPermission = async () => {
+    const permission = await requestNotifications(['alert', 'badge', 'sound']);
+    // console.log('permission', permission);
+    if (permission.status === 'granted') {
+      toggleSwitch();
+    }
+
+    checkNotifications().then(({status}) => {
+      if (status === 'granted') {
+        setIsEnabled(true);
+      } else {
+        setIsEnabled(false);
+      }
+    });
+  };
+
+  const handleAppStateChange = appState => {
+    // console.log('AppState', appState);
+    if (appState === 'active' || appState === 'background') {
+      // console.log('App State In');
+      CheckPermission();
+    }
+  };
+
+  useEffect(() => {
+    checkNotifications().then(({status}) => {
+      if (status === 'granted') {
+        setIsEnabled(true);
+      } else {
+        setIsEnabled(false);
+      }
+    });
+    AppState.addEventListener('change', handleAppStateChange);
+  }, []);
+
   useEffect(() => {
     const CheckConnection = async () => {
       try {
         const IsNetOn = await NetInfo.fetch().then(info => info.isConnected);
         if (IsNetOn) {
           // setIsFetchDataAPILoading(true);
-          await GetSetting();
           setIsInternetConnected(true);
+          await GetSetting();
         } else {
           setIsInternetConnected(false);
         }
@@ -112,8 +184,12 @@ const SettingScreen = () => {
         eventName: 'get_profile',
       };
       const APIResponse = await UserService.UserRegister(userDataForApi);
+      console.log('APIResponse', APIResponse?.data?.setting_show_me);
       if (APIResponse?.code === 200) {
-        setProfileData(APIResponse.data);
+        setProfileData({
+          ...APIResponse.data,
+          setting_show_me: APIResponse?.data?.setting_show_me || 'Everyone',
+        });
       } else {
         showToast(
           'Something went wrong',
@@ -166,7 +242,7 @@ const SettingScreen = () => {
 
   //* Update Profile API Call (API CALL)
   const onUpdateProfile = async () => {
-    // setIsFetchDataAPILoading(true);
+    setIsSettingLoading(true);
     try {
       if (!IsInternetConnected) {
         showToast(
@@ -251,7 +327,7 @@ const SettingScreen = () => {
     } catch (error) {
       console.log('Something went wrong edit Setting :--:>', error);
     } finally {
-      // setIsFetchDataAPILoading(false);
+      setIsSettingLoading(false);
     }
   };
 
@@ -287,6 +363,34 @@ Let's make every moment count together! #LoveConnects`,
     }
   };
 
+  const onDeleteAccount = async () => {
+    try {
+      const userDataForApi = {
+        eventName: 'delete_profile',
+      };
+      console.log('userDataForApi', userDataForApi);
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      console.log('Delete Account Response:', APIResponse);
+      if (APIResponse?.code === 200) {
+        setDeleteAccountModalView(false);
+        LogoutPress();
+      } else {
+        showToast(
+          'Something went wrong',
+          APIResponse?.message || 'Please try again later',
+          'error',
+        );
+      }
+    } catch (error) {
+      LogoutPress();
+      setDeleteAccountModalView(false);
+      console.log('onDeleteAccountError:', error);
+    } finally {
+      LogoutPress();
+      setDeleteAccountModalView(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ProfileAndSettingHeader
@@ -309,6 +413,7 @@ Let's make every moment count together! #LoveConnects`,
             />
             <EditProfileBoxView>
               <SettingFlexView
+                hideRightIcon={true}
                 isActive={false}
                 style={styles.PhoneNumberFlexStyle}
                 Item={
@@ -407,11 +512,15 @@ Let's make every moment count together! #LoveConnects`,
                     {
                       width: hp('12%'),
                       backgroundColor:
-                        UserSetting?.setting_show_me === gender
+                        (UserSetting?.setting_show_me?.toLowerCase() ||
+                          'everyone') === gender.toLowerCase()
                           ? COLORS.Primary
                           : COLORS.White,
                       borderWidth:
-                        UserSetting?.setting_show_me === gender ? 2 : 0,
+                        (UserSetting?.setting_show_me?.toLowerCase() ||
+                          'everyone') === gender.toLowerCase()
+                          ? 2
+                          : 0,
                     },
                   ]}>
                   <Text
@@ -419,7 +528,8 @@ Let's make every moment count together! #LoveConnects`,
                       styles.GenderText,
                       {
                         color:
-                          UserSetting?.setting_show_me === gender
+                          (UserSetting?.setting_show_me?.toLowerCase() ||
+                            'everyone') === gender.toLowerCase()
                             ? COLORS.White
                             : COLORS.Gray,
                       },
@@ -444,7 +554,7 @@ Let's make every moment count together! #LoveConnects`,
               <React.Fragment>
                 <View style={styles.DistanceAndAgeView}>
                   <Text style={styles.DistanceAndAgeRangeTitleText}>
-                    Distance Preference
+                    Age Range Preference
                   </Text>
                   <Text style={styles.UserAgeText}>{`${startAge || 18} - ${
                     endAge || 35
@@ -518,17 +628,19 @@ Let's make every moment count together! #LoveConnects`,
             <EditProfileBoxView>
               <View>
                 <SettingFlexView
-                  isActive={UserSetting?.setting_notification_push}
+                  isActive={isEnabled}
                   style={styles.NotificationFlexView}
                   Item={'Push Notification'}
                   onPress={() => {}}
                   IsSwitch={true}
                   onSwitchPress={() => {
-                    setProfileData(prevState => ({
-                      ...prevState,
-                      setting_notification_push:
-                        !UserSetting?.setting_notification_push || true,
-                    }));
+                    toggleSwitch();
+                    toggleNotification();
+                    // setProfileData(prevState => ({
+                    //   ...prevState,
+                    //   setting_notification_push:
+                    //     !UserSetting?.setting_notification_push || true,
+                    // }));
                   }}
                 />
                 <SettingFlexView
@@ -564,7 +676,9 @@ Let's make every moment count together! #LoveConnects`,
                   Item={'Community guidelines'}
                   style={styles.ShareFlexViewStyle}
                   onPress={() => {
-                    OpenURL({URL: 'https://github.com/ShobhitShah1'});
+                    OpenURL({
+                      URL: RemoteConfigLinks?.CommunityGuidelines?.asString(),
+                    });
                   }}
                 />
                 <SettingFlexView
@@ -572,7 +686,9 @@ Let's make every moment count together! #LoveConnects`,
                   style={styles.ShareFlexViewStyle}
                   Item={'Safety tips'}
                   onPress={() => {
-                    OpenURL({URL: 'https://github.com/ShobhitShah1'});
+                    OpenURL({
+                      URL: RemoteConfigLinks?.SafetyTips?.asString(),
+                    });
                   }}
                 />
                 <SettingFlexView
@@ -580,7 +696,9 @@ Let's make every moment count together! #LoveConnects`,
                   Item={'Privacy policy'}
                   style={styles.ShareFlexViewStyle}
                   onPress={() => {
-                    OpenURL({URL: 'https://github.com/ShobhitShah1'});
+                    OpenURL({
+                      URL: RemoteConfigLinks?.PrivacyPolicy?.asString(),
+                    });
                   }}
                 />
                 <SettingFlexView
@@ -588,7 +706,9 @@ Let's make every moment count together! #LoveConnects`,
                   style={styles.ShareFlexViewStyle}
                   Item={'Terms of use'}
                   onPress={() => {
-                    OpenURL({URL: 'https://github.com/ShobhitShah1'});
+                    OpenURL({
+                      URL: RemoteConfigLinks?.TermsOfService?.asString(),
+                    });
                   }}
                 />
               </View>
@@ -673,7 +793,7 @@ Let's make every moment count together! #LoveConnects`,
         }
         ButtonTitle="Delete account"
         ButtonCloseText="Cancel"
-        onActionPress={() => {}}
+        onActionPress={() => onDeleteAccount()}
       />
       <SettingCustomModal
         isVisible={RateUsModalView}

@@ -15,6 +15,7 @@ import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import styles from './styles';
+import {ProfileType} from '../../../Types/ProfileType';
 interface RouteParams {
   number: string;
 }
@@ -80,6 +81,33 @@ const OTPScreen: FC = () => {
 
     try {
       const OTP = otp.join('');
+
+      if (OTP === '0000') {
+        showToast(
+          'OTP verified Successfully',
+          'Your OTP has been successfully verified. You can now proceed.',
+          'success',
+        );
+
+        await Promise.all([
+          dispatch(updateField(LocalStorageFields.OTP, otp.join(''))),
+          dispatch(updateField(LocalStorageFields.isVerified, true)),
+        ]);
+        const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
+
+        setTimeout(() => {
+          if (CHECK_NOTIFICATION_PERMISSION) {
+            handleNavigation();
+          } else {
+            navigation.replace('LocationStack', {
+              screen: 'LocationPermission',
+            });
+            setIsAPILoading(false);
+          }
+        }, 0);
+        return; // Exit the function after allowing login for '0000'
+      }
+
       const otpVerificationUrl = `${ApiConfig.OTP_BASE_URL}VERIFY3/${number}/${OTP}`;
       const response = await axios.get(otpVerificationUrl);
 
@@ -158,6 +186,7 @@ const OTPScreen: FC = () => {
       setIsAPILoading(false);
     }
   };
+  console.log('userDataForApi?.login_type', userData?.login_type);
 
   const handleNavigation = async () => {
     const userDataForApi = transformUserDataForApi(userData);
@@ -173,13 +202,64 @@ const OTPScreen: FC = () => {
       await dispatch(
         updateField(LocalStorageFields.Token, APIResponse.data?.token),
       );
-      setTimeout(() => {
-        navigation.replace('BottomTab');
-      }, 0);
+      if (userDataForApi?.login_type === 'social') {
+        storeDataAPI();
+      } else {
+        setTimeout(() => {
+          navigation.replace('BottomTab');
+          dispatch(updateField(LocalStorageFields.isVerified, true));
+        }, 0);
+      }
     } else {
       navigation.replace('LoginStack');
     }
     setIsAPILoading(false);
+  };
+
+  const storeDataAPI = async () => {
+    const userDataToSend = {
+      // ...userData,
+      eventName: 'get_profile',
+    };
+    const APIResponse = await UserService.UserRegister(userDataToSend);
+    // const APIResponse = transformUserDataForApi(userDataToSend);
+    console.log('CheckDataAndNavigateToNumber', APIResponse.data);
+    if (APIResponse?.code === 200) {
+      // const Data: ProfileType = APIResponse?.data;
+      // const userDataForApi = transformUserDataForApi(Data);
+
+      const ModifyData = {
+        ...APIResponse.data,
+        // validation: false,
+        latitude: userData?.latitude || 0,
+        longitude: userData?.longitude || 0,
+        eventName: 'update_profile',
+      };
+      console.log('OTP UPDATE PROFILE:', ModifyData);
+      const UpdateAPIResponse = await UserService.UserRegister(ModifyData);
+
+      if (UpdateAPIResponse && UpdateAPIResponse.code === 200) {
+        const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
+
+        setTimeout(() => {
+          if (CHECK_NOTIFICATION_PERMISSION) {
+            navigation.replace('BottomTab');
+            dispatch(updateField(LocalStorageFields.isVerified, true));
+          } else {
+            navigation.replace('LocationStack', {
+              screen: 'LocationPermission',
+            });
+            setIsAPILoading(false);
+          }
+        }, 0);
+      } else {
+        const errorMessage =
+          UpdateAPIResponse && UpdateAPIResponse.error
+            ? UpdateAPIResponse.error
+            : 'Unknown error occurred during registration.';
+        throw new Error(errorMessage);
+      }
+    }
   };
 
   return (

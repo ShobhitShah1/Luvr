@@ -97,13 +97,6 @@ const WhatAboutYou: FC = () => {
     );
   };
 
-  const fieldsToUpdate = [
-    LocalStorageFields.communication_stry,
-    LocalStorageFields.education_level,
-    LocalStorageFields.recived_love,
-    LocalStorageFields.star_sign,
-  ];
-
   const onNextPress = async () => {
     const YourIntoFills = [
       'communication_stry',

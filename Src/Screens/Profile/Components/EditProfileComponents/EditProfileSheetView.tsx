@@ -42,10 +42,13 @@ import {
   MagicalPersonType,
   ProfileType,
 } from '../../../../Types/ProfileType';
+import {ViewPositionsProps} from '../../EditProfileScreen';
 
 interface EditProfileDataProps {
   profile: ProfileType;
   setProfile: React.Dispatch<React.SetStateAction<ProfileType>>;
+  storeViewPosition: (viewName: string, position: number) => void;
+  viewPositions: ViewPositionsProps;
 }
 
 type ProfileKeys = keyof ProfileType | keyof MagicalPersonType;
@@ -53,12 +56,40 @@ type ProfileKeys = keyof ProfileType | keyof MagicalPersonType;
 const EditProfileSheetView: FC<EditProfileDataProps> = ({
   profile,
   setProfile,
+  storeViewPosition,
+  viewPositions,
 }) => {
+  const StoreViewPosition = (viewName: string, position: number) => {
+    // console.log('STORING:', viewName, position);
+    // console.log('setViewPositions', storeViewPosition);
+    setTimeout(() => {
+      if (
+        viewPositions.CommunicationStyle === 0 ||
+        viewPositions.Drink === 0 ||
+        viewPositions.ImInto === 0 ||
+        viewPositions.LookingFor === 0 ||
+        viewPositions.Exercise === 0 ||
+        viewPositions.InterestedIn === 0 ||
+        viewPositions.Movie === 0 ||
+        viewPositions.SmokeAndDrink === 0 ||
+        viewPositions.ZodiacSign === 0
+      ) {
+        storeViewPosition && storeViewPosition(viewName, position);
+      }
+    }, 0);
+
+    // scrollViewRef.current?.scrollTo({
+    //   x: 0,
+    //   y: 2447.238037109375,
+    //   animated: false,
+    // });
+  };
+
   //* ================= Hoping Functions =================
   const onPressLookingFor = useCallback(
     (item: any) => {
       //* Check if the selected item is already in the array
-      const isSelected = profile.hoping === item?.Title;
+      const isSelected = profile?.hoping === item?.Title;
       //* If the selected item is already in the array, unselect it
       if (isSelected) {
         setProfile(prevState => ({
@@ -73,11 +104,11 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         }));
       }
     },
-    [profile.hoping, setProfile],
+    [profile?.hoping, setProfile],
   );
 
   const renderHopingView = ({item, index}: {item: any; index: number}) => {
-    const Selected = profile.hoping === item;
+    const Selected = profile?.hoping === item;
     return (
       <TouchableOpacity
         activeOpacity={ActiveOpacity}
@@ -137,11 +168,11 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         };
       });
     },
-    [profile.orientation, setProfile],
+    [profile?.orientation, setProfile],
   );
 
   const renderIntrustedView = ({item, index}: {item: any; index: number}) => {
-    // const Selected = profile.orientation === item;
+    // const Selected = profile?.orientation === item;
     const Selected =
       profile?.orientation && profile?.orientation?.length !== 0
         ? profile?.orientation?.includes(item.name)
@@ -238,7 +269,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
           </View>
         );
       },
-    [profile.likes_into, handleOptionPress],
+    [profile?.likes_into, handleOptionPress],
   );
 
   //* ======================= OTHER =======================
@@ -254,39 +285,42 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
       setProfile(prevProfile => {
         if (
           'magical_person' in prevProfile &&
-          value in prevProfile.magical_person
+          value in prevProfile?.magical_person
         ) {
           return {
             ...prevProfile,
             magical_person: {
-              ...prevProfile.magical_person,
+              ...prevProfile?.magical_person,
               [value]: name,
             },
           };
         } else if (
           'education' in prevProfile &&
-          value in prevProfile.education
+          value in prevProfile?.education
         ) {
           return {
             ...prevProfile,
             education: {
-              ...prevProfile.education,
+              ...prevProfile?.education,
               [value]: name,
             },
           };
-        } else if ('habits' in prevProfile && value in prevProfile.habits) {
+        } else if ('habits' in prevProfile && value in prevProfile?.habits) {
           return {
             ...prevProfile,
             habits: {
-              ...prevProfile.habits,
+              ...prevProfile?.habits,
               [value]: name,
             },
           };
-        } else if ('location' in prevProfile && value in prevProfile.location) {
+        } else if (
+          'location' in prevProfile &&
+          value in prevProfile?.location
+        ) {
           return {
             ...prevProfile,
             location: {
-              ...prevProfile.location,
+              ...prevProfile?.location,
               [value]: name,
             },
           };
@@ -323,15 +357,15 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
           selectedOption = profile[value] === item;
         } else if (
           'magical_person' in profile &&
-          value in profile.magical_person
+          value in profile?.magical_person
         ) {
-          selectedOption = profile.magical_person[value] === item;
-        } else if ('education' in profile && value in profile.education) {
-          selectedOption = profile.education[value] === item;
-        } else if ('habits' in profile && value in profile.habits) {
-          selectedOption = profile.habits[value] === item;
-        } else if ('location' in profile && value in profile.location) {
-          selectedOption = profile.location[value] === item;
+          selectedOption = profile?.magical_person[value] === item;
+        } else if ('education' in profile && value in profile?.education) {
+          selectedOption = profile?.education[value] === item;
+        } else if ('habits' in profile && value in profile?.habits) {
+          selectedOption = profile?.habits[value] === item;
+        } else if ('location' in profile && value in profile?.location) {
+          selectedOption = profile?.location[value] === item;
         }
 
         return (
@@ -366,13 +400,9 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
     <ScrollView style={styles.BottomSheetContainerView}>
       {/* Gender */}
       <View
-        // onLayout={event => {
-        //   const layout = event.nativeEvent.layout;
-        //   console.log('View 1 height:', layout.height);
-        //   console.log('View 1 width:', layout.width);
-        //   console.log('View 1 x:', layout.x);
-        //   console.log('View 1 y:', layout.y);
-        // }}
+        onLayout={event => {
+          StoreViewPosition('Gender', event.nativeEvent.layout.y);
+        }}
         style={styles.TextViewForSpace}>
         <View style={styles.TitleFlexView}>
           <Image
@@ -398,8 +428,8 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
                 {
                   width: hp('12%'),
                   backgroundColor:
-                    profile.gender === gender ? COLORS.Primary : COLORS.White,
-                  borderWidth: profile.gender === gender ? 2 : 0,
+                    profile?.gender === gender ? COLORS.Primary : COLORS.White,
+                  borderWidth: profile?.gender === gender ? 2 : 0,
                 },
               ]}>
               <Text
@@ -407,7 +437,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
                   styles.GenderText,
                   {
                     color:
-                      profile.gender === gender ? COLORS.White : COLORS.Gray,
+                      profile?.gender === gender ? COLORS.White : COLORS.Gray,
                   },
                 ]}>
                 {gender}
@@ -418,7 +448,11 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
       </View>
 
       {/* I'm Into */}
-      <View style={styles.TextViewForSpace}>
+      <View
+        style={styles.TextViewForSpace}
+        onLayout={event => {
+          StoreViewPosition('ImInto', event.nativeEvent.layout.y);
+        }}>
         <View style={styles.ImIntoTitleFlexView}>
           <View
             style={[
@@ -459,7 +493,11 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
       </View>
 
       {/* Hoping || Looking For */}
-      <View style={styles.TextViewForSpace}>
+      <View
+        style={styles.TextViewForSpace}
+        onLayout={event => {
+          StoreViewPosition('LookingFor', event.nativeEvent.layout.y);
+        }}>
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
@@ -480,7 +518,11 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
       </View>
 
       {/* Interested in */}
-      <View style={styles.TextViewForSpace}>
+      <View
+        style={styles.TextViewForSpace}
+        onLayout={event => {
+          StoreViewPosition('IntrustedIn', event.nativeEvent.layout.y);
+        }}>
         <View style={styles.ImIntoTitleFlexView}>
           <View
             style={[
@@ -515,7 +557,11 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
       </View>
 
       {/* Zodiac Sign */}
-      <View style={styles.TextViewForSpace}>
+      <View
+        style={styles.TextViewForSpace}
+        onLayout={event => {
+          StoreViewPosition('ZodiacSign', event.nativeEvent.layout.y);
+        }}>
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
@@ -549,7 +595,11 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
       </View>
 
       {/* Communication Style */}
-      <View style={styles.TextViewForSpace}>
+      <View
+        style={styles.TextViewForSpace}
+        onLayout={event => {
+          StoreViewPosition('CommunicationStyle', event.nativeEvent.layout.y);
+        }}>
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
@@ -583,7 +633,11 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
       </View>
 
       {/* Exercise */}
-      <View style={styles.TextViewForSpace}>
+      <View
+        style={styles.TextViewForSpace}
+        onLayout={event => {
+          StoreViewPosition('Exercise', event.nativeEvent.layout.y);
+        }}>
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
@@ -613,7 +667,11 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
       </View>
 
       {/* Smoke & Drink */}
-      <View style={styles.TextViewForSpace}>
+      <View
+        style={styles.TextViewForSpace}
+        onLayout={event => {
+          StoreViewPosition('SmokeAndDrink', event.nativeEvent.layout.y);
+        }}>
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
@@ -641,7 +699,11 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
       </View>
 
       {/* Movie */}
-      <View style={styles.TextViewForSpace}>
+      <View
+        style={styles.TextViewForSpace}
+        onLayout={event => {
+          StoreViewPosition('Movie', event.nativeEvent.layout.y);
+        }}>
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
@@ -669,7 +731,11 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
       </View>
 
       {/* Drink */}
-      <View style={styles.TextViewForSpace}>
+      <View
+        style={styles.TextViewForSpace}
+        onLayout={event => {
+          StoreViewPosition('Drink', event.nativeEvent.layout.y);
+        }}>
         <View style={styles.TitleFlexView}>
           <Image
             resizeMode="contain"
@@ -894,7 +960,7 @@ const styles = StyleSheet.create({
 //   const onPressLookingFor = useCallback(
 //     (item: ItemProps) => {
 //       //* Check if the selected item is already in the array
-//       const isSelected = profile.hoping.Title === item?.Title;
+//       const isSelected = profile?.hoping.Title === item?.Title;
 
 //       //* If the selected item is already in the array, unselect it
 //       if (isSelected) {
@@ -915,11 +981,11 @@ const styles = StyleSheet.create({
 //         }));
 //       }
 //     },
-//     [profile.hoping, setProfile],
+//     [profile?.hoping, setProfile],
 //   );
 
 //   const renderHopingView = ({item, index}: {item: any; index: number}) => {
-//     const Selected = profile.hoping.Title === item?.Title;
+//     const Selected = profile?.hoping.Title === item?.Title;
 //     return (
 //       <TouchableOpacity
 //         activeOpacity={ActiveOpacity}
@@ -987,7 +1053,7 @@ const styles = StyleSheet.create({
 //   const renderImIntoList = useMemo(
 //     () =>
 //       ({item}: {item: {id: number; name: string}}) => {
-//         const selectedOption = profile.likes_into.includes(item.name);
+//         const selectedOption = profile?.likes_into.includes(item.name);
 //         return (
 //           <View style={styles.MultiSelectOptionContainer}>
 //             <TouchableOpacity
@@ -1009,7 +1075,7 @@ const styles = StyleSheet.create({
 //           </View>
 //         );
 //       },
-//     [profile.likes_into, handleOptionPress],
+//     [profile?.likes_into, handleOptionPress],
 //   );
 //   //* ======================= END =======================
 
@@ -1046,7 +1112,7 @@ const styles = StyleSheet.create({
 //   const renderZodiacSign = useMemo(
 //     () =>
 //       ({item}: {item: string}) => {
-//         const selectedOption = profile.magical_person.star_sign.includes(item);
+//         const selectedOption = profile?.magical_person.star_sign.includes(item);
 //         return (
 //           <View style={styles.MultiSelectOptionContainer}>
 //             <TouchableOpacity
@@ -1070,7 +1136,7 @@ const styles = StyleSheet.create({
 //           </View>
 //         );
 //       },
-//     [profile.magical_person.star_sign, handleZodiacSignPress],
+//     [profile?.magical_person.star_sign, handleZodiacSignPress],
 //   );
 //   //* ======================= END =======================
 
@@ -1110,8 +1176,8 @@ const styles = StyleSheet.create({
 //                 {
 //                   width: hp('12%'),
 //                   backgroundColor:
-//                     profile.gender === gender ? COLORS.Primary : COLORS.White,
-//                   borderWidth: profile.gender === gender ? 2 : 0,
+//                     profile?.gender === gender ? COLORS.Primary : COLORS.White,
+//                   borderWidth: profile?.gender === gender ? 2 : 0,
 //                 },
 //               ]}>
 //               <Text
@@ -1119,7 +1185,7 @@ const styles = StyleSheet.create({
 //                   styles.GenderText,
 //                   {
 //                     color:
-//                       profile.gender === gender ? COLORS.White : COLORS.Gray,
+//                       profile?.gender === gender ? COLORS.White : COLORS.Gray,
 //                   },
 //                 ]}>
 //                 {gender}
@@ -1148,7 +1214,7 @@ const styles = StyleSheet.create({
 //             <Text style={styles.NameText}>I'm Into</Text>
 //           </View>
 //           <Text style={styles.NameText}>
-//             {`${profile.likes_into.length}/5`}
+//             {`${profile?.likes_into.length}/5`}
 //           </Text>
 //         </View>
 //         <View style={styles.BirthdayInputView}>

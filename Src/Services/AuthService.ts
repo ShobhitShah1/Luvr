@@ -40,6 +40,7 @@ export const initGoogleSignIn = async () => {
   try {
     GoogleSignin.configure({
       webClientId: ApiConfig.GOOGLE_WEB_CLIENT_ID,
+      offlineAccess: true,
     });
   } catch {}
 };
