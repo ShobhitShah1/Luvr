@@ -1,26 +1,22 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
 import React, {FC} from 'react';
-import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
-import CommonIcons from '../../../Common/CommonIcons';
-import CommonImages from '../../../Common/CommonImages';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import CommonImages from '../../../Common/CommonImages';
+import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import {formatDate} from '../../../Utils/formatDate';
 
 interface NotificationData {
-  id: number;
-  image: string;
   title: string;
   description: string;
-  time: string | object;
+  date: string;
 }
 
 const RenderNotificationView: FC<NotificationData> = ({
-  id,
-  image,
   title,
   description,
-  time,
+  date,
 }) => {
-  console.log('time', time);
+  const formattedDate = formatDate(date);
   return (
     <View style={styles.Container}>
       <View style={styles.DetailBoxContainerView}>
@@ -34,10 +30,12 @@ const RenderNotificationView: FC<NotificationData> = ({
           <Text numberOfLines={3} style={styles.TitleMatchText}>
             {title}
           </Text>
-          <Text style={styles.DescriptionText}>{description}</Text>
+          <Text numberOfLines={5} style={styles.DescriptionText}>
+            {description}
+          </Text>
         </View>
         <View style={styles.LikeButtonView}>
-          <Text style={styles.TimeText}>{'10:50 AM'}</Text>
+          <Text style={styles.TimeText}>{String(formattedDate)}</Text>
         </View>
       </View>
     </View>
@@ -57,7 +55,7 @@ const styles = StyleSheet.create({
     borderRadius: hp('4%'),
     marginVertical: hp('1%'),
     paddingVertical: hp('1.8%'),
-    paddingHorizontal: hp('1.5%'),
+    paddingHorizontal: hp('1.2%'),
     backgroundColor: COLORS.White,
     justifyContent: 'space-between',
   },
@@ -80,25 +78,24 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
   },
   LikeImageProfile: {
-    width: 60,
-    height: 60,
+    width: 55,
+    height: 55,
     borderRadius: 500,
   },
   LikeTextView: {
-    width: '63%',
-    paddingHorizontal: 10,
+    width: '55%',
+    paddingLeft: 2,
     justifyContent: 'center',
   },
   LikeButtonView: {
-    width: '18%',
-
-    // alignItems: 'center',
-    // justifyContent: 'center',
+    width: '25%',
+    justifyContent: 'center',
   },
   TimeText: {
     ...GROUP_FONT.body4,
     color: COLORS.Black,
-    // width: 60,
-    // height: 60,
+    textAlign: 'center',
+    fontSize: 12,
+    padding: 0,
   },
 });

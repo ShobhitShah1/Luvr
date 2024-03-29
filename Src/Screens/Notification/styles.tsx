@@ -8,6 +8,7 @@ const styles = StyleSheet.create({
   },
   NotificationViewContainer: {
     width: '90%',
+    flex: 1,
     justifyContent: 'center',
     alignSelf: 'center',
   },

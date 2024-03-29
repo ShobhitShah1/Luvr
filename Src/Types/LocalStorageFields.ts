@@ -46,6 +46,7 @@ export const LocalStorageFields = {
   setting_people_with_range: 'setting_people_with_range',
   setting_show_me: 'setting_show_me',
   setting_show_people_with_range: 'setting_show_people_with_range',
+  email: 'email',
 } as const;
 
 export type UserField = keyof typeof LocalStorageFields;

@@ -1,3 +1,5 @@
+import {Platform} from 'react-native';
+
 const ApiConfig = {
   DEBUG: false,
   BASE_URL: 'https://nirvanatechlabs.in/dating/',
@@ -17,5 +19,10 @@ const ApiConfig = {
   BlockProfile: 'block_users',
   ReportProfile: 'report_users',
 };
+
+export const skus = Platform.select({
+  android: ['com.luvr.dating.donation'],
+  ios: [''],
+});
 
 export default ApiConfig;

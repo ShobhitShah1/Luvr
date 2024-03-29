@@ -1,11 +1,16 @@
-import notifee from '@notifee/react-native';
+import notifee, {
+  AndroidImportance,
+  AndroidVisibility,
+} from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 import React, {useEffect} from 'react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {ToastProvider} from 'react-native-toast-notifications';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
+import {APP_NAME} from './Src/Config/Setting';
 import {UserDataProvider} from './Src/Contexts/UserDataContext';
+import {addNotification} from './Src/Redux/Action/userActions';
 import {persistor, store} from './Src/Redux/Store/store';
 import MainRoute from './Src/Routes/MainRoute';
 import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
@@ -18,28 +23,52 @@ export default function App() {
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log('Hy, Got Notification:--:>', remoteMessage);
-      onDisplayNotification();
+      const title =
+        remoteMessage.notification?.title || `${APP_NAME} Notification`;
+      const body = remoteMessage.notification?.body || '';
+      onDisplayNotification(title, body);
+      store &&
+        store.dispatch(
+          addNotification({title, description: body, date: new Date()}),
+        );
     });
-
-    async function onDisplayNotification() {
-      await notifee.requestPermission();
-
-      const channelId = await notifee.createChannel({
-        id: 'Test',
-        name: 'Test Channel',
-      });
-
-      await notifee.displayNotification({
-        title: 'Notification Title',
-        body: 'Main body content of the notification',
-        android: {
-          channelId,
-        },
-      });
-    }
 
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Message handled in the background!', remoteMessage);
+      console.log('Hy, Got Notification:--:>', remoteMessage);
+      const title =
+        remoteMessage.notification?.title || `${APP_NAME} Notification`;
+      const body = remoteMessage.notification?.body || '';
+      onDisplayNotification(title, body);
+      store &&
+        store.dispatch(
+          addNotification({title, description: body, date: new Date()}),
+        );
+    });
+  }, []);
+
+  async function onDisplayNotification(title: string, body: string) {
+    await notifee.requestPermission();
+
+    const channelId = await notifee.createChannel({
+      id: 'General',
+      name: 'General Notification',
+      visibility: AndroidVisibility.PUBLIC,
+      importance: AndroidImportance.HIGH,
+    });
+
+    await notifee.displayNotification({
+      title: title || `${APP_NAME} Notification`,
+      body: body,
+      android: {
+        channelId,
+      },
+    });
+  }
 
   return (
     <Provider store={store}>

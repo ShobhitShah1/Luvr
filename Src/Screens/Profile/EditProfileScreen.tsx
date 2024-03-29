@@ -10,6 +10,7 @@ import {
 import {BlurView} from '@react-native-community/blur';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   Image,
@@ -563,7 +564,7 @@ const EditProfileScreen = () => {
         eventName: 'update_profile',
         mobile_no: profile?.mobile_no,
         about: Bio || profile?.about,
-        identity: UserData?.identity || '',
+        identity: UserData?.identity || UserData.email,
         profile_image: profile?.profile_image,
         full_name: UserName,
         birthdate:
@@ -1161,17 +1162,23 @@ const EditProfileScreen = () => {
                   style={styles.ModalCloseIcon}
                 />
               </TouchableOpacity>
-              <TouchableOpacity
-                disabled={IsFetchDataAPILoading}
-                onPress={() => onUpdateProfile()}
-                style={styles.ModalSubmitButton}
-                activeOpacity={ActiveOpacity}>
-                <Image
-                  source={CommonIcons.Check}
-                  tintColor={COLORS.Primary}
-                  style={styles.ModalSubmitIcon}
-                />
-              </TouchableOpacity>
+              {IsFetchDataAPILoading ? (
+                <View style={styles.ModalSubmitButton}>
+                  <ActivityIndicator size={17} color={COLORS.Primary} />
+                </View>
+              ) : (
+                <TouchableOpacity
+                  disabled={IsFetchDataAPILoading}
+                  onPress={() => onUpdateProfile()}
+                  style={styles.ModalSubmitButton}
+                  activeOpacity={ActiveOpacity}>
+                  <Image
+                    source={CommonIcons.Check}
+                    tintColor={COLORS.Primary}
+                    style={styles.ModalSubmitIcon}
+                  />
+                </TouchableOpacity>
+              )}
             </View>
             <BottomSheetScrollView style={{}} ref={scrollViewRef}>
               <EditProfileSheetView

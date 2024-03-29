@@ -1,3 +1,6 @@
+/* eslint-disable react-native/no-inline-styles */
+import {useNavigation} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   StatusBar,
@@ -6,26 +9,83 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
-import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
+import {
+  flushFailedPurchasesCachedAsPendingAndroid,
+  getProducts,
+  initConnection,
+  requestPurchase,
+} from 'react-native-iap';
 import CommonIcons from '../../Common/CommonIcons';
+import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import Button from '../../Components/Button';
-import {useNavigation} from '@react-navigation/native';
+import {skus} from '../../Config/ApiConfig';
 import UserService from '../../Services/AuthService';
 import {useCustomToast} from '../../Utils/toastUtils';
-import CommonImages from '../../Common/CommonImages';
 
 const BackgroundImageSize = 150;
+
 const DonationScreen = () => {
   const navigation = useNavigation();
-  const [PaymentSuccess, setPaymentSuccess] = useState(false);
   const {showToast} = useCustomToast();
+
+  const [PaymentSuccess, setPaymentSuccess] = useState(false);
+  const [IAPConnected, setIAPConnected] = useState(false);
+  const [PaymentLoader, setPaymentLoader] = useState(false);
+  const [DonationAmount, setDonationAmount] = useState<string | number>(0);
+
+  useEffect(() => {
+    InitializedConnection();
+  }, []);
+
+  const InitializedConnection = async () => {
+    setPaymentLoader(true);
+    try {
+      initConnection().then(res => {
+        console.log('Connection', res);
+        setIAPConnected(res);
+        GetProducts();
+        flushFailedPurchasesCachedAsPendingAndroid();
+      });
+    } catch (error) {
+      setPaymentLoader(false);
+    }
+  };
+
+  const GetProducts = async () => {
+    const Products = await getProducts({skus});
+    // console.log('Products', Products);
+    if (Products) {
+      Products.map(res => {
+        console.log(res.localizedPrice);
+        setDonationAmount(res.localizedPrice);
+      });
+    }
+    setPaymentLoader(false);
+  };
+
+  const RequestPurchase = async () => {
+    if (skus) {
+      setPaymentLoader(true);
+      console.log('⏳ Payment Loading .......');
+      try {
+        const request = await requestPurchase({skus});
+        console.log('📋 RequestIOSPayment:', request);
+        DonationAPICall();
+        console.log('✅ All Set');
+      } catch (error) {
+        console.log('⚠️ Error', error);
+        setPaymentLoader(false);
+      }
+    } else {
+      setPaymentLoader(false);
+    }
+  };
 
   const DonationAPICall = async () => {
     try {
       const userDataForApi = {
         eventName: 'donation',
-        donation_amount: 0,
+        donation_amount: DonationAmount,
       };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
@@ -40,9 +100,10 @@ const DonationScreen = () => {
     } catch (error) {
       console.log('Something Went Wrong With Feting API Data', error);
     } finally {
-      //  setRefreshing(false);
+      setPaymentLoader(false);
     }
   };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.Secondary} />
@@ -76,7 +137,7 @@ const DonationScreen = () => {
 
             <Text style={styles.DonateDescription}>
               {PaymentSuccess
-                ? 'Your donation of $5 will help us a lot, It will make a big difference.'
+                ? `Your donation of ${DonationAmount} will help us a lot, It will make a big difference.`
                 : 'Donate us something to make this app more better!'}
             </Text>
           </View>
@@ -84,11 +145,15 @@ const DonationScreen = () => {
 
         <View style={styles.DonateButtonContainer}>
           <Button
+            isLoading={PaymentLoader}
             onPress={() => {
-              DonationAPICall();
+              RequestPurchase();
+              // DonationAPICall();
             }}
             ButtonTitle={
-              PaymentSuccess ? 'Make another donation' : 'Donate now $5'
+              PaymentSuccess
+                ? 'Make another donation'
+                : `Donate now ${DonationAmount}`
             }
           />
           {!PaymentSuccess && (

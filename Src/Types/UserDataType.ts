@@ -46,6 +46,7 @@ export interface UserDataType {
   [LocalStorageFields.setting_people_with_range]: boolean;
   [LocalStorageFields.setting_show_me]: string;
   [LocalStorageFields.setting_show_people_with_range]: boolean;
+  [LocalStorageFields.email]: string;
 }
 
 export default UserDataType;

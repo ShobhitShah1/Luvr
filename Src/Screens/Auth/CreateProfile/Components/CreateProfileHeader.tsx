@@ -18,6 +18,7 @@ interface CreateProfileProps {
   Skip: boolean;
   handleSkipPress?: () => void;
   hideBack?: boolean;
+  canGoBack?: boolean;
 }
 
 const CreateProfileHeader: FC<CreateProfileProps> = ({
@@ -25,6 +26,7 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({
   Skip,
   handleSkipPress,
   hideBack,
+  canGoBack,
 }) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
@@ -33,17 +35,19 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({
     <View style={styles.headerContainer}>
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.Secondary} />
       <View style={styles.buttonAndTitleContainer}>
-        <TouchableOpacity
-          style={styles.backButtonView}
-          onPress={() => navigation.goBack()}>
-          {!hideBack && (
-            <Image
-              resizeMode="contain"
-              source={CommonIcons.TinderBack}
-              style={styles.cancelButton}
-            />
-          )}
-        </TouchableOpacity>
+        {
+          <TouchableOpacity
+            style={styles.backButtonView}
+            onPress={() => navigation.goBack()}>
+            {!hideBack && (
+              <Image
+                resizeMode="contain"
+                source={CommonIcons.TinderBack}
+                style={styles.cancelButton}
+              />
+            )}
+          </TouchableOpacity>
+        }
 
         <View style={styles.pageCountView}>
           {ProgressCount !== 0 && (

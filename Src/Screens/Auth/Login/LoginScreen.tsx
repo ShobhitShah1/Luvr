@@ -88,6 +88,18 @@ const LoginScreen: FC = () => {
 
       // Proceed with your logic for successful login
       console.log('Updating fields and navigating...');
+      await Promise.all([
+        dispatch(
+          updateField(LocalStorageFields.identity, GoogleUserData.user.email),
+        ),
+        dispatch(
+          updateField(LocalStorageFields.email, GoogleUserData.user.email),
+        ),
+        dispatch(updateField(LocalStorageFields.login_type, 'social')),
+      ]);
+
+      console.log(GoogleUserData.user.email);
+
       handleNavigation(
         GoogleUserData.user.email,
         GoogleUserData.user.name || GoogleUserData.user.givenName || '',
@@ -173,23 +185,25 @@ const LoginScreen: FC = () => {
 
       if (APIResponse?.data?.token) {
         await Promise.all([
-          dispatch(updateField(LocalStorageFields.login_type, 'social')),
           dispatch(
             updateField(LocalStorageFields.Token, APIResponse.data.token),
           ),
-          dispatch(updateField(LocalStorageFields.identity, email)),
           dispatch(updateField(LocalStorageFields.isVerified, true)),
         ]);
-        console.log('Login Is Email Stored', email);
+        console.log('REDUX:', userData);
         CheckDataAndNavigateToNumber();
       } else {
         throw new Error('Token not found in API response');
       }
     } catch (error) {
       console.error('Navigation error:', error);
+
+      //* If Token Not Get From API User Not Filled Information!
       navigation?.replace('NumberVerification', {
         screen: 'PhoneNumber',
       });
+      console.log('REDUX:', userData);
+
       setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
     }
   };

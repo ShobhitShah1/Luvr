@@ -67,6 +67,7 @@ export default function MainRoute() {
     if (authStatus === 1) {
       const Token = await messaging().getToken();
       if (Token) {
+        console.log('FCM TOKEN:', Token);
         store.dispatch(
           updateField(LocalStorageFields.notification_token, Token),
         );

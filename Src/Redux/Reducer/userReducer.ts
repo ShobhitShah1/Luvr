@@ -7,11 +7,18 @@ import {
   RESET_SWIPER_KEYS,
   SET_USER_DATA,
   UPDATE_FIELD,
+  ADD_NOTIFICATION, // Importing the new action type
 } from '../Action/userActions';
 
-const initialState: UserDataType & {swipedLeftUserIds: string[]} & {
+const initialState: UserDataType & {
+  swipedLeftUserIds: string[];
+} & {
   swipedRightUserIds: string[];
-} & {userData: string[]} = {
+} & {
+  userData: string[];
+} & {
+  notifications: string[]; // Adding notifications to the initial state
+} = {
   ...Object.keys(LocalStorageFields).reduce(
     (acc, field) => ({...acc, [field]: ''}),
     {} as UserDataType,
@@ -19,11 +26,18 @@ const initialState: UserDataType & {swipedLeftUserIds: string[]} & {
   swipedLeftUserIds: [],
   swipedRightUserIds: [],
   userData: [],
+  notifications: [], // Initializing notifications array
 };
 
 const userReducer = (
-  state: UserDataType & {swipedLeftUserIds: string[]} & {
+  state: UserDataType & {
+    swipedLeftUserIds: string[];
+  } & {
     swipedRightUserIds: string[];
+  } & {
+    userData: string[];
+  } & {
+    notifications: string[];
   } = initialState,
   action: any,
 ) => {
@@ -31,7 +45,7 @@ const userReducer = (
     case SET_USER_DATA:
       return {
         ...state,
-        userData: action.payload,
+        userData: action.value || action.payload,
       };
     case UPDATE_FIELD:
       return {
@@ -54,6 +68,11 @@ const userReducer = (
       return {
         ...state,
         swipedRightUserIds: Array.from(uniqueUserIds),
+      };
+    case ADD_NOTIFICATION:
+      return {
+        ...state,
+        notifications: [...state.notifications, action.payload],
       };
     case RESET_SWIPER_KEYS:
       return {
