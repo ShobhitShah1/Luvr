@@ -668,7 +668,7 @@ const EditProfileScreen = () => {
               onChangeText={setUserName}
               maxLength={20}
               TextInputContainerStyle={{justifyContent: 'center'}}
-              TextInputStyle={styles.UserFullNameStyle}
+              TextInputStyle={[styles.UserFullNameStyle, {}]}
               IsViewLoading={IsFetchDataAPILoading}
               PlaceholderText="What's your full name?"
             />
@@ -1213,12 +1213,17 @@ const styles = StyleSheet.create({
     width: '90%',
     alignSelf: 'center',
   },
-  DetailContainerView: {},
+  DetailContainerView: {
+    justifyContent: 'center',
+  },
   UserFullNameStyle: {
     ...GROUP_FONT.body3,
     color: COLORS.Black,
     fontSize: 15,
     fontFamily: FONTS.Medium,
+    justifyContent: 'center',
+
+    paddingVertical: Platform.OS === 'ios' ? 25 : 0,
   },
   BirthDateContainerView: {
     flexDirection: 'row',

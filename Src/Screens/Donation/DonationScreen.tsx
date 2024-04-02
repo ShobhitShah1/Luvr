@@ -3,6 +3,8 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
   Image,
+  Platform,
+  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
@@ -106,9 +108,15 @@ const DonationScreen = () => {
 
   return (
     <View style={styles.container}>
+      <SafeAreaView />
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.Secondary} />
       <TouchableOpacity
-        style={{left: 20, position: 'absolute', top: 20}}
+        style={{
+          zIndex: 9999,
+          left: 20,
+          position: 'absolute',
+          top: Platform.OS === 'ios' ? 60 : 20,
+        }}
         activeOpacity={ActiveOpacity}
         onPress={() => navigation.goBack()}>
         <Image

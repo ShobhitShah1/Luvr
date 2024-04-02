@@ -394,7 +394,8 @@ const ExploreCardScreen: FC = () => {
               <TouchableOpacity
                 activeOpacity={ActiveOpacity}
                 onPress={() => {
-                  FetchAPIData(cardToSkipNumber);
+                  navigation.navigate('Setting');
+                  // FetchAPIData(cardToSkipNumber);
                 }}
                 style={styles.ChangeSettingButton}>
                 <Text style={styles.ChangeSettingText}>Change Setting</Text>

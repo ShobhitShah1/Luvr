@@ -3,6 +3,8 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC} from 'react';
 import {
   Image,
+  Platform,
+  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
@@ -33,6 +35,7 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({
 
   return (
     <View style={styles.headerContainer}>
+      <SafeAreaView />
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.Secondary} />
       <View style={styles.buttonAndTitleContainer}>
         {
@@ -79,7 +82,8 @@ const styles = StyleSheet.create({
   },
   buttonAndTitleContainer: {
     width: '100%',
-    margin: hp('1.5%'),
+    marginHorizontal: hp('1.5%'),
+    marginVertical: Platform.OS === 'ios' ? 0 : hp('1.5%'),
     flexDirection: 'row',
     justifyContent: 'space-between',
   },

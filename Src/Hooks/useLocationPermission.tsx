@@ -5,6 +5,7 @@ import {store} from '../Redux/Store/store';
 import {updateField} from '../Redux/Action/userActions';
 import {LocalStorageFields} from '../Types/LocalStorageFields';
 import Geolocation from 'react-native-geolocation-service';
+import {APP_NAME} from '../Config/Setting';
 
 export const useLocationPermission = () => {
   const [locationPermission, setLocationPermission] = useState(false);
@@ -36,6 +37,7 @@ export const useLocationPermission = () => {
           : PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
 
       const result = await check(permission);
+      console.log('result', result);
       if (result === RESULTS.GRANTED) {
         setLocationPermission(true);
         StoreLetAndLong();
@@ -85,7 +87,7 @@ export const useLocationPermission = () => {
   const showAlertAndNavigateToSettings = () => {
     Alert.alert(
       'Location Permission',
-      '{AppName} needs access to your location for a better user experience. This allows us to show you potential matches in your area and enhance your overall app experience.',
+      `${APP_NAME} needs access to your location for a better user experience. This allows us to show you potential matches in your area and enhance your overall app experience.`,
       [
         {
           text: 'Cancel',

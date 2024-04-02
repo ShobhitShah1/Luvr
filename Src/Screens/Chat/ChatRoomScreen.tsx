@@ -61,7 +61,9 @@ const ChatRoomScreen = () => {
   useEffect(() => {
     // if (isFocused) {
     setIsSocketLoading(true);
-    const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
+    const socketInstance = io(ApiConfig.SOCKET_BASE_URL, {
+      reconnectionAttempts: 10,
+    });
 
     socketInstance.on('connect', () => {
       setSocket(socketInstance);

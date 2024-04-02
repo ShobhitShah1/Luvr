@@ -11,6 +11,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
   StatusBar,
   StyleSheet,
   View,
@@ -514,7 +515,8 @@ const ChatScreen: FC = () => {
           }}
         />
       </View>
-      {Platform.OS && <KeyboardAvoidingView behavior="height" />}
+      {Platform.OS === 'android' && <KeyboardAvoidingView behavior="height" />}
+      <SafeAreaView />
     </View>
   );
 };

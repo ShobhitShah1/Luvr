@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image, StyleSheet} from 'react-native';
+import {Image, Platform, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS} from '../Common/Theme';
@@ -72,6 +72,7 @@ export default BottomTab;
 
 const styles = StyleSheet.create({
   TabBarIcon: {
+    top: Platform.OS === 'ios' ? 5 : 0,
     resizeMode: 'contain',
     width: hp('3.2%'),
     height: hp('3.2%'),
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   TabBarStyle: {
-    height: hp(7),
+    height: Platform.OS === 'ios' ? hp(8.7) : hp(7),
     marginLeft: hp('-0.5%'),
     marginRight: hp('-0.5%'),
   },

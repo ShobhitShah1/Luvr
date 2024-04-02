@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {Platform, StyleSheet} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   },
   AppNameTitleView: {
     paddingHorizontal: hp('3%'),
-    marginVertical: hp('3%'),
+    marginVertical: Platform.OS === 'ios' ? hp('1%') : hp('3%'),
     justifyContent: 'center',
     maxHeight: '20%',
   },

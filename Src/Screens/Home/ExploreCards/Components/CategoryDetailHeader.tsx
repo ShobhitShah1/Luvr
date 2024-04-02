@@ -1,6 +1,14 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {FC} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
 import {
@@ -22,6 +30,7 @@ const CategoryDetailHeader: FC<CategoryHeaderProps> = ({item}) => {
   const navigation = useNavigation();
   return (
     <View style={styles.Container}>
+      <SafeAreaView />
       <View style={styles.ContentView}>
         <TouchableOpacity
           activeOpacity={ActiveOpacity}
@@ -49,7 +58,7 @@ export default CategoryDetailHeader;
 const styles = StyleSheet.create({
   Container: {
     width: '100%',
-    height: hp('8%'),
+    height: Platform.OS === 'ios' ? hp('12.5%') : hp('8%'),
     justifyContent: 'center',
   },
   ContentView: {

@@ -2,6 +2,8 @@ import {useNavigation} from '@react-navigation/native';
 import React, {FC, useCallback, useEffect} from 'react';
 import {
   Image,
+  Platform,
+  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
@@ -68,6 +70,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
 
   return (
     <View style={styles.Container}>
+      <SafeAreaView />
       <StatusBar
         barStyle={'dark-content'}
         backgroundColor={COLORS.White}
@@ -80,20 +83,22 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
 
         {/* {hideSettingAndNotification === false && showSetting === true && ( */}
         <View style={styles.IconsView}>
-          <TouchableOpacity
-            activeOpacity={ActiveOpacity}
-            onPress={() => {
-              navigation.navigate('Donation');
-            }}
-            style={[styles.DonationContainer]}>
-            <Animated.View style={[styles.IconWrapper, animatedStyle]}>
-              <Image
-                style={styles.DonateIcon}
-                resizeMode="contain"
-                source={CommonIcons.donate_icon}
-              />
-            </Animated.View>
-          </TouchableOpacity>
+          {Platform.OS === 'android' && (
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              onPress={() => {
+                navigation.navigate('Donation');
+              }}
+              style={[styles.DonationContainer]}>
+              <Animated.View style={[styles.IconWrapper, animatedStyle]}>
+                <Image
+                  style={styles.DonateIcon}
+                  resizeMode="contain"
+                  source={CommonIcons.donate_icon}
+                />
+              </Animated.View>
+            </TouchableOpacity>
+          )}
           {hideSettingAndNotification === false && (
             <TouchableOpacity
               activeOpacity={ActiveOpacity}
@@ -134,7 +139,7 @@ export default BottomTabHeader;
 const styles = StyleSheet.create({
   Container: {
     width: '100%',
-    height: hp('8%'),
+    height: Platform.OS === 'ios' ? hp('12.5%') : hp('8%'),
     justifyContent: 'center',
     backgroundColor: COLORS.White,
 

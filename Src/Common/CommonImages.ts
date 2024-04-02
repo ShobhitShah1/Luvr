@@ -6,6 +6,7 @@ const Avoid_Contact = require('../../Assets/Images/avoid_contact.png');
 const LikeCard = require('../../Assets/Images/LikeCard.png');
 const NoChat = require('../../Assets/Images/no_chats_icon.png');
 const ItsAMatch = require('../../Assets/Images/ItsAMatch.png');
+const NoNotification = require('../../Assets/Images/no_notification_icon.png');
 
 export default {
   WelcomeBackground,
@@ -16,4 +17,5 @@ export default {
   LikeCard,
   NoChat,
   ItsAMatch,
+  NoNotification,
 };

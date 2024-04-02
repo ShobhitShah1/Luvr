@@ -41,6 +41,7 @@ import {store} from '../Redux/Store/store';
 import {LocalStorageFields} from '../Types/LocalStorageFields';
 import {updateField} from '../Redux/Action/userActions';
 import DonationScreen from '../Screens/Donation/DonationScreen';
+import ApiConfig from '../Config/ApiConfig';
 
 // SplashScreen.show();
 
@@ -127,7 +128,7 @@ export default function MainRoute() {
       console.error('Error determining initial route:', error);
       setInitialRoute('NumberVerification');
     }
-  }, [isUserVerified, navigationRef, isNavigationReady]);
+  }, [isUserVerified, navigationRef, isNavigationReady, ApiConfig]);
 
   useEffect(() => {
     if (initialRoute) {
@@ -137,7 +138,7 @@ export default function MainRoute() {
       console.log('📱 Screen Will Show:', initialRoute);
       console.log('--------------- SPLASH END ----------------');
     }
-  }, [initialRoute, isUserVerified]);
+  }, [initialRoute, isUserVerified, ApiConfig]);
 
   // Add another useEffect to hide the splash screen when navigation is ready and initial setup is done
   // useEffect(() => {

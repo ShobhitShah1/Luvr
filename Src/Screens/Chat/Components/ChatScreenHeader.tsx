@@ -2,6 +2,8 @@ import {useNavigation} from '@react-navigation/native';
 import React, {FC} from 'react';
 import {
   Image,
+  Platform,
+  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
@@ -24,6 +26,7 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({data}) => {
   const navigation = useNavigation();
   return (
     <View style={styles.Container}>
+      <SafeAreaView />
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.White} />
       <View style={styles.ContentView}>
         <View style={styles.BackAndProfileInfoView}>
@@ -77,7 +80,7 @@ export default ChatScreenHeader;
 const styles = StyleSheet.create({
   Container: {
     width: '100%',
-    height: hp('8%'),
+    height: Platform.OS === 'ios' ? hp('12.5%') : hp('8%'),
     justifyContent: 'center',
     backgroundColor: COLORS.White,
     paddingHorizontal: 7,

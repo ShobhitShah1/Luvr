@@ -13,6 +13,7 @@ import {
   Dimensions,
   FlatList,
   Image,
+  Platform,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -577,6 +578,7 @@ const styles = StyleSheet.create({
   LikeAndRejectButtonView: {
     justifyContent: 'center',
     alignSelf: 'center',
+    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
   },
   DislikeButton: {
     padding: 0,

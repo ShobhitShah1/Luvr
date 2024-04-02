@@ -5,7 +5,15 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useEffect, useState} from 'react';
-import {ImageBackground, ScrollView, StatusBar, Text, View} from 'react-native';
+import {
+  ImageBackground,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  Text,
+  View,
+} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import CommonImages from '../../../Common/CommonImages';
 import CommonLogos from '../../../Common/CommonLogos';
@@ -21,6 +29,7 @@ import remoteConfig from '@react-native-firebase/remote-config';
 import OpenURL from '../../../Components/OpenURL';
 import {APP_NAME} from '../../../Config/Setting';
 import {ProfileType} from '../../../Types/ProfileType';
+import appleAuth from '@invertase/react-native-apple-authentication';
 
 const LoginScreen: FC = () => {
   const navigation =
@@ -31,6 +40,7 @@ const LoginScreen: FC = () => {
   const [IsSocialLoginLoading, setIsSocialLoginLoading] = useState({
     Google: false,
     Facebook: false,
+    Apple: false,
   });
   const [privacyLinks, setPrivacyLinks] = useState<{[key: string]: string}>({
     PrivacyPolicy: '',
@@ -82,7 +92,11 @@ const LoginScreen: FC = () => {
       console.log('Initiating Google login...');
       setIsSocialLoginLoading({...IsSocialLoginLoading, Google: true});
 
-      await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
+      if (Platform.OS === 'android') {
+        await GoogleSignin.hasPlayServices({
+          showPlayServicesUpdateDialog: true,
+        });
+      }
       const GoogleUserData = await GoogleSignin.signIn();
       // console.log('Google login successful:', GoogleUserData);
 
@@ -205,6 +219,7 @@ const LoginScreen: FC = () => {
       console.log('REDUX:', userData);
 
       setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
+      setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
     }
   };
 
@@ -227,6 +242,39 @@ const LoginScreen: FC = () => {
       console.log('Error in CheckDataAndNavigateToNumber');
     } finally {
       setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
+      setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: true});
+
+    try {
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+      });
+      const credentialState = await appleAuth.getCredentialStateForUser(
+        appleAuthRequestResponse.user,
+      );
+
+      if (credentialState === appleAuth.State.AUTHORIZED) {
+        if (
+          appleAuthRequestResponse.email &&
+          (appleAuthRequestResponse.fullName?.givenName ||
+            appleAuthRequestResponse.fullName?.familyName)
+        ) {
+          handleNavigation(
+            appleAuthRequestResponse.email,
+            appleAuthRequestResponse.fullName?.givenName ||
+              appleAuthRequestResponse.fullName?.familyName ||
+              '',
+          );
+        }
+      }
+    } catch (error) {
+      console.log('ERROR:', error);
+      setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
     }
   };
 
@@ -238,6 +286,7 @@ const LoginScreen: FC = () => {
       style={styles.Container}
       imageStyle={styles.BGImageStyle}>
       <StatusBar backgroundColor={'#843841'} barStyle="light-content" />
+      <SafeAreaView />
       <ScrollView
         bounces={false}
         style={styles.ContentView}
@@ -269,6 +318,14 @@ const LoginScreen: FC = () => {
               Icon={CommonLogos.GoogleLogo}
               onPress={() => {
                 handleGoogleLogin();
+              }}
+            />
+            <LoginButton
+              IsLoading={IsSocialLoginLoading.Apple}
+              Title="LOGIN WITH APPLE"
+              Icon={CommonLogos.AppleLoginLogo}
+              onPress={() => {
+                handleAppleLogin();
               }}
             />
             {/* <LoginButton

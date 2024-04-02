@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>591101539634-9g3005qpghr05o36q8d883fulfl7brhq.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.591101539634-9g3005qpghr05o36q8d883fulfl7brhq</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>591101539634-dvh4knnfrrbl776f6qegc5t6aqant9r4.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCjrnHJtd0EMx6v7YhNRSIcaK9Vy5bf6hg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>591101539634</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.luvr.dating</string>
+	<key>PROJECT_ID</key>
+	<string>luvr-68981</string>
+	<key>STORAGE_BUCKET</key>
+	<string>luvr-68981.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:591101539634:ios:c73581d97f98afc189132b</string>
+</dict>
+</plist>

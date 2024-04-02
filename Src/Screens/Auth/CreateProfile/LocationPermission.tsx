@@ -26,18 +26,19 @@ const LocationPermission: FC = () => {
   const [IsLocationLoading, setIsLocationLoading] = useState(false);
 
   const onNextPress = async () => {
-    if (locationPermission) {
-      setIsLocationLoading(true);
-      navigateToNextScreen();
-    } else {
-      const requestPermission = await requestLocationPermission();
-      if (requestPermission) {
-        setIsLocationLoading(true);
-        navigateToNextScreen();
-      } else {
-        setIsLocationLoading(false);
-      }
-    }
+    handleNavigation();
+    // if (locationPermission) {
+    //   setIsLocationLoading(true);
+    //   navigateToNextScreen();
+    // } else {
+    //   const requestPermission = await requestLocationPermission();
+    //   if (requestPermission) {
+    //     setIsLocationLoading(true);
+    //     navigateToNextScreen();
+    //   } else {
+    //     setIsLocationLoading(false);
+    //   }
+    // }
   };
 
   const navigateToNextScreen = async () => {

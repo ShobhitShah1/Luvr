@@ -1,5 +1,7 @@
 import {
   Image,
+  Platform,
+  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
@@ -29,6 +31,7 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({
 
   return (
     <View style={styles.Container}>
+      <SafeAreaView />
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.White} />
       <View style={styles.ContentView}>
         <TouchableOpacity
@@ -42,7 +45,13 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({
             source={CommonIcons.TinderBack}
           />
         </TouchableOpacity>
-        <View style={styles.TitleView}>
+        <View
+          style={[
+            styles.TitleView,
+            {
+              right: Title === 'Notification' ? 10 : 0,
+            },
+          ]}>
           <Text style={styles.Title}>{Title}</Text>
         </View>
         {Title !== 'Notification' ? (
@@ -83,7 +92,8 @@ export default ProfileAndSettingHeader;
 const styles = StyleSheet.create({
   Container: {
     width: '100%',
-    height: hp('8%'),
+    // height: hp('8%'),
+    height: Platform.OS === 'ios' ? hp('12.5%') : hp('8%'),
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.White,
@@ -98,7 +108,9 @@ const styles = StyleSheet.create({
   },
   ContentView: {
     width: '90%',
+    top: Platform.OS === 'ios' ? 5 : 0,
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
   ViewStyle: {
