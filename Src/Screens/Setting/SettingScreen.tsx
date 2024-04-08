@@ -6,7 +6,6 @@ import messaging from '@react-native-firebase/messaging';
 import remoteConfig from '@react-native-firebase/remote-config';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {useEffect, useState} from 'react';
 import {
   Alert,
@@ -62,7 +61,7 @@ const SettingScreen = () => {
   const [DeleteAccountModalView, setDeleteAccountModalView] = useState(false);
   const [RateUsModalView, setRateUsModalView] = useState(false);
   const [UserSetting, setProfileData] = useState<ProfileType | undefined>();
-  const {reset} = useNavigation<NativeStackNavigationProp<any>>();
+  const {reset, replace, navigate} = useNavigation();
   const [RatingCount, setRatingCount] = useState(3);
   const {showToast} = useCustomToast();
   const [IsInternetConnected, setIsInternetConnected] = useState(true);
@@ -212,19 +211,6 @@ const SettingScreen = () => {
 
   const LogoutPress = async () => {
     // Your existing logout logic
-    dispatch(resetUserData());
-    setLogOutModalView(false);
-    setTimeout(() => {
-      reset({
-        index: 0,
-        routes: [
-          {
-            name: 'NumberVerification',
-          },
-        ],
-      });
-    }, 0);
-
     const signOutFromGoogle = async () => {
       try {
         await GoogleSignin.revokeAccess();
@@ -232,11 +218,36 @@ const SettingScreen = () => {
         console.log('Logged out from Google');
       } catch (error) {
         console.error('Error signing out from Google:', error);
+      } finally {
+        dispatch(resetUserData());
+        setLogOutModalView(false);
+        setTimeout(() => {
+          reset({
+            index: 0,
+            routes: [
+              {
+                name: 'NumberVerification',
+              },
+            ],
+          });
+        }, 2000);
       }
     };
-
     if (await GoogleSignin.isSignedIn()) {
       signOutFromGoogle();
+    } else {
+      dispatch(resetUserData());
+      setLogOutModalView(false);
+      setTimeout(() => {
+        reset({
+          index: 0,
+          routes: [
+            {
+              name: 'NumberVerification',
+            },
+          ],
+        });
+      }, 2000);
     }
   };
 

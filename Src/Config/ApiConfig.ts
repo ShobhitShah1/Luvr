@@ -5,7 +5,7 @@ const ApiConfig = {
   DEBUG: false,
   BASE_URL: 'https://nirvanatechlabs.in/dating/',
   IMAGE_UPLOAD_BASE_URL: 'https://nirvanatechlabs.in/dating/upload',
-  GET_LOCATION_API: 'https://ip-api.com/json/?fields=countryCode',
+  GET_LOCATION_API: 'http://ip-api.com/json/?fields=countryCode',
   IMAGE_BASE_URL: 'https://nirvanatechlabs.in/DATING_IMAGES/profile_images/',
   OTP_BASE_URL:
     'https://2factor.in/API/V1/5b2706aa-9db2-11ee-8cbb-0200cd936042/SMS/',

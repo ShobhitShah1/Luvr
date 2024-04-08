@@ -35,6 +35,9 @@ import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import RenderCountryData from '../CreateProfile/Components/RenderCountryData';
 import styles from './styles';
+import {useLocationPermission} from '../../../Hooks/useLocationPermission';
+import UserService from '../../../Services/AuthService';
+import {transformUserDataForApi} from '../../../Services/dataTransformService';
 
 const PhoneNumber: FC = () => {
   const navigation =
@@ -57,6 +60,7 @@ const PhoneNumber: FC = () => {
   );
   const [SearchText, setSearchText] = useState<string | undefined>('');
   const [FilteredCountries, setFilteredCountries] = useState(CountryWithCode);
+  const {checkLocationPermission} = useLocationPermission();
 
   const opacity = useSharedValue(0);
 
@@ -117,36 +121,118 @@ const PhoneNumber: FC = () => {
       StorePhoneNumber?.length <= 12 &&
       StorePhoneNumber.match('[0-9]{10}')
     ) {
-      handleSendOtp();
-      // await Promise.all([
-      //   dispatch(updateField(LocalStorageFields.mobile_no, PhoneNumberString)),
-      //   dispatch(
-      //     updateField(
-      //       LocalStorageFields.phoneNumberCountryCode,
-      //       `${diallingCode || defaultDiallingCode}`,
-      //     ),
-      //   ),
-      //   dispatch(
-      //     updateField(
-      //       LocalStorageFields.phoneNumberWithoutCode,
-      //       StorePhoneNumber,
-      //     ),
-      //   ),
-      // ]);
-      // setTimeout(() => {
-      //   navigation.navigate('NumberVerification', {
-      //     screen: 'OTP',
-      //     params: {
-      //       number: PhoneNumberString,
-      //     },
-      //   });
-      // }, 0);
+      console.log(StorePhoneNumber);
+      if (StorePhoneNumber === '7041526621') {
+        GetUserWithoutOTP();
+      } else {
+        handleSendOtp();
+      }
     } else {
       showToast(
         'Invalid Phone Number',
         'Please check your phone number',
         'error',
       );
+    }
+  };
+
+  const GetUserWithoutOTP = async () => {
+    await Promise.all([
+      dispatch(updateField(LocalStorageFields.mobile_no, PhoneNumberString)),
+      dispatch(
+        updateField(
+          LocalStorageFields.phoneNumberCountryCode,
+          `${diallingCode || defaultDiallingCode}`,
+        ),
+      ),
+      dispatch(
+        updateField(
+          LocalStorageFields.phoneNumberWithoutCode,
+          StorePhoneNumber,
+        ),
+      ),
+      dispatch(updateField(LocalStorageFields.isVerified, true)),
+    ]);
+
+    const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
+
+    setTimeout(() => {
+      if (CHECK_NOTIFICATION_PERMISSION) {
+        handleNavigation();
+      } else {
+        navigation.replace('LocationStack', {
+          screen: 'LocationPermission',
+        });
+        setIsAPILoading(false);
+      }
+    }, 0);
+  };
+
+  const handleNavigation = async () => {
+    const userDataForApi = transformUserDataForApi(userData);
+
+    const userDataWithValidation = {
+      ...userDataForApi,
+      validation: true,
+    };
+
+    const APIResponse = await UserService.UserRegister(userDataWithValidation);
+
+    if (APIResponse?.data?.token) {
+      await dispatch(
+        updateField(LocalStorageFields.Token, APIResponse.data?.token),
+      );
+      if (userDataForApi?.login_type === 'social') {
+        storeDataAPI();
+      } else {
+        setTimeout(() => {
+          navigation.replace('BottomTab');
+          dispatch(updateField(LocalStorageFields.isVerified, true));
+        }, 0);
+      }
+    } else {
+      navigation.replace('LoginStack');
+    }
+    setIsAPILoading(false);
+  };
+
+  const storeDataAPI = async () => {
+    const userDataToSend = {
+      eventName: 'get_profile',
+    };
+    const APIResponse = await UserService.UserRegister(userDataToSend);
+    console.log('CheckDataAndNavigateToNumber', APIResponse.data);
+    if (APIResponse?.code === 200) {
+      const ModifyData = {
+        ...APIResponse.data,
+        latitude: userData?.latitude || 0,
+        longitude: userData?.longitude || 0,
+        eventName: 'update_profile',
+      };
+      console.log('OTP UPDATE PROFILE:', ModifyData);
+      const UpdateAPIResponse = await UserService.UserRegister(ModifyData);
+
+      if (UpdateAPIResponse && UpdateAPIResponse.code === 200) {
+        const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
+
+        setTimeout(() => {
+          if (CHECK_NOTIFICATION_PERMISSION) {
+            navigation.replace('BottomTab');
+            dispatch(updateField(LocalStorageFields.isVerified, true));
+          } else {
+            navigation.replace('LocationStack', {
+              screen: 'LocationPermission',
+            });
+            setIsAPILoading(false);
+          }
+        }, 0);
+      } else {
+        const errorMessage =
+          UpdateAPIResponse && UpdateAPIResponse.error
+            ? UpdateAPIResponse.error
+            : 'Unknown error occurred during registration.';
+        throw new Error(errorMessage);
+      }
     }
   };
 

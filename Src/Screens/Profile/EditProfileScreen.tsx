@@ -668,7 +668,7 @@ const EditProfileScreen = () => {
               Title="Name"
             />
             <EditProfileBoxView
-              value={UserName}
+              value={String(UserName)}
               withTextInput
               children={<></>}
               onChangeText={setUserName}
@@ -701,23 +701,13 @@ const EditProfileScreen = () => {
                   value={BirthdateDay}
                   cursorColor={COLORS.Primary}
                   defaultValue={profile?.birthdate?.split('/')[0]}
-                  // onChangeText={value =>
-                  //   handleTextInputChange(
-                  //     value,
-                  //     setBirthdateDay,
-                  //     2,
-                  //     monthInputRef,
-                  //   )
-                  // }
                   onChangeText={value => {
-                    // Allow the user to remove the input
                     if (
                       value === '' ||
                       (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 31)
                     ) {
                       setBirthdateDay(value);
                       if (value.length === 2) {
-                        // Move focus to the next input field
                         monthInputRef?.current?.focus();
                       }
                     }
@@ -734,23 +724,13 @@ const EditProfileScreen = () => {
                   keyboardType={'number-pad'}
                   cursorColor={COLORS.Primary}
                   defaultValue={profile?.birthdate?.split('/')[1]}
-                  // onChangeText={value =>
-                  //   handleTextInputChange(
-                  //     value,
-                  //     setBirthdateMonth,
-                  //     2,
-                  //     yearInputRef,
-                  //   )
-                  // }
                   onChangeText={value => {
-                    // Allow the user to remove the input
                     if (
                       value === '' ||
                       (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 12)
                     ) {
                       setBirthdateMonth(value);
                       if (value.length === 2) {
-                        // Move focus to the next input field
                         yearInputRef?.current?.focus();
                       }
                     }
@@ -1134,14 +1114,10 @@ const EditProfileScreen = () => {
             backgroundColor: COLORS.Secondary,
           }}
           handleComponent={null}
-          // enableDismissOnClose={false}
-          // enableOverDrag={false}
-          // enablePanDownToClose={false}
           backdropComponent={props => (
             <BlurView blurAmount={2} style={props.style}>
               <BottomSheetBackdrop
                 {...props}
-                // opacity={0.5}
                 enableTouchThrough={false}
                 appearsOnIndex={0}
                 disappearsOnIndex={-1}

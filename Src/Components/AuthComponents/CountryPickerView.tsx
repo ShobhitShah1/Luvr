@@ -50,9 +50,10 @@ const CountryPickerView: FC<CountryPickerProps> = ({
       try {
         setIsLoading(true);
         const countryCode = await fetchCountryCode();
-         const country = CountryWithCode.find(c => c.code === countryCode);
+        console.log('countryCode', countryCode);
+        const country = CountryWithCode.find(c => c.code === countryCode);
         if (country && !diallingCode) {
-           setDiallingCode(country.dialling_code);
+          setDiallingCode(country.dialling_code);
           setDefaultDiallingCode(country.dialling_code);
         }
       } catch (error) {

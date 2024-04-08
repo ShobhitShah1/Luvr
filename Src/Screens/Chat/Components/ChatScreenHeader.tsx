@@ -64,12 +64,12 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({data}) => {
             </View>
           </View>
         </View>
-        <View style={styles.RemoveChatView}>
+        {/* <View style={styles.RemoveChatView}>
           <Image
             style={styles.RemoveChatIcon}
             source={CommonIcons.delete_chat}
           />
-        </View>
+        </View> */}
       </View>
     </View>
   );
