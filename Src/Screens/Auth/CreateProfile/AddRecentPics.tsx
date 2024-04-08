@@ -1,12 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import axios from 'axios';
 import React, {FC, useState} from 'react';
 import {
-  Alert,
   FlatList,
   Platform,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -14,11 +13,15 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'react-native-image-picker';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useDispatch, useSelector} from 'react-redux';
 import {ActiveOpacity, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
+import ApiConfig from '../../../Config/ApiConfig';
 import {TotalProfilePicCanUpload} from '../../../Config/Setting';
 import {useCameraPermission} from '../../../Hooks/useCameraPermission';
 import {useGalleryPermission} from '../../../Hooks/useGalleryPermission';
+import {updateField} from '../../../Redux/Action/userActions';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {
   addUrlToItem,
   deleteUrlFromItem,
@@ -29,12 +32,6 @@ import AddUserPhoto from './Components/AddUserPhoto';
 import ChooseFromModal from './Components/ChooseFromModal';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import axios from 'axios';
-import {useDispatch, useSelector} from 'react-redux';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {updateField} from '../../../Redux/Action/userActions';
-import ApiConfig from '../../../Config/ApiConfig';
-import UserService from '../../../Services/AuthService';
 
 const AddRecentPics: FC = () => {
   const navigation =
@@ -134,7 +131,13 @@ const AddRecentPics: FC = () => {
           ? await requestCameraPermission()
           : await requestGalleryPermission();
 
-      if (permissionStatus) {
+      if (
+        Platform.OS === 'android'
+          ? permissionStatus
+          : selectedOption !== 'Camera'
+          ? true
+          : permissionStatus
+      ) {
         console.log(
           `${selectedOption} permission granted. Opening ${selectedOption.toLowerCase()}...`,
         );

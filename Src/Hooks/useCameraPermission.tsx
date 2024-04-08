@@ -13,7 +13,7 @@ export const useCameraPermission = () => {
           : PERMISSIONS.IOS.CAMERA;
 
       const result = await check(permission);
-
+      console.log('result', result);
       if (result === RESULTS.GRANTED) {
         setCameraPermission(true);
         return true;

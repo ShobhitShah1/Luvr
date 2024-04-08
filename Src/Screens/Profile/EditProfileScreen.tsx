@@ -432,7 +432,13 @@ const EditProfileScreen = () => {
           ? await requestCameraPermission()
           : await requestGalleryPermission();
 
-      if (permissionStatus) {
+      if (
+        Platform.OS === 'android'
+          ? permissionStatus
+          : selectedOption !== 'Camera'
+          ? true
+          : permissionStatus
+      ) {
         console.log(
           `${selectedOption} permission granted. Opening ${selectedOption.toLowerCase()}...`,
         );
