@@ -530,9 +530,11 @@ const styles = StyleSheet.create({
   },
   messagesContainer: {
     marginBottom: 10,
+    // height: '100%',
   },
   ChatContainer: {
     flex: 1,
+    height: '100%',
   },
   composerTextInput: {
     ...GROUP_FONT.h3,

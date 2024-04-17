@@ -92,7 +92,7 @@ const ProfileScreen = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        bounces={false}
+        // bounces={false}
         style={styles.ProfileViewContainer}>
         <View style={styles.ContentView}>
           <View style={styles.ProfileImageView}>

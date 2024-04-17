@@ -23,7 +23,7 @@ export type MagicalPersonType = {
 };
 
 export type ProfileType = {
-  _id: string | number;
+  _id: string | number | undefined;
   about: string;
   birthdate: string;
   city: string;

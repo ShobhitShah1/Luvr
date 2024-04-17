@@ -73,7 +73,7 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
         </Skeleton>
       </Animated.View>
 
-      {!IsImageLoading && (
+      {!IsImageLoading && !hasPicture && (
         <View
           style={[
             styles.BlurViewContainer,

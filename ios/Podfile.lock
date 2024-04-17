@@ -125,6 +125,8 @@ PODS:
     - RNPermissions
   - Permission-LocationWhenInUse (3.10.1):
     - RNPermissions
+  - Permission-Notifications (3.10.1):
+    - RNPermissions
   - Permission-PhotoLibrary (3.10.1):
     - RNPermissions
   - PromisesObjC (2.4.0)
@@ -1258,6 +1260,7 @@ DEPENDENCIES:
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
   - Permission-LocationAlways (from `../node_modules/react-native-permissions/ios/LocationAlways`)
   - Permission-LocationWhenInUse (from `../node_modules/react-native-permissions/ios/LocationWhenInUse`)
+  - Permission-Notifications (from `../node_modules/react-native-permissions/ios/Notifications/Permission-Notifications.podspec`)
   - Permission-PhotoLibrary (from `../node_modules/react-native-permissions/ios/PhotoLibrary`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -1376,6 +1379,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-permissions/ios/LocationAlways"
   Permission-LocationWhenInUse:
     :path: "../node_modules/react-native-permissions/ios/LocationWhenInUse"
+  Permission-Notifications:
+    :path: "../node_modules/react-native-permissions/ios/Notifications/Permission-Notifications.podspec"
   Permission-PhotoLibrary:
     :path: "../node_modules/react-native-permissions/ios/PhotoLibrary"
   RCT-Folly:
@@ -1540,6 +1545,7 @@ SPEC CHECKSUMS:
   Permission-Camera: 9b70902f34a83c10e198d2d01f0e453e58842776
   Permission-LocationAlways: 0a0de4637662cfdf3603d6933779da2bdd657306
   Permission-LocationWhenInUse: 31f52ebddef50c306a585b5a82ca16c8ff582dec
+  Permission-Notifications: 817390e18898f34adad940cd4141e771e77086ea
   Permission-PhotoLibrary: 03c52ed95dadfb0f2ba4c7663786cce0c4e0c978
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
@@ -1611,6 +1617,6 @@ SPEC CHECKSUMS:
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: d17d2cc8105eed528474683b42e2ea310e1daf61
 
-PODFILE CHECKSUM: 4053b0382099b7a33e5c23fe4696d5641ff43616
+PODFILE CHECKSUM: 7a6ac4df2de52ab32ced5710d0767b3cd0a7a2cf
 
 COCOAPODS: 1.14.3

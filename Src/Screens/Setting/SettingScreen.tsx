@@ -104,6 +104,7 @@ const SettingScreen = () => {
   const toggleNotification = async () => {
     if (Platform.OS === 'android') {
       const authStatus = await messaging().hasPermission();
+      console.log('authStatus', authStatus);
       if (authStatus === messaging.AuthorizationStatus.NOT_DETERMINED) {
         const authorizationStatus = await messaging().requestPermission();
         if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
@@ -119,7 +120,7 @@ const SettingScreen = () => {
 
   const CheckPermission = async () => {
     const permission = await requestNotifications(['alert', 'badge', 'sound']);
-    // console.log('permission', permission);
+    console.log('permission.status', permission);
     if (permission.status === 'granted') {
       toggleSwitch();
     }

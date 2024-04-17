@@ -127,8 +127,16 @@ export default function MainRoute() {
     } catch (error) {
       console.error('Error determining initial route:', error);
       setInitialRoute('NumberVerification');
+    } finally {
+      // SplashScreen.hide();
     }
-  }, [isUserVerified, navigationRef, isNavigationReady, ApiConfig]);
+  }, [
+    initialRoute,
+    isUserVerified,
+    navigationRef,
+    isNavigationReady,
+    ApiConfig,
+  ]);
 
   useEffect(() => {
     if (initialRoute) {
@@ -138,7 +146,7 @@ export default function MainRoute() {
       console.log('📱 Screen Will Show:', initialRoute);
       console.log('--------------- SPLASH END ----------------');
     }
-  }, [initialRoute, isUserVerified, ApiConfig]);
+  }, [initialRoute, isUserVerified, navigationRef, ApiConfig]);
 
   // Add another useEffect to hide the splash screen when navigation is ready and initial setup is done
   // useEffect(() => {
@@ -214,40 +222,40 @@ export default function MainRoute() {
 
   return (
     <React.Fragment>
-      {initialRoute && (
-        <NavigationContainer
-          ref={navigationRef}
-          onReady={() => {
-            setIsNavigationReady(true);
-          }}>
-          <Stack.Navigator
-            screenOptions={{
-              headerShown: false,
-            }}
-            initialRouteName={initialRoute}>
-            <Stack.Screen
-              name="NumberVerification"
-              component={NumberVerificationStack}
-            />
-            <Stack.Screen name="LocationStack" component={LocationStack} />
-            <Stack.Screen name="LoginStack" component={LoginStack} />
-            <Stack.Screen name="BottomTab" component={BottomTab} />
-            <Stack.Screen
-              name="CategoryDetailCards"
-              component={CategoryDetailCardsScreen}
-            />
-            <Stack.Screen
-              name="ExploreCardDetail"
-              component={ExploreCardDetailScreen}
-            />
-            <Stack.Screen name="Chat" component={ChatScreen} />
-            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-            <Stack.Screen name="Setting" component={SettingScreen} />
-            <Stack.Screen name="Notification" component={NotificationScreen} />
-            <Stack.Screen name="Donation" component={DonationScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      )}
+      {/* {initialRoute && ( */}
+      <NavigationContainer
+        ref={navigationRef}
+        onReady={() => {
+          setIsNavigationReady(true);
+        }}>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}
+          initialRouteName={initialRoute}>
+          <Stack.Screen
+            name="NumberVerification"
+            component={NumberVerificationStack}
+          />
+          <Stack.Screen name="LocationStack" component={LocationStack} />
+          <Stack.Screen name="LoginStack" component={LoginStack} />
+          <Stack.Screen name="BottomTab" component={BottomTab} />
+          <Stack.Screen
+            name="CategoryDetailCards"
+            component={CategoryDetailCardsScreen}
+          />
+          <Stack.Screen
+            name="ExploreCardDetail"
+            component={ExploreCardDetailScreen}
+          />
+          <Stack.Screen name="Chat" component={ChatScreen} />
+          <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+          <Stack.Screen name="Setting" component={SettingScreen} />
+          <Stack.Screen name="Notification" component={NotificationScreen} />
+          <Stack.Screen name="Donation" component={DonationScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+      {/* )} */}
     </React.Fragment>
   );
 }

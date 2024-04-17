@@ -475,31 +475,29 @@ const EditProfileScreen = () => {
 
   //* Upload Single Image
   const UploadImage = async (item: any) => {
-    // console.log('UploadImage Item:', item);
     setIsFetchDataAPILoading(true);
-    let formData = new FormData();
 
-    // Ensure item is an array and not null
     if (Array.isArray(item)) {
+      let formData = new FormData();
+
       item.forEach(({url, type, name}) => {
-        console.log('URL TYPE AND NAME:', url, type, name);
-        // Check if URL exists and is a string
-        formData.append('eventName', 'update_profile');
-        formData.append('file_to', 'profile_images');
+        console.log('URL, TYPE, AND NAME:', url, type, name);
+
         if (url && typeof url === 'string') {
+          formData.append('eventName', 'update_profile');
+          formData.append('file_to', 'profile_images');
           formData.append('file', {
             uri: Platform.OS === 'android' ? url : url.replace('file://', ''),
             type,
-            name: 'testname.jpg',
+            name,
           });
         } else {
           console.error('Invalid URL:', url);
         }
       });
 
-      console.log('FormData:', formData);
-
       try {
+        console.log('Inside');
         const APIResponse = await axios.post(
           ApiConfig.IMAGE_UPLOAD_BASE_URL,
           formData,
@@ -509,28 +507,34 @@ const EditProfileScreen = () => {
               app_secret: '_d_a_t_i_n_g_',
               'Content-Type': 'multipart/form-data',
             },
+            onUploadProgress: progressEvent => {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total,
+              );
+              console.log('Upload Progress:', percentCompleted);
+              // Update progress UI if needed
+            },
           },
         );
-        // if (APIResponse.code === 200) {
-        //   const newData = UserPicks.map(data =>
-        //     data.url === '' ? item.shift() || data : data,
-        //   );
-        console.log('APIResponse?.code', APIResponse?.code);
-        console.log('APIResponse?.data', APIResponse?.data);
+
+        console.log('APIResponse', APIResponse);
+
         if (APIResponse?.data?.code === 200) {
           GetProfileData();
           showToast(
             'Image Uploaded',
-            'Your Image has been uploaded successfully.',
+            'Your image has been uploaded successfully.',
             'success',
           );
-          // Handle API response here
         } else {
-          showToast('Error', 'Error while uploaded image', 'error');
+          showToast('Error', 'Error while uploading image', 'error');
         }
       } catch (error) {
         console.error('API Error:', error);
-        // Handle error
+        console.error('API Error:', error?.response);
+        console.error('API Error:', error?.response?.data);
+        console.error('API Error:', error?.response?.data?.message);
+        showToast('Error', 'Failed to upload image', 'error');
       } finally {
         setIsFetchDataAPILoading(false);
       }
