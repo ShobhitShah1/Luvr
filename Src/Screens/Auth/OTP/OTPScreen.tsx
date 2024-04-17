@@ -1,11 +1,10 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import axios from 'axios';
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useEffect, useState, useRef} from 'react';
 import {Alert, Keyboard, Text, View} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import OtpInput from '../../../Components/AuthComponents/OtpInput';
 import ApiConfig from '../../../Config/ApiConfig';
 import {useLocationPermission} from '../../../Hooks/useLocationPermission';
 import {updateField} from '../../../Redux/Action/userActions';
@@ -15,20 +14,23 @@ import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import styles from './styles';
-import {ProfileType} from '../../../Types/ProfileType';
+import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
+
 interface RouteParams {
   number: string;
 }
 
 const OTPScreen: FC = () => {
   const route = useRoute();
+  const OTPInputRef = useRef<SmoothPinCodeInput>(null);
   const OTPInputs: number = 4;
   const {number} = route.params as RouteParams;
   const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
   const dispatch = useDispatch();
   const {locationPermission, checkLocationPermission} = useLocationPermission();
-  const [otp, setOtp] = useState<string[]>(Array(OTPInputs).fill(''));
+  const [otp, setOtp] = useState<string>('');
+  // const [otp, setOtp] = useState<string[]>(Array(OTPInputs).fill(''));
   const [IsAPILoading, setIsAPILoading] = useState(false);
 
   const navigation = useNavigation();
@@ -57,8 +59,7 @@ const OTPScreen: FC = () => {
   }, [ResendDisabled]);
 
   useEffect(() => {
-    const filledOtp = otp.join('');
-    if (filledOtp.length === OTPInputs) {
+    if (otp.length === OTPInputs) {
       setDisableButton(false);
     } else {
       setDisableButton(true);
@@ -186,7 +187,6 @@ const OTPScreen: FC = () => {
       setIsAPILoading(false);
     }
   };
-  console.log('userDataForApi?.login_type', userData?.login_type);
 
   const handleNavigation = async () => {
     const userDataForApi = transformUserDataForApi(userData);
@@ -275,13 +275,18 @@ const OTPScreen: FC = () => {
           </Text>
         </View>
 
-        <OtpInput
-          otp={otp}
-          setOtp={setOtp}
-          length={OTPInputs}
-          onOtpFilled={() => {
-            // console.log(`Code Fill ${otp}`);
-          }}
+        <SmoothPinCodeInput
+          value={otp}
+          animated={false}
+          ref={OTPInputRef}
+          codeLength={OTPInputs}
+          onTextChange={(code: string) => setOtp(code)}
+          cellStyle={styles.OTPCellStyle}
+          textStyle={styles.OTPTextStyle}
+          containerStyle={styles.OTPContainerStyle}
+          cellStyleFocused={styles.OTPCellStyleFocused}
+          cellStyleFilled={styles.OTPCellStyleFilled}
+          textStyleFocused={styles.OTPTextStyleFocused}
         />
 
         <View style={styles.ResendView}>
@@ -294,6 +299,7 @@ const OTPScreen: FC = () => {
             <Text
               onPress={() => {
                 if (!ResendDisabled) {
+                  setOtp('');
                   handleSendOtp();
                 }
               }}

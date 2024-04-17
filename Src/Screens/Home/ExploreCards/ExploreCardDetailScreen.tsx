@@ -165,11 +165,13 @@ const ExploreCardDetailScreen = () => {
 
     if (APIResponse && APIResponse?.code === 200) {
       // navigation.goBack();
+      await store.dispatch(onSwipeLeft(String(UserID)));
       showToast(
         'Success!',
         `Your report against ${CardDetail.params?.props?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${SelectedReportReason}`,
         'success',
       );
+      navigation.goBack();
     } else {
       showToast('Error', 'Something went wrong', 'error');
     }

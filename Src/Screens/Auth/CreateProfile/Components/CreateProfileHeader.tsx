@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
-import {COLORS, GROUP_FONT} from '../../../../Common/Theme';
+import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../../Common/Theme';
 
 interface CreateProfileProps {
   ProgressCount: number;
@@ -38,19 +38,18 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({
       <SafeAreaView />
       <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.Secondary} />
       <View style={styles.buttonAndTitleContainer}>
-        {
-          <TouchableOpacity
-            style={styles.backButtonView}
-            onPress={() => navigation.goBack()}>
-            {!hideBack && (
-              <Image
-                resizeMode="contain"
-                source={CommonIcons.TinderBack}
-                style={styles.cancelButton}
-              />
-            )}
-          </TouchableOpacity>
-        }
+        <TouchableOpacity
+          activeOpacity={ActiveOpacity}
+          style={styles.backButtonView}
+          onPress={() => navigation.goBack()}>
+          {!hideBack && (
+            <Image
+              resizeMode="contain"
+              source={CommonIcons.TinderBack}
+              style={styles.cancelButton}
+            />
+          )}
+        </TouchableOpacity>
 
         <View style={styles.pageCountView}>
           {ProgressCount !== 0 && (
@@ -60,7 +59,9 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({
 
         <View style={styles.skipButton}>
           {Skip && (
-            <TouchableOpacity onPress={handleSkipPress}>
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              onPress={handleSkipPress}>
               <Text style={styles.skipText}>Skip</Text>
             </TouchableOpacity>
           )}

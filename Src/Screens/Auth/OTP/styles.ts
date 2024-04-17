@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
 import {CommonSize} from '../../../Common/CommonSize';
-import {COLORS, FONTS} from '../../../Common/Theme';
+import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -66,6 +66,41 @@ const styles = StyleSheet.create({
     color: COLORS.Primary,
     textDecorationLine: 'underline',
     paddingTop: hp(0.5),
+  },
+  OTPContainerStyle: {
+    width: '95%',
+    marginVertical: 5,
+    alignSelf: 'flex-end',
+    alignItems: 'flex-end',
+    // backgroundColor: 'red',
+    justifyContent: 'center',
+  },
+  OTPCellStyle: {
+    width: 60,
+    height: 60,
+    marginRight: 29,
+    borderRadius: 500,
+    // marginHorizontal: 50,
+    backgroundColor: COLORS.White,
+  },
+  OTPCellStyleFocused: {
+    borderWidth: 1,
+    borderColor: COLORS.Primary,
+  },
+  OTPCellStyleFilled: {
+    backgroundColor: COLORS.Primary,
+  },
+  OTPTextStyle: {
+    textAlign: 'center',
+    ...GROUP_FONT.h4,
+    fontSize: hp('2%'),
+    color: COLORS.White,
+  },
+  OTPTextStyleFocused: {
+    textAlign: 'center',
+    ...GROUP_FONT.h4,
+    fontSize: hp('2%'),
+    color: COLORS.White,
   },
 });
 

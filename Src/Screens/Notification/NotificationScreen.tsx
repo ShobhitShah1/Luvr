@@ -3,17 +3,17 @@
 import React from 'react';
 import {FlatList, Image, Text, View} from 'react-native';
 import {useSelector} from 'react-redux';
+import CommonImages from '../../Common/CommonImages';
 import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
 import RenderNotificationView from './Components/RenderNotificationView';
 import styles from './styles';
-import CommonImages from '../../Common/CommonImages';
-import {recognizePrefixSuffix} from 'react-native-reanimated/lib/typescript/reanimated2/animation/util';
 
 const NotificationScreen = () => {
   const notifications = useSelector((state: any) => state.user.notifications);
 
   // Reverse the array of notifications to display the newest ones first
-  const reversedNotifications = notifications.slice().reverse();
+  const reversedNotifications =
+    notifications?.length !== 0 ? notifications?.slice()?.reverse() : [];
 
   const RenderEmptyComponent = () => {
     return (

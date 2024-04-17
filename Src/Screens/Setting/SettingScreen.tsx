@@ -300,21 +300,17 @@ const SettingScreen = () => {
         latitude: UserData?.latitude || '',
         longitude: UserData?.longitude || '',
         radius: UserSetting?.radius || 0,
-        setting_active_status: UserSetting?.setting_active_status || true,
+        setting_active_status: UserSetting?.setting_active_status,
         setting_age_range_min: UserSetting?.setting_age_range_min || '18-35',
         setting_distance_preference:
           UserSetting?.setting_distance_preference || '20',
-        setting_notification_email:
-          UserSetting?.setting_notification_email || true,
-        setting_notification_push:
-          UserSetting?.setting_notification_push || true,
-        setting_notification_team:
-          UserSetting?.setting_notification_team || true,
-        setting_people_with_range:
-          UserSetting?.setting_people_with_range || true,
+        setting_notification_email: UserSetting?.setting_notification_email,
+        setting_notification_push: UserSetting?.setting_notification_push,
+        setting_notification_team: UserSetting?.setting_notification_team,
+        setting_people_with_range: UserSetting?.setting_people_with_range,
         setting_show_me: UserSetting?.setting_show_me || 'Everyone',
         setting_show_people_with_range:
-          UserSetting?.setting_show_people_with_range || true,
+          UserSetting?.setting_show_people_with_range,
       };
 
       console.log('DataToSend', DataToSend);
@@ -648,11 +644,6 @@ Let's make every moment count together! #LoveConnects`,
                   onSwitchPress={() => {
                     toggleSwitch();
                     toggleNotification();
-                    // setProfileData(prevState => ({
-                    //   ...prevState,
-                    //   setting_notification_push:
-                    //     !UserSetting?.setting_notification_push || true,
-                    // }));
                   }}
                 />
                 <SettingFlexView
@@ -665,7 +656,7 @@ Let's make every moment count together! #LoveConnects`,
                     setProfileData(prevState => ({
                       ...prevState,
                       setting_notification_email:
-                        !UserSetting?.setting_notification_email || true,
+                        !UserSetting?.setting_notification_email,
                     }));
                   }}
                 />

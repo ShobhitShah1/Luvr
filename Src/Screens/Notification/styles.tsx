@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Regular,
     fontSize: 15,
     paddingHorizontal: 5,
+    color: COLORS.Black,
   },
 });
 
