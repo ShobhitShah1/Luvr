@@ -9,9 +9,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   imageContainer: {
+    flex: 1,
     ...StyleSheet.absoluteFillObject,
   },
   ImageStyle: {
+    // flex: 1,
     width: '100%',
     height: '100%',
   },

@@ -1,10 +1,7 @@
 import {StyleSheet} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {CommonSize} from '../../../Common/CommonSize';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 
 const styles = StyleSheet.create({
   Container: {
@@ -68,19 +65,19 @@ const styles = StyleSheet.create({
     paddingTop: hp(0.5),
   },
   OTPContainerStyle: {
-    width: '95%',
+    zIndex: 9999,
+    marginHorizontal: 20,
     marginVertical: 5,
-    alignSelf: 'flex-end',
-    alignItems: 'flex-end',
-    // backgroundColor: 'red',
+    alignSelf: 'center',
     justifyContent: 'center',
+    width: '100%',
   },
   OTPCellStyle: {
-    width: 60,
-    height: 60,
-    marginRight: 29,
+    width: hp(6.2),
+    height: hp(6.2),
+    marginLeft: hp(2),
+    marginRight: hp(2),
     borderRadius: 500,
-    // marginHorizontal: 50,
     backgroundColor: COLORS.White,
   },
   OTPCellStyleFocused: {
@@ -89,6 +86,8 @@ const styles = StyleSheet.create({
   },
   OTPCellStyleFilled: {
     backgroundColor: COLORS.Primary,
+    borderColor: COLORS.White,
+    borderWidth: 1,
   },
   OTPTextStyle: {
     textAlign: 'center',

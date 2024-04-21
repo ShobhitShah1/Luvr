@@ -93,6 +93,7 @@ const ChatRoomScreen = () => {
 
         //* Event: List - Response
         const handleListResponse: SocketEventHandlers['List'] = data => {
+          console.log('data', data);
           try {
             if (data && data?.data) {
               const filteredData = data.data.filter(
@@ -105,8 +106,6 @@ const ChatRoomScreen = () => {
                 ]);
                 return combinedData;
               });
-            } else {
-              // setMessages([]);
             }
           } catch (error) {
             console.error('Error handling list response:', error);
@@ -127,7 +126,7 @@ const ChatRoomScreen = () => {
         };
 
         const handleReceivedChat = (chat: any) => {
-          // console.log('chat', chat);
+          console.log('chat', chat);
           setMessages(previousMessages => {
             const combinedData = combineSameIdData([...previousMessages, chat]);
             return combinedData;

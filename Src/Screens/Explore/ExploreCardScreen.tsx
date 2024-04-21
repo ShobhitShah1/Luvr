@@ -1,3 +1,70 @@
+// /* eslint-disable react-native/no-inline-styles */
+// import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+// import React, {useEffect, useRef, useState} from 'react';
+// import {FlatList} from 'react-native';
+
+// const _colors = {
+//   active: `#FCD259ff`,
+//   inactive: `#FCD25900`,
+// };
+// const _spacing = 10;
+
+// const Images = [
+//   'https://picsum.photos/id/125/200/300',
+//   'https://picsum.photos/id/237/200/300',
+//   'https://picsum.photos/id/337/200/300',
+//   'https://picsum.photos/id/437/200/300',
+//   'https://picsum.photos/id/537/200/300',
+// ];
+
+// const ExploreCardScreen = () => {
+//   const FlatListRef = useRef<FlatList>(null);
+//   const [Index, setIndex] = useState<number>(0);
+
+//   useEffect(() => {
+//     if (FlatListRef.current) {
+//       FlatListRef.current.scrollToIndex({animated: true, index: 1});
+//     }
+//   }, []);
+
+//   return (
+//     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+//       <FlatList
+//         style={{flexGrow: 0}}
+//         data={Images}
+//         initialScrollIndex={Index}
+//         ref={FlatListRef}
+//         keyExtractor={(item, index) => index.toString()}
+//         contentContainerStyle={{paddingLeft: _spacing}}
+//         showsHorizontalScrollIndicator={false}
+//         horizontal
+//         onScrollToIndexFailed={() => {}}
+//         renderItem={({item, index: fIndex}) => {
+//           return (
+//             <TouchableOpacity key={fIndex} activeOpacity={1} onPress={() => {}}>
+//               <View
+//                 style={{
+//                   marginRight: _spacing,
+//                   padding: _spacing,
+//                   borderWidth: 2,
+//                   borderColor: _colors.active,
+//                   borderRadius: 12,
+//                   backgroundColor: _colors.inactive,
+//                 }}>
+//                 <Image source={{uri: item}} style={{width: 250, height: 250}} />
+//               </View>
+//             </TouchableOpacity>
+//           );
+//         }}
+//       />
+//     </View>
+//   );
+// };
+
+// export default ExploreCardScreen;
+
+// const styles = StyleSheet.create({});
+
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import {useIsFocused, useNavigation} from '@react-navigation/native';
@@ -56,7 +123,7 @@ const ExploreCardScreen: FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [CurrentCardIndex, setCurrentCardIndex] = useState(0);
   const [firstImageLoading, setFirstImageLoading] = useState(true);
-  const [IsAPILoading, setIsAPILoading] = useState(false);
+  const [IsAPILoading, setIsAPILoading] = useState(true);
   const [IsNetConnected, setIsNetConnected] = useState(true);
   const [ItsMatchModalView, setItsMatchModalView] = useState(false);
 
@@ -67,14 +134,12 @@ const ExploreCardScreen: FC = () => {
           prevIndex =>
             (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik?.length || 0,
         );
-
         Animated.timing(animatedOpacity, {
           toValue: 1,
           duration: 1000,
           easing: Easing.linear,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }).start();
-
         swipeRef.current?.forceUpdate();
       }
     },
@@ -109,16 +174,6 @@ const ExploreCardScreen: FC = () => {
       setCurrentCardIndex(0);
     }
   }, [isScreenFocused]);
-  // useEffect(() => {
-  //   const _unsubscribe = navigation.addListener('focus', () => {
-  //     startInterval();
-  //     setIsAPILoading(true);
-  //     FetchAPIData(0);
-  //     setCardToSkipNumber(0);
-  //     setCurrentCardIndex(0);
-  //   });
-  //   return () => _unsubscribe();
-  // }, []);
 
   useEffect(() => {
     if (cards?.length === 0) {
@@ -134,22 +189,10 @@ const ExploreCardScreen: FC = () => {
     async (cardSkipValue: number | undefined) => {
       setCurrentCardIndex(0);
       try {
-        console.log(
-          'LeftSwipedUserIds:',
-          LeftSwipedUserIds,
-          'LEFT DATA:',
-          store.getState().user?.swipedLeftUserIds,
-        );
-        console.log(
-          'RightSwipedUserIds:',
-          RightSwipedUserIds,
-          'RIGHT SWIPE:',
-          store.getState().user?.swipedRightUserIds,
-        );
         const userDataForApi = {
           limit: CardLimit,
-          unlike: LeftSwipedUserIds,
-          like: RightSwipedUserIds,
+          unlike: [], // LeftSwipedUserIds
+          like: [], // RightSwipedUserIds
           skip: cardSkipValue || cardToSkipNumber,
           radius: userData.radius,
           eventName: 'list_neighbour',
@@ -160,18 +203,15 @@ const ExploreCardScreen: FC = () => {
 
         if (APIResponse?.code === 200 && Array.isArray(APIResponse.data)) {
           const newCards = APIResponse.data;
-          console.log('Total Swiper Cards: --:>', newCards?.length);
           if (newCards.length !== 0) {
-            setCards(newCards);
+            const filteredCards = newCards.filter(
+              card => card?.name || card?.enable === 1,
+            );
+            setCards(filteredCards);
             swipeRef.current?.forceUpdate();
             startInterval();
           } else {
             setCards([]);
-            showToast(
-              'No more cards',
-              'You have reached the end of available cards',
-              'info',
-            );
             stopInterval();
           }
         } else {
@@ -199,7 +239,8 @@ const ExploreCardScreen: FC = () => {
   );
 
   //* On Swipe Right Do Something
-  const OnSwipeRight = (cardIndex: number) => {
+  const OnSwipeRightCard = (cardIndex: number) => {
+    console.log('Swipe Right Card Index', cardIndex);
     if (cards && cards[CurrentCardIndex]?._id) {
       console.log(cards[CurrentCardIndex]?._id, CurrentCardIndex);
       LikeUserAPI(String(cards[CurrentCardIndex]?._id));
@@ -252,13 +293,7 @@ const ExploreCardScreen: FC = () => {
         if (APIResponse.data?.status === 'match') {
           setItsMatchModalView(true);
         }
-        // setItsMatchModalView(true);
         swipeRef.current?.forceUpdate();
-        // showToast(
-        //   'Swipe Right Success',
-        //   'You swiped right! Waiting for the other user to match.',
-        //   'success',
-        // );
       } else {
         showToast(
           'Something went wrong',
@@ -299,7 +334,6 @@ const ExploreCardScreen: FC = () => {
             Unable to establish an internet connection at the moment. Please
             check your network settings and try again."
           </Text>
-          {/* <ActivityIndicator size={'large'} color={COLORS.Primary} /> */}
         </View>
       </React.Fragment>
     );
@@ -325,9 +359,11 @@ const ExploreCardScreen: FC = () => {
             stackSeparation={0}
             horizontalThreshold={width / 2.5}
             key={cards?.length}
-            secondCardZoom={0}
+            disableLeftSwipe
+            disableRightSwipe
+            secondCardZoom={10}
             swipeBackCard={true}
-            onSwipedRight={OnSwipeRight}
+            onSwipedRight={OnSwipeRightCard}
             onSwiped={OnSwiped}
             onSwipedLeft={OnSwipeLeft}
             onSwipedAll={OnSwipeAll}
@@ -348,7 +384,7 @@ const ExploreCardScreen: FC = () => {
                 ? [-width / 3, -1, 0, 1, width / 3]
                 : [-width / 3, -1, 0, 1, width / 3]
             }
-            useViewOverflow={true}
+            // useViewOverflow={true}
             overlayLabels={{
               left: {
                 element: (
@@ -395,24 +431,10 @@ const ExploreCardScreen: FC = () => {
                 activeOpacity={ActiveOpacity}
                 onPress={() => {
                   navigation.navigate('Setting');
-                  // FetchAPIData(cardToSkipNumber);
                 }}
                 style={styles.ChangeSettingButton}>
                 <Text style={styles.ChangeSettingText}>Change Setting</Text>
               </TouchableOpacity>
-
-              {/* <TouchableOpacity
-                activeOpacity={ActiveOpacity}
-                onPress={async () => {
-                  await store.dispatch(resetSwiperData());
-                  setTimeout(() => {
-                    FetchAPIData(0);
-                    setCardToSkipNumber(0);
-                  }, 0);
-                }}
-                style={styles.ChangeSettingButton}>
-                <Text style={styles.ChangeSettingText}>Clear Data</Text>
-              </TouchableOpacity> */}
             </View>
           )
         )}
@@ -443,27 +465,6 @@ const ExploreCardScreen: FC = () => {
               source={CommonIcons.like_button}
             />
           </TouchableOpacity>
-
-          {/* <TouchableOpacity
-            style={{
-              justifyContent: 'center',
-              alignSelf: 'center',
-              width: 60,
-              height: 60,
-              borderRadius: 500,
-              backgroundColor: 'red',
-            }}
-            onPress={async () => {
-              await store.dispatch(resetSwiperData());
-              setCardToSkipNumber(0);
-              setTimeout(() => {
-                FetchAPIData(0);
-              }, 200);
-            }}>
-            <Text style={{textAlign: 'center', color: COLORS.White}}>
-              Clear Data
-            </Text>
-          </TouchableOpacity> */}
         </View>
       )}
 

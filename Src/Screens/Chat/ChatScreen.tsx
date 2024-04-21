@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   ParamListBase,
@@ -8,7 +7,6 @@ import {
 } from '@react-navigation/native';
 import React, {FC, useCallback, useEffect, useState} from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -42,7 +40,6 @@ import UserService from '../../Services/AuthService';
 import {ProfileType} from '../../Types/ProfileType';
 import {chatRoomDataType} from '../../Types/chatRoomDataType';
 import ChatScreenHeader from './Components/ChatScreenHeader';
-import CommonImages from '../../Common/CommonImages';
 
 interface ChatData {
   params: {
@@ -69,12 +66,6 @@ const ChatScreen: FC = () => {
     return Math.random().toString(36).substr(2, 9);
   };
   const [avatarUrl, setAvatarUrl] = useState<string>('');
-
-  // const Avatar =
-  //   OtherUserProfileData &&
-  //   OtherUserProfileData?.recent_pik &&
-  //   OtherUserProfileData?.recent_pik[0] &&
-  //   ApiConfig.IMAGE_BASE_URL + OtherUserProfileData?.recent_pik[0];
 
   useEffect(() => {
     if (IsFocused) {
@@ -127,7 +118,7 @@ const ChatScreen: FC = () => {
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
     );
 
-    // console.log('sortedMessages', sortedMessages);
+    console.log('sortedMessages', sortedMessages);
 
     return sortedMessages;
   };
@@ -150,9 +141,20 @@ const ChatScreen: FC = () => {
         avatar: avatarUrl,
       },
     };
-    // console.log('singleChatMessage', singleChatMessage);
-    // Return an array with the single chat message
+
     return [singleChatMessage];
+  };
+
+  const removeDuplicates = (messages: any[]) => {
+    const uniqueMessages = messages.reduce((unique, message) => {
+      const existingMessage = unique.find(m => m._id === message._id);
+      if (!existingMessage) {
+        unique.push(message);
+      }
+      return unique;
+    }, []);
+
+    return uniqueMessages;
   };
 
   useEffect(() => {
@@ -185,6 +187,7 @@ const ChatScreen: FC = () => {
 
       const giftedChatMessages = transformDataForGiftedChat(filteredMessages);
 
+      console.log('giftedChatMessages', giftedChatMessages);
       if (!giftedChatMessages) {
         console.error('transformDataForGiftedChat returned undefined:', data);
         return;
@@ -194,10 +197,12 @@ const ChatScreen: FC = () => {
 
       if (giftedChatMessages.length !== 0) {
         // console.log('giftedChatMessages', giftedChatMessages);
-        setUserMessages(previousMessages => [
-          ...previousMessages,
+        const uniqueMessages = removeDuplicates([
+          ...userMessage,
           ...giftedChatMessages,
         ]);
+
+        setUserMessages(uniqueMessages);
       }
     };
 
@@ -208,6 +213,7 @@ const ChatScreen: FC = () => {
     };
 
     const handleReceiverChat = async (chat: any) => {
+      console.log('chat', chat);
       if (!OtherUserProfileData) {
         // If not available, fetch OtherUserProfileData
         await getOtherUserDataCall();
@@ -259,10 +265,6 @@ const ChatScreen: FC = () => {
     };
   }, [socket, params, avatarUrl]);
 
-  // useEffect(() => {
-  //   console.log('userMessage', userMessage);
-  // }, [userMessage]);
-
   const getOtherUserDataCall = async () => {
     try {
       const data = {
@@ -313,17 +315,10 @@ const ChatScreen: FC = () => {
         socket.emit(CHAT_EVENT, chatData, (err, responses) => {
           console.log('err, responses', err, responses);
           if (err) {
-            // some clients did not acknowledge the event in the given delay
           } else {
-            // acknowledgment is the data sent back by the server
-            // console.log('Message acknowledgment:', responses);
-
-            // You can handle the acknowledgment as needed
             if (responses && responses.success) {
-              // Message sent successfully
               console.log('Message sent successfully');
             } else {
-              // Message failed to send
               console.error('Message failed to send');
             }
           }
@@ -353,15 +348,6 @@ const ChatScreen: FC = () => {
   };
 
   const renderBubble = (props: BubbleProps<IMessage>) => {
-    // const formattedTime = new Date(
-    //   props?.currentMessage?.createdAt,
-    // ).toLocaleTimeString([], {
-    //   hour: 'numeric',
-    //   minute: '2-digit',
-    //   hour12: true,
-    // });
-
-    // console.log('formattedTime --->', props.currentMessage);
     return (
       <View>
         <Bubble

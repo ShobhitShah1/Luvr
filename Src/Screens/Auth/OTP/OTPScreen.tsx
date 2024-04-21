@@ -1,3 +1,5 @@
+/* eslint-disable react/self-closing-comp */
+/* eslint-disable react-native/no-inline-styles */
 import {useNavigation, useRoute} from '@react-navigation/native';
 import axios from 'axios';
 import React, {FC, useEffect, useState, useRef} from 'react';
@@ -37,6 +39,12 @@ const OTPScreen: FC = () => {
   const [DisableButton, setDisableButton] = useState<boolean>(true);
   const [ResendDisabled, setResendDisabled] = useState<boolean>(false);
   const [ResendTimer, setResendTimer] = useState<number>(0); // Timer in seconds
+
+  useEffect(() => {
+    if (OTPInputRef.current) {
+      OTPInputRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -81,9 +89,7 @@ const OTPScreen: FC = () => {
     setIsAPILoading(true);
 
     try {
-      const OTP = otp.join('');
-
-      if (OTP === '0000') {
+      if (otp === '0000') {
         showToast(
           'OTP verified Successfully',
           'Your OTP has been successfully verified. You can now proceed.',
@@ -91,7 +97,7 @@ const OTPScreen: FC = () => {
         );
 
         await Promise.all([
-          dispatch(updateField(LocalStorageFields.OTP, otp.join(''))),
+          dispatch(updateField(LocalStorageFields.OTP, otp)),
           dispatch(updateField(LocalStorageFields.isVerified, true)),
         ]);
         const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
@@ -109,7 +115,7 @@ const OTPScreen: FC = () => {
         return; // Exit the function after allowing login for '0000'
       }
 
-      const otpVerificationUrl = `${ApiConfig.OTP_BASE_URL}VERIFY3/${number}/${OTP}`;
+      const otpVerificationUrl = `${ApiConfig.OTP_BASE_URL}VERIFY3/${number}/${otp}`;
       const response = await axios.get(otpVerificationUrl);
 
       if (response.data?.Status === 'Success') {
@@ -120,7 +126,7 @@ const OTPScreen: FC = () => {
         );
 
         await Promise.all([
-          dispatch(updateField(LocalStorageFields.OTP, otp.join(''))),
+          dispatch(updateField(LocalStorageFields.OTP, otp)),
           dispatch(updateField(LocalStorageFields.isVerified, true)),
         ]);
         const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
@@ -275,19 +281,27 @@ const OTPScreen: FC = () => {
           </Text>
         </View>
 
-        <SmoothPinCodeInput
-          value={otp}
-          animated={false}
-          ref={OTPInputRef}
-          codeLength={OTPInputs}
-          onTextChange={(code: string) => setOtp(code)}
-          cellStyle={styles.OTPCellStyle}
-          textStyle={styles.OTPTextStyle}
-          containerStyle={styles.OTPContainerStyle}
-          cellStyleFocused={styles.OTPCellStyleFocused}
-          cellStyleFilled={styles.OTPCellStyleFilled}
-          textStyleFocused={styles.OTPTextStyleFocused}
-        />
+        <View
+          style={{
+            width: '90%',
+            zIndex: 9999,
+            alignSelf: 'center',
+          }}>
+          <SmoothPinCodeInput
+            value={otp}
+            animated={false}
+            ref={OTPInputRef}
+            codeLength={OTPInputs}
+            disableFullscreenUI={false}
+            onTextChange={(code: string) => setOtp(code)}
+            cellStyle={styles.OTPCellStyle}
+            textStyle={styles.OTPTextStyle}
+            containerStyle={styles.OTPContainerStyle}
+            cellStyleFocused={styles.OTPCellStyleFocused}
+            cellStyleFilled={styles.OTPCellStyleFilled}
+            textStyleFocused={styles.OTPTextStyleFocused}
+          />
+        </View>
 
         <View style={styles.ResendView}>
           <Text style={styles.NoCodeText}>Didn't you received any code?</Text>

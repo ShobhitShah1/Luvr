@@ -14,7 +14,7 @@ export interface SwiperCard {
   identity: string;
   is_block_contact: string;
   is_orientation_visible: string;
-  likes_into: [];
+  likes_into: string[];
   login_type: string;
   magical_person: [];
   mobile_no: string;

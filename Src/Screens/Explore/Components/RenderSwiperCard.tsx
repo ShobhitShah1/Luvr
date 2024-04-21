@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {useNavigation} from '@react-navigation/native';
 import {Skeleton} from 'moti/skeleton';
-import React, {FC, memo} from 'react';
+import React, {FC, memo, useEffect} from 'react';
 import {
   Image,
   Platform,
@@ -10,8 +10,12 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import Animated, {useSharedValue} from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import CommonIcons from '../../../Common/CommonIcons';
 import {ActiveOpacity, COLORS} from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
@@ -19,6 +23,7 @@ import {DummyImage} from '../../../Config/Setting';
 import useCalculateAge from '../../../Hooks/useCalculateAge';
 import {SwiperCard} from '../../../Types/SwiperCard';
 import styles from '../styles';
+import FastImage from 'react-native-fast-image';
 
 interface RenderCardProps {
   CurrentCardIndex: number;
@@ -116,12 +121,16 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
     isFirstCard: any,
     currentCardNumber: any,
   ) => {
+    // let timeout = setTimeout(() => {
     const defaultImageUrl = DummyImage;
     const imageIndex = isFirstCard ? currentCardNumber : 0;
     const imageUrl = ImageCardData?.recent_pik[imageIndex];
     return imageUrl
       ? `${ApiConfig.IMAGE_BASE_URL}${imageUrl}`
       : defaultImageUrl;
+    // }, 500);
+
+    // return () => clearTimeout(timeout);
   };
 
   function getRandomInt(max) {
@@ -141,6 +150,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
             <FastImage
               onLoadStart={ImageLoading}
               resizeMode="cover"
+              removeClippedSubviews
               onLoadEnd={ImageLoaded}
               key={currentImageIndex + getRandomInt(cardData.recent_pik.length)}
               fallback={Platform.OS === 'android'}
