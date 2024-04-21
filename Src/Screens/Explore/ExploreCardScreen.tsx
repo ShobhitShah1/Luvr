@@ -191,8 +191,8 @@ const ExploreCardScreen: FC = () => {
       try {
         const userDataForApi = {
           limit: CardLimit,
-          unlike: [], // LeftSwipedUserIds
-          like: [], // RightSwipedUserIds
+          unlike: LeftSwipedUserIds, // LeftSwipedUserIds
+          like: RightSwipedUserIds, // RightSwipedUserIds
           skip: cardSkipValue || cardToSkipNumber,
           radius: userData.radius,
           eventName: 'list_neighbour',

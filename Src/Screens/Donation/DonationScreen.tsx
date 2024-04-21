@@ -2,6 +2,7 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
+  Alert,
   Image,
   Platform,
   SafeAreaView,
@@ -42,13 +43,26 @@ const DonationScreen = () => {
   const InitializedConnection = async () => {
     setPaymentLoader(true);
     try {
-      initConnection().then(res => {
-        console.log('Connection', res);
-        setIAPConnected(res);
-        GetProducts();
-        flushFailedPurchasesCachedAsPendingAndroid();
-      });
+      initConnection()
+        .then(res => {
+          console.log('Connection', res);
+          setIAPConnected(res);
+          GetProducts();
+          flushFailedPurchasesCachedAsPendingAndroid();
+        })
+        .catch(error => {
+          console.log('Connection ERROR CATCH:', error);
+          Alert.alert(
+            'Error',
+            String(
+              error?.Error ||
+                'Billing is unavailable. This may be a problem with your device, or the Play Store may be down.',
+            ),
+          );
+          setPaymentLoader(false);
+        });
     } catch (error) {
+      console.log('Connection Error:', error);
       setPaymentLoader(false);
     }
   };
@@ -76,6 +90,13 @@ const DonationScreen = () => {
         console.log('✅ All Set');
       } catch (error) {
         console.log('⚠️ Error', error);
+        Alert.alert(
+          'Error',
+          String(
+            error?.Error ||
+              'Billing is unavailable. This may be a problem with your device, or the Play Store may be down.',
+          ),
+        );
         setPaymentLoader(false);
       }
     } else {

@@ -53,13 +53,12 @@ interface SocketEventHandlers {
 const ChatRoomScreen = () => {
   const [socket, setSocket] = useState<Socket | undefined>();
   const [messages, setMessages] = useState<MessageItem[]>([]);
-  const [isSocketLoading, setIsSocketLoading] = useState(false);
+  const [isSocketLoading, setIsSocketLoading] = useState(true);
   const {showToast} = useCustomToast();
   const currentLoginUserId = store.getState().user?.userData?._id;
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    // if (isFocused) {
     setIsSocketLoading(true);
     const socketInstance = io(ApiConfig.SOCKET_BASE_URL, {
       reconnectionAttempts: 10,
@@ -77,10 +76,12 @@ const ChatRoomScreen = () => {
       setSocket(socketInstance);
     } else {
       setSocket(undefined);
-      // setIsSocketLoading(false);
     }
-    // }
   }, []);
+
+  useEffect(() => {
+    console.log('messages', messages.length !== 0 && messages[0].chat);
+  }, [messages]);
 
   useEffect(() => {
     try {
@@ -110,7 +111,9 @@ const ChatRoomScreen = () => {
           } catch (error) {
             console.error('Error handling list response:', error);
           } finally {
-            setIsSocketLoading(false);
+            setTimeout(() => {
+              setIsSocketLoading(false);
+            }, 500);
           }
         };
 
@@ -120,8 +123,6 @@ const ChatRoomScreen = () => {
             console.log('Received Message:', data);
           } catch (error) {
             console.error('Error handling received message:', error);
-          } finally {
-            setIsSocketLoading(false);
           }
         };
 
@@ -131,32 +132,26 @@ const ChatRoomScreen = () => {
             const combinedData = combineSameIdData([...previousMessages, chat]);
             return combinedData;
           });
-          setIsSocketLoading(false);
+          setTimeout(() => {
+            setIsSocketLoading(false);
+          }, 500);
         };
 
         socket.on(LIST_EVENT, handleListResponse);
         socket.on(MESSAGE_EVENT, handleReceivedMessage);
         socket.on(CHAT_EVENT, handleReceivedChat);
-
-        // setIsSocketLoading(false);
-
         return () => {
           socket.off(LIST_EVENT, handleListResponse);
           socket.off(MESSAGE_EVENT, handleReceivedMessage);
           socket.off(CHAT_EVENT, handleReceivedChat);
         };
-      } else {
-        // setIsSocketLoading(false);
       }
     } catch (error) {
       console.log('SOCKET CATCH ERROR', error);
-    } finally {
-      // setIsSocketLoading(false);
     }
   }, [socket, isFocused, currentLoginUserId]);
 
   const combineSameIdData = (data: MessageItem[]): MessageItem[] => {
-    // console.log('data', data);
     const combinedData: MessageItem[] = [];
     const idMap = new Map<string, MessageItem>();
 
@@ -164,18 +159,14 @@ const ChatRoomScreen = () => {
       const id = item?.to;
 
       if (id) {
-        // Check if id is defined
         if (idMap.has(id)) {
-          // If the item already exists, update its chat data
           idMap.get(id)!.chat = [...idMap.get(id)!.chat, ...item.chat];
         } else {
-          // If the item doesn't exist, add it to the map
           idMap.set(id, {...item});
         }
       }
     });
 
-    // Convert the map values to an array
     idMap.forEach(value => {
       combinedData.push(value);
     });

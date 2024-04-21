@@ -11,6 +11,8 @@ import {
   View,
 } from 'react-native';
 import Animated, {
+  FadeIn,
+  FadeOut,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
@@ -50,53 +52,6 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
   const IsFirstCard = CurrentCardIndex === card;
   const Age = useCalculateAge(cardData?.birthdate);
   const navigation = useNavigation();
-  // const YourInto = ['Cricket', 'Gaming', 'Coding'];
-
-  // useEffect(() => {
-  //   const fadeInDuration = 300; // Adjust the duration as needed
-
-  //   translateX.value = withTiming(0, {}, finished => {
-  //     if (finished) {
-  //       runOnJS(setFirstImageLoading)(false);
-  //       // Reset opacity for the next fade-in
-  //       opacity.value = withTiming(1, {duration: 200});
-  //     }
-  //   });
-
-  //   runOnJS(setFirstImageLoading)(true);
-
-  //   // Simulate loading delay
-  //   setTimeout(() => {
-  //     opacity.value = withTiming(1, {duration: fadeInDuration});
-  //   }, 200);
-
-  //   // Simulate loading delay
-  //   setTimeout(() => {
-  //     runOnJS(setFirstImageLoading)(false);
-  //     translateX.value = withTiming(0, {duration: 600}); // Slide out the image
-  //   }, 700);
-  // }, [currentImageIndex]);
-
-  // useEffect(() => {
-  //   opacity.value = withSpring(1, {}, finished => {
-  //     if (finished) {
-  //       runOnJS(setFirstImageLoading)(false);
-  //     }
-  //   });
-
-  //   runOnJS(setFirstImageLoading)(true);
-
-  //   setTimeout(() => {
-  //     runOnJS(setFirstImageLoading)(false);
-  //     opacity.value = withSpring(1);
-  //   }, 0);
-  // }, [currentImageIndex]);
-
-  // const animatedStyle = useAnimatedStyle(() => {
-  //   return {
-  //     opacity: opacity.value,
-  //   };
-  // }, [opacity.value]);
 
   const handlePressIn = () => {
     stopInterval();
@@ -121,16 +76,12 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
     isFirstCard: any,
     currentCardNumber: any,
   ) => {
-    // let timeout = setTimeout(() => {
     const defaultImageUrl = DummyImage;
     const imageIndex = isFirstCard ? currentCardNumber : 0;
     const imageUrl = ImageCardData?.recent_pik[imageIndex];
     return imageUrl
       ? `${ApiConfig.IMAGE_BASE_URL}${imageUrl}`
       : defaultImageUrl;
-    // }, 500);
-
-    // return () => clearTimeout(timeout);
   };
 
   function getRandomInt(max) {
@@ -142,26 +93,24 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}>
       <View style={styles.card}>
-        <Animated.View style={[styles.imageContainer]}>
-          <Skeleton
-            show={false} //firstImageLoading
-            colorMode="light"
-            colors={COLORS.LoaderGradient}>
-            <FastImage
-              onLoadStart={ImageLoading}
-              resizeMode="cover"
-              removeClippedSubviews
-              onLoadEnd={ImageLoaded}
-              key={currentImageIndex + getRandomInt(cardData.recent_pik.length)}
-              fallback={Platform.OS === 'android'}
-              source={{
-                uri: getCardImageUrl(cardData, IsFirstCard, currentImageIndex),
-                priority: FastImage.priority.high,
-                cache: FastImage.cacheControl.immutable,
-              }}
-              style={styles.ImageStyle}
-            />
-          </Skeleton>
+        <Animated.View
+          entering={FadeIn.duration(500)}
+          exiting={FadeOut.duration(500)}
+          style={[styles.imageContainer]}>
+          <FastImage
+            onLoadStart={ImageLoading}
+            resizeMode="cover"
+            removeClippedSubviews={true}
+            onLoadEnd={ImageLoaded}
+            key={currentImageIndex + getRandomInt(cardData.recent_pik.length)}
+            fallback={Platform.OS === 'android'}
+            source={{
+              uri: getCardImageUrl(cardData, IsFirstCard, currentImageIndex),
+              priority: FastImage.priority.high,
+              cache: FastImage.cacheControl.immutable,
+            }}
+            style={styles.ImageStyle}
+          />
         </Animated.View>
 
         <View style={styles.CardBottomDetailView}>

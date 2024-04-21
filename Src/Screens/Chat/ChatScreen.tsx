@@ -62,10 +62,11 @@ const ChatScreen: FC = () => {
   const IsFocused = useIsFocused();
   const [socket, setSocket] = useState<Socket>();
   const [ReceiverSocketId, setReceiverSocketId] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string>('');
+
   const generateRandomId = () => {
     return Math.random().toString(36).substr(2, 9);
   };
-  const [avatarUrl, setAvatarUrl] = useState<string>('');
 
   useEffect(() => {
     if (IsFocused) {
@@ -81,23 +82,13 @@ const ChatScreen: FC = () => {
   const transformDataForGiftedChat = (apiData: any) => {
     let dataArray = Array.isArray(apiData) ? apiData : [apiData];
 
-    // Filter out messages not involving the current user and the opponent
     const filteredMessages = dataArray.filter(item => {
-      // console.log('item', item.to);
-
       return item.to === CurrentLoginUserId || item.to === params?.id;
     });
-
-    // console.log('filteredMessages', filteredMessages);
-
-    // Combine all chat messages into a single array
     const allMessages = filteredMessages.reduce((accumulator, currentItem) => {
       return accumulator.concat(currentItem.chat);
     }, []);
 
-    // console.log('allMessages', allMessages);
-
-    // Transform combined messages into GiftedChat format
     const giftedChatMessages = allMessages.map((message: any) => {
       // console.log(MESSAGE_EVENT, message);
       return {
@@ -113,13 +104,9 @@ const ChatScreen: FC = () => {
       };
     });
 
-    // Sort messages by createdAt in descending order (most recent first)
     const sortedMessages = giftedChatMessages.sort(
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
     );
-
-    console.log('sortedMessages', sortedMessages);
-
     return sortedMessages;
   };
 
@@ -176,9 +163,8 @@ const ChatScreen: FC = () => {
     //* Read Chat (Read Receipts)
     socket.emit(READ_ALL, {id: CurrentLoginUserId});
 
-    // Event: List - Response
+    //* Event: List - Response
     const handleListResponse = (data: {data: any}) => {
-      // console.log('handleListResponse:--:>', data);
       let dataArray = Array.isArray(data.data) ? data.data : [data.data];
 
       const filteredMessages = dataArray.filter((item: any) => {
@@ -187,16 +173,12 @@ const ChatScreen: FC = () => {
 
       const giftedChatMessages = transformDataForGiftedChat(filteredMessages);
 
-      console.log('giftedChatMessages', giftedChatMessages);
       if (!giftedChatMessages) {
         console.error('transformDataForGiftedChat returned undefined:', data);
         return;
       }
 
-      // console.log('giftedChatMessages', giftedChatMessages);
-
       if (giftedChatMessages.length !== 0) {
-        // console.log('giftedChatMessages', giftedChatMessages);
         const uniqueMessages = removeDuplicates([
           ...userMessage,
           ...giftedChatMessages,
@@ -206,20 +188,15 @@ const ChatScreen: FC = () => {
       }
     };
 
-    // Event: Receive Message
-    const handleReceivedMessage = (data: any) => {
-      // console.log('Received Message:', data);
-      // setMessages(prevMessages => [...prevMessages, data]);
-    };
+    //* Event: Receive Message
+    const handleReceivedMessage = (data: any) => {};
 
     const handleReceiverChat = async (chat: any) => {
       console.log('chat', chat);
       if (!OtherUserProfileData) {
-        // If not available, fetch OtherUserProfileData
         await getOtherUserDataCall();
       }
       const giftedChatMessages = StoreSingleChatFormat(chat);
-      // console.log('OtherUserProfileData:', OtherUserProfileData);
       if (giftedChatMessages) {
         const updatedMessages = giftedChatMessages.map((message: any) => ({
           ...message,
@@ -236,21 +213,21 @@ const ChatScreen: FC = () => {
     };
 
     const handleReceiverSocketId = (data: {to_socket_id: string}) => {
-      // console.log('handleReceiverSocketId:', data, data?.to_socket_id);
       setReceiverSocketId(data?.to_socket_id);
     };
 
     const handleJoinResponse = (data: any) => {
-      // console.log('handleJoinResponse:', data);
-
-      // Check if the response contains data and if the ID matches params?.id
       if (data && data.id === params?.id) {
-        // If there's a match, set the receiver's socket ID
         setReceiverSocketId(data.socket_id);
       }
     };
 
+    const handleReadAllMessages = (data: any) => {
+      console.log('Read all messages');
+    };
+
     socket.on(JOIN_EVENT, handleJoinResponse);
+    socket.on(READ_ALL, handleReadAllMessages);
     socket.on(LIST_EVENT, handleListResponse);
     socket.on(MESSAGE_EVENT, handleReceivedMessage);
     socket.on(CHAT_EVENT, handleReceiverChat);
@@ -258,6 +235,7 @@ const ChatScreen: FC = () => {
 
     return () => {
       socket.off(JOIN_EVENT, handleJoinResponse);
+      socket.off(READ_ALL, handleReadAllMessages);
       socket.off(LIST_EVENT, handleListResponse);
       socket.off(MESSAGE_EVENT, handleReceivedMessage);
       socket.off(CHAT_EVENT, handleReceiverChat);
@@ -516,7 +494,6 @@ const styles = StyleSheet.create({
   },
   messagesContainer: {
     marginBottom: 10,
-    // height: '100%',
   },
   ChatContainer: {
     flex: 1,

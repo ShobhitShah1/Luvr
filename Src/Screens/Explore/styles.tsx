@@ -11,9 +11,9 @@ const styles = StyleSheet.create({
   imageContainer: {
     flex: 1,
     ...StyleSheet.absoluteFillObject,
+    backgroundColor: COLORS.Primary,
   },
   ImageStyle: {
-    // flex: 1,
     width: '100%',
     height: '100%',
   },
