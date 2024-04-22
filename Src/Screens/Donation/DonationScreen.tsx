@@ -90,13 +90,7 @@ const DonationScreen = () => {
         console.log('✅ All Set');
       } catch (error) {
         console.log('⚠️ Error', error);
-        Alert.alert(
-          'Error',
-          String(
-            error?.Error ||
-              'Billing is unavailable. This may be a problem with your device, or the Play Store may be down.',
-          ),
-        );
+        Alert.alert('Error', String(error));
         setPaymentLoader(false);
       }
     } else {

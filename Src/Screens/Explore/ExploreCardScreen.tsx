@@ -1,70 +1,3 @@
-// /* eslint-disable react-native/no-inline-styles */
-// import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-// import React, {useEffect, useRef, useState} from 'react';
-// import {FlatList} from 'react-native';
-
-// const _colors = {
-//   active: `#FCD259ff`,
-//   inactive: `#FCD25900`,
-// };
-// const _spacing = 10;
-
-// const Images = [
-//   'https://picsum.photos/id/125/200/300',
-//   'https://picsum.photos/id/237/200/300',
-//   'https://picsum.photos/id/337/200/300',
-//   'https://picsum.photos/id/437/200/300',
-//   'https://picsum.photos/id/537/200/300',
-// ];
-
-// const ExploreCardScreen = () => {
-//   const FlatListRef = useRef<FlatList>(null);
-//   const [Index, setIndex] = useState<number>(0);
-
-//   useEffect(() => {
-//     if (FlatListRef.current) {
-//       FlatListRef.current.scrollToIndex({animated: true, index: 1});
-//     }
-//   }, []);
-
-//   return (
-//     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-//       <FlatList
-//         style={{flexGrow: 0}}
-//         data={Images}
-//         initialScrollIndex={Index}
-//         ref={FlatListRef}
-//         keyExtractor={(item, index) => index.toString()}
-//         contentContainerStyle={{paddingLeft: _spacing}}
-//         showsHorizontalScrollIndicator={false}
-//         horizontal
-//         onScrollToIndexFailed={() => {}}
-//         renderItem={({item, index: fIndex}) => {
-//           return (
-//             <TouchableOpacity key={fIndex} activeOpacity={1} onPress={() => {}}>
-//               <View
-//                 style={{
-//                   marginRight: _spacing,
-//                   padding: _spacing,
-//                   borderWidth: 2,
-//                   borderColor: _colors.active,
-//                   borderRadius: 12,
-//                   backgroundColor: _colors.inactive,
-//                 }}>
-//                 <Image source={{uri: item}} style={{width: 250, height: 250}} />
-//               </View>
-//             </TouchableOpacity>
-//           );
-//         }}
-//       />
-//     </View>
-//   );
-// };
-
-// export default ExploreCardScreen;
-
-// const styles = StyleSheet.create({});
-
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import {useIsFocused, useNavigation} from '@react-navigation/native';
@@ -172,6 +105,7 @@ const ExploreCardScreen: FC = () => {
       FetchAPIData(0);
       setCardToSkipNumber(0);
       setCurrentCardIndex(0);
+      setCurrentImageIndex(0);
     }
   }, [isScreenFocused]);
 
@@ -191,8 +125,8 @@ const ExploreCardScreen: FC = () => {
       try {
         const userDataForApi = {
           limit: CardLimit,
-          unlike: LeftSwipedUserIds, // LeftSwipedUserIds
-          like: RightSwipedUserIds, // RightSwipedUserIds
+          unlike: LeftSwipedUserIds,
+          like: RightSwipedUserIds,
           skip: cardSkipValue || cardToSkipNumber,
           radius: userData.radius,
           eventName: 'list_neighbour',

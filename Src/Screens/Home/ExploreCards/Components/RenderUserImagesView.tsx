@@ -21,14 +21,13 @@ const RenderUserImagesView: FC<UserImagesProps> = ({Images}) => {
       <Image
         onLoadStart={() => setIsImageLoading(true)}
         onLoadEnd={() => setIsImageLoading(false)}
-        resizeMode="cover"
         style={styles.UserProfileImages}
         source={{
           uri: Images ? `${ApiConfig.IMAGE_BASE_URL}${Images}` : DummyImage,
           cache: 'force-cache',
         }}
-        resizeMethod="resize"
-        progressiveRenderingEnabled
+        resizeMethod="scale"
+        progressiveRenderingEnabled={true}
       />
       {IsImageLoading && (
         <View style={styles.Loader}>
@@ -43,8 +42,9 @@ export default RenderUserImagesView;
 
 const styles = StyleSheet.create({
   UserProfileImages: {
-    height: 380,
-    resizeMode: 'cover',
+    flex: 1,
+    height: '100%',
+    resizeMode: 'contain',
     width: Dimensions.get('window').width * 0.9,
   },
   Loader: {

@@ -479,7 +479,7 @@ const styles = StyleSheet.create({
     paddingBottom: hp('10%'),
   },
   ProfileImageView: {
-    height: 380,
+    height: 430,
     width: '90%',
     borderRadius: 20,
     overflow: 'hidden',

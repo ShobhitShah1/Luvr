@@ -1,31 +1,25 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import {useNavigation} from '@react-navigation/native';
-import {Skeleton} from 'moti/skeleton';
-import React, {FC, memo, useEffect} from 'react';
+import React, {FC, memo, useEffect, useRef, useState} from 'react';
 import {
+  FlatList,
   Image,
-  Platform,
+  LayoutChangeEvent,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import Animated, {
-  FadeIn,
-  FadeOut,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import FastImage from 'react-native-fast-image';
+import Animated, {FadeIn, FadeOut} from 'react-native-reanimated';
 import CommonIcons from '../../../Common/CommonIcons';
-import {ActiveOpacity, COLORS} from '../../../Common/Theme';
+import {ActiveOpacity} from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import {DummyImage} from '../../../Config/Setting';
 import useCalculateAge from '../../../Hooks/useCalculateAge';
 import {SwiperCard} from '../../../Types/SwiperCard';
 import styles from '../styles';
-import FastImage from 'react-native-fast-image';
 
 interface RenderCardProps {
   CurrentCardIndex: number;
@@ -48,7 +42,6 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
   startInterval,
   stopInterval,
 }) => {
-  const opacity = useSharedValue(0);
   const IsFirstCard = CurrentCardIndex === card;
   const Age = useCalculateAge(cardData?.birthdate);
   const navigation = useNavigation();
@@ -71,50 +64,91 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
     startInterval();
   };
 
-  const getCardImageUrl = (
-    ImageCardData: any,
-    isFirstCard: any,
-    currentCardNumber: any,
-  ) => {
-    const defaultImageUrl = DummyImage;
-    const imageIndex = isFirstCard ? currentCardNumber : 0;
-    const imageUrl = ImageCardData?.recent_pik[imageIndex];
-    return imageUrl
-      ? `${ApiConfig.IMAGE_BASE_URL}${imageUrl}`
-      : defaultImageUrl;
-  };
+  const flatListRef = useRef<FlatList>(null);
+  const [ContainerWidthAndHeight, setContainerWidthAndHeight] = useState({
+    width: 350,
+    height: 350,
+  });
 
-  function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
-  }
+  useEffect(() => {
+    if (
+      flatListRef.current &&
+      IsFirstCard &&
+      cardData?.recent_pik?.length > 0
+    ) {
+      flatListRef?.current?.scrollToIndex({
+        index: currentImageIndex,
+        animated: true,
+      });
+    }
+    console.log('currentImageIndex', currentImageIndex);
+  }, [currentImageIndex]);
+
+  const LayOutChange = (item: LayoutChangeEvent) => {
+    setContainerWidthAndHeight({
+      height: item.nativeEvent.layout.height,
+      width: item.nativeEvent.layout.width,
+    });
+    console.log('Height', item.nativeEvent.layout.height);
+    console.log('Width', item.nativeEvent.layout.width);
+  };
 
   return (
     <TouchableWithoutFeedback
       onPressIn={handlePressIn}
-      onPressOut={handlePressOut}>
+      onPressOut={handlePressOut}
+      onLayout={event => LayOutChange(event)}>
       <View style={styles.card}>
         <Animated.View
           entering={FadeIn.duration(500)}
           exiting={FadeOut.duration(500)}
           style={[styles.imageContainer]}>
-          <FastImage
-            onLoadStart={ImageLoading}
-            resizeMode="cover"
+          <FlatList
+            horizontal
+            pagingEnabled
+            ref={flatListRef}
+            initialNumToRender={4}
+            initialScrollIndex={0}
+            scrollEnabled={false}
+            nestedScrollEnabled={false}
+            keyExtractor={(item, index) => index.toString()}
+            data={cardData?.recent_pik}
             removeClippedSubviews={true}
-            onLoadEnd={ImageLoaded}
-            key={currentImageIndex + getRandomInt(cardData.recent_pik.length)}
-            fallback={Platform.OS === 'android'}
-            source={{
-              uri: getCardImageUrl(cardData, IsFirstCard, currentImageIndex),
-              priority: FastImage.priority.high,
-              cache: FastImage.cacheControl.immutable,
+            showsHorizontalScrollIndicator={false}
+            renderItem={({item, index}) => {
+              return (
+                <View
+                  style={{
+                    height: ContainerWidthAndHeight.height
+                      ? ContainerWidthAndHeight.height
+                      : 530.9091186523438,
+                    width: ContainerWidthAndHeight.width
+                      ? ContainerWidthAndHeight.width
+                      : 350.5454406738281,
+                  }}>
+                  <FastImage
+                    key={index}
+                    resizeMode="cover"
+                    onLoad={ImageLoaded}
+                    onLoadStart={ImageLoading}
+                    source={{
+                      uri: item ? ApiConfig.IMAGE_BASE_URL + item : DummyImage,
+                      priority: FastImage.priority.high,
+                    }}
+                    style={styles.ImageStyle}
+                    removeClippedSubviews={true}
+                  />
+                </View>
+              );
             }}
-            style={styles.ImageStyle}
           />
         </Animated.View>
 
         <View style={styles.CardBottomDetailView}>
-          <View>
+          <View
+            style={{
+              width: '90%',
+            }}>
             <View style={styles.TitleView}>
               <Text style={styles.TitleText}>
                 {`${cardData?.full_name ? cardData?.full_name : 'User'}, ${

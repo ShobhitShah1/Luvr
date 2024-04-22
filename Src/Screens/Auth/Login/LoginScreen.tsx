@@ -320,14 +320,16 @@ const LoginScreen: FC = () => {
                 handleGoogleLogin();
               }}
             />
-            <LoginButton
-              IsLoading={IsSocialLoginLoading.Apple}
-              Title="LOGIN WITH APPLE"
-              Icon={CommonLogos.AppleLoginLogo}
-              onPress={() => {
-                handleAppleLogin();
-              }}
-            />
+            {Platform.OS === 'ios' && (
+              <LoginButton
+                IsLoading={IsSocialLoginLoading.Apple}
+                Title="LOGIN WITH APPLE"
+                Icon={CommonLogos.AppleLoginLogo}
+                onPress={() => {
+                  handleAppleLogin();
+                }}
+              />
+            )}
             {/* <LoginButton
               IsLoading={IsSocialLoginLoading.Facebook}
               Title="LOGIN WITH FACEBOOK"

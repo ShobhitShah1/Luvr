@@ -13,14 +13,13 @@ import UserService from '../../Services/AuthService';
 import {LocalStorageFields} from '../../Types/LocalStorageFields';
 import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
-import styles from './styles';
 import RenderLookingView from './Components/RenderlookingView';
+import styles from './styles';
 
 const HomeScreen = () => {
   const [IsAPIDataLoading, setIsAPIDataLoading] = useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
-  const {requestLocationPermission, locationPermission} =
-    useLocationPermission();
+  const {requestLocationPermission} = useLocationPermission();
 
   useEffect(() => {
     Promise.all([GetMyLikes(), GetProfileData(), requestUserPermission()]);
@@ -31,8 +30,6 @@ const HomeScreen = () => {
   }, []);
 
   const handleLocationPermissionRequest = async () => {
-    console.log('locationPermission', locationPermission);
-
     requestLocationPermission();
   };
 
@@ -117,12 +114,10 @@ const HomeScreen = () => {
 
         const APIResponse = await UserService.UserRegister(userDataForApi);
         if (APIResponse?.code === 200) {
-          // console.log('Get My Like Data:', APIResponse.data);
           if (APIResponse?.code === 200 && APIResponse?.data) {
             const userIds = Array.isArray(APIResponse.data)
               ? APIResponse.data
               : [APIResponse.data];
-            // console.log('userIds', userIds);
             store.dispatch(onSwipeRight(userIds));
           }
         }

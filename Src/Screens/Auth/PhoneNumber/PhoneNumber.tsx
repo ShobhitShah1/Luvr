@@ -13,8 +13,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import {requestHint} from 'react-native-otp-verify';
-import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -29,15 +27,15 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
 import {CountryWithCode} from '../../../Components/Data';
 import ApiConfig from '../../../Config/ApiConfig';
+import {useLocationPermission} from '../../../Hooks/useLocationPermission';
 import {updateField} from '../../../Redux/Action/userActions';
+import UserService from '../../../Services/AuthService';
+import {transformUserDataForApi} from '../../../Services/dataTransformService';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import RenderCountryData from '../CreateProfile/Components/RenderCountryData';
 import styles from './styles';
-import {useLocationPermission} from '../../../Hooks/useLocationPermission';
-import UserService from '../../../Services/AuthService';
-import {transformUserDataForApi} from '../../../Services/dataTransformService';
 
 const PhoneNumber: FC = () => {
   const navigation =
@@ -81,23 +79,23 @@ const PhoneNumber: FC = () => {
     };
   });
 
-  useEffect(() => {
-    if (isFocused === true && PhoneNumber.length !== 0) {
-      GetPermission();
-    }
-  }, [isFocused]);
+  // useEffect(() => {
+  //   if (isFocused === true && PhoneNumber.length !== 0) {
+  //     GetPermission();
+  //   }
+  // }, [isFocused]);
 
-  const GetPermission = async () => {
-    try {
-      const result = await request(PERMISSIONS.ANDROID.READ_PHONE_NUMBERS);
+  // const GetPermission = async () => {
+  //   try {
+  //     const result = await request(PERMISSIONS.ANDROID.READ_PHONE_NUMBERS);
 
-      if (result === RESULTS.GRANTED) {
-        setStorePhoneNumber(await requestHint());
-      }
-    } catch (error) {
-      console.error('Permission request failed:', error);
-    }
-  };
+  //     if (result === RESULTS.GRANTED) {
+  //       setStorePhoneNumber(await requestHint());
+  //     }
+  //   } catch (error) {
+  //     console.error('Permission request failed:', error);
+  //   }
+  // };
 
   const handleCountryPress = (item: any, index: number) => {
     console.log('Country pressed:', item, index);

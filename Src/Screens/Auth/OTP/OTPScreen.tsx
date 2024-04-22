@@ -1,4 +1,3 @@
-/* eslint-disable react/self-closing-comp */
 /* eslint-disable react-native/no-inline-styles */
 import {useNavigation, useRoute} from '@react-navigation/native';
 import axios from 'axios';
@@ -32,7 +31,6 @@ const OTPScreen: FC = () => {
   const dispatch = useDispatch();
   const {locationPermission, checkLocationPermission} = useLocationPermission();
   const [otp, setOtp] = useState<string>('');
-  // const [otp, setOtp] = useState<string[]>(Array(OTPInputs).fill(''));
   const [IsAPILoading, setIsAPILoading] = useState(false);
 
   const navigation = useNavigation();

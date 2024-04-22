@@ -1,111 +1,41 @@
 {
   "project_info": {
-    "project_number": "591101539634",
-    "project_id": "luvr-68981",
-    "storage_bucket": "luvr-68981.appspot.com"
+    "project_number": "126773940218",
+    "project_id": "luvr-de376",
+    "storage_bucket": "luvr-de376.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:591101539634:android:fd8223edff97ec0389132b",
-        "android_client_info": {
-          "package_name": "com.luvr"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "591101539634-dvh4knnfrrbl776f6qegc5t6aqant9r4.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.luvr",
-            "certificate_hash": "2e72358975bec4073d88bbbba7c95db3a189a700"
-          }
-        },
-        {
-          "client_id": "591101539634-pe7njenqrcc80vuvq7cch1b4jjqks75h.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.luvr",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
-          "client_id": "591101539634-u8ca0q5rmo6qvd27cpmobfero4s00fva.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.luvr",
-            "certificate_hash": "a178493bbdd498ece4dc6486dedc38021953423b"
-          }
-        },
-        {
-          "client_id": "591101539634-qfm6j0v8n1sokdd69985puskjb1l6fqv.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBKeWDrYs7wt4psMV9oa1qaNaWTWZjM3pY"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "591101539634-qfm6j0v8n1sokdd69985puskjb1l6fqv.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:591101539634:android:a1db5d938665f25b89132b",
+        "mobilesdk_app_id": "1:126773940218:android:0e548428a10e8c0aad5e43",
         "android_client_info": {
           "package_name": "com.luvr.dating"
         }
       },
       "oauth_client": [
         {
-          "client_id": "591101539634-gl30hscu1ldieg9uptrqk8gf4erm9jva.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.luvr.dating",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
-          "client_id": "591101539634-hq2fn4t9vj51svlm1ktav3f7spvq1bm6.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.luvr.dating",
-            "certificate_hash": "2e72358975bec4073d88bbbba7c95db3a189a700"
-          }
-        },
-        {
-          "client_id": "591101539634-qtk8e7el6o94tsp1uaan6cf98is4jh2n.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.luvr.dating",
-            "certificate_hash": "a178493bbdd498ece4dc6486dedc38021953423b"
-          }
-        },
-        {
-          "client_id": "591101539634-qfm6j0v8n1sokdd69985puskjb1l6fqv.apps.googleusercontent.com",
+          "client_id": "126773940218-vqp2euiee90i9pecsh3gfdiaa19hj0rv.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBKeWDrYs7wt4psMV9oa1qaNaWTWZjM3pY"
+          "current_key": "AIzaSyDBdJg8sKRv6U5nsO0aFPF8SHfEkUnGPxw"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "591101539634-qfm6j0v8n1sokdd69985puskjb1l6fqv.apps.googleusercontent.com",
+              "client_id": "126773940218-vqp2euiee90i9pecsh3gfdiaa19hj0rv.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "126773940218-0958nmarcg5ien4g32a94otbekgc8m8q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.luvr.dating"
+              }
             }
           ]
         }
