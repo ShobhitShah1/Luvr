@@ -92,7 +92,6 @@ const ProfileScreen = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        // bounces={false}
         style={styles.ProfileViewContainer}>
         <View style={styles.ContentView}>
           <View style={styles.ProfileImageView}>
@@ -112,9 +111,6 @@ const ProfileScreen = () => {
                     {ProfileData?.recent_pik &&
                     ProfileData?.recent_pik?.length !== 0 ? (
                       <FastImage
-                        // onLoadStart={() => setIsImageLoading(true)}
-                        // onLoad={() => setIsImageLoading(false)}
-                        // onLoadEnd={() => setIsImageLoading(false)}
                         style={styles.ProfileImage}
                         source={{
                           uri:
@@ -138,13 +134,6 @@ const ProfileScreen = () => {
                             }}
                             fallback={Platform.OS === 'android'}
                           />
-                          // <LottieView
-                          //   style={styles.LottieViewStyle}
-                          //   source={CommonIcons.PepeTheFrogGif}
-                          //   autoPlay={true}
-                          //   useNativeLooping={true}
-                          //   loop
-                          // />
                         )}
                       </View>
                     )}
@@ -270,8 +259,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   UserNameAndLocationView: {
-    marginTop: 25,
-    marginVertical: 10,
+    marginTop: 21,
+    marginVertical: 4,
     justifyContent: 'center',
   },
   NameAndBadgeView: {
@@ -284,6 +273,8 @@ const styles = StyleSheet.create({
     ...GROUP_FONT.h1,
     color: COLORS.Black,
     textAlign: 'center',
+    maxWidth: '85%',
+    paddingTop: 6,
   },
   UserCityText: {
     marginTop: 3,

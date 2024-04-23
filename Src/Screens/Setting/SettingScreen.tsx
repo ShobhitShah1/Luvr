@@ -10,6 +10,7 @@ import React, {useEffect, useState} from 'react';
 import {
   Alert,
   AppState,
+  AppStateStatus,
   Dimensions,
   LayoutChangeEvent,
   Linking,
@@ -41,19 +42,9 @@ import SettingCustomModal from './Components/SettingCustomModal';
 import SettingFlexView from './Components/SettingFlexView';
 import styles from './styles';
 
+const ShowMeArray = ['Male', 'Female', 'Everyone'];
+
 const SettingScreen = () => {
-  // console.log('parameters', parameters, GETDistancePreference);
-  const RemoteConfigLinks = remoteConfig().getAll();
-  useEffect(() => {
-    GetRemoteConfigValue();
-  }, []);
-
-  const GetRemoteConfigValue = async () => {
-    await remoteConfig().fetch(300);
-  };
-
-  // const profile = useSelector(state => state?.user);
-  // const [profile, setProfile] = useState<ProfileType>();
   const dispatch = useDispatch();
   const [widthSeekBar, setWidthSeekBar] = useState(0);
   const UserData = useSelector((state: any) => state?.user);
@@ -61,20 +52,63 @@ const SettingScreen = () => {
   const [DeleteAccountModalView, setDeleteAccountModalView] = useState(false);
   const [RateUsModalView, setRateUsModalView] = useState(false);
   const [UserSetting, setProfileData] = useState<ProfileType | undefined>();
-  const {reset, replace, navigate} = useNavigation();
+  const {reset} = useNavigation();
   const [RatingCount, setRatingCount] = useState(3);
   const {showToast} = useCustomToast();
   const [IsInternetConnected, setIsInternetConnected] = useState(true);
-  const settingAgeRangeMin = UserSetting?.setting_age_range_min || '';
   const [IsSettingLoading, setIsSettingLoading] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(false);
+
   let startAge = '';
   let endAge = '';
 
+  const settingAgeRangeMin = UserSetting?.setting_age_range_min || '';
   if (settingAgeRangeMin) {
-    [startAge, endAge] = settingAgeRangeMin.split('-');
+    [startAge, endAge] = settingAgeRangeMin?.split('-');
   }
 
-  const ShowMeArray = ['Male', 'Female', 'Everyone'];
+  const RemoteConfigLinks = remoteConfig().getAll();
+
+  useEffect(() => {
+    GetRemoteConfigValue();
+  }, []);
+
+  useEffect(() => {
+    const Unsubscribe = AppState.addEventListener(
+      'change',
+      handleAppStateChange,
+    );
+
+    return () => Unsubscribe.remove();
+  }, []);
+
+  useEffect(() => {
+    const CheckConnection = async () => {
+      try {
+        const IsNetOn = await NetInfo.fetch().then(info => info.isConnected);
+        if (IsNetOn) {
+          // setIsFetchDataAPILoading(true);
+          setIsInternetConnected(true);
+          await GetSetting();
+        } else {
+          setIsInternetConnected(false);
+        }
+      } catch (error) {
+        console.error(
+          'Error fetching profile data or checking location permission:',
+          error,
+        );
+        setIsInternetConnected(false);
+        // setIsFetchDataAPILoading(false);
+      }
+    };
+
+    CheckConnection();
+  }, []);
+
+  const GetRemoteConfigValue = async () => {
+    await remoteConfig().fetch(100);
+  };
 
   const handleShowMeSelect = (gender: string) => {
     setProfileData(prevState => ({
@@ -83,10 +117,9 @@ const SettingScreen = () => {
     }));
   };
 
-  const [isEnabled, setIsEnabled] = useState(false);
-
   const toggleSwitch = () => {
     checkNotifications().then(({status}) => {
+      console.log('status', status);
       if (status === 'granted') {
         setIsEnabled(true);
       } else {
@@ -119,12 +152,6 @@ const SettingScreen = () => {
   };
 
   const CheckPermission = async () => {
-    const permission = await requestNotifications(['alert', 'badge', 'sound']);
-    console.log('permission.status', permission);
-    if (permission.status === 'granted') {
-      toggleSwitch();
-    }
-
     checkNotifications().then(({status}) => {
       if (status === 'granted') {
         setIsEnabled(true);
@@ -134,48 +161,12 @@ const SettingScreen = () => {
     });
   };
 
-  const handleAppStateChange = appState => {
-    // console.log('AppState', appState);
-    if (appState === 'active' || appState === 'background') {
-      // console.log('App State In');
+  const handleAppStateChange = (appState: AppStateStatus) => {
+    console.log('AppState', appState);
+    if (appState === 'active') {
       CheckPermission();
     }
   };
-
-  useEffect(() => {
-    checkNotifications().then(({status}) => {
-      if (status === 'granted') {
-        setIsEnabled(true);
-      } else {
-        setIsEnabled(false);
-      }
-    });
-    AppState.addEventListener('change', handleAppStateChange);
-  }, []);
-
-  useEffect(() => {
-    const CheckConnection = async () => {
-      try {
-        const IsNetOn = await NetInfo.fetch().then(info => info.isConnected);
-        if (IsNetOn) {
-          // setIsFetchDataAPILoading(true);
-          setIsInternetConnected(true);
-          await GetSetting();
-        } else {
-          setIsInternetConnected(false);
-        }
-      } catch (error) {
-        console.error(
-          'Error fetching profile data or checking location permission:',
-          error,
-        );
-        setIsInternetConnected(false);
-        // setIsFetchDataAPILoading(false);
-      }
-    };
-
-    CheckConnection();
-  }, []);
 
   const GetSetting = async () => {
     setIsSettingLoading(true);
@@ -249,6 +240,60 @@ const SettingScreen = () => {
           ],
         });
       }, 2000);
+    }
+  };
+
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        message: `Unlock the door to endless possibilities 💖 Swipe, match, and let serendipity take the lead. Join our vibrant dating community today! ✨ #FindYourSpark
+
+Download now:
+
+${
+  RemoteConfigLinks?.AppStore?.asString() &&
+  `📱 App Store: ${RemoteConfigLinks?.AppStore?.asString()}`
+} 
+📱 Google Play: ${
+          RemoteConfigLinks?.PlayStore?.asString() ||
+          'https://play.google.com/store/apps/details?id=com.luvr.dating'
+        }
+
+Let's make every moment count together! #LoveConnects`,
+      });
+      if (result.action === Share.sharedAction) {
+      } else if (result.action === Share.dismissedAction) {
+      }
+    } catch (error: any) {
+      Alert.alert(error.message);
+    }
+  };
+
+  const onDeleteAccount = async () => {
+    try {
+      const userDataForApi = {
+        eventName: 'delete_profile',
+      };
+      console.log('userDataForApi', userDataForApi);
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      console.log('Delete Account Response:', APIResponse);
+      if (APIResponse?.code === 200) {
+        setDeleteAccountModalView(false);
+        LogoutPress();
+      } else {
+        showToast(
+          'Something went wrong',
+          APIResponse?.message || 'Please try again later',
+          'error',
+        );
+      }
+    } catch (error) {
+      LogoutPress();
+      setDeleteAccountModalView(false);
+      console.log('onDeleteAccountError:', error);
+    } finally {
+      LogoutPress();
+      setDeleteAccountModalView(false);
     }
   };
 
@@ -336,66 +381,6 @@ const SettingScreen = () => {
       console.log('Something went wrong edit Setting :--:>', error);
     } finally {
       setIsSettingLoading(false);
-    }
-  };
-
-  const onShare = async () => {
-    try {
-      const result = await Share.share({
-        message: `Unlock the door to endless possibilities 💖 Swipe, match, and let serendipity take the lead. Join our vibrant dating community today! ✨ #FindYourSpark
-
-Download now:
-
-  📱 [App Store](#),
-  📱 [Google Play](#)
-
-Stay connected with us:
-
-  🌟 [Facebook](#),
-  🌟 [Instagram](#),
-  🌟 [Twitter](#)
-
-Let's make every moment count together! #LoveConnects`,
-      });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (error: any) {
-      Alert.alert(error.message);
-    }
-  };
-
-  const onDeleteAccount = async () => {
-    try {
-      const userDataForApi = {
-        eventName: 'delete_profile',
-      };
-      console.log('userDataForApi', userDataForApi);
-      const APIResponse = await UserService.UserRegister(userDataForApi);
-      console.log('Delete Account Response:', APIResponse);
-      if (APIResponse?.code === 200) {
-        setDeleteAccountModalView(false);
-        LogoutPress();
-      } else {
-        showToast(
-          'Something went wrong',
-          APIResponse?.message || 'Please try again later',
-          'error',
-        );
-      }
-    } catch (error) {
-      LogoutPress();
-      setDeleteAccountModalView(false);
-      console.log('onDeleteAccountError:', error);
-    } finally {
-      LogoutPress();
-      setDeleteAccountModalView(false);
     }
   };
 
@@ -802,9 +787,6 @@ Let's make every moment count together! #LoveConnects`,
         isVisible={RateUsModalView}
         setState={setRateUsModalView}
         title="Rate app"
-        // description={
-        //   'If you enjoy this app, would you mind taking a moment to rate it? It Won’t take more than a minute. Thanks for your support!'
-        // }
         description={
           <React.Fragment>
             <Text
@@ -840,11 +822,19 @@ Let's make every moment count together! #LoveConnects`,
         onActionPress={() => {
           setRateUsModalView(false);
           setTimeout(() => {
-            console.log('RatingCount', RatingCount);
             if (RatingCount >= 3) {
-              Alert.alert('Rating Above 3');
+              if (Platform.OS === 'android') {
+                Linking.openURL(
+                  RemoteConfigLinks?.PlayStore?.asString() ||
+                    'https://play.google.com/store/apps/details?id=com.luvr.dating',
+                );
+              } else {
+                if (RemoteConfigLinks?.AppStore?.asString()) {
+                  Linking.openURL(RemoteConfigLinks.AppStore.asString());
+                }
+              }
             } else {
-              Alert.alert('Success!', 'Thanks for the review ❤️');
+              showToast('Success!', 'Thanks for the review ❤️', 'success');
             }
             setRatingCount(3);
           }, 0);

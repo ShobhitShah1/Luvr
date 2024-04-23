@@ -50,8 +50,6 @@ const LoginScreen: FC = () => {
   useEffect(() => {
     async function initializeRemoteConfig() {
       await Promise.all([
-        // Settings.setAppID('1072075284080018'),
-        // Settings.initializeSDK(),
         initGoogleSignIn(),
         RemoteConfig(),
       ]);
@@ -98,9 +96,6 @@ const LoginScreen: FC = () => {
         });
       }
       const GoogleUserData = await GoogleSignin.signIn();
-      // console.log('Google login successful:', GoogleUserData);
-
-      // Proceed with your logic for successful login
       console.log('Updating fields and navigating...');
       await Promise.all([
         dispatch(
@@ -132,50 +127,6 @@ const LoginScreen: FC = () => {
       setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
     }
   };
-
-  // const handleFacebookLogin = async () => {
-  //   // try {
-  //   //   LoginManager.logInWithPermissions(['public_profile']).then(
-  //   //     function (result) {
-  //   //       if (result.isCancelled) {
-  //   //         console.log('Login cancelled');
-  //   //       } else {
-  //   //         console.log(
-  //   //           'Login success with permissions: ' +
-  //   //             result?.grantedPermissions?.toString(),
-  //   //         );
-  //   //         AccessToken.getCurrentAccessToken().then(data => {
-  //   //           console.log('Facebook Data:', data);
-  //   //           if (data?.accessToken) {
-  //   //             fetch(ApiConfig.FACEBOOK_GRAPH_API + data.accessToken)
-  //   //               .then(response => response.json())
-  //   //               .then(json => {
-  //   //                 console.log('FACEBOOK JSON DATA:', json);
-  //   //                 // handleNavigation(
-  //   //                 //   GoogleUserData.user.email,
-  //   //                 //   GoogleUserData.user.name ||
-  //   //                 //     GoogleUserData.user.givenName ||
-  //   //                 //     '',
-  //   //                 // );
-  //   //               })
-  //   //               .catch(() => {
-  //   //                 console.error('ERROR GETTING DATA FROM FACEBOOK');
-  //   //               });
-  //   //           } else {
-  //   //             showToast('Error', 'Could not get access token', 'error');
-  //   //           }
-  //   //         });
-  //   //       }
-  //   //     },
-  //   //     function (error) {
-  //   //       console.log('Login fail with error: ' + error);
-  //   //     },
-  //   //   );
-  //   // } catch (error) {
-  //   //   console.log('Facebook Login Error', error);
-  //   //   showToast('Error', String(error || 'Facebook Login Error'), 'error');
-  //   // }
-  // };
 
   const handleNavigation = async (email: string, name: string) => {
     try {
