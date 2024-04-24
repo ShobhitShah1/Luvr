@@ -52,8 +52,8 @@ type ChatScreenRouteProp = RouteProp<ParamListBase, 'ChatScreen'> & ChatData;
 
 const ChatScreen: FC = () => {
   const {params} = useRoute<ChatScreenRouteProp>();
-  // const chatData = params?.ChatData || {};
   const CurrentLoginUserId = store.getState().user?.userData?._id;
+  const CurrentUserImage = store.getState().user?.userData?.recent_pik;
   const CurrentLoginUserFullName = store.getState().user?.userData?.full_name;
   const [userMessage, setUserMessages] = useState<IMessage[]>([]);
   const [CountMessage, setCountMessage] = useState(0);
@@ -63,7 +63,6 @@ const ChatScreen: FC = () => {
   const [socket, setSocket] = useState<Socket>();
   const [ReceiverSocketId, setReceiverSocketId] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string>('');
-
   const generateRandomId = () => {
     return Math.random().toString(36).substr(2, 9);
   };
@@ -111,8 +110,6 @@ const ChatScreen: FC = () => {
   };
 
   const StoreSingleChatFormat = (message: any) => {
-    // console.log('OTHER', OtherUserProfileData);
-
     setCountMessage(1);
 
     const singleChatMessage = {
@@ -150,7 +147,10 @@ const ChatScreen: FC = () => {
     }
 
     //* Event: Join
-    socket.emit(JOIN_EVENT, {id: CurrentLoginUserId});
+    socket.emit(JOIN_EVENT, {
+      id: CurrentLoginUserId,
+      to_profile: OtherUserProfileData?.recent_pik[0],
+    });
 
     //* Event: Get Receiver Socket
     socket.emit(GET_RECEIVER_SOCKET_EVENT, {
@@ -161,7 +161,7 @@ const ChatScreen: FC = () => {
     socket.emit(LIST_EVENT, {id: CurrentLoginUserId});
 
     //* Read Chat (Read Receipts)
-    socket.emit(READ_ALL, {id: CurrentLoginUserId});
+    socket.emit(READ_ALL, {to: OtherUserProfileData?._id});
 
     //* Event: List - Response
     const handleListResponse = (data: {data: any}) => {
@@ -179,6 +179,8 @@ const ChatScreen: FC = () => {
       }
 
       if (giftedChatMessages.length !== 0) {
+        console.log('MAKE IT FALSE');
+
         const uniqueMessages = removeDuplicates([
           ...userMessage,
           ...giftedChatMessages,
@@ -268,27 +270,29 @@ const ChatScreen: FC = () => {
 
   const onSend = useCallback(
     async (messages: IMessage[]) => {
-      setUserMessages(previousMessages =>
-        GiftedChat.append(previousMessages, messages),
-      );
+      // console.log(userMessage?.length === 0);
+
       setCountMessage(1);
-      // console.log('OtherUserProfileData', OtherUserProfileData);
       if (!OtherUserProfileData || OtherUserProfileData === undefined) {
         await getOtherUserDataCall();
       }
+      console.log('CountMessage', CountMessage);
 
       if (socket) {
         const chatData = {
-          ...(CountMessage === 0 ? {is_first: 1} : {}),
+          ...(userMessage?.length === 0 ? {is_first: 1} : {}),
           to: params?.id,
           reciver_socket_id: ReceiverSocketId || null,
           from_name: CurrentLoginUserFullName,
           to_name: OtherUserProfileData?.full_name,
           message: messages[0].text,
           to_profile: OtherUserProfileData?.recent_pik[0],
+          from_profile: CurrentUserImage[0],
         };
-
-        // console.log(chatData, userMessage.length);
+        setUserMessages(previousMessages =>
+          GiftedChat.append(previousMessages, messages),
+        );
+        console.log('Socket Data Going:', chatData);
 
         socket.emit(CHAT_EVENT, chatData, (err, responses) => {
           console.log('err, responses', err, responses);
@@ -310,6 +314,7 @@ const ChatScreen: FC = () => {
       CurrentLoginUserFullName,
       ReceiverSocketId,
       CountMessage,
+      userMessage,
     ],
   );
 

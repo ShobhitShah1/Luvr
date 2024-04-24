@@ -49,10 +49,7 @@ const LoginScreen: FC = () => {
 
   useEffect(() => {
     async function initializeRemoteConfig() {
-      await Promise.all([
-        initGoogleSignIn(),
-        RemoteConfig(),
-      ]);
+      await Promise.all([initGoogleSignIn(), RemoteConfig()]);
     }
     initializeRemoteConfig();
   }, []);
@@ -122,7 +119,11 @@ const LoginScreen: FC = () => {
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         showToast('Error!', 'Play services not available or outdated', 'error');
       } else {
-        showToast('Error!', 'An error occurred during Google login', 'error');
+        showToast(
+          'Error!',
+          String(error) || 'An error occurred during Google login',
+          'error',
+        );
       }
       setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
     }

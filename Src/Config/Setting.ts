@@ -22,5 +22,6 @@ export const MESSAGE_EVENT = 'message';
 export const CHAT_EVENT = 'chat';
 export const GET_RECEIVER_SOCKET_EVENT = 'get_reciver_socket';
 export const READ_ALL = 'read_all';
+export const UPDATE_LIST = 'updateList';
 
 export const APP_NAME = 'Luvr';

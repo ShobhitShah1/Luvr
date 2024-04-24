@@ -6,6 +6,7 @@ import FastImage from 'react-native-fast-image';
 import CommonIcons from '../../../Common/CommonIcons';
 import CommonImages from '../../../Common/CommonImages';
 import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
+import ApiConfig from '../../../Config/ApiConfig';
 
 interface MessageType {
   id: string;
@@ -45,6 +46,8 @@ const RenderChatRoomList = ({item, index}: ChatRoomProps) => {
       hour12: true,
     });
 
+  // console.log('New Chat Come?', item);
+
   return (
     <TouchableOpacity
       key={index}
@@ -57,7 +60,11 @@ const RenderChatRoomList = ({item, index}: ChatRoomProps) => {
         <FastImage
           resizeMode="cover"
           style={styles.profilePic}
-          source={CommonImages.WelcomeBackground}
+          source={
+            item?.profile
+              ? {uri: ApiConfig.IMAGE_BASE_URL + item?.profile}
+              : CommonImages.WelcomeBackground
+          }
         />
       </View>
       <View style={styles.nameAndMessageView}>

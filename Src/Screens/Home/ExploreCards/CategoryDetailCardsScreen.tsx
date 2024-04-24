@@ -65,14 +65,17 @@ const CategoryDetailCardsScreen: FC = () => {
         eventName: 'list_neighbour_home',
         latitude: userData.latitude,
         longitude: userData.longitude,
-        radius: 180,
+        radius: 500,
         unlike: LeftSwipedUserIds,
         like: RightSwipedUserIds,
         hoping: params?.item?.title,
         skip: 0,
-        limit: 0,
+        limit: 200,
       };
       const APIResponse = await UserService.UserRegister(userDataForApi);
+
+      console.log('APIResponse', APIResponse);
+
       if (APIResponse?.code === 200) {
         setCategoryData(APIResponse?.data || []);
       } else {

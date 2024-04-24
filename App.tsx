@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import notifee, {
   AndroidImportance,
   AndroidVisibility,
@@ -22,7 +23,6 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log('Hy, Got Notification:--:>', remoteMessage);
       const title =
         remoteMessage.notification?.title || `${APP_NAME} Notification`;
       const body = remoteMessage.notification?.body || '';
@@ -38,8 +38,6 @@ export default function App() {
 
   useEffect(() => {
     messaging().setBackgroundMessageHandler(async remoteMessage => {
-      console.log('Message handled in the background!', remoteMessage);
-      console.log('Hy, Got Notification:--:>', remoteMessage);
       const title =
         remoteMessage.notification?.title || `${APP_NAME} Notification`;
       const body = remoteMessage.notification?.body || '';
