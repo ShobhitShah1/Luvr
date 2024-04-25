@@ -8,6 +8,8 @@ import {
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
 import {BlurView} from '@react-native-community/blur';
+import NetInfo from '@react-native-community/netinfo';
+import axios from 'axios';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
@@ -18,23 +20,22 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import Geolocation from 'react-native-geolocation-service';
 import * as ImagePicker from 'react-native-image-picker';
+import {useDispatch, useSelector} from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import CustomTextInput from '../../Components/CustomTextInput';
+import ApiConfig from '../../Config/ApiConfig';
 import {TotalProfilePicCanUploadEditProfile} from '../../Config/Setting';
 import {useCameraPermission} from '../../Hooks/useCameraPermission';
 import {useGalleryPermission} from '../../Hooks/useGalleryPermission';
-import UserService from '../../Services/AuthService';
-import NetInfo from '@react-native-community/netinfo';
-import Geolocation from 'react-native-geolocation-service';
-import {useDispatch, useSelector} from 'react-redux';
 import {useLocationPermission} from '../../Hooks/useLocationPermission';
 import {updateField} from '../../Redux/Action/userActions';
+import UserService from '../../Services/AuthService';
 import {LocalStorageFields} from '../../Types/LocalStorageFields';
 import {ProfileType} from '../../Types/ProfileType';
 import {useCustomToast} from '../../Utils/toastUtils';
@@ -45,8 +46,7 @@ import EditProfileCategoriesList from './Components/EditProfileComponents/EditPr
 import EditProfileSheetView from './Components/EditProfileComponents/EditProfileSheetView';
 import EditProfileTitleView from './Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from './Components/ProfileAndSettingHeader';
-import ApiConfig from '../../Config/ApiConfig';
-import axios from 'axios';
+import TextString from '../../Common/TextString';
 
 export interface ViewPositionsProps {
   Gender: number;
@@ -120,23 +120,23 @@ const EditProfileScreen = () => {
   const [ClickCategoryName, setClickCategoryName] = useState('');
 
   useEffect(() => {
-    const CheckConnection = () => {
+    const CheckConnection = async () => {
       try {
-        NetInfo.fetch().then(info => {
-          if (info.isConnected) {
-            setIsFetchDataAPILoading(true);
-            setIsInternetConnected(true);
-            Promise.all([GetProfileData(), CheckLocationPermission()]);
-          } else {
-            setIsInternetConnected(false);
-          }
-        });
+        const info = await NetInfo.fetch();
+        if (info.isConnected) {
+          setIsFetchDataAPILoading(true);
+          setIsInternetConnected(true);
+          await Promise.all([GetProfileData(), CheckLocationPermission()]);
+        } else {
+          setIsInternetConnected(false);
+        }
       } catch (error) {
         console.error(
           'Error fetching profile data or checking location permission:',
           error,
         );
         setIsInternetConnected(false);
+      } finally {
         setIsFetchDataAPILoading(false);
       }
     };
@@ -221,7 +221,7 @@ const EditProfileScreen = () => {
             }
           },
           error => reject(error),
-          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 0},
         );
       });
     } catch (error: any) {
@@ -322,13 +322,6 @@ const EditProfileScreen = () => {
     }
   };
 
-  //* Birthdate Focus Handler
-  const handleTextChange = (value: string, nextInputRef: any) => {
-    if (value.length === 2) {
-      nextInputRef.current.focus();
-    }
-  };
-
   //* Handle Sheet Open/Close
   const handlePresentModalPress = useCallback((name: string) => {
     bottomSheetModalRef.current?.present();
@@ -387,11 +380,6 @@ const EditProfileScreen = () => {
 
       if (newImages.length > 0) {
         UploadImage(newImages);
-        // const newData = UserPicks.map(item =>
-        //   item.url === '' ? newImages.shift() || item : item,
-        // );
-        // setUserPicks(newData);
-        // console.log('Selected Images:', newData);
       }
     } catch (error) {
       console.log('Image Picker Error:', error);
@@ -415,10 +403,6 @@ const EditProfileScreen = () => {
 
       if (newImages.length > 0) {
         UploadImage(newImages);
-        // const newData = UserPicks.map(item =>
-        //   item.url === '' ? newImages.shift() || item : item,
-        // );
-        // setUserPicks(newData);
       }
     } catch (error) {
       console.log('Image Picker Error:', error);
@@ -456,25 +440,21 @@ const EditProfileScreen = () => {
     }
   };
 
-  // Convert FormData to an object
-  function formDataToObject(formData) {
-    const object = {};
-    formData &&
-      formData?.forEach((value, key) => {
-        if (!object.hasOwnProperty(key)) {
-          object[key] = value;
-        } else {
-          if (!Array.isArray(object[key])) {
-            object[key] = [object[key]];
-          }
-          object[key].push(value);
-        }
-      });
-    return object;
-  }
-
   //* Upload Single Image
   const UploadImage = async (item: any) => {
+    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+    if (!InInternetConnected) {
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+      setIsFetchDataAPILoading(false);
+
+      return;
+    }
+
     setIsFetchDataAPILoading(true);
 
     if (Array.isArray(item)) {
@@ -546,17 +526,20 @@ const EditProfileScreen = () => {
 
   //* Update Profile API Call (API CALL)
   const onUpdateProfile = async () => {
+    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+    if (!InInternetConnected) {
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+      setIsFetchDataAPILoading(false);
+
+      return;
+    }
     setIsFetchDataAPILoading(true);
     try {
-      if (!IsInternetConnected) {
-        showToast(
-          'Network Issue',
-          'Please check your internet connection and try again',
-          'error',
-        );
-        return;
-      }
-
       const age = calculateAge(
         `${BirthdateDay},${BirthdateMonth},${BirthdateYear}`,
       );

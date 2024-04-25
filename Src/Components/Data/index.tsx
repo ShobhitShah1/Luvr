@@ -4855,25 +4855,25 @@ export const HomeLookingForData = [
   },
   {
     id: 2,
-    title: 'New friends',
+    title: 'New Friends',
     image:
       'https://images.unsplash.com/photo-1522098605161-cc0c1434c31a?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
   {
     id: 3,
-    title: 'Something casual',
+    title: 'Something Casual',
     image:
       'https://images.unsplash.com/photo-1500027014421-46ccc843776a?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
   {
     id: 4,
-    title: 'Party partner',
+    title: 'Party Partner',
     image:
       'https://images.unsplash.com/photo-1541532713592-79a0317b6b77?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
   {
     id: 5,
-    title: 'Sort term relationship',
+    title: 'Sort Term Relationship',
     image:
       'https://images.unsplash.com/photo-1520975408777-d189f6edc46d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },

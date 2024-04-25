@@ -15,11 +15,16 @@ import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
 import RenderLookingView from './Components/RenderlookingView';
 import styles from './styles';
+import TextString from '../../Common/TextString';
+import NetInfo from '@react-native-community/netinfo';
+import {useCustomToast} from '../../Utils/toastUtils';
+import {COLORS} from '../../Common/Theme';
 
 const HomeScreen = () => {
   const [IsAPIDataLoading, setIsAPIDataLoading] = useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
   const {requestLocationPermission} = useLocationPermission();
+  const {showToast} = useCustomToast();
 
   useEffect(() => {
     Promise.all([GetMyLikes(), GetProfileData(), requestUserPermission()]);
@@ -67,6 +72,17 @@ const HomeScreen = () => {
   }
 
   const GetProfileData = async () => {
+    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+    if (!InInternetConnected) {
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+      return;
+    }
+
     try {
       const userDataForApi = {
         eventName: 'get_profile',
@@ -105,6 +121,12 @@ const HomeScreen = () => {
   }, []);
 
   const GetMyLikes = async () => {
+    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+    if (!InInternetConnected) {
+      return;
+    }
+
     setIsAPIDataLoading(true);
     try {
       setTimeout(async () => {
@@ -199,7 +221,12 @@ const HomeScreen = () => {
 
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            progressBackgroundColor={COLORS.White}
+            colors={[COLORS.Primary]}
+          />
         }
         showsVerticalScrollIndicator={false}
         bounces={false}>

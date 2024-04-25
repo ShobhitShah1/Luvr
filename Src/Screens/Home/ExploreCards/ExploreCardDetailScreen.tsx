@@ -496,10 +496,11 @@ const styles = StyleSheet.create({
   TitleAndIconView: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: hp('0.5%'),
   },
   DetailIconsView: {
-    width: hp('2.6%'),
-    height: hp('2.6%'),
+    width: hp('2.4%'),
+    height: hp('2.4%'),
   },
   TitleText: {
     ...GROUP_FONT.h3,
@@ -520,6 +521,7 @@ const styles = StyleSheet.create({
     width: '92%',
     flexWrap: 'wrap',
     alignSelf: 'flex-end',
+    marginVertical: 5,
   },
   MultipleBoxView: {
     marginTop: hp('1%'),
@@ -562,14 +564,14 @@ const styles = StyleSheet.create({
     marginHorizontal: hp('0.5%'),
   },
   BlockAndReportIcon: {
-    width: hp('2.5%'),
-    height: hp('2.5%'),
+    width: hp('2.4%'),
+    height: hp('2.4%'),
   },
   BlockAndReportText: {
     fontFamily: FONTS.Bold,
     color: COLORS.Black,
-    fontSize: hp('1.9%'),
-    marginHorizontal: hp('0.8%'),
+    fontSize: hp('1.8%'),
+    marginHorizontal: hp('0.5%'),
   },
   LikeAndRejectView: {
     marginTop: hp('3%'),

@@ -26,6 +26,8 @@ import {ProfileType} from '../../Types/ProfileType';
 import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import calculateDataPercentage from './Components/calculateDataPercentage';
+import TextString from '../../Common/TextString';
+import NetInfo from '@react-native-community/netinfo';
 
 const ProfileScreen = () => {
   const userData = useSelector((state: any) => state?.user);
@@ -51,6 +53,20 @@ const ProfileScreen = () => {
   }, []);
 
   const fetchProfileData = async () => {
+    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+    if (!InInternetConnected) {
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+      setIsAPILoading(false);
+      setRefreshing(false);
+      setErrorFetchingData(false);
+      return;
+    }
+
     setIsAPILoading(true);
     setErrorFetchingData(false);
 
@@ -90,7 +106,12 @@ const ProfileScreen = () => {
       <BottomTabHeader hideSettingAndNotification={true} showSetting={true} />
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            progressBackgroundColor={COLORS.White}
+            colors={[COLORS.Primary]}
+          />
         }
         style={styles.ProfileViewContainer}>
         <View style={styles.ContentView}>

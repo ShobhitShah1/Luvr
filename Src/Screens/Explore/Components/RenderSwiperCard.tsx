@@ -74,23 +74,36 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
     if (
       flatListRef.current &&
       IsFirstCard &&
-      cardData?.recent_pik?.length > 0
+      cardData?.recent_pik?.length > 0 &&
+      currentImageIndex >= 0 &&
+      currentImageIndex < cardData.recent_pik.length
     ) {
       flatListRef?.current?.scrollToIndex({
         index: currentImageIndex,
         animated: true,
       });
     }
-    console.log('currentImageIndex', currentImageIndex);
-  }, [currentImageIndex]);
+  }, [currentImageIndex, cardData]);
+
+  // useEffect(() => {
+  //   if (
+  //     flatListRef.current &&
+  //     IsFirstCard &&
+  //     cardData?.recent_pik?.length > 0
+  //   ) {
+  //     flatListRef?.current?.scrollToIndex({
+  //       index: currentImageIndex,
+  //       animated: true,
+  //     });
+  //   }
+  //   console.log('currentImageIndex', currentImageIndex);
+  // }, [currentImageIndex]);
 
   const LayOutChange = (item: LayoutChangeEvent) => {
     setContainerWidthAndHeight({
       height: item.nativeEvent.layout.height,
       width: item.nativeEvent.layout.width,
     });
-    console.log('Height', item.nativeEvent.layout.height);
-    console.log('Width', item.nativeEvent.layout.width);
   };
 
   return (

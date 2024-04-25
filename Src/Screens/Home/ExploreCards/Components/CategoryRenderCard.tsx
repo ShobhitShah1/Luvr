@@ -17,43 +17,102 @@ import CommonImages from '../../../../Common/CommonImages';
 import {ActiveOpacity, COLORS, FONTS} from '../../../../Common/Theme';
 import ApiConfig from '../../../../Config/ApiConfig';
 import useCalculateAge from '../../../../Hooks/useCalculateAge';
+import {onSwipeRight} from '../../../../Redux/Action/userActions';
+import {store} from '../../../../Redux/Store/store';
+import UserService from '../../../../Services/AuthService';
 import {ProfileType} from '../../../../Types/ProfileType';
+import {useCustomToast} from '../../../../Utils/toastUtils';
+import NetInfo from '@react-native-community/netinfo';
+import TextString from '../../../../Common/TextString';
 
 interface RenderLookingViewProps {
   item: ProfileType;
   index: number;
   isRecentlyActive?: boolean;
+  FetchAPIData: () => void;
+  setIsAPILoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentCardIndex: React.Dispatch<React.SetStateAction<number>>;
+  setItsMatchModalView: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const CategoryRenderCard: FC<RenderLookingViewProps> = ({
   item,
   index,
   isRecentlyActive,
+  FetchAPIData,
+  setIsAPILoading,
+  setCurrentCardIndex,
+  setItsMatchModalView,
 }) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{ExploreCardDetail: {}}>>();
-  const marginHorizontal = index === 1 || index === 3 ? '4%' : 0;
   const [IsImageLoading, setIsImageLoading] = useState(false);
+  const {showToast} = useCustomToast();
 
   const OnPressCard = () => {
     navigation.navigate('ExploreCardDetail', {props: item});
   };
-  // console.log('item', item);
-  // const ImagePath =
-  //   item?.recent_pik && item?.recent_pik?.length !== 0
-  //     ? {uri: item?.recent_pik[0]}
-  //     : CommonImages.WelcomeBackground;
+
   const ImagePath =
     item?.recent_pik && item?.recent_pik?.length !== 0
       ? {uri: ApiConfig.IMAGE_BASE_URL + item?.recent_pik[0]}
       : CommonImages.WelcomeBackground;
 
   const Age = useCalculateAge(item.birthdate);
+
+  const onLikePress = async () => {
+    setIsAPILoading(true);
+    setCurrentCardIndex(index);
+
+    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+    if (!InInternetConnected) {
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+      return;
+    }
+
+    try {
+      const userDataForApi = {
+        eventName: 'like',
+        like_to: item._id,
+      };
+
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      if (APIResponse?.code === 200) {
+        console.log('LikeUserAPI APIResponse Data ---:>', APIResponse.data);
+        if (APIResponse.data?.status === 'match') {
+          setItsMatchModalView(true);
+        } else {
+          setItsMatchModalView(false);
+          // setIsAPILoading(false);
+        }
+        store.dispatch(onSwipeRight(String(item._id)));
+        FetchAPIData();
+      } else {
+        showToast(
+          'Something went wrong',
+          APIResponse?.message || 'Please try again letter',
+          'error',
+        );
+        setItsMatchModalView(false);
+        setIsAPILoading(false);
+      }
+    } catch (error) {
+      console.log('Something Went Wrong With Feting API Data');
+      setItsMatchModalView(false);
+      setIsAPILoading(false);
+    }
+  };
+
   return (
     <TouchableOpacity
       activeOpacity={1}
       onPress={OnPressCard}
-      style={[styles.container, {marginHorizontal}]}>
+      style={[styles.container, {}]}>
       {IsImageLoading && (
         <View style={styles.ImageLoaderView}>
           <ActivityIndicator
@@ -102,7 +161,13 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
 
             <TouchableOpacity
               activeOpacity={ActiveOpacity}
-              style={styles.LikeCardView}>
+              style={styles.LikeCardView}
+              onPress={() => {
+                setIsAPILoading(true);
+                setTimeout(() => {
+                  onLikePress();
+                }, 0);
+              }}>
               <Image source={CommonImages.LikeCard} style={styles.LikeCard} />
             </TouchableOpacity>
           </View>
@@ -120,6 +185,7 @@ const styles = StyleSheet.create({
     height: hp('25%'),
     overflow: 'hidden',
     marginVertical: '1%',
+    marginBottom: '2%',
     borderRadius: hp('3%'),
   },
   imageView: {
@@ -140,11 +206,11 @@ const styles = StyleSheet.create({
   DetailContainerView: {
     width: '100%',
     flexDirection: 'row',
-    marginVertical: hp('1%'),
+    marginBottom: hp('1.5%'),
     justifyContent: 'space-between',
   },
   UserInfoView: {
-    width: '75%',
+    width: '72%',
     overflow: 'hidden',
     justifyContent: 'center',
   },
@@ -154,6 +220,7 @@ const styles = StyleSheet.create({
     lineHeight: hp('3.5%'),
     color: COLORS.White,
     marginHorizontal: hp('2%'),
+    marginBottom: hp('0.5%'),
   },
   LocationView: {
     width: '85%',
@@ -169,15 +236,16 @@ const styles = StyleSheet.create({
   },
   LocationText: {
     width: '80%',
+    color: COLORS.White,
+    fontSize: hp('1.5%'),
     marginLeft: hp('0.5%'),
     fontFamily: FONTS.Medium,
-    fontSize: hp('1.5%'),
-    color: COLORS.White,
   },
   LikeCardView: {
-    width: '25%',
+    // right: 1,
+    width: '28%',
     overflow: 'hidden',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
   },
   LikeCard: {
     alignSelf: 'flex-start',

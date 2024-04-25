@@ -27,6 +27,8 @@ import {store} from '../../Redux/Store/store';
 import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderChatRoomList from './Components/RenderChatRoomList';
+import TextString from '../../Common/TextString';
+import NetInfo from '@react-native-community/netinfo';
 
 interface ChatMessage {
   senderId: string;
@@ -64,12 +66,28 @@ const ChatRoomScreen = () => {
     if (isFocused) {
       setIsSocketLoading(true);
       ConnectSocket();
+    } else {
+      if (socket) {
+        socket.disconnect();
+      }
     }
   }, [isFocused]);
 
   const ConnectSocket = async () => {
+    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+    if (!InInternetConnected) {
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+      setIsSocketLoading(false);
+      return;
+    }
+
     const socketInstance = io(ApiConfig.SOCKET_BASE_URL, {
-      reconnectionAttempts: 10,
+      reconnectionAttempts: 5,
     });
 
     socketInstance.on('connect', () => {
@@ -89,7 +107,6 @@ const ChatRoomScreen = () => {
 
   useEffect(() => {
     try {
-      // setIsSocketLoading(true);
       if (socket && isFocused) {
         //* Event: Join
         socket.emit(JOIN_EVENT, {id: currentLoginUserId});
@@ -100,7 +117,6 @@ const ChatRoomScreen = () => {
         //* Event: List - Response
         const handleListResponse: SocketEventHandlers['List'] = data => {
           console.log('data', data);
-          // console.log('CHAT LIST DATA:', data?.data && data?.data[0].chat);
           try {
             if (data && data?.data) {
               const filteredData = data.data.filter(
@@ -187,8 +203,6 @@ const ChatRoomScreen = () => {
       </React.Fragment>
     );
   }
-
-  console.log(messages);
 
   return (
     <View style={styles.container}>

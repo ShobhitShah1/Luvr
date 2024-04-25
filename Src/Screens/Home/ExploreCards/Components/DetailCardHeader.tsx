@@ -72,14 +72,14 @@ const styles = StyleSheet.create({
     width: '90%',
     alignSelf: 'center',
     flexDirection: 'row',
-    // justifyContent: 'space-between',
+    justifyContent: 'center',
   },
   BackIconView: {
     justifyContent: 'center',
   },
   BackIcon: {
     width: hp('3%'),
-    height: hp('3%'),
+    height: hp('2.8%'),
   },
   NameAndBadgeView: {
     flexDirection: 'row',

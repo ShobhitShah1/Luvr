@@ -41,6 +41,7 @@ import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHead
 import SettingCustomModal from './Components/SettingCustomModal';
 import SettingFlexView from './Components/SettingFlexView';
 import styles from './styles';
+import TextString from '../../Common/TextString';
 
 const ShowMeArray = ['Male', 'Female', 'Everyone'];
 
@@ -67,8 +68,9 @@ const SettingScreen = () => {
     [startAge, endAge] = settingAgeRangeMin?.split('-');
   }
 
-  const RemoteConfigLinks = remoteConfig().getAll();
+  const [RemoteConfigLinks, setRemoteConfigLinks] = useState<object>({});
 
+  // console.log(typeof RemoteConfigLinks);
   useEffect(() => {
     GetRemoteConfigValue();
   }, []);
@@ -87,7 +89,6 @@ const SettingScreen = () => {
       try {
         const IsNetOn = await NetInfo.fetch().then(info => info.isConnected);
         if (IsNetOn) {
-          // setIsFetchDataAPILoading(true);
           setIsInternetConnected(true);
           await GetSetting();
         } else {
@@ -108,6 +109,10 @@ const SettingScreen = () => {
 
   const GetRemoteConfigValue = async () => {
     await remoteConfig().fetch(100);
+    const GetRemoteConfigLinks = remoteConfig().getAll();
+    if (GetRemoteConfigLinks) {
+      setRemoteConfigLinks(GetRemoteConfigLinks);
+    }
   };
 
   const handleShowMeSelect = (gender: string) => {
@@ -169,6 +174,18 @@ const SettingScreen = () => {
   };
 
   const GetSetting = async () => {
+    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+    if (!InInternetConnected) {
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+      setIsSettingLoading(false);
+      return;
+    }
+
     setIsSettingLoading(true);
     try {
       const userDataForApi = {
@@ -202,7 +219,6 @@ const SettingScreen = () => {
   };
 
   const LogoutPress = async () => {
-    // Your existing logout logic
     const signOutFromGoogle = async () => {
       try {
         await GoogleSignin.revokeAccess();
@@ -270,6 +286,18 @@ Let's make every moment count together! #LoveConnects`,
   };
 
   const onDeleteAccount = async () => {
+    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+    if (!InInternetConnected) {
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+      setIsSettingLoading(false);
+      return;
+    }
+
     try {
       const userDataForApi = {
         eventName: 'delete_profile',
@@ -299,17 +327,20 @@ Let's make every moment count together! #LoveConnects`,
 
   //* Update Profile API Call (API CALL)
   const onUpdateProfile = async () => {
+    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+    if (!InInternetConnected) {
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+      setIsSettingLoading(false);
+      return;
+    }
+
     setIsSettingLoading(true);
     try {
-      if (!IsInternetConnected) {
-        showToast(
-          'Network Issue',
-          'Please check your internet connection and try again',
-          'error',
-        );
-        return;
-      }
-
       const DataToSend = {
         eventName: 'update_profile',
         mobile_no: UserSetting?.mobile_no || '',
@@ -404,7 +435,7 @@ Let's make every moment count together! #LoveConnects`,
               Icon={CommonIcons.ProfileTab}
               Title="Phone Number"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsSettingLoading}>
               <SettingFlexView
                 hideRightIcon={true}
                 isActive={false}
@@ -427,7 +458,9 @@ Let's make every moment count together! #LoveConnects`,
               Icon={CommonIcons.ProfileTab}
               Title="Maximum Distance"
             />
-            <EditProfileBoxView onLayout={getSizeSeekBar}>
+            <EditProfileBoxView
+              IsViewLoading={IsSettingLoading}
+              onLayout={getSizeSeekBar}>
               <React.Fragment>
                 <View style={styles.DistanceAndAgeView}>
                   <Text style={styles.DistanceAndAgeRangeTitleText}>
@@ -440,7 +473,7 @@ Let's make every moment count together! #LoveConnects`,
                 <View
                   style={{
                     width: '100%',
-                    overflow: 'hidden',
+                    overflow: 'visible',
                   }}>
                   <MultiSlider
                     onValuesChange={v => {
@@ -493,7 +526,7 @@ Let's make every moment count together! #LoveConnects`,
               Icon={CommonIcons.ProfileTab}
               Title="Show me"
             />
-            {/* <EditProfileBoxView> */}
+            {/* <EditProfileBoxView IsViewLoading={IsSettingLoading}> */}
             <View style={styles.GenderContainer}>
               {ShowMeArray.map((gender, index) => (
                 <TouchableOpacity
@@ -543,7 +576,7 @@ Let's make every moment count together! #LoveConnects`,
               Icon={CommonIcons.ProfileTab}
               Title="Age range"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsSettingLoading}>
               <React.Fragment>
                 <View style={styles.DistanceAndAgeView}>
                   <Text style={styles.DistanceAndAgeRangeTitleText}>
@@ -556,7 +589,7 @@ Let's make every moment count together! #LoveConnects`,
                 <View
                   style={{
                     width: '100%',
-                    overflow: 'hidden',
+                    overflow: 'visible',
                   }}>
                   <MultiSlider
                     onValuesChange={v => {
@@ -593,7 +626,7 @@ Let's make every moment count together! #LoveConnects`,
               Icon={CommonIcons.ProfileTab}
               Title="Active status"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsSettingLoading}>
               <SettingFlexView
                 isActive={UserSetting?.setting_active_status}
                 style={styles.PhoneNumberFlexStyle}
@@ -618,7 +651,7 @@ Let's make every moment count together! #LoveConnects`,
               Icon={CommonIcons.ProfileTab}
               Title="Notifications"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsSettingLoading}>
               <View>
                 <SettingFlexView
                   isActive={isEnabled}
@@ -657,7 +690,7 @@ Let's make every moment count together! #LoveConnects`,
               Icon={CommonIcons.ProfileTab}
               Title="Privacy"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsSettingLoading}>
               <View>
                 <SettingFlexView
                   isActive={false}
@@ -711,7 +744,7 @@ Let's make every moment count together! #LoveConnects`,
               Icon={CommonIcons.ProfileTab}
               Title="Other"
             />
-            <EditProfileBoxView>
+            <EditProfileBoxView IsViewLoading={IsSettingLoading}>
               <View>
                 <SettingFlexView
                   isActive={false}

@@ -18,6 +18,9 @@ import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import LikesContent from './Components/LikesContent';
 import MatchesContent from './Components/MatchesContent';
 import styles from './styles';
+import TextString from '../../Common/TextString';
+import {useCustomToast} from '../../Utils/toastUtils';
+import NetInfo from '@react-native-community/netinfo';
 
 type TabData = {title: string; index?: number};
 
@@ -60,7 +63,7 @@ const MyLikesScreen = () => {
   }>({likes: [], matches: []});
   const [refreshing, setRefreshing] = useState(false);
   const [isAPILoading, setIsAPILoading] = useState(false);
-
+  const {showToast} = useCustomToast();
   const tabsData: TabData[] = [
     {
       title: userLikesCount > 0 ? `Likes: ${userLikesCount}` : 'Likes',
@@ -105,13 +108,23 @@ const MyLikesScreen = () => {
   };
 
   useEffect(() => {
-    // if (isFocus) {
     setIsAPILoading(true);
     fetchLikesAndMatchAPI();
-    // }
   }, []);
 
   const fetchLikesAndMatchAPI = useCallback(async () => {
+    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+    if (!InInternetConnected) {
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+      setIsAPILoading(false);
+      return;
+    }
+
     try {
       const userDataForApi = {eventName: 'likes_matchs'};
       const APIResponse = await UserService.UserRegister(userDataForApi);
@@ -203,6 +216,8 @@ const MyLikesScreen = () => {
                   <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}
+                    progressBackgroundColor={COLORS.White}
+                    colors={[COLORS.Primary]}
                   />
                 }
                 initialNumToRender={20}

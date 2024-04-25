@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   },
   SliderContainerStyle: {
     margin: 0,
-    // alignSelf: 'center',
+    overflow: 'visible',
     justifyContent: 'center',
   },
   SliderContainer: {

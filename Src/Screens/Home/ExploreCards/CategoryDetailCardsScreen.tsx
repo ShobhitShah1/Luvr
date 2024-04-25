@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import {useRoute} from '@react-navigation/native';
-import React, {FC, useEffect, useState} from 'react';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import React, {FC, useCallback, useEffect, useState} from 'react';
 import {ActivityIndicator, FlatList, StatusBar, Text, View} from 'react-native';
 import {COLORS} from '../../../Common/Theme';
 import styles from './styles';
@@ -11,6 +12,9 @@ import {useCustomToast} from '../../../Utils/toastUtils';
 import UserService from '../../../Services/AuthService';
 import CategoryDetailHeader from './Components/CategoryDetailHeader';
 import CategoryRenderCard from './Components/CategoryRenderCard';
+import ItsAMatch from '../../Explore/Components/ItsAMatch';
+import Modal from 'react-native-modal';
+import {store} from '../../../Redux/Store/store';
 
 interface CategoryDetailCardsProps {
   params: {
@@ -25,8 +29,9 @@ interface CategoryDetailCardsProps {
 const CategoryDetailCardsScreen: FC = () => {
   const {params} = useRoute<CategoryDetailCardsProps>();
   const userData = useSelector((state: any) => state?.user);
-  // console.log('userData', userData);
   const {showToast} = useCustomToast();
+  const {navigate} = useNavigation();
+
   const LeftSwipedUserIds = useSelector(
     state => state?.user?.swipedLeftUserIds || [],
   );
@@ -34,8 +39,10 @@ const CategoryDetailCardsScreen: FC = () => {
     state => state?.user?.swipedRightUserIds || [],
   );
   const [CategoryData, setCategoryData] = useState([]);
-  const [IsAPILoading, setIsAPILoading] = useState(false);
+  const [IsAPILoading, setIsAPILoading] = useState(true);
   const [IsNetConnected, setIsNetConnected] = useState(false);
+  const [ItsMatchModalView, setItsMatchModalView] = useState(false);
+  const [CurrentCardIndex, setCurrentCardIndex] = useState<number>(-1);
 
   useEffect(() => {
     CheckConnectionAndFetchAPI();
@@ -48,6 +55,7 @@ const CategoryDetailCardsScreen: FC = () => {
     if (isConnected) {
       setIsNetConnected(true);
       FetchAPIData();
+      setItsMatchModalView(false);
     } else {
       setIsNetConnected(false);
       setIsAPILoading(false);
@@ -56,25 +64,28 @@ const CategoryDetailCardsScreen: FC = () => {
         'Please check your internet connection',
         'error',
       );
+      setItsMatchModalView(false);
     }
   };
 
-  const FetchAPIData = async () => {
+  const FetchAPIData = useCallback(async () => {
     try {
       const userDataForApi = {
         eventName: 'list_neighbour_home',
         latitude: userData.latitude,
         longitude: userData.longitude,
-        radius: 500,
-        unlike: LeftSwipedUserIds,
-        like: RightSwipedUserIds,
+        radius: userData?.userData?.radius
+          ? userData?.userData?.radius
+          : 9000000000000000,
+        unlike: store.getState().user?.swipedLeftUserIds,
+        like: store.getState().user?.swipedRightUserIds,
         hoping: params?.item?.title,
         skip: 0,
         limit: 200,
       };
-      const APIResponse = await UserService.UserRegister(userDataForApi);
 
-      console.log('APIResponse', APIResponse);
+      console.log('userDataForApi', userDataForApi);
+      const APIResponse = await UserService.UserRegister(userDataForApi);
 
       if (APIResponse?.code === 200) {
         setCategoryData(APIResponse?.data || []);
@@ -91,7 +102,14 @@ const CategoryDetailCardsScreen: FC = () => {
     } finally {
       setIsAPILoading(false);
     }
-  };
+  }, [
+    LeftSwipedUserIds,
+    RightSwipedUserIds,
+    userData,
+    store.getState().user?.swipedLeftUserIds,
+    store.getState().user?.swipedRightUserIds,
+    params?.item?.title,
+  ]);
 
   const ListEmptyView = () => {
     return (
@@ -130,12 +148,57 @@ const CategoryDetailCardsScreen: FC = () => {
           contentContainerStyle={{flex: CategoryData.length === 0 ? 1 : 0}}
           data={CategoryData}
           style={styles.FlatListStyle}
+          columnWrapperStyle={{
+            justifyContent: 'space-between',
+          }}
           renderItem={({item, index}) => {
-            return <CategoryRenderCard item={item} index={index} />;
+            return (
+              <CategoryRenderCard
+                item={item}
+                index={index}
+                FetchAPIData={FetchAPIData}
+                setIsAPILoading={setIsAPILoading}
+                setCurrentCardIndex={setCurrentCardIndex}
+                setItsMatchModalView={setItsMatchModalView}
+              />
+            );
           }}
           ListEmptyComponent={<ListEmptyView />}
+          showsVerticalScrollIndicator={false}
         />
       </View>
+
+      {ItsMatchModalView && (
+        <Modal
+          isVisible={ItsMatchModalView}
+          animationIn={'fadeIn'}
+          animationOut={'fadeOut'}
+          useNativeDriver
+          useNativeDriverForBackdrop
+          hasBackdrop
+          onBackdropPress={() => {
+            setItsMatchModalView(false);
+          }}
+          onBackButtonPress={() => {
+            setItsMatchModalView(false);
+          }}
+          style={{
+            flex: 1,
+            margin: 0,
+          }}>
+          <ItsAMatch
+            user={CategoryData && CategoryData[CurrentCardIndex]}
+            onSayHiClick={() => {
+              setItsMatchModalView(false);
+              navigate('Chat', {
+                id: CategoryData[CurrentCardIndex]?._id,
+              });
+            }}
+            onCloseModalClick={() => setItsMatchModalView(false)}
+            setItsMatch={setItsMatchModalView}
+          />
+        </Modal>
+      )}
     </View>
   );
 };

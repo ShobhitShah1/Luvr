@@ -11,7 +11,6 @@ import styles from './styles';
 const NotificationScreen = () => {
   const notifications = useSelector((state: any) => state.user.notifications);
 
-  // Reverse the array of notifications to display the newest ones first
   const reversedNotifications =
     notifications?.length !== 0 ? notifications?.slice()?.reverse() : [];
 

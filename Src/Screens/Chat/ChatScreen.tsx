@@ -194,12 +194,14 @@ const ChatScreen: FC = () => {
     const handleReceivedMessage = (data: any) => {};
 
     const handleReceiverChat = async (chat: any) => {
-      console.log('chat', chat);
+      // console.log('chat', chat);
       if (!OtherUserProfileData) {
         await getOtherUserDataCall();
       }
       const giftedChatMessages = StoreSingleChatFormat(chat);
       if (giftedChatMessages) {
+        socket.emit(READ_ALL, {to: OtherUserProfileData?._id});
+
         const updatedMessages = giftedChatMessages.map((message: any) => ({
           ...message,
           user: {
@@ -293,7 +295,7 @@ const ChatScreen: FC = () => {
           GiftedChat.append(previousMessages, messages),
         );
         console.log('Socket Data Going:', chatData);
-
+        socket.emit(READ_ALL, {to: OtherUserProfileData?._id});
         socket.emit(CHAT_EVENT, chatData, (err, responses) => {
           console.log('err, responses', err, responses);
           if (err) {

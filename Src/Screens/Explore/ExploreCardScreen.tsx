@@ -30,6 +30,8 @@ import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
+import TextString from '../../Common/TextString';
+import NetInfo from '@react-native-community/netinfo';
 
 const ExploreCardScreen: FC = () => {
   const {width} = useWindowDimensions() || {};
@@ -121,12 +123,24 @@ const ExploreCardScreen: FC = () => {
 
   const FetchAPIData = useCallback(
     async (cardSkipValue: number | undefined) => {
+      const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+      if (!InInternetConnected) {
+        showToast(
+          TextString.error.toUpperCase(),
+          TextString.PleaseCheckYourInternetConnection,
+          TextString.error,
+        );
+        setIsAPILoading(false);
+        return;
+      }
+
       setCurrentCardIndex(0);
       try {
         const userDataForApi = {
           limit: CardLimit,
-          unlike: LeftSwipedUserIds, //LeftSwipedUserIds
-          like: RightSwipedUserIds, //RightSwipedUserIds
+          unlike: LeftSwipedUserIds,
+          like: RightSwipedUserIds,
           skip: cardSkipValue || cardToSkipNumber,
           radius: userData.radius,
           eventName: 'list_neighbour',
@@ -190,7 +204,18 @@ const ExploreCardScreen: FC = () => {
   };
 
   //* All Card Swiped
-  const OnSwiped = (cardIndex: any) => {
+  const OnSwiped = async (cardIndex: any) => {
+    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+    if (!InInternetConnected) {
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+      swipeRef.current?.swipeBack();
+      return;
+    }
     setCurrentCardIndex(cardIndex + 1);
     setCurrentImageIndex(0);
   };
@@ -204,7 +229,7 @@ const ExploreCardScreen: FC = () => {
   };
 
   //* This Will Just Swipe Left
-  const SwipeLeft = () => {
+  const SwipeLeft = async () => {
     swipeRef.current?.swipeLeft();
   };
 
@@ -215,6 +240,17 @@ const ExploreCardScreen: FC = () => {
 
   //* User Like API
   const LikeUserAPI = async (id: string) => {
+    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+    if (!InInternetConnected) {
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+      return;
+    }
+
     try {
       const userDataForApi = {
         eventName: 'like',
@@ -234,9 +270,11 @@ const ExploreCardScreen: FC = () => {
           APIResponse?.message || 'Please try again letter',
           'error',
         );
+        swipeRef.current?.swipeBack();
       }
     } catch (error) {
       console.log('Something Went Wrong With Feting API Data');
+      swipeRef.current?.swipeBack();
     } finally {
       setIsAPILoading(false);
     }
@@ -316,7 +354,6 @@ const ExploreCardScreen: FC = () => {
                 ? [-width / 3, -1, 0, 1, width / 3]
                 : [-width / 3, -1, 0, 1, width / 3]
             }
-            // useViewOverflow={true}
             overlayLabels={{
               left: {
                 element: (
