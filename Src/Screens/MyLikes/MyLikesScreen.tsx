@@ -21,6 +21,7 @@ import styles from './styles';
 import TextString from '../../Common/TextString';
 import {useCustomToast} from '../../Utils/toastUtils';
 import NetInfo from '@react-native-community/netinfo';
+import {LikeInterface} from '../../Types/Interface';
 
 type TabData = {title: string; index?: number};
 
@@ -58,8 +59,8 @@ const MyLikesScreen = () => {
   const [userLikesCount, setUserLikesCount] = useState<number>(0);
   const [userMatchesCount, setUserMatchesCount] = useState<number>(0);
   const [matchAndLikeData, setMatchAndLikeData] = useState<{
-    likes: any[];
-    matches: any[];
+    likes: LikeInterface[];
+    matches: LikeInterface[];
   }>({likes: [], matches: []});
   const [refreshing, setRefreshing] = useState(false);
   const [isAPILoading, setIsAPILoading] = useState(false);
@@ -131,9 +132,7 @@ const MyLikesScreen = () => {
 
       if (APIResponse?.code === 200) {
         const data = APIResponse.data;
-
         let combinedData = [...data.like, ...data.match]; // Combine likes and matches data
-
         setUserLikesCount(data.like.length);
         setUserMatchesCount(data.match.length);
         setMatchAndLikeData(combinedData);
@@ -173,15 +172,6 @@ const MyLikesScreen = () => {
   return (
     <View style={styles.container}>
       <BottomTabHeader showSetting={false} />
-      {/* <ScrollView
-        scrollEnabled={false}
-        contentContainerStyle={{flex: 1}}
-        removeClippedSubviews
-        nestedScrollEnabled={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        style={styles.ContentView}> */}
       <View style={styles.TopTabContainerView}>
         <FlatList
           data={tabsData}

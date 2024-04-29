@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   Container: {
     width: '100%',
     // height: hp('8%'),
-    height: Platform.OS === 'ios' ? hp('12.5%') : hp('8%'),
+    height: Platform.OS === 'ios' ? hp('12%') : hp('6.8%'),
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.White,

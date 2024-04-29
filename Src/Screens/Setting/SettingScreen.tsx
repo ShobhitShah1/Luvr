@@ -70,9 +70,9 @@ const SettingScreen = () => {
 
   const [RemoteConfigLinks, setRemoteConfigLinks] = useState<object>({});
 
-  // console.log(typeof RemoteConfigLinks);
   useEffect(() => {
     GetRemoteConfigValue();
+    CheckPermission();
   }, []);
 
   useEffect(() => {
@@ -340,6 +340,7 @@ Let's make every moment count together! #LoveConnects`,
     }
 
     setIsSettingLoading(true);
+
     try {
       const DataToSend = {
         eventName: 'update_profile',
@@ -403,13 +404,19 @@ Let's make every moment count together! #LoveConnects`,
       } else {
         showToast(
           'Error Updating Setting',
-          'Oops! Something went wrong while trying to update your Setting. Please try again later or contact support if the issue persists',
+          String(APIResponse?.error) ||
+            'Oops! Something went wrong while trying to update your Setting. Please try again later or contact support if the issue persists',
           'error',
         );
         console.log('Something went wrong');
       }
     } catch (error) {
-      console.log('Something went wrong edit Setting :--:>', error);
+      showToast(
+        'Error Updating Setting',
+        String(error) ||
+          'Oops! Something went wrong while trying to update your Setting. Please try again later or contact support if the issue persists',
+        'error',
+      );
     } finally {
       setIsSettingLoading(false);
     }

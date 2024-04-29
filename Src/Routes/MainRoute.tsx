@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
+import messaging from '@react-native-firebase/messaging';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React, {useCallback, useEffect, useState} from 'react';
@@ -27,23 +28,20 @@ import {
 } from '../Screens/Auth';
 
 // ========================== HOME SCREENS ==========================
+import ApiConfig from '../Config/ApiConfig';
+import {setCurrentScreenName, updateField} from '../Redux/Action/userActions';
+import {store} from '../Redux/Store/store';
 import ChatScreen from '../Screens/Chat/ChatScreen';
+import DonationScreen from '../Screens/Donation/DonationScreen';
 import CategoryDetailCardsScreen from '../Screens/Home/ExploreCards/CategoryDetailCardsScreen';
 import ExploreCardDetailScreen from '../Screens/Home/ExploreCards/ExploreCardDetailScreen';
 import NotificationScreen from '../Screens/Notification/NotificationScreen';
 import EditProfileScreen from '../Screens/Profile/EditProfileScreen';
 import SettingScreen from '../Screens/Setting/SettingScreen';
 import {initGoogleSignIn} from '../Services/AuthService';
+import {LocalStorageFields} from '../Types/LocalStorageFields';
 import BottomTab from './BottomTab';
 import {navigationRef} from './RootNavigation';
-import messaging from '@react-native-firebase/messaging';
-import {store} from '../Redux/Store/store';
-import {LocalStorageFields} from '../Types/LocalStorageFields';
-import {updateField} from '../Redux/Action/userActions';
-import DonationScreen from '../Screens/Donation/DonationScreen';
-import ApiConfig from '../Config/ApiConfig';
-
-// SplashScreen.show();
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -79,7 +77,7 @@ export default function MainRoute() {
   const determineInitialRoute = useCallback(async () => {
     try {
       const checkLoginPermission = await checkLocationPermission();
-      console.log('checkLoginPermission', checkLoginPermission);
+      // console.log('checkLoginPermission', checkLoginPermission);
 
       if (!isUserVerified) {
         setInitialRoute('NumberVerification');
@@ -87,7 +85,7 @@ export default function MainRoute() {
       }
 
       console.log('Pass isUserVerified ✅');
-      console.log('ReduxUserData', ReduxUserData);
+      // console.log('ReduxUserData', ReduxUserData);
       console.log(
         'ReduxUserData.mobile_no',
         ReduxUserData.mobile_no,
@@ -133,9 +131,9 @@ export default function MainRoute() {
   useEffect(() => {
     if (initialRoute) {
       SplashScreen.hide();
-      console.log('📄 UserData Splash Screen:', ReduxUserData);
-      console.log('🆔 User Verified:', isUserVerified ? '✅' : '❌');
-      console.log('📱 Screen Will Show:', initialRoute);
+      // console.log('📄 UserData Splash Screen:', ReduxUserData);
+      // console.log('🆔 User Verified:', isUserVerified ? '✅' : '❌');
+      // console.log('📱 Screen Will Show:', initialRoute);
       console.log('--------------- SPLASH END ----------------');
     }
   }, [initialRoute, isUserVerified, ApiConfig]);
@@ -196,6 +194,32 @@ export default function MainRoute() {
     );
   };
 
+  const StateChangesCall = ref => {
+    const currentRouteName = ref?.getCurrentRoute()?.name;
+    if (currentRouteName) {
+      console.log('currentRouteName', currentRouteName);
+      if (
+        !currentRouteName.includes('Login') &&
+        !currentRouteName.includes('PhoneNumber') &&
+        !currentRouteName.includes('OTP') &&
+        !currentRouteName.includes('IdentifyYourSelf') &&
+        !currentRouteName.includes('SexualOrientationScreen') &&
+        !currentRouteName.includes('DistancePreference') &&
+        !currentRouteName.includes('HopingToFind') &&
+        !currentRouteName.includes('AddDailyHabits') &&
+        !currentRouteName.includes('YourEducation') &&
+        !currentRouteName.includes('WhatAboutYou') &&
+        !currentRouteName.includes('YourIntro') &&
+        !currentRouteName.includes('AddRecentPics') &&
+        !currentRouteName.includes('AvoidContacts') &&
+        !currentRouteName.includes('ManageContacts')
+      ) {
+        return currentRouteName;
+      }
+    }
+    return null;
+  };
+
   return (
     <React.Fragment>
       {initialRoute && (
@@ -203,6 +227,12 @@ export default function MainRoute() {
           ref={navigationRef}
           onReady={() => {
             setIsNavigationReady(true);
+          }}
+          onStateChange={() => {
+            const currentRouteName = StateChangesCall(navigationRef.current);
+            if (currentRouteName) {
+              store.dispatch(setCurrentScreenName(currentRouteName));
+            }
           }}>
           <Stack.Navigator
             screenOptions={{

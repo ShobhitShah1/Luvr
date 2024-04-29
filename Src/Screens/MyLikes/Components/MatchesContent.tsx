@@ -21,6 +21,7 @@ const MatchesContent: FC<LikesProps> = ({LikesData}) => {
   const userData = useSelector((state: any) => state?.user);
   let title = LikesData?.status;
   let Data: ProfileType | [] = [];
+  console.log('LikesData', LikesData);
 
   if (
     LikesData &&
@@ -50,7 +51,9 @@ const MatchesContent: FC<LikesProps> = ({LikesData}) => {
             <Image
               style={styles.MatchCardOpponentProfilePic}
               source={
-                Data?.recent_pik && Data?.recent_pik[0]
+                Data?.recent_pik &&
+                Data?.recent_pik?.length !== 0 &&
+                Data?.recent_pik[0]
                   ? {uri: ApiConfig.IMAGE_BASE_URL + Data?.recent_pik[0]}
                   : CommonImages.WelcomeBackground
               }

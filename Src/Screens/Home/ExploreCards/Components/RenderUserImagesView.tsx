@@ -12,12 +12,13 @@ import {DummyImage} from '../../../../Config/Setting';
 
 interface UserImagesProps {
   Images: string;
+  index: number;
 }
 
-const RenderUserImagesView: FC<UserImagesProps> = ({Images}) => {
+const RenderUserImagesView: FC<UserImagesProps> = ({Images, index}) => {
   const [IsImageLoading, setIsImageLoading] = useState(false);
   return (
-    <View>
+    <View style={styles.ImageContainer} key={index}>
       <Image
         onLoadStart={() => setIsImageLoading(true)}
         onLoadEnd={() => setIsImageLoading(false)}
@@ -26,7 +27,7 @@ const RenderUserImagesView: FC<UserImagesProps> = ({Images}) => {
           uri: Images ? `${ApiConfig.IMAGE_BASE_URL}${Images}` : DummyImage,
           cache: 'force-cache',
         }}
-        resizeMethod="scale"
+        resizeMethod="resize"
         progressiveRenderingEnabled={true}
       />
       {IsImageLoading && (
@@ -41,11 +42,17 @@ const RenderUserImagesView: FC<UserImagesProps> = ({Images}) => {
 export default RenderUserImagesView;
 
 const styles = StyleSheet.create({
+  ImageContainer: {
+    flex: 1,
+    width: '90%',
+    overflow: 'hidden',
+    alignItems: 'center',
+  },
   UserProfileImages: {
     flex: 1,
     height: '100%',
     resizeMode: 'contain',
-    width: Dimensions.get('window').width * 0.9,
+    width: Dimensions.get('window').width,
   },
   Loader: {
     position: 'absolute',

@@ -8,6 +8,7 @@ export const RESET_SWIPER_KEYS = 'RESET_SWIPER_KEYS';
 export const ON_SWIPE_LEFT = 'ON_SWIPE_LEFT';
 export const ON_SWIPE_RIGHT = 'ON_SWIPE_RIGHT';
 export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
+export const CURRENT_SCREEN = 'CURRENT_SCREEN';
 
 export type NotificationPayload = {
   title: string;
@@ -41,6 +42,11 @@ export const updateField = (
 export const setUserData = (userData: any) => ({
   type: SET_USER_DATA,
   payload: userData,
+});
+
+export const setCurrentScreenName = (screenName: string) => ({
+  type: CURRENT_SCREEN,
+  payload: screenName,
 });
 
 export type OnSwipeLeftAction = {

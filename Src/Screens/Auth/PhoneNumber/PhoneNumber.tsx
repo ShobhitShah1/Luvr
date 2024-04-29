@@ -36,6 +36,7 @@ import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import RenderCountryData from '../CreateProfile/Components/RenderCountryData';
 import styles from './styles';
+import {store} from '../../../Redux/Store/store';
 
 const PhoneNumber: FC = () => {
   const navigation =
@@ -78,24 +79,6 @@ const PhoneNumber: FC = () => {
       opacity: opacity.value,
     };
   });
-
-  // useEffect(() => {
-  //   if (isFocused === true && PhoneNumber.length !== 0) {
-  //     GetPermission();
-  //   }
-  // }, [isFocused]);
-
-  // const GetPermission = async () => {
-  //   try {
-  //     const result = await request(PERMISSIONS.ANDROID.READ_PHONE_NUMBERS);
-
-  //     if (result === RESULTS.GRANTED) {
-  //       setStorePhoneNumber(await requestHint());
-  //     }
-  //   } catch (error) {
-  //     console.error('Permission request failed:', error);
-  //   }
-  // };
 
   const handleCountryPress = (item: any, index: number) => {
     console.log('Country pressed:', item, index);
@@ -152,18 +135,20 @@ const PhoneNumber: FC = () => {
       dispatch(updateField(LocalStorageFields.isVerified, true)),
     ]);
 
-    const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
+    handleNavigation();
 
-    setTimeout(() => {
-      if (CHECK_NOTIFICATION_PERMISSION) {
-        handleNavigation();
-      } else {
-        navigation.replace('LocationStack', {
-          screen: 'LocationPermission',
-        });
-        setIsAPILoading(false);
-      }
-    }, 0);
+    // const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
+
+    // setTimeout(() => {
+    //   if (CHECK_NOTIFICATION_PERMISSION) {
+    //     handleNavigation();
+    //   } else {
+    //     navigation.replace('LocationStack', {
+    //       screen: 'LocationPermission',
+    //     });
+    //     setIsAPILoading(false);
+    //   }
+    // }, 0);
   };
 
   const handleNavigation = async () => {
@@ -172,20 +157,21 @@ const PhoneNumber: FC = () => {
     const userDataWithValidation = {
       ...userDataForApi,
       validation: true,
+      mobile_no: PhoneNumberString || store?.getState()?.user?.mobile_no,
     };
 
-    const APIResponse = await UserService.UserRegister(userDataWithValidation);
+    console.log('userDataWithValidation', userDataWithValidation);
 
+    const APIResponse = await UserService.UserRegister(userDataWithValidation);
+    console.log('handleNavigation APIResponse', APIResponse);
     if (APIResponse?.data?.token) {
-      await dispatch(
-        updateField(LocalStorageFields.Token, APIResponse.data?.token),
-      );
+      dispatch(updateField(LocalStorageFields.Token, APIResponse.data?.token));
+      console.log('userDataForApi?.login_type', userDataForApi?.login_type);
       if (userDataForApi?.login_type === 'social') {
         storeDataAPI();
       } else {
         setTimeout(() => {
           navigation.replace('BottomTab');
-          dispatch(updateField(LocalStorageFields.isVerified, true));
         }, 0);
       }
     } else {

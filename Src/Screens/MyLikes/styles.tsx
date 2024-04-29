@@ -2,7 +2,7 @@ import {StyleSheet} from 'react-native';
 import {COLORS, FONTS} from '../../Common/Theme';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-let NOIMAGE_CONTAINER = 150;
+let NO_IMAGE_CONTAINER = 150;
 
 const styles = StyleSheet.create({
   container: {
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   TabBarButtonView: {
-    width: '45%',
+    width: '46%',
     height: 52,
     justifyContent: 'center',
     borderWidth: 2,
@@ -32,17 +32,17 @@ const styles = StyleSheet.create({
 
   //* Tab
   TopTabContainerView: {
-    paddingTop: 14,
-    paddingBottom: 5,
+    marginTop: 14,
+    marginBottom: 5,
+    width: '90%',
+    alignSelf: 'center',
   },
   FlatListContentContainerStyle: {
-    alignSelf: 'center',
+    // alignSelf: 'center',
     justifyContent: 'center',
   },
   FlatListColumnWrapperStyle: {
     justifyContent: 'space-between',
-    width: '90%',
-    alignSelf: 'center',
   },
   ContentContainer: {
     flex: 1,
@@ -60,13 +60,13 @@ const styles = StyleSheet.create({
     borderRadius: 500,
     alignSelf: 'center',
     justifyContent: 'center',
-    width: NOIMAGE_CONTAINER,
-    height: NOIMAGE_CONTAINER,
+    width: NO_IMAGE_CONTAINER,
+    height: NO_IMAGE_CONTAINER,
     backgroundColor: COLORS.White,
   },
   NoLikeImage: {
-    width: NOIMAGE_CONTAINER - 70,
-    height: NOIMAGE_CONTAINER - 70,
+    width: NO_IMAGE_CONTAINER - 70,
+    height: NO_IMAGE_CONTAINER - 70,
     alignSelf: 'center',
     justifyContent: 'center',
   },

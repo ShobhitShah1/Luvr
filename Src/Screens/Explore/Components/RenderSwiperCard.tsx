@@ -79,7 +79,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
       currentImageIndex < cardData.recent_pik.length
     ) {
       flatListRef?.current?.scrollToIndex({
-        index: currentImageIndex,
+        index: currentImageIndex || 0,
         animated: true,
       });
     }
@@ -116,45 +116,74 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
           entering={FadeIn.duration(500)}
           exiting={FadeOut.duration(500)}
           style={[styles.imageContainer]}>
-          <FlatList
-            horizontal
-            pagingEnabled
-            ref={flatListRef}
-            initialNumToRender={4}
-            initialScrollIndex={0}
-            scrollEnabled={false}
-            nestedScrollEnabled={false}
-            keyExtractor={(item, index) => index.toString()}
-            data={cardData?.recent_pik}
-            removeClippedSubviews={true}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({item, index}) => {
-              return (
-                <View
-                  style={{
-                    height: ContainerWidthAndHeight.height
-                      ? ContainerWidthAndHeight.height
-                      : 530.9091186523438,
-                    width: ContainerWidthAndHeight.width
-                      ? ContainerWidthAndHeight.width
-                      : 350.5454406738281,
-                  }}>
-                  <FastImage
-                    key={index}
-                    resizeMode="cover"
-                    onLoad={ImageLoaded}
-                    onLoadStart={ImageLoading}
-                    source={{
-                      uri: item ? ApiConfig.IMAGE_BASE_URL + item : DummyImage,
-                      priority: FastImage.priority.high,
-                    }}
-                    style={styles.ImageStyle}
-                    removeClippedSubviews={true}
-                  />
-                </View>
-              );
-            }}
-          />
+          {cardData?.recent_pik?.length !== 0 ? (
+            <FlatList
+              horizontal
+              pagingEnabled
+              ref={flatListRef}
+              initialNumToRender={4}
+              initialScrollIndex={0}
+              scrollEnabled={false}
+              nestedScrollEnabled={false}
+              onScrollToIndexFailed={error => {
+                console.log('onScrollToIndexFailed', error);
+              }}
+              keyExtractor={(item, index) => index.toString()}
+              data={cardData?.recent_pik}
+              removeClippedSubviews={true}
+              showsHorizontalScrollIndicator={false}
+              renderItem={({item, index}) => {
+                return (
+                  <View
+                    style={{
+                      height: ContainerWidthAndHeight.height
+                        ? ContainerWidthAndHeight.height
+                        : 530.9091186523438,
+                      width: ContainerWidthAndHeight.width
+                        ? ContainerWidthAndHeight.width
+                        : 350.5454406738281,
+                    }}>
+                    <FastImage
+                      key={index}
+                      resizeMode="cover"
+                      onLoad={ImageLoaded}
+                      onLoadStart={ImageLoading}
+                      source={{
+                        uri: item
+                          ? ApiConfig.IMAGE_BASE_URL + item
+                          : DummyImage,
+                        priority: FastImage.priority.high,
+                      }}
+                      style={styles.ImageStyle}
+                      removeClippedSubviews={true}
+                    />
+                  </View>
+                );
+              }}
+            />
+          ) : (
+            <View
+              style={{
+                height: ContainerWidthAndHeight.height
+                  ? ContainerWidthAndHeight.height
+                  : 530.9091186523438,
+                width: ContainerWidthAndHeight.width
+                  ? ContainerWidthAndHeight.width
+                  : 350.5454406738281,
+              }}>
+              <FastImage
+                resizeMode="cover"
+                onLoad={ImageLoaded}
+                onLoadStart={ImageLoading}
+                source={{
+                  uri: DummyImage,
+                  priority: FastImage.priority.high,
+                }}
+                style={styles.ImageStyle}
+                removeClippedSubviews={true}
+              />
+            </View>
+          )}
         </Animated.View>
 
         <View style={styles.CardBottomDetailView}>

@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
+import NetInfo from '@react-native-community/netinfo';
 import {useIsFocused} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
@@ -13,22 +14,16 @@ import {
 } from 'react-native';
 import {Socket, io} from 'socket.io-client';
 import CommonImages from '../../Common/CommonImages';
+import TextString from '../../Common/TextString';
 import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import {chatRoomData} from '../../Components/Data';
 import ApiConfig from '../../Config/ApiConfig';
-import {
-  CHAT_EVENT,
-  JOIN_EVENT,
-  LIST_EVENT,
-  MESSAGE_EVENT,
-  UPDATE_LIST,
-} from '../../Config/Setting';
+import {JOIN_EVENT, LIST_EVENT, UPDATE_LIST} from '../../Config/Setting';
+import {setCurrentScreenName} from '../../Redux/Action/userActions';
 import {store} from '../../Redux/Store/store';
 import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderChatRoomList from './Components/RenderChatRoomList';
-import TextString from '../../Common/TextString';
-import NetInfo from '@react-native-community/netinfo';
 
 interface ChatMessage {
   senderId: string;
@@ -64,8 +59,11 @@ const ChatRoomScreen = () => {
 
   useEffect(() => {
     if (isFocused) {
-      setIsSocketLoading(true);
+      if (messages.length === 0) {
+        setIsSocketLoading(true);
+      }
       ConnectSocket();
+      // store.dispatch(setCurrentScreenName('ChatRoom'));
     } else {
       if (socket) {
         socket.disconnect();
@@ -116,7 +114,6 @@ const ChatRoomScreen = () => {
 
         //* Event: List - Response
         const handleListResponse: SocketEventHandlers['List'] = data => {
-          console.log('data', data);
           try {
             if (data && data?.data) {
               const filteredData = data.data.filter(
@@ -124,13 +121,23 @@ const ChatRoomScreen = () => {
               );
               if (filteredData.length !== 0) {
                 const usersWithFirstChat = filteredData.map(message => {
-                  console.log('message.chat', message.chat);
+                  const otherUserChats = message.chat.filter(
+                    chat => chat?.id !== currentLoginUserId,
+                  );
+
+                  //* With Both Side Chat
+                  // const firstChat =
+                  //   message.chat.length > 0
+                  //     ? message.chat[message.chat.length - 1]
+                  //     : null;
+
+                  //* Only Other User Chat
                   const firstChat =
-                    message.chat.length > 0
-                      ? message.chat[message.chat.length - 1]
+                    otherUserChats.length > 0
+                      ? otherUserChats[otherUserChats.length - 1]
                       : null;
 
-                  console.log('firstChat', firstChat);
+                  console.log('firstChat', firstChat, currentLoginUserId);
                   return {
                     chat: firstChat ? [firstChat] : [],
                     last_updated_time: message.last_updated_time,
@@ -142,7 +149,6 @@ const ChatRoomScreen = () => {
                 });
 
                 console.log('userList', usersWithFirstChat);
-
                 setMessages(usersWithFirstChat);
               }
             } else {

@@ -43,27 +43,31 @@ const ReportUserModalView: FC<ReportUserProps> = ({
   return (
     <Modal
       isVisible={Visible}
-      useNativeDriver
-      useNativeDriverForBackdrop
+      useNativeDriver={true}
+      useNativeDriverForBackdrop={true}
       onBackdropPress={() => setVisibility(false)}
-      hasBackdrop
+      hasBackdrop={true}
+      onBackButtonPress={() => setVisibility(false)}
       customBackdrop={<BlurredBackdrop />}>
       <View style={styles.Container}>
-        <View style={styles.TitleView}>
-          <Text style={styles.TitleText}>Report Profile</Text>
+        <View>
+          <View style={styles.TitleView}>
+            <View />
+            <Text style={styles.TitleText}>Report Profile</Text>
+            <TouchableOpacity
+              onPress={() => setVisibility(false)}
+              activeOpacity={ActiveOpacity}
+              style={styles.CloseModalIconView}>
+              <Image
+                source={CommonIcons.CloseModal}
+                style={styles.CloseModalIcon}
+              />
+            </TouchableOpacity>
+          </View>
           <Text style={styles.TitleSubText}>
             Don't Worry, your feedback is anonymous and they won't know that
             you've report them
           </Text>
-          <TouchableOpacity
-            onPress={() => setVisibility(false)}
-            activeOpacity={ActiveOpacity}
-            style={styles.CloseModalIconView}>
-            <Image
-              source={CommonIcons.CloseModal}
-              style={styles.CloseModalIcon}
-            />
-          </TouchableOpacity>
         </View>
 
         <View style={styles.ReasonsViewContainer}>
@@ -141,10 +145,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   TitleView: {
-    height: '15%',
+    height: 50,
+    paddingHorizontal: 15,
     width: '100%',
-    justifyContent: 'center',
-    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   TitleText: {
     zIndex: 9999,
@@ -152,21 +158,22 @@ const styles = StyleSheet.create({
     color: COLORS.Black,
     fontFamily: FONTS.Bold,
     fontSize: 20,
+    left: 15,
   },
   TitleSubText: {
-    paddingVertical: 2,
+    marginBottom: 13,
+    marginTop: 3,
     zIndex: 9999,
     textAlign: 'center',
     opacity: 0.8,
+    width: '90%',
+    alignSelf: 'center',
     color: COLORS.DescriptionGray,
-    fontFamily: FONTS.Bold,
-    fontSize: 14,
+    fontFamily: FONTS.SemiBold,
+    fontSize: 13.5,
   },
   CloseModalIconView: {
-    top: 15,
-    right: 15,
     zIndex: 9999,
-    position: 'absolute',
   },
   CloseModalIcon: {
     width: 28,
@@ -174,7 +181,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   ReasonsViewContainer: {
-    height: '71%',
+    height: '73%',
   },
   ReasonsTextView: {
     width: '90%',
@@ -215,7 +222,7 @@ const styles = StyleSheet.create({
   ReportButtonView: {
     width: 200,
     height: 50,
-    marginVertical: 7,
+    bottom: 5,
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',

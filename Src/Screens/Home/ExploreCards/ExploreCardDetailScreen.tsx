@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   Animated,
   Dimensions,
-  FlatList,
   Image,
   Platform,
   ScrollView,
@@ -164,7 +163,6 @@ const ExploreCardDetailScreen = () => {
     console.log('Report APIResponse', APIResponse);
 
     if (APIResponse && APIResponse?.code === 200) {
-      // navigation.goBack();
       await store.dispatch(onSwipeLeft(String(UserID)));
       showToast(
         'Success!',
@@ -200,14 +198,14 @@ const ExploreCardDetailScreen = () => {
           contentContainerStyle={styles.ScrollViewContentContainerStyle}>
           <View style={styles.ProfileImageView}>
             {CardData?.recent_pik?.length !== 0 && (
-              <FlatList
-                horizontal
-                pagingEnabled
-                style={{flex: 1}}
+              <Animated.FlatList
+                horizontal={true}
+                pagingEnabled={true}
+                style={{flex: 1, width: '100%'}}
                 showsHorizontalScrollIndicator={false}
                 data={CardData?.recent_pik}
                 renderItem={({item, index}) => {
-                  return <RenderUserImagesView Images={item} />;
+                  return <RenderUserImagesView Images={item} index={index} />;
                 }}
                 onScroll={Animated.event(
                   [{nativeEvent: {contentOffset: {x: scrollX}}}],
@@ -223,7 +221,7 @@ const ExploreCardDetailScreen = () => {
             {CardData &&
               CardData?.recent_pik?.length !== 0 &&
               CardData?.recent_pik?.length > 1 && (
-                <Paginator data={CardData?.recent_pik || 0} scrollX={scrollX} />
+                <Paginator data={CardData?.recent_pik} scrollX={scrollX} />
               )}
           </View>
 
@@ -480,11 +478,10 @@ const styles = StyleSheet.create({
   },
   ProfileImageView: {
     height: 430,
-    width: '90%',
+    width: '100%',
     borderRadius: 20,
     overflow: 'hidden',
     alignSelf: 'center',
-    alignItems: 'center',
   },
   DetailBoxContainerView: {
     borderRadius: hp('4%'),

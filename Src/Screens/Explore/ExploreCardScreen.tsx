@@ -103,7 +103,9 @@ const ExploreCardScreen: FC = () => {
   useEffect(() => {
     if (isScreenFocused) {
       startInterval();
-      setIsAPILoading(true);
+      if (cards.length === 0) {
+        setIsAPILoading(true);
+      }
       FetchAPIData(0);
       setCardToSkipNumber(0);
       setCurrentCardIndex(0);
@@ -216,8 +218,8 @@ const ExploreCardScreen: FC = () => {
       swipeRef.current?.swipeBack();
       return;
     }
-    setCurrentCardIndex(cardIndex + 1);
     setCurrentImageIndex(0);
+    setCurrentCardIndex(cardIndex + 1);
   };
 
   //* When Swipe All Card Fetch New

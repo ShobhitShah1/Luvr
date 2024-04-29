@@ -14,6 +14,38 @@
       },
       "oauth_client": [
         {
+          "client_id": "126773940218-ioa30gc6uqs9mi091gtrerpgrtjh56a0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.luvr.dating",
+            "certificate_hash": "2e72358975bec4073d88bbbba7c95db3a189a700"
+          }
+        },
+        {
+          "client_id": "126773940218-l1iprpd4oi8h7vkk8mltqoc0ln9506n1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.luvr.dating",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "126773940218-s0k7hd0ih1dl85c2ci6s0bs3c8btrqs2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.luvr.dating",
+            "certificate_hash": "a178493bbdd498ece4dc6486dedc38021953423b"
+          }
+        },
+        {
+          "client_id": "126773940218-vsvmm2rre5545dd5uspd9vup9b5sacj1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.luvr.dating",
+            "certificate_hash": "4b9b36d11f032c1501737ef71c88668a4f4730ae"
+          }
+        },
+        {
           "client_id": "126773940218-vqp2euiee90i9pecsh3gfdiaa19hj0rv.apps.googleusercontent.com",
           "client_type": 3
         }

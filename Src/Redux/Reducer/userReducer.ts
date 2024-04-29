@@ -7,7 +7,8 @@ import {
   RESET_SWIPER_KEYS,
   SET_USER_DATA,
   UPDATE_FIELD,
-  ADD_NOTIFICATION, // Importing the new action type
+  ADD_NOTIFICATION,
+  CURRENT_SCREEN,
 } from '../Action/userActions';
 
 const initialState: UserDataType & {
@@ -17,7 +18,7 @@ const initialState: UserDataType & {
 } & {
   userData: string[];
 } & {
-  notifications: string[]; // Adding notifications to the initial state
+  notifications: string[];
 } = {
   ...Object.keys(LocalStorageFields).reduce(
     (acc, field) => ({...acc, [field]: ''}),
@@ -26,7 +27,8 @@ const initialState: UserDataType & {
   swipedLeftUserIds: [],
   swipedRightUserIds: [],
   userData: [],
-  notifications: [], // Initializing notifications array
+  notifications: [],
+  CurrentScreen: '',
 };
 
 const userReducer = (
@@ -38,9 +40,12 @@ const userReducer = (
     userData: string[];
   } & {
     notifications: string[];
+  } & {
+    CurrentScreen: string;
   } = initialState,
   action: any,
 ) => {
+  console.log('action', action);
   switch (action.type) {
     case SET_USER_DATA:
       return {
@@ -79,6 +84,11 @@ const userReducer = (
         ...state,
         swipedLeftUserIds: [],
         swipedRightUserIds: [],
+      };
+    case CURRENT_SCREEN:
+      return {
+        ...state,
+        CurrentScreen: action.value || action.payload,
       };
     case RESET:
       return initialState;

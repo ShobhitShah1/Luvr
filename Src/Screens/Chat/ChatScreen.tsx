@@ -35,6 +35,7 @@ import {
   MESSAGE_EVENT,
   READ_ALL,
 } from '../../Config/Setting';
+import {setCurrentScreenName} from '../../Redux/Action/userActions';
 import {store} from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
 import {ProfileType} from '../../Types/ProfileType';
@@ -72,6 +73,7 @@ const ChatScreen: FC = () => {
       getOtherUserDataCall();
       const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
       setSocket(socketInstance);
+      // store.dispatch(setCurrentScreenName('Chat'));
       return () => {
         socketInstance.disconnect();
       };
