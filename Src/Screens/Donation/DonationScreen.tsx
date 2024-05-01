@@ -69,7 +69,6 @@ const DonationScreen = () => {
 
   const GetProducts = async () => {
     const Products = await getProducts({skus});
-    // console.log('Products', Products);
     if (Products) {
       Products.map(res => {
         console.log(res.localizedPrice);
@@ -90,7 +89,8 @@ const DonationScreen = () => {
         console.log('✅ All Set');
       } catch (error) {
         console.log('⚠️ Error', error);
-        Alert.alert('Error', String(error));
+        // Alert.alert('Error', String(error));
+        showToast('Error', String(error?.message), 'error');
         setPaymentLoader(false);
       }
     } else {
@@ -171,7 +171,6 @@ const DonationScreen = () => {
             isLoading={PaymentLoader}
             onPress={() => {
               RequestPurchase();
-              // DonationAPICall();
             }}
             ButtonTitle={
               PaymentSuccess

@@ -17,7 +17,6 @@ import CommonImages from '../../../Common/CommonImages';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import {ProfileType} from '../../../Types/ProfileType';
-import {APP_NAME} from '../../../Config/Setting';
 
 interface ChatHeaderProps {
   data: ProfileType;
@@ -41,28 +40,34 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({data}) => {
             />
           </TouchableOpacity>
           <View style={styles.UserInfoView}>
-            <View style={styles.ProfileImageView}>
-              <FastImage
-                style={styles.ProfileImage}
-                source={
-                  data?.recent_pik && data?.recent_pik?.length !== 0
-                    ? {
-                        uri: ApiConfig.IMAGE_BASE_URL + data?.recent_pik[0],
-                        priority: FastImage.priority.high,
-                      }
-                    : CommonImages.WelcomeBackground
-                }
-              />
-            </View>
-            <View style={styles.ProfileNameView}>
-              <Text numberOfLines={1} style={styles.ProfileNameText}>
-                {data?.full_name || ''}
-              </Text>
-              <Image
-                source={CommonIcons.Verification_Icon}
-                style={styles.VerifyIconView}
-              />
-            </View>
+            {data?.recent_pik && data?.recent_pik?.length !== 0 && (
+              <View style={styles.ProfileImageView}>
+                <FastImage
+                  style={styles.ProfileImage}
+                  source={
+                    data?.recent_pik && data?.recent_pik?.length !== 0
+                      ? {
+                          uri: ApiConfig.IMAGE_BASE_URL + data?.recent_pik[0],
+                          priority: FastImage.priority.high,
+                        }
+                      : CommonImages.WelcomeBackground
+                  }
+                />
+              </View>
+            )}
+            {data?.full_name && (
+              <>
+                <View style={styles.ProfileNameView}>
+                  <Text numberOfLines={1} style={styles.ProfileNameText}>
+                    {data?.full_name || ''}
+                  </Text>
+                  <Image
+                    source={CommonIcons.Verification_Icon}
+                    style={styles.VerifyIconView}
+                  />
+                </View>
+              </>
+            )}
           </View>
         </View>
         {/* <View style={styles.RemoveChatView}>

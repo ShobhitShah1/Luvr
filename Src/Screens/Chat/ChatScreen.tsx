@@ -35,7 +35,6 @@ import {
   MESSAGE_EVENT,
   READ_ALL,
 } from '../../Config/Setting';
-import {setCurrentScreenName} from '../../Redux/Action/userActions';
 import {store} from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
 import {ProfileType} from '../../Types/ProfileType';
@@ -64,6 +63,7 @@ const ChatScreen: FC = () => {
   const [socket, setSocket] = useState<Socket>();
   const [ReceiverSocketId, setReceiverSocketId] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string>('');
+
   const generateRandomId = () => {
     return Math.random().toString(36).substr(2, 9);
   };

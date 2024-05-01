@@ -136,19 +136,6 @@ const PhoneNumber: FC = () => {
     ]);
 
     handleNavigation();
-
-    // const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
-
-    // setTimeout(() => {
-    //   if (CHECK_NOTIFICATION_PERMISSION) {
-    //     handleNavigation();
-    //   } else {
-    //     navigation.replace('LocationStack', {
-    //       screen: 'LocationPermission',
-    //     });
-    //     setIsAPILoading(false);
-    //   }
-    // }, 0);
   };
 
   const handleNavigation = async () => {

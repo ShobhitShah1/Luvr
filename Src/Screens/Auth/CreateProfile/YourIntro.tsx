@@ -121,7 +121,6 @@ const YourIntro: FC = () => {
         ...userDataForApi,
         likes_into: selectedItems,
         validation: false,
-        // identity: 'cmini45402gmail.com',
         eventName:
           userDataForApi?.login_type === 'social'
             ? 'app_user_register_social'

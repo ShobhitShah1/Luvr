@@ -19,6 +19,7 @@ import TextString from '../../Common/TextString';
 import NetInfo from '@react-native-community/netinfo';
 import {useCustomToast} from '../../Utils/toastUtils';
 import {COLORS} from '../../Common/Theme';
+import {requestNotifications} from 'react-native-permissions';
 
 const HomeScreen = () => {
   const [IsAPIDataLoading, setIsAPIDataLoading] = useState(false);
@@ -27,15 +28,53 @@ const HomeScreen = () => {
   const {showToast} = useCustomToast();
 
   useEffect(() => {
-    Promise.all([GetMyLikes(), GetProfileData(), requestUserPermission()]);
+    Promise.all([
+      GetMyLikes(),
+      GetProfileData(),
+      requestUserPermission(),
+      AskNotificationPermission(),
+      UpdateDeviceToken(),
+    ]);
   }, []);
 
   useEffect(() => {
     handleLocationPermissionRequest();
   }, []);
 
+  const AskNotificationPermission = () => {
+    requestNotifications(['alert', 'sound'])
+      .then(({status, settings}) => {
+        console.log('requestNotifications:', status, settings);
+      })
+      .catch(error => {
+        console.log('ERROR', error);
+      });
+  };
+
   const handleLocationPermissionRequest = async () => {
     requestLocationPermission();
+  };
+
+  const UpdateDeviceToken = async () => {
+    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+
+    if (!InInternetConnected) {
+      return;
+    }
+    const Token = await messaging().getToken();
+
+    if (Token) {
+      const userDataForApi = {
+        eventName: 'update_notification_token',
+        notification_token: Token,
+      };
+
+      console.log('userDataForApi', userDataForApi);
+      const APIResponse = await UserService.UserRegister(userDataForApi);
+      console.log('UPDATE TOKEN APIResponse:', APIResponse);
+      if (APIResponse?.code === 200) {
+      }
+    }
   };
 
   async function requestUserPermission() {

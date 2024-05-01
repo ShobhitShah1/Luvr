@@ -1,77 +1,81 @@
 import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useState} from 'react';
-import {Alert, Image, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {Image, StatusBar, StyleSheet, Text, View} from 'react-native';
+import Geolocation from 'react-native-geolocation-service';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useDispatch, useSelector} from 'react-redux';
 import CommonImages from '../../../Common/CommonImages';
 import {COLORS, FONTS} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import {useLocationPermission} from '../../../Hooks/useLocationPermission';
-import CreateProfileStyles from './styles';
-import Geolocation from 'react-native-geolocation-service';
-import {useCustomToast} from '../../../Utils/toastUtils';
 import {updateField} from '../../../Redux/Action/userActions';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useDispatch, useSelector} from 'react-redux';
 import UserService from '../../../Services/AuthService';
 import {transformUserDataForApi} from '../../../Services/dataTransformService';
+import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {useCustomToast} from '../../../Utils/toastUtils';
+import CreateProfileStyles from './styles';
+import {useLocationPermission} from '../../../Hooks/useLocationPermission';
 
 const LocationPermission: FC = () => {
   const navigation = useNavigation();
   const {showToast} = useCustomToast();
   const dispatch = useDispatch();
   const userData = useSelector((state: any) => state?.user);
-  const {locationPermission, requestLocationPermission} =
-    useLocationPermission();
+  const {requestLocationPermission} = useLocationPermission();
+
   const [IsLocationLoading, setIsLocationLoading] = useState(false);
 
   const onNextPress = async () => {
-    handleNavigation();
-    // if (locationPermission) {
-    //   setIsLocationLoading(true);
-    //   navigateToNextScreen();
-    // } else {
-    //   const requestPermission = await requestLocationPermission();
-    //   if (requestPermission) {
-    //     setIsLocationLoading(true);
-    //     navigateToNextScreen();
-    //   } else {
-    //     setIsLocationLoading(false);
-    //   }
-    // }
+    navigateToNextScreen();
   };
 
   const navigateToNextScreen = async () => {
     setIsLocationLoading(true);
     try {
-      return new Promise((resolve, reject) => {
-        Geolocation.getCurrentPosition(
-          async position => {
-            const {coords} = position;
-            if (coords) {
-              await Promise.all([
-                dispatch(
-                  updateField(LocalStorageFields.longitude, coords.longitude),
-                ),
-                dispatch(
-                  updateField(LocalStorageFields.latitude, coords.latitude),
-                ),
-              ]);
+      requestLocationPermission()
+        .then(isLocationGranted => {
+          if (isLocationGranted) {
+            return new Promise((resolve, reject) => {
+              Geolocation.getCurrentPosition(
+                async position => {
+                  const {coords} = position;
+                  if (coords) {
+                    await Promise.all([
+                      dispatch(
+                        updateField(
+                          LocalStorageFields.longitude,
+                          coords.longitude,
+                        ),
+                      ),
+                      dispatch(
+                        updateField(
+                          LocalStorageFields.latitude,
+                          coords.latitude,
+                        ),
+                      ),
+                    ]);
 
-              setTimeout(() => {
-                handleNavigation();
-              }, 0);
-            }
-          },
-          error => {
-            reject(error);
-            setTimeout(() => {
-              setIsLocationLoading(false);
-            }, 0);
-          },
-          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-        );
-      });
+                    setTimeout(() => {
+                      handleNavigation();
+                    }, 0);
+                  }
+                },
+                error => {
+                  reject(error);
+                  setTimeout(() => {
+                    setIsLocationLoading(false);
+                  }, 0);
+                },
+                {enableHighAccuracy: true, timeout: 15000, maximumAge: 100},
+              );
+            });
+          } else {
+            setIsLocationLoading(false);
+          }
+        })
+        .catch(error => {
+          console.log('Location Permisstion Error', error);
+          setIsLocationLoading(false);
+        });
     } catch (error: any) {
       console.error(error, error?.message);
       showToast(

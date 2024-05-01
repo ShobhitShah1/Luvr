@@ -42,6 +42,7 @@ import {initGoogleSignIn} from '../Services/AuthService';
 import {LocalStorageFields} from '../Types/LocalStorageFields';
 import BottomTab from './BottomTab';
 import {navigationRef} from './RootNavigation';
+import AddEmail from '../Screens/Auth/CreateProfile/AddEmail';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -172,6 +173,7 @@ export default function MainRoute() {
           screenOptions={{
             headerShown: false,
           }}>
+          <Stack.Screen component={AddEmail} name="AddEmail" />
           <Stack.Screen component={IdentifyYourSelf} name="IdentifyYourSelf" />
           <Stack.Screen
             component={SexualOrientation}
@@ -212,7 +214,9 @@ export default function MainRoute() {
         !currentRouteName.includes('YourIntro') &&
         !currentRouteName.includes('AddRecentPics') &&
         !currentRouteName.includes('AvoidContacts') &&
-        !currentRouteName.includes('ManageContacts')
+        !currentRouteName.includes('ManageContacts') &&
+        !currentRouteName.includes('LocationPermission') &&
+        !currentRouteName.includes('AddEmail')
       ) {
         return currentRouteName;
       }

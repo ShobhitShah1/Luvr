@@ -1,9 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import {useNavigation, useRoute} from '@react-navigation/native';
 import axios from 'axios';
-import React, {FC, useEffect, useState, useRef} from 'react';
+import React, {FC, useEffect, useRef, useState} from 'react';
 import {Alert, Keyboard, Text, View} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
+import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
 import {useDispatch, useSelector} from 'react-redux';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import ApiConfig from '../../../Config/ApiConfig';
@@ -15,7 +16,6 @@ import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import styles from './styles';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
 
 interface RouteParams {
   number: string;
@@ -27,13 +27,14 @@ const OTPScreen: FC = () => {
   const OTPInputs: number = 4;
   const {number} = route.params as RouteParams;
   const userData = useSelector((state: any) => state?.user);
-  const {showToast} = useCustomToast();
   const dispatch = useDispatch();
+  const {showToast} = useCustomToast();
+  const navigation = useNavigation();
+
   const {locationPermission, checkLocationPermission} = useLocationPermission();
   const [otp, setOtp] = useState<string>('');
   const [IsAPILoading, setIsAPILoading] = useState(false);
 
-  const navigation = useNavigation();
   const [DisableButton, setDisableButton] = useState<boolean>(true);
   const [ResendDisabled, setResendDisabled] = useState<boolean>(false);
   const [ResendTimer, setResendTimer] = useState<number>(0); // Timer in seconds
@@ -206,14 +207,15 @@ const OTPScreen: FC = () => {
       await dispatch(
         updateField(LocalStorageFields.Token, APIResponse.data?.token),
       );
-      if (userDataForApi?.login_type === 'social') {
-        storeDataAPI();
-      } else {
-        setTimeout(() => {
-          navigation.replace('BottomTab');
-          dispatch(updateField(LocalStorageFields.isVerified, true));
-        }, 0);
-      }
+      storeDataAPI();
+      // if (userDataForApi?.login_type === 'social') {
+      //   storeDataAPI();
+      // } else {
+      //   setTimeout(() => {
+      //     navigation.replace('BottomTab');
+      //     dispatch(updateField(LocalStorageFields.isVerified, true));
+      //   }, 0);
+      // }
     } else {
       navigation.replace('LoginStack');
     }
@@ -226,15 +228,11 @@ const OTPScreen: FC = () => {
       eventName: 'get_profile',
     };
     const APIResponse = await UserService.UserRegister(userDataToSend);
-    // const APIResponse = transformUserDataForApi(userDataToSend);
     console.log('CheckDataAndNavigateToNumber', APIResponse.data);
-    if (APIResponse?.code === 200) {
-      // const Data: ProfileType = APIResponse?.data;
-      // const userDataForApi = transformUserDataForApi(Data);
 
+    if (APIResponse?.code === 200) {
       const ModifyData = {
         ...APIResponse.data,
-        // validation: false,
         latitude: userData?.latitude || 0,
         longitude: userData?.longitude || 0,
         eventName: 'update_profile',
@@ -243,10 +241,16 @@ const OTPScreen: FC = () => {
       const UpdateAPIResponse = await UserService.UserRegister(ModifyData);
 
       if (UpdateAPIResponse && UpdateAPIResponse.code === 200) {
+        console.log('storeDataAPI UpdateAPIResponse:', UpdateAPIResponse);
         const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
 
         setTimeout(() => {
           if (CHECK_NOTIFICATION_PERMISSION) {
+            // if (condition) {
+
+            // } else {
+
+            // }
             navigation.replace('BottomTab');
             dispatch(updateField(LocalStorageFields.isVerified, true));
           } else {

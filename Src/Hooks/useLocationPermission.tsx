@@ -44,12 +44,15 @@ export const useLocationPermission = () => {
         return true;
       } else {
         const requestPermission = await request(permission);
+        console.log('requestPermission:', requestPermission);
 
         const isPermissionGranted = requestPermission === RESULTS.GRANTED;
         setLocationPermission(isPermissionGranted);
 
         if (!isPermissionGranted) {
-          showAlertAndNavigateToSettings();
+          if (requestPermission === RESULTS.BLOCKED) {
+            showAlertAndNavigateToSettings();
+          }
         } else {
           StoreLetAndLong();
         }

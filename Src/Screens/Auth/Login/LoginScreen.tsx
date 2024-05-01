@@ -1,7 +1,10 @@
+import messaging from '@react-native-firebase/messaging';
 import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
+import appleAuth from '@invertase/react-native-apple-authentication';
+import remoteConfig from '@react-native-firebase/remote-config';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useEffect, useState} from 'react';
@@ -18,18 +21,16 @@ import {useDispatch, useSelector} from 'react-redux';
 import CommonImages from '../../../Common/CommonImages';
 import CommonLogos from '../../../Common/CommonLogos';
 import LoginButton from '../../../Components/AuthComponents/LoginButton';
+import OpenURL from '../../../Components/OpenURL';
+import {APP_NAME} from '../../../Config/Setting';
 import {updateField} from '../../../Redux/Action/userActions';
+import {store} from '../../../Redux/Store/store';
 import UserService, {initGoogleSignIn} from '../../../Services/AuthService';
 import {transformUserDataForApi} from '../../../Services/dataTransformService';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {ProfileType} from '../../../Types/ProfileType';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import styles from './styles';
-// import {AccessToken, LoginManager, Settings} from 'react-native-fbsdk-next';
-import remoteConfig from '@react-native-firebase/remote-config';
-import OpenURL from '../../../Components/OpenURL';
-import {APP_NAME} from '../../../Config/Setting';
-import {ProfileType} from '../../../Types/ProfileType';
-import appleAuth from '@invertase/react-native-apple-authentication';
 
 const LoginScreen: FC = () => {
   const navigation =
@@ -37,22 +38,45 @@ const LoginScreen: FC = () => {
   const {showToast} = useCustomToast();
   const dispatch = useDispatch();
   const userData = useSelector((state: any) => state?.user);
+
   const [IsSocialLoginLoading, setIsSocialLoginLoading] = useState({
     Google: false,
     Facebook: false,
     Apple: false,
   });
+
   const [privacyLinks, setPrivacyLinks] = useState<{[key: string]: string}>({
     PrivacyPolicy: '',
     TermsOfService: '',
   });
+  const [DeviceToken, setDeviceToken] = useState<string>('');
 
   useEffect(() => {
     async function initializeRemoteConfig() {
-      await Promise.all([initGoogleSignIn(), RemoteConfig()]);
+      await Promise.all([
+        initGoogleSignIn(),
+        RemoteConfig(),
+        // HandleNotificationPermission(),
+      ]);
     }
     initializeRemoteConfig();
   }, []);
+
+  const HandleNotificationPermission = async () => {
+    const authStatus = await messaging().requestPermission();
+    console.log('authStatus', authStatus);
+
+    if (authStatus === 1) {
+      const Token = await messaging().getToken();
+      if (Token) {
+        console.log('FCM TOKEN:', Token);
+        setDeviceToken(Token);
+        store.dispatch(
+          updateField(LocalStorageFields.notification_token, Token),
+        );
+      }
+    }
+  };
 
   const RemoteConfig = async () => {
     try {
@@ -76,7 +100,6 @@ const LoginScreen: FC = () => {
     }
   };
 
-  // Example validation function, you can adjust it based on your requirements
   const validateConfig = (configValue: string): boolean => {
     // Add your validation logic here, e.g., check if configValue is not empty
     return configValue.trim().length > 0;
@@ -86,7 +109,6 @@ const LoginScreen: FC = () => {
     try {
       console.log('Initiating Google login...');
       setIsSocialLoginLoading({...IsSocialLoginLoading, Google: true});
-
       if (Platform.OS === 'android') {
         await GoogleSignin.hasPlayServices({
           showPlayServicesUpdateDialog: true,
@@ -103,9 +125,7 @@ const LoginScreen: FC = () => {
         ),
         dispatch(updateField(LocalStorageFields.login_type, 'social')),
       ]);
-
       console.log(GoogleUserData.user.email);
-
       handleNavigation(
         GoogleUserData.user.email,
         GoogleUserData.user.name || GoogleUserData.user.givenName || '',
@@ -139,6 +159,7 @@ const LoginScreen: FC = () => {
         validation: true,
         identity: email,
         full_name: name,
+        ...(DeviceToken.length !== 0 ? {notification_token: DeviceToken} : {}),
       };
 
       console.log('userDataWithValidation', userDataWithValidation);
@@ -185,6 +206,10 @@ const LoginScreen: FC = () => {
       console.log('Data.mobile_no:', Data, Data.mobile_no);
       if (Data.mobile_no) {
         navigation?.replace('BottomTab');
+      } else if (Data.identity.length === 0) {
+        navigation?.replace('LoginStack', {
+          screen: 'AddEmail',
+        });
       } else {
         navigation?.replace('NumberVerification', {
           screen: 'PhoneNumber',
@@ -282,17 +307,6 @@ const LoginScreen: FC = () => {
                 }}
               />
             )}
-            {/* <LoginButton
-              IsLoading={IsSocialLoginLoading.Facebook}
-              Title="LOGIN WITH FACEBOOK"
-              Icon={CommonLogos.FacebookLogo}
-              onPress={() => {
-                // navigation.navigate('NumberVerification', {
-                //   screen: 'PhoneNumber',
-                // });
-                handleFacebookLogin();
-              }}
-            /> */}
           </View>
 
           <View style={styles.TermsView}>

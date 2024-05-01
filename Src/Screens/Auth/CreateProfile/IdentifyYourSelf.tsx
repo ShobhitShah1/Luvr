@@ -181,7 +181,7 @@ const IdentifyYourSelf: FC = () => {
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={1} Skip={false} hideBack={true} />
+      <CreateProfileHeader ProgressCount={1} Skip={false} />
 
       <ScrollView
         ref={ScrollViewRef}

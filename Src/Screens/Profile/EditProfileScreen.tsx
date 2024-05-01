@@ -9,6 +9,7 @@ import {
 } from '@gorhom/bottom-sheet';
 import {BlurView} from '@react-native-community/blur';
 import NetInfo from '@react-native-community/netinfo';
+import messaging from '@react-native-firebase/messaging';
 import axios from 'axios';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
@@ -27,6 +28,7 @@ import Geolocation from 'react-native-geolocation-service';
 import * as ImagePicker from 'react-native-image-picker';
 import {useDispatch, useSelector} from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
+import TextString from '../../Common/TextString';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import CustomTextInput from '../../Components/CustomTextInput';
 import ApiConfig from '../../Config/ApiConfig';
@@ -46,7 +48,6 @@ import EditProfileCategoriesList from './Components/EditProfileComponents/EditPr
 import EditProfileSheetView from './Components/EditProfileComponents/EditProfileSheetView';
 import EditProfileTitleView from './Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from './Components/ProfileAndSettingHeader';
-import TextString from '../../Common/TextString';
 
 export interface ViewPositionsProps {
   Gender: number;
@@ -441,7 +442,9 @@ const EditProfileScreen = () => {
   };
 
   //* Upload Single Image
-  const UploadImage = async (item: any) => {
+  const UploadImage = async (items: any[]) => {
+    setIsFetchDataAPILoading(true);
+
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
     if (!InInternetConnected) {
@@ -451,19 +454,17 @@ const EditProfileScreen = () => {
         TextString.error,
       );
       setIsFetchDataAPILoading(false);
-
       return;
     }
 
-    setIsFetchDataAPILoading(true);
+    try {
+      const uploadResults = [];
 
-    if (Array.isArray(item)) {
-      let formData = new FormData();
-
-      item.forEach(({url, type, name}) => {
+      for (const {url, type, name} of items) {
         console.log('URL, TYPE, AND NAME:', url, type, name);
 
         if (url && typeof url === 'string') {
+          const formData = new FormData();
           formData.append('eventName', 'update_profile');
           formData.append('file_to', 'profile_images');
           formData.append('file', {
@@ -471,55 +472,47 @@ const EditProfileScreen = () => {
             type,
             name,
           });
+
+          const response = await axios.post(
+            ApiConfig.IMAGE_UPLOAD_BASE_URL,
+            formData,
+            {
+              headers: {
+                Authorization: `Bearer ${UserData.Token}`,
+                app_secret: '_d_a_t_i_n_g_',
+                'Content-Type': 'multipart/form-data',
+              },
+            },
+          );
+
+          console.log('Image uploaded:', response.data);
+          uploadResults.push(response.data);
         } else {
           console.error('Invalid URL:', url);
         }
-      });
-
-      try {
-        console.log('Inside');
-        const APIResponse = await axios.post(
-          ApiConfig.IMAGE_UPLOAD_BASE_URL,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${UserData.Token}`,
-              app_secret: '_d_a_t_i_n_g_',
-              'Content-Type': 'multipart/form-data',
-            },
-            onUploadProgress: progressEvent => {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total,
-              );
-              console.log('Upload Progress:', percentCompleted);
-              // Update progress UI if needed
-            },
-          },
-        );
-
-        console.log('APIResponse', APIResponse);
-
-        if (APIResponse?.data?.code === 200) {
-          GetProfileData();
-          showToast(
-            'Image Uploaded',
-            'Your image has been uploaded successfully.',
-            'success',
-          );
-        } else {
-          showToast('Error', 'Error while uploading image', 'error');
-        }
-      } catch (error) {
-        console.error('API Error:', error);
-        console.error('API Error:', error?.response);
-        console.error('API Error:', error?.response?.data);
-        console.error('API Error:', error?.response?.data?.message);
-        showToast('Error', 'Failed to upload image', 'error');
-      } finally {
-        setIsFetchDataAPILoading(false);
       }
-    } else {
-      console.error('Invalid item:', item);
+
+      // Check if all uploads were successful
+      const allUploadsSuccessful = uploadResults.every(
+        result => result?.code === 200,
+      );
+
+      if (allUploadsSuccessful) {
+        GetProfileData();
+        showToast(
+          'Image Uploaded',
+          'Your images have been uploaded successfully.',
+          'success',
+        );
+      } else {
+        showToast('Error', 'Error while uploading images', 'error');
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      console.error('API Error Response:', error?.response);
+      console.error('API Error Message:', error?.response?.data?.message);
+      showToast('Error', String(error), 'error');
+    } finally {
       setIsFetchDataAPILoading(false);
     }
   };

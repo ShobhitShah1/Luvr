@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
+import NetInfo from '@react-native-community/netinfo';
 import React, {useCallback, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
@@ -12,16 +13,15 @@ import {
   View,
 } from 'react-native';
 import CommonIcons from '../../Common/CommonIcons';
+import TextString from '../../Common/TextString';
 import {ActiveOpacity, COLORS} from '../../Common/Theme';
 import UserService from '../../Services/AuthService';
+import {LikeInterface} from '../../Types/Interface';
+import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import LikesContent from './Components/LikesContent';
 import MatchesContent from './Components/MatchesContent';
 import styles from './styles';
-import TextString from '../../Common/TextString';
-import {useCustomToast} from '../../Utils/toastUtils';
-import NetInfo from '@react-native-community/netinfo';
-import {LikeInterface} from '../../Types/Interface';
 
 type TabData = {title: string; index?: number};
 
@@ -65,6 +65,7 @@ const MyLikesScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [isAPILoading, setIsAPILoading] = useState(false);
   const {showToast} = useCustomToast();
+
   const tabsData: TabData[] = [
     {
       title: userLikesCount > 0 ? `Likes: ${userLikesCount}` : 'Likes',
@@ -129,9 +130,11 @@ const MyLikesScreen = () => {
     try {
       const userDataForApi = {eventName: 'likes_matchs'};
       const APIResponse = await UserService.UserRegister(userDataForApi);
+      console.log('APIResponse', APIResponse);
 
       if (APIResponse?.code === 200) {
         const data = APIResponse.data;
+        console.log('data', data);
         let combinedData = [...data.like, ...data.match]; // Combine likes and matches data
         setUserLikesCount(data.like.length);
         setUserMatchesCount(data.match.length);
