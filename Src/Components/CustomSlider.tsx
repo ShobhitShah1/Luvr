@@ -137,8 +137,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   txt: {
-    fontSize: 25,
-    color: '#000',
+    color: 'transparent',
+    // fontSize: 25,
+    // color: '#000',
   },
   barContainer: {
     width: '100%',

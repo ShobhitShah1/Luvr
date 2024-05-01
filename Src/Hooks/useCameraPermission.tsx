@@ -34,8 +34,8 @@ export const useCameraPermission = () => {
 
   const showAlertAndNavigateToSettings = () => {
     Alert.alert(
-      'Permission Denied',
-      'To use the camera, you need to grant camera permission in device settings.',
+      'Camera Access Denied',
+      'To take photos for your profile, camera access is required. Please grant camera permission in your device settings to proceed. Would you like to open settings now?',
       [
         {
           text: 'Cancel',

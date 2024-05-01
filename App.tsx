@@ -1,15 +1,17 @@
 /* eslint-disable react-native/no-inline-styles */
+import notifee, {EventType} from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 import React, {useEffect} from 'react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {ToastProvider} from 'react-native-toast-notifications';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
+import {onDisplayNotification} from './Src/Components/onDisplayNotification';
 import {UserDataProvider} from './Src/Contexts/UserDataContext';
 import {persistor, store} from './Src/Redux/Store/store';
 import MainRoute from './Src/Routes/MainRoute';
 import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
-import {onDisplayNotification} from './Src/Components/onDisplayNotification';
+import {navigationRef} from './Src/Routes/RootNavigation';
 
 export default function App() {
   //*
@@ -18,6 +20,7 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log('remoteMessage', remoteMessage);
       const ScreenName = store ? store.getState().user?.CurrentScreen : '';
       const title = remoteMessage.notification?.title || '';
       const body = remoteMessage.notification?.body || '';
@@ -28,6 +31,27 @@ export default function App() {
     });
 
     return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    return notifee.onForegroundEvent(({type, detail}) => {
+      switch (type) {
+        case EventType.DISMISSED:
+          console.log('User dismissed notification', detail.notification);
+          break;
+        case EventType.PRESS:
+          console.log('User pressed notification', detail.notification);
+          const Token = store ? store.getState().user?.Token : '';
+
+          if (Token?.length !== 0) {
+            navigationRef &&
+              navigationRef?.navigate('BottomTab', {
+                screen: 'ChatRoom',
+              });
+          }
+          break;
+      }
+    });
   }, []);
 
   return (

@@ -9,12 +9,6 @@ import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import {ProfileType} from '../../../Types/ProfileType';
 
-// interface ProfileType {
-//   _id: string;
-//   full_name: string;
-//   recent_pik: string[];
-// }
-
 interface LikesProps {
   LikesData: {
     status: string;
@@ -26,9 +20,12 @@ let NO_IMAGE_CONTAINER = 150;
 
 const MatchesContent: FC<LikesProps> = ({LikesData}) => {
   const navigation = useNavigation();
-  const userData = useSelector((state: any) => state?.user);
+  const userData = useSelector((state: any) => state?.user || {});
 
-  const matchData = LikesData?.user_details?.[0];
+  const matchData =
+    LikesData && Array.isArray(LikesData)
+      ? LikesData[0]?.user_details?.[0]
+      : LikesData?.user_details?.[0];
 
   const handleChatClick = () => {
     if (userData?.userData?._id !== matchData?._id) {
@@ -37,9 +34,11 @@ const MatchesContent: FC<LikesProps> = ({LikesData}) => {
   };
 
   if (
-    LikesData?.status === 'match' &&
-    matchData &&
-    userData?.userData?._id !== matchData?._id
+    Array.isArray(LikesData)
+      ? LikesData[0]?.status === 'match'
+      : LikesData.status === 'match' &&
+        matchData &&
+        userData?.userData?._id !== matchData?._id
   ) {
     return (
       <View style={styles.Container}>

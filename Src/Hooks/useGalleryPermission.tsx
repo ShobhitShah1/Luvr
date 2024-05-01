@@ -34,8 +34,8 @@ export const useGalleryPermission = () => {
 
   const showAlertAndNavigateToSettings = () => {
     Alert.alert(
-      'Permission Denied',
-      'To access the gallery, you need to grant permission in device settings.',
+      'Gallery Access Denied',
+      "To upload a profile image, access to your device's gallery is required. Please grant permission in your device settings to proceed. Would you like to open settings now?",
       [
         {
           text: 'Cancel',

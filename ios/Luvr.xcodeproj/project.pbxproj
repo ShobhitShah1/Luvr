@@ -21,7 +21,7 @@
 		A26B58C94261F94585A4904A /* libPods-Luvr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E0BF1339FC8DF6703D869ED0 /* libPods-Luvr.a */; };
 		BBF1146AC73E4AD6A78CC6FB /* OpenSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6BB2A8159D784BCF8797B5C1 /* OpenSans-ExtraBold.ttf */; };
 		D39348E67CF142EB8167206B /* OpenSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 49332FC2DE754DA9AEB7711E /* OpenSans-Light.ttf */; };
-		ECE980912BB97878009FFE26 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ECE980902BB97878009FFE26 /* GoogleService-Info.plist */; };
+		ECE213002BE2A57900731241 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ECE212FF2BE2A57900731241 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,7 +58,7 @@
 		E0BF1339FC8DF6703D869ED0 /* libPods-Luvr.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Luvr.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC47AA5B2BBB107700BC7C47 /* Luvr.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Luvr.entitlements; path = Luvr/Luvr.entitlements; sourceTree = "<group>"; };
 		ECDCBB4A2BBAF83C009E9D0A /* LuvrRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = LuvrRelease.entitlements; path = Luvr/LuvrRelease.entitlements; sourceTree = "<group>"; };
-		ECE980902BB97878009FFE26 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		ECE212FF2BE2A57900731241 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		EDFED06AF1988AEAC7AAEB01 /* Pods-Luvr.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Luvr.release.xcconfig"; path = "Target Support Files/Pods-Luvr/Pods-Luvr.release.xcconfig"; sourceTree = "<group>"; };
 		F4CEEE7D05C0489A82D9E800 /* Pacifico-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pacifico-Regular.ttf"; path = "../Assets/Fonts/Pacifico-Regular.ttf"; sourceTree = "<group>"; };
@@ -104,9 +104,9 @@
 		13B07FAE1A68108700A75B9A /* Luvr */ = {
 			isa = PBXGroup;
 			children = (
+				ECE212FF2BE2A57900731241 /* GoogleService-Info.plist */,
 				EC47AA5B2BBB107700BC7C47 /* Luvr.entitlements */,
 				ECDCBB4A2BBAF83C009E9D0A /* LuvrRelease.entitlements */,
-				ECE980902BB97878009FFE26 /* GoogleService-Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -220,6 +220,7 @@
 				0F911268A3D3FD33DD3C0740 /* [CP] Embed Pods Frameworks */,
 				802D4DA003FDECDF575420B9 /* [CP] Copy Pods Resources */,
 				D7B8D5E922A6926E24BE3EA4 /* [CP-User] [RNFB] Core Configuration */,
+				B99EFDCC756CD38028242EA1 /* [CP-User] [RNFB] Crashlytics Configuration */,
 			);
 			buildRules = (
 			);
@@ -285,7 +286,7 @@
 				D39348E67CF142EB8167206B /* OpenSans-Light.ttf in Resources */,
 				494B4D0A83824927BEAD3816 /* OpenSans-Medium.ttf in Resources */,
 				701E5B2BCE844BEDB0F60BE1 /* OpenSans-Regular.ttf in Resources */,
-				ECE980912BB97878009FFE26 /* GoogleService-Info.plist in Resources */,
+				ECE213002BE2A57900731241 /* GoogleService-Info.plist in Resources */,
 				494040DB2D2841E89ABCE3FB /* OpenSans-SemiBold.ttf in Resources */,
 				2CEAF6F896134334A20D89E7 /* Pacifico-Regular.ttf in Resources */,
 			);
@@ -382,6 +383,20 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Luvr/Pods-Luvr-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		B99EFDCC756CD38028242EA1 /* [CP-User] [RNFB] Crashlytics Configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "[CP-User] [RNFB] Crashlytics Configuration";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\nif [[ ${PODS_ROOT} ]]; then\n  echo \"info: Exec FirebaseCrashlytics Run from Pods\"\n  \"${PODS_ROOT}/FirebaseCrashlytics/run\"\nelse\n  echo \"info: Exec FirebaseCrashlytics Run from framework\"\n  \"${PROJECT_DIR}/FirebaseCrashlytics.framework/run\"\nfi\n";
 		};
 		C3652EF8E7B1CDDF8EC781DC /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -526,7 +541,7 @@
 				CODE_SIGN_ENTITLEMENTS = Luvr/Luvr.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = W9PQ57C5L4;
 				ENABLE_BITCODE = NO;
@@ -561,7 +576,7 @@
 				CODE_SIGN_ENTITLEMENTS = Luvr/LuvrRelease.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = W9PQ57C5L4;
 				INFOPLIST_FILE = Luvr/Info.plist;
@@ -654,10 +669,7 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -725,10 +737,7 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

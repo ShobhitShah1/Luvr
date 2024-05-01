@@ -12,13 +12,11 @@ import {useLocationPermission} from '../Hooks/useLocationPermission';
 import {
   AddDailyHabits,
   AddRecentPics,
-  AvoidContacts,
   DistancePreference,
   HopingToFind,
   IdentifyYourSelf,
   LocationPermission,
   LoginScreen,
-  ManageContacts,
   OTPScreen,
   PhoneNumber,
   SexualOrientation,
@@ -173,8 +171,6 @@ export default function MainRoute() {
           <Stack.Screen component={WhatAboutYou} name="WhatAboutYou" />
           <Stack.Screen component={YourIntro} name="YourIntro" />
           <Stack.Screen component={AddRecentPics} name="AddRecentPics" />
-          <Stack.Screen component={AvoidContacts} name="AvoidContacts" />
-          <Stack.Screen component={ManageContacts} name="ManageContacts" />
         </Stack.Navigator>
       </React.Fragment>
     );
@@ -196,8 +192,6 @@ export default function MainRoute() {
         !currentRouteName.includes('WhatAboutYou') &&
         !currentRouteName.includes('YourIntro') &&
         !currentRouteName.includes('AddRecentPics') &&
-        !currentRouteName.includes('AvoidContacts') &&
-        !currentRouteName.includes('ManageContacts') &&
         !currentRouteName.includes('LocationPermission') &&
         !currentRouteName.includes('AddEmail')
       ) {
