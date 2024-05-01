@@ -29,6 +29,7 @@ import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import {useCustomToast} from '../../../Utils/toastUtils';
 
 const {width} = Dimensions.get('window');
 
@@ -37,7 +38,7 @@ const SexualOrientation: FC = () => {
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const userData = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
-
+  const {showToast} = useCustomToast();
   const initialSexualOrientation: string[] =
     userData.orientation.length !== 0 ? userData.orientation : [];
 
@@ -113,14 +114,17 @@ const SexualOrientation: FC = () => {
         try {
           dispatch(updateField(LocalStorageFields.orientation, orientations));
           dispatch(
-            updateField(LocalStorageFields.is_orientation_visible, ShowOnProfile),
+            updateField(
+              LocalStorageFields.is_orientation_visible,
+              ShowOnProfile,
+            ),
           );
         } catch (error) {
-          console.log('err', error);
+          showToast('Error', String(error), 'error');
         }
       }, 0);
     } else {
-      Alert.alert('Error', 'Please select your sexual orientation');
+      showToast('Error', 'Please select your sexual orientation', 'error');
     }
   };
 

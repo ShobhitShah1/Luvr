@@ -63,7 +63,6 @@ const ChatRoomScreen = () => {
         setIsSocketLoading(true);
       }
       ConnectSocket();
-      // store.dispatch(setCurrentScreenName('ChatRoom'));
     } else {
       if (socket) {
         socket.disconnect();
@@ -137,7 +136,6 @@ const ChatRoomScreen = () => {
                       ? otherUserChats[otherUserChats.length - 1]
                       : null;
 
-                  console.log('firstChat', firstChat, currentLoginUserId);
                   return {
                     chat: firstChat ? [firstChat] : [],
                     last_updated_time: message.last_updated_time,
@@ -148,14 +146,11 @@ const ChatRoomScreen = () => {
                   };
                 });
 
-                console.log('userList', usersWithFirstChat);
                 setMessages(usersWithFirstChat);
               }
-            } else {
-              // setMessages([]);
             }
           } catch (error) {
-            console.error('Error handling list response:', error);
+            showToast('Error', String(error), 'error');
           } finally {
             setTimeout(() => {
               setIsSocketLoading(false);
@@ -164,7 +159,6 @@ const ChatRoomScreen = () => {
         };
 
         const handleUpdateList = data => {
-          console.log('handleUpdateList:', data);
           socket.emit(LIST_EVENT, {id: currentLoginUserId});
         };
 
@@ -177,7 +171,7 @@ const ChatRoomScreen = () => {
         };
       }
     } catch (error) {
-      console.log('SOCKET CATCH ERROR', error);
+      showToast('Error', String(error), 'error');
     }
   }, [socket, isFocused, currentLoginUserId]);
 

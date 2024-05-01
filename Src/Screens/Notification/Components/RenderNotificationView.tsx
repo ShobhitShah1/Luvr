@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, memo} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonImages from '../../../Common/CommonImages';
@@ -42,7 +42,7 @@ const RenderNotificationView: FC<NotificationData> = ({
   );
 };
 
-export default RenderNotificationView;
+export default memo(RenderNotificationView);
 
 const styles = StyleSheet.create({
   Container: {

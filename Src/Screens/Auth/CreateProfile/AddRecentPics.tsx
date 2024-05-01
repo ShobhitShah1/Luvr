@@ -81,10 +81,9 @@ const AddRecentPics: FC = () => {
           item.url === '' ? newImages.shift() || item : item,
         );
         setData(newData);
-        console.log('Selected Images:', newData);
       }
     } catch (error) {
-      console.log('Image Picker Error:', error);
+      showToast('Error', String(error), 'error');
     }
   };
 
@@ -110,7 +109,7 @@ const AddRecentPics: FC = () => {
         setData(newData);
       }
     } catch (error) {
-      console.log('Image Picker Error:', error);
+      showToast('Error', String(error), 'error');
     }
   };
 
@@ -151,7 +150,7 @@ const AddRecentPics: FC = () => {
         setChooseModalVisible(false);
       }
     } catch (error) {
-      console.error('Error handling user selection:', error);
+      showToast('Error', String(error), 'error');
     }
   };
 
@@ -199,11 +198,11 @@ const AddRecentPics: FC = () => {
             setIsLoading(false);
           })
           .catch(error => {
-            console.error('Error during image upload:', error);
+            showToast('Error', String(error), 'error');
           });
       }, 0);
     } catch (error) {
-      console.log('CatchLog Image Upload:', error);
+      showToast('Error', String(error), 'error');
     }
   };
 
@@ -230,11 +229,9 @@ const AddRecentPics: FC = () => {
               app_secret: '_d_a_t_i_n_g_',
               'Content-Type': 'multipart/form-data',
             },
-            onUploadProgress,
           },
         );
 
-        console.log('Upload successful:', response.data);
         return response.data;
       } catch (error: any) {
         showToast(
@@ -242,8 +239,7 @@ const AddRecentPics: FC = () => {
           'Something went wrong while uploading image',
           'error',
         );
-        console.error('Error uploading image:', error.response.data);
-        throw error.response.data; // Rethrow the error to be caught by the caller
+        throw error.response.data;
       }
     }
   };
@@ -252,23 +248,16 @@ const AddRecentPics: FC = () => {
     if (index < images.length) {
       const image = images[index];
       try {
-        const result = await uploadImage(image);
-        //* Perform any actions with the result if needed
-        console.log(`Processing result for image ${index + 1}:`, result);
-
-        //* Proceed to the next image
+        await uploadImage(image);
         await uploadImagesSequentially(images, index + 1);
       } catch (error) {
-        console.error(`Failed to upload image ${index + 1}:`, error);
+        showToast(
+          'Error',
+          String(error) || `Failed to upload image ${index + 1}:`,
+          'error',
+        );
       }
     }
-  };
-
-  const onUploadProgress = progressEvent => {
-    const percentCompleted = Math.round(
-      (progressEvent.loaded * 100) / progressEvent.total,
-    );
-    console.log(`Upload Progress: ${percentCompleted}%`);
   };
 
   return (

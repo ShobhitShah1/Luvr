@@ -30,7 +30,6 @@ const WhatAboutYou: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const userData = useSelector((state: any) => state?.user);
-  // console.log('HATAT', userData);
   const dispatch = useDispatch();
   const {showToast} = useCustomToast();
   const [selectedItems, setSelectedItems] = useState<Record<string, String>>({
@@ -39,7 +38,6 @@ const WhatAboutYou: FC = () => {
     recived_love: userData.recived_love,
     star_sign: userData.star_sign,
   });
-  // console.log('WhatAboutYou userData', userData);
 
   const [IsSendRequestLoading, setIsSendRequestLoading] =
     useState<boolean>(false);

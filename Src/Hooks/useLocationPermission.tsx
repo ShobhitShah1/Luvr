@@ -18,13 +18,11 @@ export const useLocationPermission = () => {
           : PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
 
       const result = await check(permission);
-      console.log('📍 Location Permission Status:', result);
       if (result === RESULTS.GRANTED) {
         setLocationPermission(true);
       }
       return result === RESULTS.GRANTED;
     } catch (error) {
-      console.error('Error checking location permission:', error);
       return false;
     }
   };
@@ -37,14 +35,13 @@ export const useLocationPermission = () => {
           : PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
 
       const result = await check(permission);
-      console.log('result', result);
+
       if (result === RESULTS.GRANTED) {
         setLocationPermission(true);
         StoreLetAndLong();
         return true;
       } else {
         const requestPermission = await request(permission);
-        console.log('requestPermission:', requestPermission);
 
         const isPermissionGranted = requestPermission === RESULTS.GRANTED;
         setLocationPermission(isPermissionGranted);
@@ -60,7 +57,6 @@ export const useLocationPermission = () => {
         return isPermissionGranted;
       }
     } catch (error) {
-      console.error('Error requesting location permission:', error);
       return false;
     }
   };
@@ -80,9 +76,7 @@ export const useLocationPermission = () => {
           ]);
         }
       },
-      error => {
-        console.log('LOCATION ERROR:', error);
-      },
+      error => {},
       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   };

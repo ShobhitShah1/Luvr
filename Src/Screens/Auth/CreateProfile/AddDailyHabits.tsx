@@ -154,7 +154,7 @@ const AddDailyHabits: FC = () => {
         );
       }
     } catch (error) {
-      console.log('Catch Error On Next Press Daily Habits:', error);
+      showToast('Error', String(error), 'error');
     } finally {
       setIsSendRequestLoading(false);
     }

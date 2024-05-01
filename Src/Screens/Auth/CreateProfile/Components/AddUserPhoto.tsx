@@ -61,12 +61,6 @@ const AddUserPhoto: React.FC<AddUserPhotoProps> = ({picture}) => {
             borderColor: hasPicture ? COLORS.White : COLORS.Black,
           },
         ]}>
-        {/* <BlurView
-          // blurType="light"
-          blurAmount={1}
-          style={styles.BlurView}
-          overlayColor="#00000000"
-          reducedTransparencyFallbackColor="#00000000"> */}
         <View style={[styles.AddAndDeleteContainerView]}>
           <View style={styles.FlexView}>
             <Image
@@ -92,7 +86,6 @@ const AddUserPhoto: React.FC<AddUserPhotoProps> = ({picture}) => {
             </Text>
           </View>
         </View>
-        {/* </BlurView> */}
       </View>
     </View>
   );

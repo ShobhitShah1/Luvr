@@ -47,7 +47,11 @@ const LogOutModalRenderView: FC<SettingModalProps> = ({
         </View>
 
         <View style={styles.ButtonContainer}>
-          <Button onPress={onPress} ButtonTitle={ButtonTitle} />
+          <Button
+            isLoading={false}
+            onPress={onPress}
+            ButtonTitle={ButtonTitle}
+          />
           {/* <TouchableOpacity
             onPress={onPress}
             activeOpacity={ActiveOpacity}

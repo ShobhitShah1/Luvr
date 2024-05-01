@@ -73,11 +73,10 @@ const LocationPermission: FC = () => {
           }
         })
         .catch(error => {
-          console.log('Location Permisstion Error', error);
+          showToast('Error', String(error), 'error');
           setIsLocationLoading(false);
         });
     } catch (error: any) {
-      console.error(error, error?.message);
       showToast(
         'Something went wrong',
         String(

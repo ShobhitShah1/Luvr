@@ -172,7 +172,7 @@ const ExploreCardScreen: FC = () => {
           );
         }
       } catch (error) {
-        console.log('Something Went Wrong With Fetching API Data');
+        showToast('Error', String(error), 'error');
       } finally {
         setIsAPILoading(false);
       }
@@ -261,7 +261,6 @@ const ExploreCardScreen: FC = () => {
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
-        console.log('LikeUserAPI APIResponse Data ---:>', APIResponse.data);
         if (APIResponse.data?.status === 'match') {
           setItsMatchModalView(true);
         }
@@ -275,7 +274,7 @@ const ExploreCardScreen: FC = () => {
         swipeRef.current?.swipeBack();
       }
     } catch (error) {
-      console.log('Something Went Wrong With Feting API Data');
+      showToast('Error', String(error), 'error');
       swipeRef.current?.swipeBack();
     } finally {
       setIsAPILoading(false);

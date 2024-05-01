@@ -3,7 +3,6 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useRef, useState} from 'react';
 import {
-  Alert,
   Keyboard,
   ScrollView,
   StyleSheet,
@@ -23,9 +22,9 @@ import {MainGenders} from '../../../Components/Data';
 import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
 import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import {useCustomToast} from '../../../Utils/toastUtils';
 
 const IdentifyYourSelf: FC = () => {
   //* Get Key Name. From Where You Want To Store Data
@@ -53,29 +52,9 @@ const IdentifyYourSelf: FC = () => {
   const [CityName, setCityName] = useState<string>(userData.city);
   const [selectedGender, setSelectedGender] = useState<string>(userData.gender);
 
-  // useEffect(() => {
-  //   const handleBackPress = () => {
-  //     return true;
-  //   };
-
-  //   BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-
-  //   return () => {
-  //     BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
-  //   };
-  // }, []);
-
   //* Navigation
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-
-  //* On Next Click This Will Call And Store Data
-  // const handleInputChange = useCallback(
-  //   (field: string, value: string | boolean) => {
-  //     dispatch({type: 'UPDATE_FIELD', field, value});
-  //   },
-  //   [dispatch],
-  // );
 
   const handleGenderSelection = (gender: string) => {
     setSelectedGender(gender);
@@ -86,7 +65,6 @@ const IdentifyYourSelf: FC = () => {
       .split(',')
       .map(item => parseInt(item.trim(), 10));
 
-    // Validation for month (1-12)
     if (month < 1 || month > 12) {
       throw new Error('Invalid month. Month must be between 1 and 12.');
     }
@@ -123,9 +101,10 @@ const IdentifyYourSelf: FC = () => {
         !CityName
       ) {
         //* Show an alert with a proper message
-        Alert.alert(
+        showToast(
           'Incomplete Information',
           'Please fill in all required fields.',
+          'error',
         );
         return;
       }
@@ -133,9 +112,8 @@ const IdentifyYourSelf: FC = () => {
       const age = calculateAge(
         `${BirthDateDD},${BirthDateMM},${BirthDateYYYY}`,
       );
-      if (isEligible(age)) {
-        console.log('User is eligible.');
-      } else {
+
+      if (!isEligible(age)) {
         showToast('Error', 'Please enter a valid age.', 'Error');
         console.log('User is not eligible.');
         return;
@@ -154,20 +132,12 @@ const IdentifyYourSelf: FC = () => {
         dispatch(updateField(LocalStorageFields.city, CityName));
       }, 0);
 
-      // handleInputChange(LocalStorageFields.full_name, FirstName);
-      // handleInputChange(
-      // LocalStorageFields.birthdate,
-      // `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`,
-      // );
-      // handleInputChange(LocalStorageFields.gender, selectedGender);
-      // handleInputChange(LocalStorageFields.city, CityName);
-
       //* Use navigation.navigate callback to update context after navigation
       navigation.navigate('LoginStack', {
         screen: 'SexualOrientationScreen',
       });
     } catch (error) {
-      showToast('Error', String(error), 'Error');
+      showToast('Error', String(error), 'error');
     }
   }, [
     navigation,
@@ -221,14 +191,12 @@ const IdentifyYourSelf: FC = () => {
                 keyboardType={'number-pad'}
                 value={BirthDateDD}
                 onChangeText={value => {
-                  // Allow the user to remove the input
                   if (
                     value === '' ||
                     (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 31)
                   ) {
                     setBirthDateDD(value);
                     if (value.length === 2) {
-                      // Move focus to the next input field
                       monthInputRef?.current?.focus();
                     }
                   }
@@ -243,14 +211,12 @@ const IdentifyYourSelf: FC = () => {
                 value={BirthDateMM}
                 keyboardType={'number-pad'}
                 onChangeText={value => {
-                  // Allow the user to remove the input
                   if (
                     value === '' ||
                     (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 12)
                   ) {
                     setBirthDateMM(value);
                     if (value.length === 2) {
-                      // Move focus to the next input field
                       yearInputRef?.current?.focus();
                     }
                   }

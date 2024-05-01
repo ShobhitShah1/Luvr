@@ -40,6 +40,7 @@ import UserService from '../../Services/AuthService';
 import {ProfileType} from '../../Types/ProfileType';
 import {chatRoomDataType} from '../../Types/chatRoomDataType';
 import ChatScreenHeader from './Components/ChatScreenHeader';
+import {useCustomToast} from '../../Utils/toastUtils';
 
 interface ChatData {
   params: {
@@ -63,6 +64,7 @@ const ChatScreen: FC = () => {
   const [socket, setSocket] = useState<Socket>();
   const [ReceiverSocketId, setReceiverSocketId] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string>('');
+  const {showToast} = useCustomToast();
 
   const generateRandomId = () => {
     return Math.random().toString(36).substr(2, 9);
@@ -91,7 +93,6 @@ const ChatScreen: FC = () => {
     }, []);
 
     const giftedChatMessages = allMessages.map((message: any) => {
-      // console.log(MESSAGE_EVENT, message);
       return {
         _id: generateRandomId(),
         text: message.message,
@@ -181,8 +182,6 @@ const ChatScreen: FC = () => {
       }
 
       if (giftedChatMessages.length !== 0) {
-        console.log('MAKE IT FALSE');
-
         const uniqueMessages = removeDuplicates([
           ...userMessage,
           ...giftedChatMessages,
@@ -196,7 +195,6 @@ const ChatScreen: FC = () => {
     const handleReceivedMessage = (data: any) => {};
 
     const handleReceiverChat = async (chat: any) => {
-      // console.log('chat', chat);
       if (!OtherUserProfileData) {
         await getOtherUserDataCall();
       }
@@ -228,9 +226,7 @@ const ChatScreen: FC = () => {
       }
     };
 
-    const handleReadAllMessages = (data: any) => {
-      console.log('Read all messages');
-    };
+    const handleReadAllMessages = (data: any) => {};
 
     socket.on(JOIN_EVENT, handleJoinResponse);
     socket.on(READ_ALL, handleReadAllMessages);
@@ -259,7 +255,6 @@ const ChatScreen: FC = () => {
       const apiResponse = await UserService.UserRegister(data);
 
       if (apiResponse?.code === 200 && apiResponse.data) {
-        console.log('get_other_profile', apiResponse.data);
         setOtherUserProfileData(apiResponse.data);
         if (apiResponse.data && apiResponse.data?.recent_pik) {
           setAvatarUrl(
@@ -274,13 +269,10 @@ const ChatScreen: FC = () => {
 
   const onSend = useCallback(
     async (messages: IMessage[]) => {
-      // console.log(userMessage?.length === 0);
-
       setCountMessage(1);
       if (!OtherUserProfileData || OtherUserProfileData === undefined) {
         await getOtherUserDataCall();
       }
-      console.log('CountMessage', CountMessage);
 
       if (socket) {
         const chatData = {
@@ -299,14 +291,12 @@ const ChatScreen: FC = () => {
         console.log('Socket Data Going:', chatData);
         socket.emit(READ_ALL, {to: OtherUserProfileData?._id});
         socket.emit(CHAT_EVENT, chatData, (err, responses) => {
-          console.log('err, responses', err, responses);
           if (err) {
-          } else {
-            if (responses && responses.success) {
-              console.log('Message sent successfully');
-            } else {
-              console.error('Message failed to send');
-            }
+            showToast(
+              'Error',
+              String(err) || 'Something went wrong. Please try again later.',
+              'error',
+            );
           }
         });
       }
@@ -461,9 +451,6 @@ const ChatScreen: FC = () => {
         <GiftedChat
           alignTop
           messages={userMessage}
-          onInputTextChanged={text => {
-            //  console.log('User Typing:', text);
-          }}
           onSend={messages => onSend(messages)}
           user={{
             _id: 1,

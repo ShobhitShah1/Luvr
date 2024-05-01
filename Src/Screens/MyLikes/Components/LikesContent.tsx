@@ -12,7 +12,7 @@ interface LikesProps {
   LikesData: LikeAndMatchTypes;
 }
 
-let NOIMAGE_CONTAINER = 150;
+let NO_IMAGE_CONTAINER = 150;
 
 const LikesContent: FC<LikesProps> = ({LikesData}) => {
   const [IsImageLoading, setIsImageLoading] = useState(false);
@@ -92,13 +92,13 @@ const styles = StyleSheet.create({
     borderRadius: 500,
     alignSelf: 'center',
     justifyContent: 'center',
-    width: NOIMAGE_CONTAINER,
-    height: NOIMAGE_CONTAINER,
+    width: NO_IMAGE_CONTAINER,
+    height: NO_IMAGE_CONTAINER,
     backgroundColor: COLORS.White,
   },
   NoLikeImage: {
-    width: NOIMAGE_CONTAINER - 70,
-    height: NOIMAGE_CONTAINER - 70,
+    width: NO_IMAGE_CONTAINER - 70,
+    height: NO_IMAGE_CONTAINER - 70,
     alignSelf: 'center',
     justifyContent: 'center',
   },

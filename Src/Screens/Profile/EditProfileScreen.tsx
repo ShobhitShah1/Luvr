@@ -86,7 +86,6 @@ const EditProfileScreen = () => {
   const [EducationDegree, setEducationDegree] = useState(
     profile?.education?.digree,
   );
-  // console.log('UserData', UserData);
   const Day = profile?.birthdate?.split('/')[0];
   const Month = profile?.birthdate?.split('/')[1];
   const Year = profile?.birthdate?.split('/')[2];
@@ -226,7 +225,6 @@ const EditProfileScreen = () => {
         );
       });
     } catch (error: any) {
-      console.error(error, error?.message);
       showToast(
         'Something went wrong',
         String(
@@ -251,9 +249,6 @@ const EditProfileScreen = () => {
           ? APIResponse?.data
           : {};
 
-        console.log('recent_pik:', DataToStore.recent_pik);
-
-        // Set default values if magical_person or habits are empty
         if (
           !DataToStore.magical_person ||
           Object.keys(DataToStore.magical_person).length === 0
@@ -318,7 +313,7 @@ const EditProfileScreen = () => {
         setIsFetchDataAPILoading(false);
       }
     } catch (error) {
-      console.log('Something Went Wrong With Feting API Data');
+      showToast('Error', String(error), 'error');
       setIsFetchDataAPILoading(false);
     }
   };
@@ -331,15 +326,6 @@ const EditProfileScreen = () => {
 
   const handleSheetChanges = useCallback(
     (index: number) => {
-      console.log('handleSheetChanges', index);
-      console.log('ClickCategoryName', ClickCategoryName);
-      console.log('viewPositions', viewPositions);
-      console.log(
-        'viewPositions[ClickCategoryName]:',
-        viewPositions[ClickCategoryName as keyof typeof viewPositions], // Use type assertion
-      );
-
-      // setTimeout(() => {
       if (
         index === 0 &&
         viewPositions[ClickCategoryName as keyof typeof viewPositions] !==
@@ -351,7 +337,6 @@ const EditProfileScreen = () => {
           animated: true,
         });
       }
-      // }, 0);
     },
     [ClickCategoryName, viewPositions, bottomSheetModalRef, scrollViewRef],
   );
@@ -383,7 +368,7 @@ const EditProfileScreen = () => {
         UploadImage(newImages);
       }
     } catch (error) {
-      console.log('Image Picker Error:', error);
+      showToast('Error', String(error), 'error');
     }
   };
 
@@ -406,7 +391,7 @@ const EditProfileScreen = () => {
         UploadImage(newImages);
       }
     } catch (error) {
-      console.log('Image Picker Error:', error);
+      showToast('Error', String(error), 'error');
     }
   };
 
@@ -424,10 +409,6 @@ const EditProfileScreen = () => {
           ? true
           : permissionStatus
       ) {
-        console.log(
-          `${selectedOption} permission granted. Opening ${selectedOption.toLowerCase()}...`,
-        );
-
         if (selectedOption === 'Camera') {
           await HandleCameraImagePicker();
         } else {
@@ -461,8 +442,6 @@ const EditProfileScreen = () => {
       const uploadResults = [];
 
       for (const {url, type, name} of items) {
-        console.log('URL, TYPE, AND NAME:', url, type, name);
-
         if (url && typeof url === 'string') {
           const formData = new FormData();
           formData.append('eventName', 'update_profile');
@@ -485,7 +464,6 @@ const EditProfileScreen = () => {
             },
           );
 
-          console.log('Image uploaded:', response.data);
           uploadResults.push(response.data);
         } else {
           console.error('Invalid URL:', url);
@@ -508,9 +486,6 @@ const EditProfileScreen = () => {
         showToast('Error', 'Error while uploading images', 'error');
       }
     } catch (error) {
-      console.error('API Error:', error);
-      console.error('API Error Response:', error?.response);
-      console.error('API Error Message:', error?.response?.data?.message);
       showToast('Error', String(error), 'error');
     } finally {
       setIsFetchDataAPILoading(false);
@@ -537,12 +512,8 @@ const EditProfileScreen = () => {
         `${BirthdateDay},${BirthdateMonth},${BirthdateYear}`,
       );
       const isValid = isEligible(age);
-      // const age = calculateAge(BirthdateDay, BirthdateMonth, BirthdateYear);
-      if (isValid) {
-        console.log('User is eligible.');
-      } else {
+      if (!isValid) {
         showToast('Error', 'Please enter a valid age.', 'Error');
-        console.log('User is not eligible.');
         return;
       }
 
@@ -596,7 +567,6 @@ const EditProfileScreen = () => {
           profile?.setting_show_people_with_range || true,
       };
 
-      console.log('DataToSend', DataToSend);
       const APIResponse = await UserService.UserRegister(DataToSend);
 
       if (APIResponse.code === 200) {
@@ -612,10 +582,8 @@ const EditProfileScreen = () => {
           'Oops! Something went wrong while trying to update your profile. Please try again later or contact support if the issue persists',
           'error',
         );
-        console.log('Something went wrong');
       }
     } catch (error) {
-      console.log('Something went wrong edit profile :--:>', error);
       showToast('Error', String(error), 'Error');
     } finally {
       setIsFetchDataAPILoading(false);
@@ -623,7 +591,6 @@ const EditProfileScreen = () => {
   };
 
   const storeViewPosition = (viewName: string, position: number) => {
-    console.log('STORING:', viewName, position);
     setViewPositions(prevState => ({
       ...prevState,
       [viewName]: position,
@@ -1081,7 +1048,6 @@ const EditProfileScreen = () => {
         isModalVisible={ChooseModalVisible}
         toggleModal={OnToggleModal}
         OnOptionPress={(option: string) => {
-          console.log('option', option);
           HandleUserSelection(option);
         }}
       />

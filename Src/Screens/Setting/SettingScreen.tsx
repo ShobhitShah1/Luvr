@@ -95,12 +95,8 @@ const SettingScreen = () => {
           setIsInternetConnected(false);
         }
       } catch (error) {
-        console.error(
-          'Error fetching profile data or checking location permission:',
-          error,
-        );
+        showToast('Error', String(error), 'error');
         setIsInternetConnected(false);
-        // setIsFetchDataAPILoading(false);
       }
     };
 
@@ -124,7 +120,6 @@ const SettingScreen = () => {
 
   const toggleSwitch = () => {
     checkNotifications().then(({status}) => {
-      console.log('status', status);
       if (status === 'granted') {
         setIsEnabled(true);
       } else {
@@ -142,7 +137,6 @@ const SettingScreen = () => {
   const toggleNotification = async () => {
     if (Platform.OS === 'android') {
       const authStatus = await messaging().hasPermission();
-      console.log('authStatus', authStatus);
       if (authStatus === messaging.AuthorizationStatus.NOT_DETERMINED) {
         const authorizationStatus = await messaging().requestPermission();
         if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
@@ -167,7 +161,6 @@ const SettingScreen = () => {
   };
 
   const handleAppStateChange = (appState: AppStateStatus) => {
-    console.log('AppState', appState);
     if (appState === 'active') {
       CheckPermission();
     }
@@ -192,7 +185,6 @@ const SettingScreen = () => {
         eventName: 'get_profile',
       };
       const APIResponse = await UserService.UserRegister(userDataForApi);
-      console.log('APIResponse', APIResponse?.data?.setting_show_me);
       if (APIResponse?.code === 200) {
         setProfileData({
           ...APIResponse.data,
@@ -207,7 +199,7 @@ const SettingScreen = () => {
         setProfileData({} as ProfileType);
       }
     } catch (error) {
-      console.log('Something Went Wrong With Feting API Data');
+      showToast('Error', String(error), 'error');
     } finally {
       setIsSettingLoading(false);
     }
@@ -215,7 +207,6 @@ const SettingScreen = () => {
 
   const getSizeSeekBar = (event: LayoutChangeEvent) => {
     setWidthSeekBar(event.nativeEvent.layout.width);
-    console.log('size', event.nativeEvent.layout);
   };
 
   const LogoutPress = async () => {
@@ -223,9 +214,8 @@ const SettingScreen = () => {
       try {
         await GoogleSignin.revokeAccess();
         await GoogleSignin.signOut();
-        console.log('Logged out from Google');
       } catch (error) {
-        console.error('Error signing out from Google:', error);
+        showToast('Error', String(error), 'error');
       } finally {
         dispatch(resetUserData());
         setLogOutModalView(false);
@@ -302,9 +292,7 @@ Let's make every moment count together! #LoveConnects`,
       const userDataForApi = {
         eventName: 'delete_profile',
       };
-      console.log('userDataForApi', userDataForApi);
       const APIResponse = await UserService.UserRegister(userDataForApi);
-      console.log('Delete Account Response:', APIResponse);
       if (APIResponse?.code === 200) {
         setDeleteAccountModalView(false);
         LogoutPress();
@@ -318,7 +306,7 @@ Let's make every moment count together! #LoveConnects`,
     } catch (error) {
       LogoutPress();
       setDeleteAccountModalView(false);
-      console.log('onDeleteAccountError:', error);
+      showToast('Error', String(error), 'error');
     } finally {
       LogoutPress();
       setDeleteAccountModalView(false);
@@ -389,9 +377,6 @@ Let's make every moment count together! #LoveConnects`,
         setting_show_people_with_range:
           UserSetting?.setting_show_people_with_range,
       };
-
-      console.log('DataToSend', DataToSend);
-
       const APIResponse = await UserService.UserRegister(DataToSend);
 
       if (APIResponse.code === 200) {
@@ -408,7 +393,6 @@ Let's make every moment count together! #LoveConnects`,
             'Oops! Something went wrong while trying to update your Setting. Please try again later or contact support if the issue persists',
           'error',
         );
-        console.log('Something went wrong');
       }
     } catch (error) {
       showToast(
@@ -484,7 +468,6 @@ Let's make every moment count together! #LoveConnects`,
                   }}>
                   <MultiSlider
                     onValuesChange={v => {
-                      console.log('V ---:>', v);
                       setProfileData(prevState => ({
                         ...prevState,
                         setting_distance_preference: v[0],
@@ -600,7 +583,6 @@ Let's make every moment count together! #LoveConnects`,
                   }}>
                   <MultiSlider
                     onValuesChange={v => {
-                      console.log('V ---:>', v);
                       setProfileData(prevState => ({
                         ...prevState,
                         setting_age_range_min: `${v[0]}-${v[1]}`,
@@ -842,11 +824,9 @@ Let's make every moment count together! #LoveConnects`,
             </Text>
             <Rating
               onFinishRating={value => {
-                console.log(value);
                 setRatingCount(value);
               }}
               onSwipeRating={value => {
-                console.log('NEW', value);
                 setRatingCount(value);
               }}
               startingValue={RatingCount}

@@ -30,12 +30,6 @@ const SwitchComponent: FC<SwitchComponentProps> = ({
   size,
   onPress,
 }) => {
-  // const [IsActive, setSetIsActive] = useState(isActive);
-
-  // useEffect(() => {
-  //   setSetIsActive(isActive);
-  // }, [isActive, setSetIsActive]);
-
   const trackWidth = useMemo(() => {
     return size * 1.5;
   }, [size]);
@@ -44,7 +38,6 @@ const SwitchComponent: FC<SwitchComponentProps> = ({
     return size * 0.88;
   }, [size]);
 
-  // const onPress = () => setSetIsActive(!isActive);
   return (
     <Pressable
       onPress={onPress}

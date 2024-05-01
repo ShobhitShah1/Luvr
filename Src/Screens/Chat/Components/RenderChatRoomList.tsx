@@ -46,8 +46,6 @@ const RenderChatRoomList = ({item, index}: ChatRoomProps) => {
       hour12: true,
     });
 
-  // console.log('New Chat Come?', item);
-
   return (
     <TouchableOpacity
       key={index}

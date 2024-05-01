@@ -1,5 +1,4 @@
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
 import {FlatList, Image, Text, View} from 'react-native';
 import {useSelector} from 'react-redux';
@@ -8,38 +7,30 @@ import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHead
 import RenderNotificationView from './Components/RenderNotificationView';
 import styles from './styles';
 
+const RenderEmptyComponent = () => {
+  return (
+    <View style={styles.EmptyListView}>
+      <View style={styles.NoChatIconBackground}>
+        <Image source={CommonImages.NoNotification} style={styles.NoChatIcon} />
+      </View>
+      <Text style={styles.NoChatText}>No notification</Text>
+      <Text style={styles.NoChatDescription}>
+        There are no notification yet. Please come back here to get notification
+        about likes, matches, messages and much more!
+      </Text>
+    </View>
+  );
+};
+
 const NotificationScreen = () => {
   const notifications = useSelector((state: any) => state.user.notifications);
 
   const reversedNotifications =
     notifications?.length !== 0 ? notifications?.slice()?.reverse() : [];
 
-  const RenderEmptyComponent = () => {
-    return (
-      <View style={styles.EmptyListView}>
-        <View style={styles.NoChatIconBackground}>
-          <Image
-            source={CommonImages.NoNotification}
-            style={styles.NoChatIcon}
-          />
-        </View>
-        <Text style={styles.NoChatText}>No notification</Text>
-        <Text style={styles.NoChatDescription}>
-          There are no notification yet. Please come back here to get
-          notification about likes, matches, messages and much more!
-        </Text>
-      </View>
-    );
-  };
-
   return (
     <View style={styles.container}>
-      <ProfileAndSettingHeader
-        Title={'Notification'}
-        onUpdatePress={() => {
-          // UpdateSetting();
-        }}
-      />
+      <ProfileAndSettingHeader Title={'Notification'} />
       <View style={styles.NotificationViewContainer}>
         <FlatList
           showsVerticalScrollIndicator={false}

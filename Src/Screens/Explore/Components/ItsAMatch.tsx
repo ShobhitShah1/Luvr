@@ -46,20 +46,6 @@ const ItsAMatch: FC<ItsAMatchProps> = ({
         justifyContent: 'center',
         backgroundColor: 'rgba(0,0,0,0.5)',
       }}>
-      <StatusBar
-      // translucent
-      // backgroundColor={'rgba(0,0,0,0.5)'}
-      // barStyle={'light-content'}
-      />
-      {/* <BlurView
-        style={{
-          backgroundColor: 'transparent',
-          justifyContent: 'center',
-          alignSelf: 'center',
-          width: '100%',
-        }}
-        blurAmount={2}
-        blurType="materialDark"> */}
       <ImageBackground
         imageStyle={styles.BackgroundImageStyle}
         source={CommonImages.ItsAMatch}
@@ -121,7 +107,6 @@ const ItsAMatch: FC<ItsAMatchProps> = ({
           </View>
         </View>
       </ImageBackground>
-      {/* </BlurView> */}
     </View>
   );
 };

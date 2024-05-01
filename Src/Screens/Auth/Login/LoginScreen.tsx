@@ -49,34 +49,13 @@ const LoginScreen: FC = () => {
     PrivacyPolicy: '',
     TermsOfService: '',
   });
-  const [DeviceToken, setDeviceToken] = useState<string>('');
 
   useEffect(() => {
     async function initializeRemoteConfig() {
-      await Promise.all([
-        initGoogleSignIn(),
-        RemoteConfig(),
-        // HandleNotificationPermission(),
-      ]);
+      await Promise.all([initGoogleSignIn(), RemoteConfig()]);
     }
     initializeRemoteConfig();
   }, []);
-
-  const HandleNotificationPermission = async () => {
-    const authStatus = await messaging().requestPermission();
-    console.log('authStatus', authStatus);
-
-    if (authStatus === 1) {
-      const Token = await messaging().getToken();
-      if (Token) {
-        console.log('FCM TOKEN:', Token);
-        setDeviceToken(Token);
-        store.dispatch(
-          updateField(LocalStorageFields.notification_token, Token),
-        );
-      }
-    }
-  };
 
   const RemoteConfig = async () => {
     try {
@@ -107,7 +86,6 @@ const LoginScreen: FC = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      console.log('Initiating Google login...');
       setIsSocialLoginLoading({...IsSocialLoginLoading, Google: true});
       if (Platform.OS === 'android') {
         await GoogleSignin.hasPlayServices({
@@ -115,7 +93,7 @@ const LoginScreen: FC = () => {
         });
       }
       const GoogleUserData = await GoogleSignin.signIn();
-      console.log('Updating fields and navigating...');
+
       await Promise.all([
         dispatch(
           updateField(LocalStorageFields.identity, GoogleUserData.user.email),
@@ -125,13 +103,11 @@ const LoginScreen: FC = () => {
         ),
         dispatch(updateField(LocalStorageFields.login_type, 'social')),
       ]);
-      console.log(GoogleUserData.user.email);
       handleNavigation(
         GoogleUserData.user.email,
         GoogleUserData.user.name || GoogleUserData.user.givenName || '',
       );
     } catch (error: any) {
-      console.log('Google Login:', error);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         showToast('Error!', 'You cancelled the login flow', 'error');
       } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -159,16 +135,11 @@ const LoginScreen: FC = () => {
         validation: true,
         identity: email,
         full_name: name,
-        ...(DeviceToken.length !== 0 ? {notification_token: DeviceToken} : {}),
       };
-
-      console.log('userDataWithValidation', userDataWithValidation);
 
       const APIResponse = await UserService.UserRegister(
         userDataWithValidation,
       );
-
-      console.log('API Response:', APIResponse);
 
       if (APIResponse?.data?.token) {
         await Promise.all([
@@ -177,7 +148,6 @@ const LoginScreen: FC = () => {
           ),
           dispatch(updateField(LocalStorageFields.isVerified, true)),
         ]);
-        console.log('REDUX:', userData);
         CheckDataAndNavigateToNumber();
       } else {
         throw new Error('Token not found in API response');
@@ -189,8 +159,6 @@ const LoginScreen: FC = () => {
       navigation?.replace('NumberVerification', {
         screen: 'PhoneNumber',
       });
-      console.log('REDUX:', userData);
-
       setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
       setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
     }
@@ -203,7 +171,6 @@ const LoginScreen: FC = () => {
       };
       const APIResponse = await UserService.UserRegister(userDataToSend);
       const Data: ProfileType = APIResponse?.data;
-      console.log('Data.mobile_no:', Data, Data.mobile_no);
       if (Data.mobile_no) {
         navigation?.replace('BottomTab');
       } else if (Data.identity.length === 0) {
@@ -215,8 +182,8 @@ const LoginScreen: FC = () => {
           screen: 'PhoneNumber',
         });
       }
-    } catch {
-      console.log('Error in CheckDataAndNavigateToNumber');
+    } catch (error) {
+      showToast('Error', String(error), 'error');
     } finally {
       setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
       setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
@@ -250,7 +217,11 @@ const LoginScreen: FC = () => {
         }
       }
     } catch (error) {
-      console.log('ERROR:', error);
+      showToast(
+        'Error!',
+        String(error) || 'An error occurred during Apple login',
+        'error',
+      );
       setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
     }
   };

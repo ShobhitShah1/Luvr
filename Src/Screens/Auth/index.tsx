@@ -11,5 +11,4 @@ export {default as WhatAboutYou} from './CreateProfile/WhatAboutYou';
 export {default as YourIntro} from './CreateProfile/YourIntro';
 export {default as AddRecentPics} from './CreateProfile/AddRecentPics';
 export {default as LocationPermission} from './CreateProfile/LocationPermission';
-export {default as ManageContacts} from './CreateProfile/ManageContacts';
 export {default as AvoidContacts} from './CreateProfile/AvoidContactsScreen';

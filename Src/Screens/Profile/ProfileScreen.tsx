@@ -82,17 +82,18 @@ const ProfileScreen = () => {
         setPercentage(ProfilePercentage);
       } else {
         showToast(
-          'Something went wrong',
-          APIResponse?.message || 'Please try again later',
+          'Error',
+          APIResponse?.error ||
+            APIResponse?.message ||
+            'Please try again later',
           'error',
         );
         setProfileData({} as ProfileType);
       }
     } catch (error) {
-      console.error('Error fetching API data:', error);
       showToast(
         'Error',
-        'Something went wrong. Please try again later.',
+        String(error) || 'Something went wrong. Please try again later.',
         'error',
       );
     } finally {

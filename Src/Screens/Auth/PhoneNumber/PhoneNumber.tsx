@@ -81,7 +81,6 @@ const PhoneNumber: FC = () => {
   });
 
   const handleCountryPress = (item: any, index: number) => {
-    console.log('Country pressed:', item, index);
     setDiallingCode(item.dialling_code);
     setDefaultDiallingCode(item.dialling_code);
     setVisible(false);
@@ -102,7 +101,6 @@ const PhoneNumber: FC = () => {
       StorePhoneNumber?.length <= 12 &&
       StorePhoneNumber.match('[0-9]{10}')
     ) {
-      console.log(StorePhoneNumber);
       if (StorePhoneNumber === '7041526621') {
         GetUserWithoutOTP();
       } else {
@@ -147,13 +145,10 @@ const PhoneNumber: FC = () => {
       mobile_no: PhoneNumberString || store?.getState()?.user?.mobile_no,
     };
 
-    console.log('userDataWithValidation', userDataWithValidation);
-
     const APIResponse = await UserService.UserRegister(userDataWithValidation);
-    console.log('handleNavigation APIResponse', APIResponse);
+
     if (APIResponse?.data?.token) {
       dispatch(updateField(LocalStorageFields.Token, APIResponse.data?.token));
-      console.log('userDataForApi?.login_type', userDataForApi?.login_type);
       if (userDataForApi?.login_type === 'social') {
         storeDataAPI();
       } else {
@@ -172,7 +167,6 @@ const PhoneNumber: FC = () => {
       eventName: 'get_profile',
     };
     const APIResponse = await UserService.UserRegister(userDataToSend);
-    console.log('CheckDataAndNavigateToNumber', APIResponse.data);
     if (APIResponse?.code === 200) {
       const ModifyData = {
         ...APIResponse.data,
@@ -180,7 +174,6 @@ const PhoneNumber: FC = () => {
         longitude: userData?.longitude || 0,
         eventName: 'update_profile',
       };
-      console.log('OTP UPDATE PROFILE:', ModifyData);
       const UpdateAPIResponse = await UserService.UserRegister(ModifyData);
 
       if (UpdateAPIResponse && UpdateAPIResponse.code === 200) {
@@ -215,7 +208,7 @@ const PhoneNumber: FC = () => {
       }${StorePhoneNumber}/AUTOGEN3/OTP1`;
 
       const response = await axios.get(url);
-      console.log('response', response);
+
       if (response.data?.Status === 'Success') {
         showToast(
           'OTP Sent Successfully',
@@ -250,18 +243,17 @@ const PhoneNumber: FC = () => {
       } else {
         showToast(
           'Server Error',
-          'Something went wrong, try again later',
+          String(response?.message) || 'Something went wrong, try again later',
           'error',
         );
       }
     } catch (error) {
       showToast(
         'Error',
-        'Failed to send otp OTP. Please check your network connection and try again.',
+        String(error) ||
+          'Failed to send otp OTP. Please check your network connection and try again.',
         'error',
       );
-      console.error('Error sending OTP:', error);
-      Alert.alert('Error', 'Failed to send OTP. Please try again.');
     } finally {
       setIsAPILoading(false);
     }

@@ -28,13 +28,6 @@ import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 import {updateField} from '../../../Redux/Action/userActions';
 
-// interface ItemProps {
-//   id: number;
-//   Title: string;
-//   Emoji: string;
-//   Icon: string;
-// }
-
 const {width} = Dimensions.get('window');
 
 const HopingToFind: FC = () => {
@@ -45,8 +38,6 @@ const HopingToFind: FC = () => {
   const dispatch = useDispatch();
   const [SelectedLookingForIndex, setSelectedLookingForIndex] =
     useState<string>(userData.hoping ? userData.hoping : {});
-
-  // console.log('SelectedLookingForIndex', SelectedLookingForIndex);
 
   const onPressLookingFor = useCallback(
     (item: string) => {

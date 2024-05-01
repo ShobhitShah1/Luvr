@@ -24,17 +24,14 @@ const AddEmail = () => {
   const {navigate} = useNavigation();
 
   const onNextClick = async () => {
-    // Regular expression for validating email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    // Check if the entered email matches the regex pattern
     if (emailRegex.test(Email)) {
       let LocalEmail = Email;
       // Valid email
       console.log('Email is valid');
       await dispatch(updateField(LocalStorageFields.identity, LocalEmail));
       setEmail(Email);
-      // Proceed with your logic for a valid email
 
       setTimeout(() => {
         navigate('LoginStack', {
@@ -42,8 +39,6 @@ const AddEmail = () => {
         });
       }, 0);
     } else {
-      // Invalid email
-      console.log('Invalid email');
       showToast('Error', 'Please enter valid email', 'error');
     }
   };

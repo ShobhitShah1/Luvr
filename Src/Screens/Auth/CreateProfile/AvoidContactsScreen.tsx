@@ -32,6 +32,7 @@ const AvoidContactsScreen: FC = () => {
 
       <View style={[CreateProfileStyles.BottomButton]}>
         <GradientButton
+          isLoading={false}
           Title={'Continue'}
           Disabled={false}
           Navigation={() => {

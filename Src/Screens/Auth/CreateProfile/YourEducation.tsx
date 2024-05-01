@@ -44,7 +44,6 @@ const YourEducation: FC = () => {
       navigation.navigate('LoginStack', {
         screen: 'AddDailyHabits',
       });
-      // showToast('Validation Error', 'Please fill all details', 'error');
     }
   };
 

@@ -85,20 +85,6 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
     }
   }, [currentImageIndex, cardData]);
 
-  // useEffect(() => {
-  //   if (
-  //     flatListRef.current &&
-  //     IsFirstCard &&
-  //     cardData?.recent_pik?.length > 0
-  //   ) {
-  //     flatListRef?.current?.scrollToIndex({
-  //       index: currentImageIndex,
-  //       animated: true,
-  //     });
-  //   }
-  //   console.log('currentImageIndex', currentImageIndex);
-  // }, [currentImageIndex]);
-
   const LayOutChange = (item: LayoutChangeEvent) => {
     setContainerWidthAndHeight({
       height: item.nativeEvent.layout.height,

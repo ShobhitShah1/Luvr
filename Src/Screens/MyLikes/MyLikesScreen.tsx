@@ -130,18 +130,21 @@ const MyLikesScreen = () => {
     try {
       const userDataForApi = {eventName: 'likes_matchs'};
       const APIResponse = await UserService.UserRegister(userDataForApi);
-      console.log('APIResponse', APIResponse);
 
       if (APIResponse?.code === 200) {
         const data = APIResponse.data;
-        console.log('data', data);
+
         let combinedData = [...data.like, ...data.match]; // Combine likes and matches data
         setUserLikesCount(data.like.length);
         setUserMatchesCount(data.match.length);
         setMatchAndLikeData(combinedData);
       }
     } catch (error) {
-      console.log('Error fetching API data:', error);
+      showToast(
+        'Error',
+        String(error) || 'Something went wrong. Please try again later.',
+        'error',
+      );
       setMatchAndLikeData({likes: [], matches: []});
     } finally {
       setRefreshing(false);

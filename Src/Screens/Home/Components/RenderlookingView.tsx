@@ -49,7 +49,6 @@ const RenderLookingView: FC<RenderLookingViewProps> = ({
           />
           <LinearGradient
             colors={COLORS.GradientViewForCards}
-            locations={[0, 1]}
             style={styles.gradient}>
             {!IsLoading && !IsImageLoading && (
               <Text numberOfLines={2} style={styles.TitleText}>

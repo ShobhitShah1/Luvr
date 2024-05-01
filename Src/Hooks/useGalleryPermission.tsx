@@ -13,7 +13,6 @@ export const useGalleryPermission = () => {
           : PERMISSIONS.IOS.PHOTO_LIBRARY;
 
       const result = await check(permission);
-      console.log('result', result);
       if (Platform.OS === 'ios' ? result === RESULTS.GRANTED : true) {
         setGalleryPermission(true);
         return true;
@@ -29,7 +28,6 @@ export const useGalleryPermission = () => {
         return isPermissionGranted;
       }
     } catch (error) {
-      console.error('Error checking or requesting gallery permission:', error);
       return false;
     }
   };

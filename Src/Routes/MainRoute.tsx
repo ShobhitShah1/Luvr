@@ -43,6 +43,7 @@ import {LocalStorageFields} from '../Types/LocalStorageFields';
 import BottomTab from './BottomTab';
 import {navigationRef} from './RootNavigation';
 import AddEmail from '../Screens/Auth/CreateProfile/AddEmail';
+import {useCustomToast} from '../Utils/toastUtils';
 
 export default function MainRoute() {
   const Stack = createNativeStackNavigator();
@@ -51,6 +52,7 @@ export default function MainRoute() {
   const [initialRoute, setInitialRoute] = useState<string>('');
   const {checkLocationPermission} = useLocationPermission();
   const [isNavigationReady, setIsNavigationReady] = useState(false);
+  const {showToast} = useCustomToast();
 
   useEffect(() => {
     Promise.all([
@@ -62,7 +64,6 @@ export default function MainRoute() {
 
   const HandleNotificationPermission = async () => {
     const authStatus = await messaging().requestPermission();
-    console.log('authStatus', authStatus);
 
     if (authStatus === 1) {
       const Token = await messaging().getToken();
@@ -78,20 +79,11 @@ export default function MainRoute() {
   const determineInitialRoute = useCallback(async () => {
     try {
       const checkLoginPermission = await checkLocationPermission();
-      // console.log('checkLoginPermission', checkLoginPermission);
 
       if (!isUserVerified) {
         setInitialRoute('NumberVerification');
         return;
       }
-
-      console.log('Pass isUserVerified ✅');
-      // console.log('ReduxUserData', ReduxUserData);
-      console.log(
-        'ReduxUserData.mobile_no',
-        ReduxUserData.mobile_no,
-        ReduxUserData.mobile_no.length === 0,
-      );
 
       if (!checkLoginPermission) {
         setInitialRoute('LocationStack');
@@ -105,18 +97,13 @@ export default function MainRoute() {
           });
         return;
       }
-      console.log('Pass checkLoginPermission ✅');
-      console.log('isNavigationReady', isNavigationReady);
       if (
         ReduxUserData?.isImageUploaded ||
         (ReduxUserData?.userData?.recent_pik &&
           ReduxUserData?.userData?.recent_pik?.length !== 0)
       ) {
-        console.log('Pass recent_pik ✅');
         setInitialRoute('BottomTab');
       } else {
-        console.log('Fail recent_pik ❌');
-        console.log('navigationRef', navigationRef.isReady());
         setInitialRoute('LoginStack');
         navigationRef &&
           navigationRef?.navigate('LoginStack', {
@@ -124,7 +111,7 @@ export default function MainRoute() {
           });
       }
     } catch (error) {
-      console.error('Error determining initial route:', error);
+      showToast('Error', String(error), 'error');
       setInitialRoute('NumberVerification');
     }
   }, [isUserVerified, navigationRef, isNavigationReady, ApiConfig]);
@@ -132,9 +119,6 @@ export default function MainRoute() {
   useEffect(() => {
     if (initialRoute) {
       SplashScreen.hide();
-      // console.log('📄 UserData Splash Screen:', ReduxUserData);
-      // console.log('🆔 User Verified:', isUserVerified ? '✅' : '❌');
-      // console.log('📱 Screen Will Show:', initialRoute);
       console.log('--------------- SPLASH END ----------------');
     }
   }, [initialRoute, isUserVerified, ApiConfig]);
@@ -199,7 +183,6 @@ export default function MainRoute() {
   const StateChangesCall = ref => {
     const currentRouteName = ref?.getCurrentRoute()?.name;
     if (currentRouteName) {
-      console.log('currentRouteName', currentRouteName);
       if (
         !currentRouteName.includes('Login') &&
         !currentRouteName.includes('PhoneNumber') &&

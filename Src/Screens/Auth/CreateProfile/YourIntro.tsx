@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {FC, useCallback, useMemo, useState} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
@@ -27,9 +27,6 @@ const YourIntro: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const userData = useSelector((state: any) => state?.user);
-  useEffect(() => {
-    console.log('userData', userData);
-  }, [userData]);
 
   const dispatch = useDispatch();
   const {showToast} = useCustomToast();

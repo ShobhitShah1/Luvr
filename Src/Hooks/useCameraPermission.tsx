@@ -13,7 +13,6 @@ export const useCameraPermission = () => {
           : PERMISSIONS.IOS.CAMERA;
 
       const result = await check(permission);
-      console.log('result', result);
       if (result === RESULTS.GRANTED) {
         setCameraPermission(true);
         return true;
@@ -29,7 +28,6 @@ export const useCameraPermission = () => {
         return isPermissionGranted;
       }
     } catch (error) {
-      console.error('Error checking or requesting camera permission:', error);
       return false;
     }
   };
