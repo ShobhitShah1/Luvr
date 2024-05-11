@@ -215,7 +215,7 @@ const SettingScreen = () => {
         await GoogleSignin.revokeAccess();
         await GoogleSignin.signOut();
       } catch (error) {
-        showToast('Error', String(error), 'error');
+        // showToast('Error', String(error), 'error');
       } finally {
         dispatch(resetUserData());
         setLogOutModalView(false);
