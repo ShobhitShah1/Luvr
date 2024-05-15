@@ -9,12 +9,14 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useEffect, useState} from 'react';
 import {
+  Image,
   ImageBackground,
   Platform,
   SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
@@ -31,6 +33,9 @@ import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {ProfileType} from '../../../Types/ProfileType';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import styles from './styles';
+import CommonIcons from '../../../Common/CommonIcons';
+import {ActiveOpacity} from '../../../Common/Theme';
+import TextString from '../../../Common/TextString';
 
 const LoginScreen: FC = () => {
   const navigation =
@@ -48,7 +53,9 @@ const LoginScreen: FC = () => {
   const [privacyLinks, setPrivacyLinks] = useState<{[key: string]: string}>({
     PrivacyPolicy: '',
     TermsOfService: '',
+    EULA: '',
   });
+  const [IsFollowTerms, setIsFollowTerms] = useState(false);
 
   useEffect(() => {
     async function initializeRemoteConfig() {
@@ -64,12 +71,18 @@ const LoginScreen: FC = () => {
       const termsOfService = remoteConfig()
         .getValue('TermsOfService')
         .asString();
+      const EULA = remoteConfig().getValue('EULA').asString();
 
       // Validate fetched config values before setting state
-      if (validateConfig(privacyPolicy) && validateConfig(termsOfService)) {
+      if (
+        validateConfig(privacyPolicy) &&
+        validateConfig(termsOfService) &&
+        validateConfig(EULA)
+      ) {
         setPrivacyLinks({
           PrivacyPolicy: privacyPolicy,
           TermsOfService: termsOfService,
+          EULA: EULA,
         });
       } else {
         console.log('Invalid config values');
@@ -86,6 +99,15 @@ const LoginScreen: FC = () => {
 
   const handleGoogleLogin = async () => {
     try {
+      if (!IsFollowTerms) {
+        showToast(
+          'Action Required',
+          'Please agree to the terms (EULA) to continue.',
+          TextString.error,
+        );
+        return;
+      }
+
       setIsSocialLoginLoading({...IsSocialLoginLoading, Google: true});
       if (Platform.OS === 'android') {
         await GoogleSignin.hasPlayServices({
@@ -191,6 +213,15 @@ const LoginScreen: FC = () => {
   };
 
   const handleAppleLogin = async () => {
+    if (!IsFollowTerms) {
+      showToast(
+        'Action Required',
+        'Please agree to the terms (EULA) to continue.',
+        TextString.error,
+      );
+      return;
+    }
+
     setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: true});
 
     try {
@@ -255,6 +286,14 @@ const LoginScreen: FC = () => {
               Title="LOGIN WITH PHONE NUMBER"
               Icon={CommonLogos.EmailLoginLogo}
               onPress={() => {
+                if (!IsFollowTerms) {
+                  showToast(
+                    'Action Required',
+                    'Please agree to the terms (EULA) to continue.',
+                    TextString.error,
+                  );
+                  return;
+                }
                 navigation.navigate('NumberVerification', {
                   screen: 'PhoneNumber',
                 });
@@ -281,8 +320,29 @@ const LoginScreen: FC = () => {
           </View>
 
           <View style={styles.TermsView}>
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              onPress={() => setIsFollowTerms(!IsFollowTerms)}
+              style={styles.FollowButtonView}>
+              {IsFollowTerms && (
+                <Image
+                  style={styles.FollowTickMark}
+                  source={CommonIcons.Check}
+                />
+              )}
+            </TouchableOpacity>
             <Text style={styles.TermsViewText}>
-              By Login, you agree to our{'\n'}
+              By Login, you agree to our{' '}
+              <Text
+                onPress={() => {
+                  if (privacyLinks?.TermsOfService) {
+                    OpenURL({URL: String(privacyLinks?.EULA)});
+                  }
+                }}
+                style={styles.UnderLineText}>
+                EULA
+              </Text>
+              {', '}
               <Text
                 onPress={() => {
                   if (privacyLinks?.TermsOfService) {

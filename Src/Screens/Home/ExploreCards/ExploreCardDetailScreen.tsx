@@ -48,7 +48,7 @@ const ExploreCardDetailScreen = () => {
   const IsFocused = useIsFocused();
   const [CurrentIndex, setCurrentIndex] = useState<number>(0);
   const [CardData, setCardData] = useState<ProfileType>();
-  const [IsAPILoading, setIsAPILoading] = useState(false);
+  const [IsAPILoading, setIsAPILoading] = useState(true);
   const navigation = useNavigation();
   const [SelectedReportReason, setSelectedReportReason] = useState<string>('');
   const [ShowReportModalView, setShowReportModalView] =

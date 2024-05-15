@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
-import React, {FC, useCallback, useMemo} from 'react';
+import React, {FC, memo, useCallback, useMemo} from 'react';
 import {
   FlatList,
   Image,
@@ -756,7 +756,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
   );
 };
 
-export default EditProfileSheetView;
+export default memo(EditProfileSheetView);
 
 const styles = StyleSheet.create({
   BottomSheetContainerView: {

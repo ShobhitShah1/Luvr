@@ -1,10 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import {MotiImage, MotiTransitionProp, MotiView} from 'moti';
-import React, {FC, useEffect, useMemo, useState} from 'react';
-import {Image, Pressable, StyleSheet, View} from 'react-native';
+import React, {FC, memo, useMemo} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {Easing} from 'react-native-reanimated';
-import {COLORS} from '../Common/Theme';
 import CommonIcons from '../Common/CommonIcons';
+import {COLORS} from '../Common/Theme';
 
 const _colors = {
   Active: COLORS.Primary,
@@ -103,7 +103,7 @@ const SwitchComponent: FC<SwitchComponentProps> = ({
   );
 };
 
-export default SwitchComponent;
+export default memo(SwitchComponent);
 
 const styles = StyleSheet.create({
   SwitchContainer: {

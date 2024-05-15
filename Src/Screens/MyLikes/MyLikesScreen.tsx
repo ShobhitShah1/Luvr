@@ -63,7 +63,7 @@ const MyLikesScreen = () => {
     matches: LikeInterface[];
   }>({likes: [], matches: []});
   const [refreshing, setRefreshing] = useState(false);
-  const [isAPILoading, setIsAPILoading] = useState(false);
+  const [isAPILoading, setIsAPILoading] = useState(true);
   const {showToast} = useCustomToast();
 
   const tabsData: TabData[] = [
@@ -133,7 +133,7 @@ const MyLikesScreen = () => {
 
       if (APIResponse?.code === 200) {
         const data = APIResponse.data;
-
+        console.log('data', data.like);
         let combinedData = [...data.like, ...data.match]; // Combine likes and matches data
         setUserLikesCount(data.like.length);
         setUserMatchesCount(data.match.length);

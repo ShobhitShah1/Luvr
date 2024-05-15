@@ -88,6 +88,7 @@ const ChatRoomScreen = () => {
     });
 
     socketInstance.on('connect', () => {
+      console.log('Socket Connected');
       setSocket(socketInstance);
     });
 
@@ -114,37 +115,47 @@ const ChatRoomScreen = () => {
         //* Event: List - Response
         const handleListResponse: SocketEventHandlers['List'] = data => {
           try {
+            console.log('data?.data:', data?.data);
             if (data && data?.data) {
               const filteredData = data.data.filter(
-                (item: MessageItem) => item.to !== currentLoginUserId,
+                (item: MessageItem | null) =>
+                  item !== null && item?.to !== currentLoginUserId,
               );
-              if (filteredData.length !== 0) {
-                const usersWithFirstChat = filteredData.map(message => {
-                  const otherUserChats = message.chat.filter(
-                    chat => chat?.id !== currentLoginUserId,
-                  );
+              // const filteredData = data.data.filter(
+              //   (item: MessageItem) => item?.to !== currentLoginUserId,
+              // );
 
-                  //* With Both Side Chat
-                  // const firstChat =
-                  //   message.chat.length > 0
-                  //     ? message.chat[message.chat.length - 1]
-                  //     : null;
+              if (filteredData && filteredData?.length !== 0) {
+                const usersWithFirstChat =
+                  filteredData &&
+                  filteredData.map(message => {
+                    const otherUserChats = message?.chat?.filter(
+                      chat => chat?.id !== currentLoginUserId,
+                    );
 
-                  //* Only Other User Chat
-                  const firstChat =
-                    otherUserChats.length > 0
-                      ? otherUserChats[otherUserChats.length - 1]
-                      : null;
+                    console.log('usersWithFirstChat', usersWithFirstChat);
 
-                  return {
-                    chat: firstChat ? [firstChat] : [],
-                    last_updated_time: message.last_updated_time,
-                    name: message.name,
-                    reciver_socket_id: message.reciver_socket_id,
-                    to: message.to,
-                    profile: message?.profile,
-                  };
-                });
+                    //* With Both Side Chat
+                    // const firstChat =
+                    //   message.chat.length > 0
+                    //     ? message.chat[message.chat.length - 1]
+                    //     : null;
+
+                    //* Only Other User Chat
+                    const firstChat =
+                      otherUserChats?.length > 0
+                        ? otherUserChats[otherUserChats?.length - 1]
+                        : null;
+
+                    return {
+                      chat: firstChat ? [firstChat] : [],
+                      last_updated_time: message?.last_updated_time,
+                      name: message?.name,
+                      reciver_socket_id: message?.reciver_socket_id,
+                      to: message?.to,
+                      profile: message?.profile,
+                    };
+                  });
 
                 setMessages(usersWithFirstChat);
               }

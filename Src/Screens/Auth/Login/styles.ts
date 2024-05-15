@@ -57,9 +57,12 @@ const styles = StyleSheet.create({
   },
   TermsView: {
     marginTop: hp('1.5%'),
+    flexDirection: 'row',
+    justifyContent: 'center',
+    // alignItems: 'center',
   },
   TermsViewText: {
-    textAlign: 'center',
+    textAlign: 'left',
     fontFamily: FONTS.Medium,
     fontSize: hp('1.5%'),
     color: COLORS.White,
@@ -67,6 +70,25 @@ const styles = StyleSheet.create({
   UnderLineText: {
     fontFamily: FONTS.Bold,
     textDecorationLine: 'underline',
+  },
+  FollowButtonView: {
+    width: 23,
+    height: 23,
+    top: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+    borderRadius: 500,
+    borderWidth: 1,
+    borderColor: COLORS.White,
+  },
+  FollowTickMark: {
+    width: 12,
+    height: 12,
+    resizeMode: 'contain',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    tintColor: COLORS.White,
   },
 });
 

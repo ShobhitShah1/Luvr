@@ -20,9 +20,10 @@ import {ProfileType} from '../../../Types/ProfileType';
 
 interface ChatHeaderProps {
   data: ProfileType;
+  onRightIconPress: () => void;
 }
 
-const ChatScreenHeader: FC<ChatHeaderProps> = ({data}) => {
+const ChatScreenHeader: FC<ChatHeaderProps> = ({data, onRightIconPress}) => {
   const navigation = useNavigation();
   return (
     <View style={styles.Container}>
@@ -70,12 +71,15 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({data}) => {
             )}
           </View>
         </View>
-        {/* <View style={styles.RemoveChatView}>
+        <TouchableOpacity
+          activeOpacity={ActiveOpacity}
+          onPress={onRightIconPress}
+          style={styles.RemoveChatView}>
           <Image
             style={styles.RemoveChatIcon}
-            source={CommonIcons.delete_chat}
+            source={CommonIcons.more_option}
           />
-        </View> */}
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -141,6 +145,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Bold,
   },
   RemoveChatView: {
+    top: 5,
     alignItems: 'center',
     justifyContent: 'center',
   },

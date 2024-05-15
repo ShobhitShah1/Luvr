@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-shadow */
-import React, {FC} from 'react';
+import React, {FC, memo} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import {ActiveOpacity} from '../../../../Common/Theme';
@@ -124,7 +124,7 @@ const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
   );
 };
 
-export default EditProfileAllImageView;
+export default memo(EditProfileAllImageView);
 
 const styles = StyleSheet.create({
   AddUserPhotoView: {

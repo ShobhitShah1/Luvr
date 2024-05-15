@@ -1,17 +1,22 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   ParamListBase,
   RouteProp,
   useIsFocused,
+  useNavigation,
   useRoute,
 } from '@react-navigation/native';
 import React, {FC, useCallback, useEffect, useState} from 'react';
 import {
+  Image,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   SafeAreaView,
   StatusBar,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
 import {
@@ -23,7 +28,7 @@ import {
   IMessage,
   InputToolbar,
 } from 'react-native-gifted-chat';
-import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
+import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 // import socket from '../../Services/socket';
 import {Socket, io} from 'socket.io-client';
 import ApiConfig from '../../Config/ApiConfig';
@@ -41,6 +46,11 @@ import {ProfileType} from '../../Types/ProfileType';
 import {chatRoomDataType} from '../../Types/chatRoomDataType';
 import ChatScreenHeader from './Components/ChatScreenHeader';
 import {useCustomToast} from '../../Utils/toastUtils';
+import {TouchableOpacity} from 'react-native';
+import CommonIcons from '../../Common/CommonIcons';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {onSwipeLeft} from '../../Redux/Action/userActions';
+import ReportUserModalView from '../../Components/ReportUserModalView';
 
 interface ChatData {
   params: {
@@ -65,6 +75,11 @@ const ChatScreen: FC = () => {
   const [ReceiverSocketId, setReceiverSocketId] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string>('');
   const {showToast} = useCustomToast();
+  const navigation = useNavigation();
+  const [SelectedReportReason, setSelectedReportReason] = useState<string>('');
+  const [ShowReportModalView, setShowReportModalView] =
+    useState<boolean>(false);
+  const [ReportAndBlockModal, setReportAndBlockModal] = useState(false);
 
   const generateRandomId = () => {
     return Math.random().toString(36).substr(2, 9);
@@ -443,9 +458,57 @@ const ChatScreen: FC = () => {
     );
   };
 
+  const onBlockProfileClick = async () => {
+    const BlockData = {
+      eventName: ApiConfig.BlockProfile,
+      blocked_to: params?.id,
+    };
+    console.log('BlockData', BlockData);
+    const APIResponse = await UserService.UserRegister(BlockData);
+    console.log('Block User', APIResponse);
+    if (APIResponse && APIResponse?.code === 200) {
+      await store.dispatch(onSwipeLeft(String(params?.id)));
+      showToast(
+        'User Blocked',
+        `Your request to block ${OtherUserProfileData?.full_name} is successfully send`,
+        'success',
+      );
+      navigation.goBack();
+    } else {
+      showToast('Error', 'Something went wrong', 'error');
+    }
+  };
+
+  const onReportProfileClick = async () => {
+    setShowReportModalView(false);
+    const BlockData = {
+      eventName: ApiConfig.ReportProfile,
+      blocked_to: params?.id,
+      reason: SelectedReportReason,
+    };
+    const APIResponse = await UserService.UserRegister(BlockData);
+
+    console.log('Report APIResponse', APIResponse);
+
+    if (APIResponse && APIResponse?.code === 200) {
+      await store.dispatch(onSwipeLeft(String(params?.id)));
+      showToast(
+        'Success!',
+        `Your report against ${OtherUserProfileData?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${SelectedReportReason}`,
+        'success',
+      );
+      navigation.goBack();
+    } else {
+      showToast('Error', 'Something went wrong', 'error');
+    }
+  };
+
   return (
     <View style={styles.Container}>
-      <ChatScreenHeader data={OtherUserProfileData} />
+      <ChatScreenHeader
+        data={OtherUserProfileData}
+        onRightIconPress={() => setReportAndBlockModal(true)}
+      />
       <StatusBar backgroundColor={COLORS.White} barStyle={'dark-content'} />
       <View style={styles.ChatContainer}>
         <GiftedChat
@@ -475,6 +538,76 @@ const ChatScreen: FC = () => {
           }}
         />
       </View>
+
+      <Modal
+        visible={ReportAndBlockModal}
+        transparent
+        presentationStyle="overFullScreen">
+        <View style={styles.BlockAndReportProfileView}>
+          <View
+            style={{
+              flex: 1,
+              paddingVertical: 10,
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '10%',
+              borderRadius: 10,
+              flexDirection: 'row',
+            }}>
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              style={{
+                position: 'absolute',
+                top: 20,
+                right: 5,
+                width: 50,
+                height: 50,
+              }}
+              onPress={() => setReportAndBlockModal(false)}>
+              <Image
+                source={CommonIcons.CloseModal}
+                style={{width: 35, height: 35}}
+              />
+            </TouchableOpacity>
+            {/* Block Profile */}
+            <TouchableOpacity
+              onPress={onBlockProfileClick}
+              activeOpacity={ActiveOpacity}
+              style={styles.BlockAndReportButtonView}>
+              <Image
+                resizeMode="contain"
+                style={styles.BlockAndReportIcon}
+                source={CommonIcons.block_profile_icon}
+              />
+              <Text style={styles.BlockAndReportText}>Block Profile</Text>
+            </TouchableOpacity>
+
+            {/* Report Profile */}
+            <TouchableOpacity
+              onPress={() => {
+                setReportAndBlockModal(false);
+                setShowReportModalView(!ShowReportModalView);
+              }}
+              activeOpacity={ActiveOpacity}
+              style={styles.BlockAndReportButtonView}>
+              <Image
+                resizeMode="contain"
+                style={styles.BlockAndReportIcon}
+                source={CommonIcons.report_profile_icon}
+              />
+              <Text style={styles.BlockAndReportText}>Report Profile</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <ReportUserModalView
+        Visible={ShowReportModalView}
+        setVisibility={setShowReportModalView}
+        onReportPress={onReportProfileClick}
+        SelectedReportReason={SelectedReportReason}
+        setSelectedReportReason={setSelectedReportReason}
+      />
       {Platform.OS === 'android' && <KeyboardAvoidingView behavior="height" />}
       <SafeAreaView />
     </View>
@@ -514,5 +647,38 @@ const styles = StyleSheet.create({
     fontSize: 11.5,
     color: COLORS.Black,
     fontFamily: FONTS.SemiBold,
+  },
+
+  BlockAndReportProfileView: {
+    width: '100%',
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  BlockAndReportButtonView: {
+    width: '47%',
+    overflow: 'hidden',
+    height: hp('7.5%'),
+    marginVertical: hp('2%'),
+    borderRadius: hp('5%'),
+    backgroundColor: COLORS.White,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: COLORS.Black,
+    paddingHorizontal: hp('1%'),
+    marginHorizontal: hp('0.5%'),
+  },
+  BlockAndReportIcon: {
+    width: hp('2.4%'),
+    height: hp('2.4%'),
+  },
+  BlockAndReportText: {
+    fontFamily: FONTS.Bold,
+    color: COLORS.Black,
+    fontSize: hp('1.8%'),
+    marginHorizontal: hp('0.5%'),
   },
 });

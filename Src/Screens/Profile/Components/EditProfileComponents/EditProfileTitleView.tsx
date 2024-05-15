@@ -7,7 +7,7 @@ import {
   ImageStyle,
   TextStyle,
 } from 'react-native';
-import React, {FC} from 'react';
+import React, {FC, memo} from 'react';
 import {COLORS, GROUP_FONT} from '../../../../Common/Theme';
 
 interface EditProfileProps {
@@ -42,7 +42,7 @@ const EditProfileTitleView: FC<EditProfileProps> = ({
   );
 };
 
-export default EditProfileTitleView;
+export default memo(EditProfileTitleView);
 
 const styles = StyleSheet.create({
   TitleViewContainer: {

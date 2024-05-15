@@ -57,13 +57,14 @@ const SettingScreen = () => {
   const [RatingCount, setRatingCount] = useState(3);
   const {showToast} = useCustomToast();
   const [IsInternetConnected, setIsInternetConnected] = useState(true);
-  const [IsSettingLoading, setIsSettingLoading] = useState(false);
+  const [IsSettingLoading, setIsSettingLoading] = useState(true);
   const [isEnabled, setIsEnabled] = useState(false);
 
   let startAge = '';
   let endAge = '';
 
   const settingAgeRangeMin = UserSetting?.setting_age_range_min || '';
+
   if (settingAgeRangeMin) {
     [startAge, endAge] = settingAgeRangeMin?.split('-');
   }
@@ -718,6 +719,16 @@ Let's make every moment count together! #LoveConnects`,
                   onPress={() => {
                     OpenURL({
                       URL: RemoteConfigLinks?.TermsOfService?.asString(),
+                    });
+                  }}
+                />
+                <SettingFlexView
+                  isActive={false}
+                  style={styles.ShareFlexViewStyle}
+                  Item={'EULA'}
+                  onPress={() => {
+                    OpenURL({
+                      URL: RemoteConfigLinks?.EULA?.asString(),
                     });
                   }}
                 />

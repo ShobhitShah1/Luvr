@@ -1,5 +1,5 @@
 import {Skeleton} from 'moti/skeleton';
-import React, {FC} from 'react';
+import React, {FC, memo} from 'react';
 import {
   LayoutChangeEvent,
   StyleProp,
@@ -65,7 +65,7 @@ const EditProfileBoxView: FC<EditProfileBoxViewProps> = ({
   );
 };
 
-export default EditProfileBoxView;
+export default memo(EditProfileBoxView);
 
 const styles = StyleSheet.create({
   container: {
