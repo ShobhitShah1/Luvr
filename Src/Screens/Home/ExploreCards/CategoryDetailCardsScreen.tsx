@@ -77,8 +77,8 @@ const CategoryDetailCardsScreen: FC = () => {
         radius: userData?.userData?.radius
           ? userData?.userData?.radius
           : 9000000000000000,
-        unlike: store.getState().user?.swipedLeftUserIds,
-        like: store.getState().user?.swipedRightUserIds,
+        unlike: LeftSwipedUserIds,
+        like: RightSwipedUserIds,
         hoping: params?.item?.title,
         skip: 0,
         limit: 200,
@@ -102,14 +102,11 @@ const CategoryDetailCardsScreen: FC = () => {
     } finally {
       setIsAPILoading(false);
     }
-  }, [
-    LeftSwipedUserIds,
-    RightSwipedUserIds,
-    userData,
-    store.getState().user?.swipedLeftUserIds,
-    store.getState().user?.swipedRightUserIds,
-    params?.item?.title,
-  ]);
+  }, [LeftSwipedUserIds, RightSwipedUserIds, userData, params?.item?.title]);
+
+  useEffect(() => {
+    FetchAPIData();
+  }, [LeftSwipedUserIds, RightSwipedUserIds]);
 
   const ListEmptyView = () => {
     return (
