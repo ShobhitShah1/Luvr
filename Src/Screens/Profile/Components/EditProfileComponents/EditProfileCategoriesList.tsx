@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, memo} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {
   ActiveOpacity,
@@ -49,7 +49,7 @@ const EditProfileCategoriesList: FC<CategoriesListProps> = ({
     </View>
   );
 };
-export default EditProfileCategoriesList;
+export default memo(EditProfileCategoriesList);
 
 const styles = StyleSheet.create({
   CategoryContainerView: {
