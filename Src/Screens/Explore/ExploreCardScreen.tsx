@@ -61,6 +61,7 @@ const ExploreCardScreen: FC = () => {
   const [IsAPILoading, setIsAPILoading] = useState(true);
   const [IsNetConnected, setIsNetConnected] = useState(true);
   const [ItsMatchModalView, setItsMatchModalView] = useState(false);
+  const [MatchedUserInfo, setMatchedUserInfo] = useState<SwiperCard>();
 
   const {startInterval, stopInterval, clearInterval} = useInterval(
     () => {
@@ -193,7 +194,10 @@ const ExploreCardScreen: FC = () => {
     console.log('Swipe Right Card Index', cardIndex);
     if (cards && cards[CurrentCardIndex]?._id) {
       console.log(cards[CurrentCardIndex]?._id, CurrentCardIndex);
-      LikeUserAPI(String(cards[CurrentCardIndex]?._id));
+      LikeUserAPI(
+        String(cards[CurrentCardIndex]?._id),
+        cards[CurrentCardIndex],
+      );
       store.dispatch(onSwipeRight(String(cards[CurrentCardIndex]?._id)));
     }
   };
@@ -241,7 +245,7 @@ const ExploreCardScreen: FC = () => {
   };
 
   //* User Like API
-  const LikeUserAPI = async (id: string) => {
+  const LikeUserAPI = async (id: string, cardData: SwiperCard) => {
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
     if (!InInternetConnected) {
@@ -263,6 +267,7 @@ const ExploreCardScreen: FC = () => {
       if (APIResponse?.code === 200) {
         if (APIResponse.data?.status === 'match') {
           setItsMatchModalView(true);
+          setMatchedUserInfo(cardData);
         }
         swipeRef.current?.forceUpdate();
       } else {
@@ -439,9 +444,7 @@ const ExploreCardScreen: FC = () => {
       )}
 
       <Modal
-        isVisible={
-          IsAPILoading || cards?.length === 0 ? false : ItsMatchModalView
-        }
+        isVisible={IsAPILoading ? false : ItsMatchModalView}
         animationIn={'fadeIn'}
         animationOut={'fadeOut'}
         useNativeDriver
@@ -449,23 +452,28 @@ const ExploreCardScreen: FC = () => {
         hasBackdrop
         onBackdropPress={() => {
           setItsMatchModalView(false);
+          setMatchedUserInfo(undefined);
         }}
         onBackButtonPress={() => {
           setItsMatchModalView(false);
+          setMatchedUserInfo(undefined);
         }}
         style={{
           flex: 1,
           margin: 0,
         }}>
         <ItsAMatch
-          user={cards && cards[CurrentCardIndex - 1]}
+          user={MatchedUserInfo}
           onSayHiClick={() => {
             setItsMatchModalView(false);
             navigation.navigate('Chat', {
-              id: cards[CurrentCardIndex - 1]?._id,
+              id: MatchedUserInfo?._id,
             });
           }}
-          onCloseModalClick={() => setItsMatchModalView(false)}
+          onCloseModalClick={() => {
+            setItsMatchModalView(false);
+            setMatchedUserInfo(undefined);
+          }}
           setItsMatch={setItsMatchModalView}
         />
       </Modal>

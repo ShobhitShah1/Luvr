@@ -260,8 +260,9 @@ Download now:
 ${
   RemoteConfigLinks?.AppStore?.asString() &&
   `📱 App Store: ${RemoteConfigLinks?.AppStore?.asString()}`
-} 
-📱 Google Play: ${
+}
+
+📱 Play Store: ${
           RemoteConfigLinks?.PlayStore?.asString() ||
           'https://play.google.com/store/apps/details?id=com.luvr.dating'
         }

@@ -8,12 +8,17 @@ const ApiConfig = {
   GET_LOCATION_API: 'http://ip-api.com/json/?fields=countryCode',
   IMAGE_BASE_URL: 'https://nirvanatechlabs.in/DATING_IMAGES/profile_images/',
   OTP_BASE_URL:
-    'https://2factor.in/API/V1/5b2706aa-9db2-11ee-8cbb-0200cd936042/SMS/',
+    'https://verify.twilio.com/v2/Services/375ea4a45416820a6c7a750e9bdaa3c4/VerificationCheck',
+  // OTP_BASE_URL:
+  //   'https://2factor.in/API/V1/5b2706aa-9db2-11ee-8cbb-0200cd936042/SMS/',
   SOCKET_BASE_URL: 'http://nirvanatechlabs.in:1111/',
   GOOGLE_WEB_CLIENT_ID:
     '126773940218-vqp2euiee90i9pecsh3gfdiaa19hj0rv.apps.googleusercontent.com',
   FACEBOOK_GRAPH_API:
     'https://graph.facebook.com/v2.5/me?fields=email,name,picture,birthday,gender&access_token=',
+
+  TwilioAccountSid: 'AC5eeeb0e046be463f0b79053383eaef46',
+  TwilioAuthToken: '375ea4a45416820a6c7a750e9bdaa3c4',
 
   //* EventName's
 
@@ -21,19 +26,15 @@ const ApiConfig = {
   ReportProfile: 'report_users',
 };
 
-// Fetch remote config values
 async function fetchRemoteConfigValues() {
   try {
     await remoteConfig().fetchAndActivate();
-    console.log('Remote Config activated successfully.');
 
-    // Get BASE_URL from remote config or use default
     const BASE_URL_REMOTE = remoteConfig().getValue('BASE_URL').asString();
     if (BASE_URL_REMOTE) {
       ApiConfig.BASE_URL = BASE_URL_REMOTE;
     }
 
-    // Get SOCKET_BASE_URL from remote config or use default
     const SOCKET_BASE_URL_REMOTE = remoteConfig()
       .getValue('SOCKET_BASE_URL')
       .asString();
@@ -48,7 +49,6 @@ async function fetchRemoteConfigValues() {
   }
 }
 
-// Call function to fetch remote config values
 fetchRemoteConfigValues();
 
 export const skus = Platform.select({

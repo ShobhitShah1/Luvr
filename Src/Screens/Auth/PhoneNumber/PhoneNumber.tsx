@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import axios from 'axios';
+import axios, {AxiosRequestConfig} from 'axios';
 import React, {FC, useCallback, useEffect, useState} from 'react';
 import {
   Alert,
@@ -203,13 +203,15 @@ const PhoneNumber: FC = () => {
   const handleSendOtp = async () => {
     setIsAPILoading(true);
     try {
-      const url = `${ApiConfig.OTP_BASE_URL}${
-        diallingCode || defaultDiallingCode
-      }${StorePhoneNumber}/AUTOGEN3/OTP1`;
+      const userDataForApi = {
+        eventName: 'send_otp',
+        mobile_no: PhoneNumberString,
+      };
 
-      const response = await axios.get(url);
+      const response = await UserService.UserRegister(userDataForApi);
+      console.log('Send OTP Response:', response);
 
-      if (response.data?.Status === 'Success') {
+      if (response?.code === 200) {
         showToast(
           'OTP Sent Successfully',
           'Please check your device for OTP',
@@ -247,11 +249,11 @@ const PhoneNumber: FC = () => {
           'error',
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       showToast(
         'Error',
-        String(error) ||
-          'Failed to send otp OTP. Please check your network connection and try again.',
+        String(error?.request?._response || error) ||
+          'Failed to send otp OTP. try again.',
         'error',
       );
     } finally {

@@ -1,26 +1,21 @@
 /* eslint-disable react-native/no-inline-styles */
 import {Image} from 'moti';
-import React, {FC, useState} from 'react';
+import React, {FC} from 'react';
 import {
   ImageBackground,
-  SafeAreaView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import LinearGradient from 'react-native-linear-gradient';
 import {useSelector} from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
-import {ProfileType} from '../../../Types/ProfileType';
-import ApiConfig from '../../../Config/ApiConfig';
-import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
-import {SwiperCard} from '../../../Types/SwiperCard';
-import {APP_NAME, DummyImage} from '../../../Config/Setting';
 import CommonImages from '../../../Common/CommonImages';
-import {BlurView} from '@react-native-community/blur';
+import {ActiveOpacity, COLORS, FONTS} from '../../../Common/Theme';
+import ApiConfig from '../../../Config/ApiConfig';
+import {APP_NAME, DummyImage} from '../../../Config/Setting';
+import {SwiperCard} from '../../../Types/SwiperCard';
 
 interface ItsAMatchProps {
   user: SwiperCard | undefined;
@@ -36,9 +31,6 @@ const ItsAMatch: FC<ItsAMatchProps> = ({
   onCloseModalClick,
 }) => {
   const userData = useSelector((state: any) => state?.user);
-  const [shoot, setShoot] = useState(true);
-  const [IsImageLoading, setIsImageLoading] = useState(false);
-
   return (
     <View
       style={{
@@ -61,9 +53,6 @@ const ItsAMatch: FC<ItsAMatchProps> = ({
           <View style={styles.MatchedProfileView}>
             <FastImage
               resizeMode="cover"
-              onLoadStart={() => setIsImageLoading(true)}
-              onLoadEnd={() => setIsImageLoading(false)}
-              onLoad={() => setIsImageLoading(false)}
               source={{
                 uri:
                   userData?.userData?.recent_pik &&
@@ -81,9 +70,6 @@ const ItsAMatch: FC<ItsAMatchProps> = ({
             />
             <FastImage
               resizeMode="cover"
-              onLoadStart={() => setIsImageLoading(true)}
-              onLoadEnd={() => setIsImageLoading(false)}
-              onLoad={() => setIsImageLoading(false)}
               source={{
                 uri:
                   user?.recent_pik?.length !== 0

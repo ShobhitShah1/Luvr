@@ -35,7 +35,7 @@ const ProfileScreen = () => {
   const Age = useCalculateAge(userData?.birthdate);
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const [IsImageLoading, setIsImageLoading] = useState(false);
-  const [IsAPILoading, setIsAPILoading] = useState(false);
+  const [IsAPILoading, setIsAPILoading] = useState(true);
   const [ProfileData, setProfileData] = useState<ProfileType | undefined>(
     undefined,
   );

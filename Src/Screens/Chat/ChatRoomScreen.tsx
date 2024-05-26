@@ -88,7 +88,6 @@ const ChatRoomScreen = () => {
     });
 
     socketInstance.on('connect', () => {
-      console.log('Socket Connected');
       setSocket(socketInstance);
     });
 
@@ -115,7 +114,6 @@ const ChatRoomScreen = () => {
         //* Event: List - Response
         const handleListResponse: SocketEventHandlers['List'] = data => {
           try {
-            console.log('data?.data:', data?.data);
             if (data && data?.data) {
               const filteredData = data.data.filter(
                 (item: MessageItem | null) =>
@@ -132,8 +130,6 @@ const ChatRoomScreen = () => {
                     const otherUserChats = message?.chat?.filter(
                       chat => chat?.id !== currentLoginUserId,
                     );
-
-                    console.log('usersWithFirstChat', usersWithFirstChat);
 
                     //* With Both Side Chat
                     // const firstChat =

@@ -113,11 +113,24 @@ const OTPScreen: FC = () => {
         }, 0);
         return; // Exit the function after allowing login for '0000'
       }
+      console.log(number, otp);
+      const userDataForApi = {
+        eventName: 'verify_otp',
+        mobile_no: number,
+        otp: otp,
+      };
 
-      const otpVerificationUrl = `${ApiConfig.OTP_BASE_URL}VERIFY3/${number}/${otp}`;
-      const response = await axios.get(otpVerificationUrl);
+      console.log('userDataForApi', userDataForApi);
+      // const otpVerificationUrl = `${ApiConfig.OTP_BASE_URL}VERIFY3/${number}/${otp}`;
+      // const response = await axios.get(otpVerificationUrl);
 
-      if (response.data?.Status === 'Success') {
+      const response = await UserService.UserRegister(userDataForApi);
+      console.log('response?.message', response?.message);
+      console.log('response?.request?.data', response?.request?.data);
+      console.log('response?.request', response?.request);
+      console.log('response?.response', response?.response);
+
+      if (response.code === 200) {
         showToast(
           'OTP verified Successfully',
           'Your OTP has been successfully verified. You can now proceed.',
