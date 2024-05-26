@@ -1,13 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
 import {useNavigation, useRoute} from '@react-navigation/native';
-import axios from 'axios';
 import React, {FC, useEffect, useRef, useState} from 'react';
 import {Alert, Keyboard, Text, View} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
 import {useDispatch, useSelector} from 'react-redux';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import ApiConfig from '../../../Config/ApiConfig';
 import {useLocationPermission} from '../../../Hooks/useLocationPermission';
 import {updateField} from '../../../Redux/Action/userActions';
 import UserService from '../../../Services/AuthService';
@@ -31,7 +29,7 @@ const OTPScreen: FC = () => {
   const {showToast} = useCustomToast();
   const navigation = useNavigation();
 
-  const {locationPermission, checkLocationPermission} = useLocationPermission();
+  const {checkLocationPermission} = useLocationPermission();
   const [otp, setOtp] = useState<string>('');
   const [IsAPILoading, setIsAPILoading] = useState(false);
 
@@ -113,22 +111,14 @@ const OTPScreen: FC = () => {
         }, 0);
         return; // Exit the function after allowing login for '0000'
       }
-      console.log(number, otp);
+
       const userDataForApi = {
         eventName: 'verify_otp',
         mobile_no: number,
         otp: otp,
       };
 
-      console.log('userDataForApi', userDataForApi);
-      // const otpVerificationUrl = `${ApiConfig.OTP_BASE_URL}VERIFY3/${number}/${otp}`;
-      // const response = await axios.get(otpVerificationUrl);
-
       const response = await UserService.UserRegister(userDataForApi);
-      console.log('response?.message', response?.message);
-      console.log('response?.request?.data', response?.request?.data);
-      console.log('response?.request', response?.request);
-      console.log('response?.response', response?.response);
 
       if (response.code === 200) {
         showToast(
@@ -175,9 +165,14 @@ const OTPScreen: FC = () => {
   const handleSendOtp = async () => {
     setIsAPILoading(true);
     try {
-      const url = `${ApiConfig.OTP_BASE_URL}${number}/AUTOGEN3/OTP1`;
+      const userDataForApi = {
+        eventName: 'verify_otp',
+        mobile_no: number,
+        otp: otp,
+      };
 
-      const response = await axios.get(url);
+      const response = await UserService.UserRegister(userDataForApi);
+
       if (response.data?.Status === 'Success') {
         showToast(
           'OTP Resend Successfully',
@@ -185,7 +180,7 @@ const OTPScreen: FC = () => {
           'success',
         );
         setResendDisabled(true);
-        setResendTimer(10); // Reset timer to 10 seconds when resend is clicked
+        setResendTimer(10);
       } else {
         showToast(
           'Server Error',
@@ -221,14 +216,6 @@ const OTPScreen: FC = () => {
         updateField(LocalStorageFields.Token, APIResponse.data?.token),
       );
       storeDataAPI();
-      // if (userDataForApi?.login_type === 'social') {
-      //   storeDataAPI();
-      // } else {
-      //   setTimeout(() => {
-      //     navigation.replace('BottomTab');
-      //     dispatch(updateField(LocalStorageFields.isVerified, true));
-      //   }, 0);
-      // }
     } else {
       navigation.replace('LoginStack');
     }
@@ -237,11 +224,9 @@ const OTPScreen: FC = () => {
 
   const storeDataAPI = async () => {
     const userDataToSend = {
-      // ...userData,
       eventName: 'get_profile',
     };
     const APIResponse = await UserService.UserRegister(userDataToSend);
-    console.log('CheckDataAndNavigateToNumber', APIResponse.data);
 
     if (APIResponse?.code === 200) {
       const ModifyData = {
@@ -250,20 +235,13 @@ const OTPScreen: FC = () => {
         longitude: userData?.longitude || 0,
         eventName: 'update_profile',
       };
-      console.log('OTP UPDATE PROFILE:', ModifyData);
       const UpdateAPIResponse = await UserService.UserRegister(ModifyData);
 
       if (UpdateAPIResponse && UpdateAPIResponse.code === 200) {
-        console.log('storeDataAPI UpdateAPIResponse:', UpdateAPIResponse);
         const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
 
         setTimeout(() => {
           if (CHECK_NOTIFICATION_PERMISSION) {
-            // if (condition) {
-
-            // } else {
-
-            // }
             navigation.replace('BottomTab');
             dispatch(updateField(LocalStorageFields.isVerified, true));
           } else {
