@@ -9,7 +9,6 @@ import {
 } from '@gorhom/bottom-sheet';
 import {BlurView} from '@react-native-community/blur';
 import NetInfo from '@react-native-community/netinfo';
-import messaging from '@react-native-firebase/messaging';
 import axios from 'axios';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
@@ -75,7 +74,6 @@ const EditProfileScreen = () => {
   const UserData = useSelector((state: any) => state?.user);
   const [IsFetchDataAPILoading, setIsFetchDataAPILoading] = useState(false);
   const [profile, setProfile] = useState<ProfileType>();
-  const [IsInternetConnected, setIsInternetConnected] = useState(true);
   const [ChooseModalVisible, setChooseModalVisible] = useState<boolean>(false);
   const [Bio, setBio] = useState(profile?.about);
   const [UserName, setUserName] = useState(profile?.full_name);
@@ -125,17 +123,13 @@ const EditProfileScreen = () => {
         const info = await NetInfo.fetch();
         if (info.isConnected) {
           setIsFetchDataAPILoading(true);
-          setIsInternetConnected(true);
           await Promise.all([GetProfileData(), CheckLocationPermission()]);
-        } else {
-          setIsInternetConnected(false);
         }
       } catch (error) {
         console.error(
           'Error fetching profile data or checking location permission:',
           error,
         );
-        setIsInternetConnected(false);
       } finally {
         setIsFetchDataAPILoading(false);
       }

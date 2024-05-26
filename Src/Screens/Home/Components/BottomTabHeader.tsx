@@ -16,7 +16,6 @@ import Animated, {
   useSharedValue,
   withRepeat,
   withSequence,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -46,9 +45,8 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
 
   const playAnimation = useCallback(() => {
     rotation.value = withSequence(
-      // deviate left to start from -ANGLE
       withTiming(-ANGLE, {duration: TIME / 2, easing: EASING}),
-      // wobble between -ANGLE and ANGLE 7 times
+
       withRepeat(
         withTiming(ANGLE, {
           duration: TIME,
@@ -81,7 +79,6 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
           <Text style={styles.TitleText}>{APP_NAME}</Text>
         </View>
 
-        {/* {hideSettingAndNotification === false && showSetting === true && ( */}
         <View style={styles.IconsView}>
           {Platform.OS === 'android' && (
             <TouchableOpacity

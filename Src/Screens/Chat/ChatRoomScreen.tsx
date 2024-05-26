@@ -16,10 +16,8 @@ import {Socket, io} from 'socket.io-client';
 import CommonImages from '../../Common/CommonImages';
 import TextString from '../../Common/TextString';
 import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
-import {chatRoomData} from '../../Components/Data';
 import ApiConfig from '../../Config/ApiConfig';
 import {JOIN_EVENT, LIST_EVENT, UPDATE_LIST} from '../../Config/Setting';
-import {setCurrentScreenName} from '../../Redux/Action/userActions';
 import {store} from '../../Redux/Store/store';
 import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
@@ -221,7 +219,7 @@ const ChatRoomScreen = () => {
             data={messages}
             contentContainerStyle={{
               flex: 1,
-              justifyContent: chatRoomData.length === 0 ? 'center' : undefined,
+              justifyContent: messages.length === 0 ? 'center' : undefined,
             }}
             maxToRenderPerBatch={10}
             renderItem={({item, index}) => {

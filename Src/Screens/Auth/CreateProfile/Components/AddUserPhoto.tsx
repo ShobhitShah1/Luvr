@@ -1,15 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 // AddUserPhoto.tsx
-import {BlurView} from '@react-native-community/blur';
 import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  Animated,
-  Image,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {ActivityIndicator, Image, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
 import {COLORS, GROUP_FONT, SIZES} from '../../../../Common/Theme';
@@ -32,7 +24,7 @@ const AddUserPhoto: React.FC<AddUserPhotoProps> = ({picture}) => {
   const [IsImageLoading, setIsImageLoading] = useState<boolean>(false);
   return (
     <View style={styles.item} key={picture?.url}>
-      <Animated.View style={styles.UserImageContainer}>
+      <View style={styles.UserImageContainer}>
         {IsImageLoading && (
           <ActivityIndicator
             color={COLORS.Primary}
@@ -52,7 +44,7 @@ const AddUserPhoto: React.FC<AddUserPhotoProps> = ({picture}) => {
           resizeMode="cover"
           style={picture?.url ? styles.ImageHasImageView : styles.NoImageView}
         />
-      </Animated.View>
+      </View>
 
       <View
         style={[

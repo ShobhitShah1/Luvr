@@ -1,13 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
 import {Skeleton} from 'moti/skeleton';
 import React, {useState} from 'react';
-import {Animated, Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
+import FastImage from 'react-native-fast-image';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
 import {COLORS, GROUP_FONT, SIZES} from '../../../../Common/Theme';
 import ApiConfig from '../../../../Config/ApiConfig';
-import FastImage from 'react-native-fast-image';
-import {BlurView} from '@react-native-community/blur';
 
 type Picture = {
   name: string;
@@ -31,7 +30,7 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
   const [IsImageLoading, setIsImageLoading] = useState<boolean>(false);
   return (
     <View style={styles.item} key={picture?.url}>
-      <Animated.View style={styles.UserImageContainer}>
+      <View style={styles.UserImageContainer}>
         <Skeleton
           width={'100%'}
           height={'100%'}
@@ -71,7 +70,7 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
             />
           </View>
         </Skeleton>
-      </Animated.View>
+      </View>
 
       {!IsImageLoading && !hasPicture && (
         <View
@@ -243,7 +242,7 @@ const styles = StyleSheet.create({
 //   const [IsImageLoading, setIsImageLoading] = useState<boolean>(false);
 //   return (
 //     <View style={styles.item} key={picture?.url}>
-//       <Animated.View style={styles.UserImageContainer}>
+//       <View style={styles.UserImageContainer}>
 //         {IsImageLoading && (
 //           <ActivityIndicator
 //             color={COLORS.Primary}
@@ -263,7 +262,7 @@ const styles = StyleSheet.create({
 //           resizeMode="cover"
 //           style={picture?.url ? styles.ImageHasImageView : styles.NoImageView}
 //         />
-//       </Animated.View>
+//       </View>
 
 //       <View
 //         style={[

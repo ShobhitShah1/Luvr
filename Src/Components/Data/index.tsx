@@ -1,44 +1,4 @@
-import {imageArray} from '../../Config/Setting';
 import {GenderTypes} from '../../Types/GenderTypes';
-import {ProfileType} from '../../Types/ProfileType';
-import {chatRoomDataType} from '../../Types/chatRoomDataType';
-
-export const chatRoomData: chatRoomDataType[] = [
-  {
-    id: 1,
-    name: 'Shobhit',
-    profilePik: imageArray[0],
-    time: '10:20 AM',
-    lastMessage: 'Hello, how are you',
-    isRead: true,
-  },
-  {
-    id: 2,
-    name: 'Test User',
-    profilePik: imageArray[1],
-    time: '10:20 AM',
-    lastMessage: 'Let’s meet today',
-    isRead: false,
-  },
-  {
-    id: 3,
-    name: 'Dummy Me',
-    time: 'Yesterday',
-    profilePik: imageArray[2],
-    lastMessage: 'Can’t wait to see you...',
-    isRead: true,
-  },
-  {
-    id: 4,
-    name: 'New User',
-    profilePik: imageArray[3],
-    time: 'Yesterday',
-    lastMessage: 'Miss you darling',
-    isRead: true,
-  },
-];
-
-//* Contact Data
 
 export interface ContactTabType {
   id: number;
@@ -58,7 +18,6 @@ export const ContactTabData: ContactTabType[] = [
 ];
 
 //* Country With Code
-
 export interface Country {
   name: string;
   code: string;
@@ -4294,206 +4253,9 @@ export const CountryWithCode: Country[] = [
   },
 ];
 
-//* FakeProfileData
-
-export interface FakeProfileType {
-  id: number;
-  name: string;
-  age: number;
-  gender: string;
-  location: string;
-  interests: string[];
-  profile_picture: string;
-}
-
-export const FakeProfileData = [
-  {
-    id: 1,
-    name: 'John Doe',
-    age: 28,
-    gender: 'male',
-    location: 'City A',
-    interests: ['Hiking', 'Reading', 'Traveling'],
-    profile_picture: 'https://loremflickr.com/640/360',
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    age: 25,
-    gender: 'female',
-    location: 'City B',
-    interests: ['Painting', 'Music', 'Cooking'],
-    profile_picture: 'https://picsum.photos/640/360',
-  },
-  {
-    id: 3,
-    name: 'Mike Johnson',
-    age: 30,
-    gender: 'male',
-    location: 'City C',
-    interests: ['Sports', 'Movies', 'Gaming'],
-    profile_picture: 'https://loremflickr.com/640/360',
-  },
-  {
-    id: 4,
-    name: 'Emily Davis',
-    age: 22,
-    gender: 'female',
-    location: 'City D',
-    interests: ['Photography', 'Yoga', 'Dancing'],
-    profile_picture: 'https://picsum.photos/640/360',
-  },
-  {
-    id: 5,
-    name: 'Alex Turner',
-    age: 26,
-    gender: 'male',
-    location: 'City E',
-    interests: ['Technology', 'Coding', 'Travel'],
-    profile_picture: 'https://loremflickr.com/640/360',
-  },
-];
-
-//* Fake User Data
-export const FakeUserCard: ProfileType[] = [
-  {
-    _id: '1',
-    mobile_no: '123-456-7890',
-    birthdate: '1990-01-01',
-    bio: '',
-    city: 'New York',
-    education: {
-      digree: 'Bachelor of Science',
-      college_name: 'Example University',
-    },
-    full_name: 'John Doe',
-    gender: 'Male',
-    habits: {
-      drink: 'Regularly',
-      exercise: 'Regularly',
-      smoke: 'Never',
-      movies: 'Daily',
-    },
-    hoping: 'New Friends',
-    identity: 'ID1',
-    is_orientation_visible: true,
-    is_block_contact: 'false',
-    date: 1234567890, // Add a sample date value
-    enable: 1, // Add a sample enable value
-    location: {
-      coordinates: [40.7128, -74.006],
-      type: 'Point',
-    },
-    user_from: 'Sample Location', // Add a sample user_from value
-    latitude: 40.7128,
-    longitude: -74.006,
-    likes_into: ['Spa', 'Ludo', 'Bookworm'],
-    login_type: 'Email',
-    magical_person: {
-      communication_stry: 'Extrovert',
-      education_level: 'Graduate',
-      recived_love: 'Yes',
-      star_sign: 'Libra',
-    },
-    orientation: ['Straight'],
-    profile_image: imageArray[0],
-    radius: 10,
-    recent_pik: [imageArray[1], imageArray[2]],
-  },
-  {
-    _id: '2',
-    mobile_no: '987-654-3210',
-    birthdate: '1985-05-15',
-    bio: '',
-    city: 'Los Angeles',
-    education: {
-      digree: 'Master of Arts',
-      college_name: 'Another University',
-    },
-    full_name: 'Jane Smith',
-    gender: 'Female',
-    habits: {
-      drink: 'Never',
-      exercise: 'Sometimes',
-      smoke: 'Never',
-      movies: 'Daily',
-    },
-    hoping: "I'm Not Sure Yet",
-    identity: 'ID2',
-    is_orientation_visible: true,
-    is_block_contact: 'false',
-    date: 1234567890, // Add a sample date value
-    enable: 1, // Add a sample enable value
-    location: {
-      coordinates: [34.0522, -118.2437],
-      type: 'Point',
-    },
-    user_from: 'Sample Location', // Add a sample user_from value
-    latitude: 34.0522,
-    longitude: -118.2437,
-    likes_into: ['Harry Potter', 'Art Lover', 'Film Buff'],
-    login_type: 'Social',
-    magical_person: {
-      communication_stry: 'Extrovert',
-      education_level: 'Postgraduate',
-      recived_love: 'Yes',
-      star_sign: 'Taurus',
-    },
-    orientation: ['Pansexual'],
-    profile_image: imageArray[3],
-    radius: 15,
-    recent_pik: [imageArray[4], imageArray[5]],
-  },
-  {
-    _id: '3',
-    mobile_no: '555-1234',
-    birthdate: '1988-07-20',
-    bio: '',
-    city: 'London',
-    education: {
-      digree: 'Ph.D. in Economics',
-      college_name: 'London School of Economics',
-    },
-    full_name: 'Alex Turner',
-    gender: 'Male',
-    habits: {
-      drink: 'Never',
-      exercise: 'Regularly',
-      smoke: 'Never',
-      movies: 'Daily',
-    },
-    hoping: 'Something Casual',
-    identity: 'ID3',
-    is_orientation_visible: true,
-    is_block_contact: 'false',
-    date: 1234567890, // Add a sample date value
-    enable: 1, // Add a sample enable value
-    location: {
-      coordinates: [51.5074, -0.1278],
-      type: 'Point',
-    },
-    user_from: 'Sample Location', // Add a sample user_from value
-    latitude: 51.5074,
-    longitude: -0.1278,
-    likes_into: ['Futurist', 'Sci-Fi Writer', 'Ghost Hunter'],
-    login_type: 'Email',
-    magical_person: {
-      communication_stry: 'Extrovert',
-      education_level: 'Doctorate',
-      recived_love: 'Yes',
-      star_sign: 'Cancer',
-    },
-    orientation: ['Demisexual'],
-    profile_image: imageArray[6],
-    radius: 12,
-    recent_pik: imageArray,
-  },
-  // Add more objects with similar structure
-];
-
 //* Genders And Main Genders
-
 export const MainGenders = ['Male', 'Female', 'Others'];
+
 export interface AllGendersType {
   id: number;
   name: string;
@@ -4651,7 +4413,6 @@ export const GendersData: GenderTypes[] = [
 ];
 
 //* Lifestyle data
-
 export interface LifestyleType {
   id: number;
   habit: string;
@@ -4703,10 +4464,10 @@ export const LifestyleData: LifestyleType[] = [
 ];
 
 //* LoogingFor Data
-
 export interface LookingForType {
   Title: string;
 }
+
 export const LookingFor: string[] = [
   'A Relationship',
   'New Friends',
@@ -4716,7 +4477,6 @@ export const LookingFor: string[] = [
 ];
 
 //* What About You
-
 export interface WhatAboutYouType {
   id: number;
   habit: string;
@@ -4787,7 +4547,6 @@ export const WhatAboutYouData: WhatAboutYouType[] = [
 ];
 
 //* Your Into Data
-
 export interface YourIntoType {
   id: number;
   name: string;
@@ -4845,7 +4604,6 @@ export const YourIntoData: YourIntoType[] = [
 ];
 
 //* Home Looking For Data
-
 export const HomeLookingForData = [
   {
     id: 1,
@@ -4904,13 +4662,11 @@ export const alertData = [
 
 export default CountryWithCode;
 
-// Define types for reasons
 export type ReportReasonType = {
   id: number;
   name: string;
 };
 
-// List of predefined report reasons
 export const reportReasons: ReportReasonType[] = [
   {id: 1, name: 'Inappropriate Behavior'},
   {id: 2, name: 'Harassment'},

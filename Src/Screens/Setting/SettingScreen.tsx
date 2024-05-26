@@ -12,7 +12,6 @@ import {
   AppState,
   AppStateStatus,
   Dimensions,
-  LayoutChangeEvent,
   Linking,
   Platform,
   ScrollView,
@@ -29,6 +28,7 @@ import {Rating} from 'react-native-ratings';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
+import TextString from '../../Common/TextString';
 import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
 import OpenURL from '../../Components/OpenURL';
 import {resetUserData} from '../../Redux/Action/userActions';
@@ -41,13 +41,12 @@ import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHead
 import SettingCustomModal from './Components/SettingCustomModal';
 import SettingFlexView from './Components/SettingFlexView';
 import styles from './styles';
-import TextString from '../../Common/TextString';
+import {ANDROID_APP_VERSION, IOS_APP_VERSION} from '../../Config/Setting';
 
 const ShowMeArray = ['Male', 'Female', 'Everyone'];
 
 const SettingScreen = () => {
   const dispatch = useDispatch();
-  const [widthSeekBar, setWidthSeekBar] = useState(0);
   const UserData = useSelector((state: any) => state?.user);
   const [LogOutModalView, setLogOutModalView] = useState(false);
   const [DeleteAccountModalView, setDeleteAccountModalView] = useState(false);
@@ -56,7 +55,6 @@ const SettingScreen = () => {
   const {reset} = useNavigation();
   const [RatingCount, setRatingCount] = useState(3);
   const {showToast} = useCustomToast();
-  const [IsInternetConnected, setIsInternetConnected] = useState(true);
   const [IsSettingLoading, setIsSettingLoading] = useState(true);
   const [isEnabled, setIsEnabled] = useState(false);
 
@@ -72,8 +70,7 @@ const SettingScreen = () => {
   const [RemoteConfigLinks, setRemoteConfigLinks] = useState<object>({});
 
   useEffect(() => {
-    GetRemoteConfigValue();
-    CheckPermission();
+    Promise.all([GetRemoteConfigValue(), CheckPermission()]);
   }, []);
 
   useEffect(() => {
@@ -90,14 +87,12 @@ const SettingScreen = () => {
       try {
         const IsNetOn = await NetInfo.fetch().then(info => info.isConnected);
         if (IsNetOn) {
-          setIsInternetConnected(true);
           await GetSetting();
         } else {
-          setIsInternetConnected(false);
+          showToast('Error', "Please check you'r internet connection", 'error');
         }
       } catch (error) {
         showToast('Error', String(error), 'error');
-        setIsInternetConnected(false);
       }
     };
 
@@ -204,10 +199,6 @@ const SettingScreen = () => {
     } finally {
       setIsSettingLoading(false);
     }
-  };
-
-  const getSizeSeekBar = (event: LayoutChangeEvent) => {
-    setWidthSeekBar(event.nativeEvent.layout.width);
   };
 
   const LogoutPress = async () => {
@@ -451,9 +442,7 @@ Let's make every moment count together! #LoveConnects`,
               Icon={CommonIcons.ProfileTab}
               Title="Maximum Distance"
             />
-            <EditProfileBoxView
-              IsViewLoading={IsSettingLoading}
-              onLayout={getSizeSeekBar}>
+            <EditProfileBoxView IsViewLoading={IsSettingLoading}>
               <React.Fragment>
                 <View style={styles.DistanceAndAgeView}>
                   <Text style={styles.DistanceAndAgeRangeTitleText}>
@@ -789,7 +778,12 @@ Let's make every moment count together! #LoveConnects`,
 
           {/* App Version */}
           <View style={styles.AppVersionView}>
-            <Text style={styles.AppVersionText}>Version 1.0.0</Text>
+            <Text style={styles.AppVersionText}>
+              Version{' '}
+              {Platform.OS === 'android'
+                ? ANDROID_APP_VERSION
+                : IOS_APP_VERSION}
+            </Text>
           </View>
         </View>
       </ScrollView>

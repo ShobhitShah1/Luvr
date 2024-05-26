@@ -40,7 +40,6 @@ const ProfileScreen = () => {
     undefined,
   );
   const [percentage, setPercentage] = useState(0);
-  const [ErrorFetchingData, setErrorFetchingData] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -63,12 +62,10 @@ const ProfileScreen = () => {
       );
       setIsAPILoading(false);
       setRefreshing(false);
-      setErrorFetchingData(false);
       return;
     }
 
     setIsAPILoading(true);
-    setErrorFetchingData(false);
 
     try {
       const userDataForApi = {

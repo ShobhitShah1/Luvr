@@ -30,7 +30,6 @@ export const COLORS = {
 };
 
 export const FONTS = {
-  Light: 'OpenSans-Light',
   Regular: 'OpenSans-Regular',
   Medium: 'OpenSans-Medium',
   Bold: 'OpenSans-Bold',

@@ -1,10 +1,5 @@
 import {ProfileType} from './ProfileType';
 
-export interface MyLikesType {
-  like: Like[];
-  match: Like[];
-}
-
 export interface LikeInterface {
   _id: string;
   first_approch: string;
