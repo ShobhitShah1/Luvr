@@ -90,7 +90,7 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
           setItsMatchModalView(false);
           // setIsAPILoading(false);
         }
-        store.dispatch(onSwipeRight(String(item._id)));
+        await store.dispatch(onSwipeRight(String(item._id)));
         FetchAPIData();
       } else {
         showToast(

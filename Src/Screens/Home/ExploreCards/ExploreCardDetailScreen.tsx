@@ -70,7 +70,9 @@ const ExploreCardDetailScreen = () => {
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
-        setCardData(APIResponse.data);
+        if (APIResponse.data) {
+          setCardData(APIResponse.data);
+        }
       } else {
         showToast(
           'Something went wrong',
@@ -239,7 +241,7 @@ const ExploreCardDetailScreen = () => {
                     About me
                   </Text>
                 </View>
-                <Text style={styles.DetailText}>{CardData?.about}</Text>
+                <Text style={styles.DetailText}>{CardData?.about || ''}</Text>
               </View>
             )}
 
@@ -263,21 +265,23 @@ const ExploreCardDetailScreen = () => {
             )}
 
             {/* Looking for */}
-            {CardData?.hoping && (
-              <View style={styles.DetailBoxContainerView}>
-                <View style={styles.TitleAndIconView}>
-                  <Image
-                    style={styles.DetailIconsView}
-                    resizeMode="contain"
-                    source={CommonIcons.looking_for_icon}
-                  />
-                  <Text style={styles.TitleText} numberOfLines={1}>
-                    Looking for
-                  </Text>
+            {CardData?.hoping &&
+              CardData?.hoping?.length !== 0 &&
+              CardData?.hoping?.length !== undefined && (
+                <View style={styles.DetailBoxContainerView}>
+                  <View style={styles.TitleAndIconView}>
+                    <Image
+                      style={styles.DetailIconsView}
+                      resizeMode="contain"
+                      source={CommonIcons.looking_for_icon}
+                    />
+                    <Text style={styles.TitleText} numberOfLines={1}>
+                      Looking for
+                    </Text>
+                  </View>
+                  <Text style={styles.DetailText}>{CardData?.hoping}</Text>
                 </View>
-                <Text style={styles.DetailText}>{CardData?.hoping}</Text>
-              </View>
-            )}
+              )}
 
             {/* Interested in */}
             {CardData?.orientation !== undefined &&

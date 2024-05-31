@@ -155,7 +155,12 @@ export default function MainRoute() {
           screenOptions={{
             headerShown: false,
           }}>
-          <Stack.Screen component={AddEmail} name="AddEmail" />
+          {ReduxUserData?.identity &&
+            ReduxUserData?.identity?.length === 0 &&
+            store.getState().user?.identity &&
+            store.getState().user?.identity?.length === 0 && (
+              <Stack.Screen component={AddEmail} name="AddEmail" />
+            )}
           <Stack.Screen component={IdentifyYourSelf} name="IdentifyYourSelf" />
           <Stack.Screen
             component={SexualOrientation}

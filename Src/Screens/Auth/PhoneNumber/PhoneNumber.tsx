@@ -8,6 +8,7 @@ import {
   Alert,
   FlatList,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   ScrollView,
   Text,
@@ -96,6 +97,8 @@ const PhoneNumber: FC = () => {
   };
 
   const onNextClick = async () => {
+    Keyboard.dismiss();
+
     if (
       StorePhoneNumber?.length >= 10 &&
       StorePhoneNumber?.length <= 12 &&

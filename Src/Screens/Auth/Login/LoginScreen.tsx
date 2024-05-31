@@ -38,8 +38,7 @@ import {ActiveOpacity} from '../../../Common/Theme';
 import TextString from '../../../Common/TextString';
 
 const LoginScreen: FC = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{NumberVerification: {}}>>();
+  const navigation = useNavigation();
   const {showToast} = useCustomToast();
   const dispatch = useDispatch();
   const userData = useSelector((state: any) => state?.user);
@@ -123,6 +122,12 @@ const LoginScreen: FC = () => {
         dispatch(
           updateField(LocalStorageFields.email, GoogleUserData.user.email),
         ),
+        dispatch(
+          updateField(
+            LocalStorageFields.full_name,
+            GoogleUserData.user.familyName || '',
+          ),
+        ),
         dispatch(updateField(LocalStorageFields.login_type, 'social')),
       ]);
       handleNavigation(
@@ -170,7 +175,9 @@ const LoginScreen: FC = () => {
           ),
           dispatch(updateField(LocalStorageFields.isVerified, true)),
         ]);
-        CheckDataAndNavigateToNumber();
+        setTimeout(() => {
+          CheckDataAndNavigateToNumber();
+        }, 500);
       } else {
         throw new Error('Token not found in API response');
       }
@@ -195,7 +202,11 @@ const LoginScreen: FC = () => {
       const Data: ProfileType = APIResponse?.data;
       if (Data.mobile_no) {
         navigation?.replace('BottomTab');
-      } else if (Data.identity.length === 0) {
+      } else if (
+        Data.identity.length === 0 ||
+        (store.getState().user?.identity &&
+          store.getState().user?.identity?.length === 0)
+      ) {
         navigation?.replace('LoginStack', {
           screen: 'AddEmail',
         });
@@ -239,6 +250,28 @@ const LoginScreen: FC = () => {
           (appleAuthRequestResponse.fullName?.givenName ||
             appleAuthRequestResponse.fullName?.familyName)
         ) {
+          await Promise.all([
+            dispatch(
+              updateField(
+                LocalStorageFields.identity,
+                appleAuthRequestResponse?.email || '',
+              ),
+            ),
+            dispatch(
+              updateField(
+                LocalStorageFields.email,
+                appleAuthRequestResponse.email || '',
+              ),
+            ),
+            dispatch(
+              updateField(
+                LocalStorageFields.full_name,
+                appleAuthRequestResponse.fullName?.givenName || '',
+              ),
+            ),
+            dispatch(updateField(LocalStorageFields.login_type, 'social')),
+          ]);
+
           handleNavigation(
             appleAuthRequestResponse.email,
             appleAuthRequestResponse.fullName?.givenName ||

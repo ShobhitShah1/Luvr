@@ -25,6 +25,7 @@ import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import {store} from '../../../Redux/Store/store';
 
 const IdentifyYourSelf: FC = () => {
   //* Get Key Name. From Where You Want To Store Data
@@ -171,6 +172,7 @@ const IdentifyYourSelf: FC = () => {
             <Text style={styles.NameText}>My name is</Text>
             <CustomTextInput
               value={FirstName}
+              editable={store.getState().user?.full_name?.length === 0}
               onChangeText={value => {
                 setFirstName(value);
               }}

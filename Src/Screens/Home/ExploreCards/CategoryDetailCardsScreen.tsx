@@ -77,8 +77,8 @@ const CategoryDetailCardsScreen: FC = () => {
         radius: userData?.userData?.radius
           ? userData?.userData?.radius
           : 9000000000000000,
-        unlike: LeftSwipedUserIds,
-        like: RightSwipedUserIds,
+        unlike: store.getState().user?.swipedLeftUserIds,
+        like: store.getState().user?.swipedRightUserIds,
         hoping: params?.item?.title,
         skip: 0,
         limit: 200,
