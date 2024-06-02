@@ -48,7 +48,6 @@ const LoginScreen: FC = () => {
     Facebook: false,
     Apple: false,
   });
-
   const [privacyLinks, setPrivacyLinks] = useState<{[key: string]: string}>({
     PrivacyPolicy: '',
     TermsOfService: '',
@@ -278,7 +277,14 @@ const LoginScreen: FC = () => {
               appleAuthRequestResponse.fullName?.familyName ||
               '',
           );
+        } else {
+          setIsSocialLoginLoading({
+            ...IsSocialLoginLoading,
+            Apple: false,
+          });
         }
+      } else {
+        setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
       }
     } catch (error) {
       showToast(

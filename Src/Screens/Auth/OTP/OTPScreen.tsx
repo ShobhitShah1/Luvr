@@ -3,9 +3,9 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {FC, useEffect, useRef, useState} from 'react';
 import {Alert, Keyboard, Text, View} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
 import {useDispatch, useSelector} from 'react-redux';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
+import SmoothPinCodeInput from '../../../Components/SmoothPinCodeInput';
 import {useLocationPermission} from '../../../Hooks/useLocationPermission';
 import {updateField} from '../../../Redux/Action/userActions';
 import UserService from '../../../Services/AuthService';
@@ -282,7 +282,6 @@ const OTPScreen: FC = () => {
           }}>
           <SmoothPinCodeInput
             value={otp}
-            animated={false}
             ref={OTPInputRef}
             codeLength={OTPInputs}
             disableFullscreenUI={false}

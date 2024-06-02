@@ -1,11 +1,9 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import axios, {AxiosRequestConfig} from 'axios';
 import React, {FC, useCallback, useEffect, useState} from 'react';
 import {
-  Alert,
   FlatList,
   Image,
   Keyboard,
@@ -27,9 +25,9 @@ import CountryPickerView from '../../../Components/AuthComponents/CountryPickerV
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
 import {CountryWithCode} from '../../../Components/Data';
-import ApiConfig from '../../../Config/ApiConfig';
 import {useLocationPermission} from '../../../Hooks/useLocationPermission';
 import {updateField} from '../../../Redux/Action/userActions';
+import {store} from '../../../Redux/Store/store';
 import UserService from '../../../Services/AuthService';
 import {transformUserDataForApi} from '../../../Services/dataTransformService';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
@@ -37,12 +35,10 @@ import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import RenderCountryData from '../CreateProfile/Components/RenderCountryData';
 import styles from './styles';
-import {store} from '../../../Redux/Store/store';
 
 const PhoneNumber: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{NumberVerification: {}}>>();
-  const isFocused = useIsFocused();
   const userData = useSelector((state: any) => state?.user);
   const dispatch = useDispatch();
   const {showToast} = useCustomToast();
@@ -81,7 +77,7 @@ const PhoneNumber: FC = () => {
     };
   });
 
-  const handleCountryPress = (item: any, index: number) => {
+  const handleCountryPress = (item: any) => {
     setDiallingCode(item.dialling_code);
     setDefaultDiallingCode(item.dialling_code);
     setVisible(false);
@@ -99,23 +95,25 @@ const PhoneNumber: FC = () => {
   const onNextClick = async () => {
     Keyboard.dismiss();
 
-    if (
-      StorePhoneNumber?.length >= 10 &&
-      StorePhoneNumber?.length <= 12 &&
-      StorePhoneNumber.match('[0-9]{10}')
-    ) {
-      if (StorePhoneNumber === '7041526621') {
-        GetUserWithoutOTP();
+    setTimeout(() => {
+      if (
+        StorePhoneNumber?.length >= 10 &&
+        StorePhoneNumber?.length <= 12 &&
+        StorePhoneNumber.match('[0-9]{10}')
+      ) {
+        if (StorePhoneNumber === '7041526621') {
+          GetUserWithoutOTP();
+        } else {
+          handleSendOtp();
+        }
       } else {
-        handleSendOtp();
+        showToast(
+          'Invalid Phone Number',
+          'Please check your phone number',
+          'error',
+        );
       }
-    } else {
-      showToast(
-        'Invalid Phone Number',
-        'Please check your phone number',
-        'error',
-      );
-    }
+    }, 200);
   };
 
   const GetUserWithoutOTP = async () => {
@@ -149,16 +147,17 @@ const PhoneNumber: FC = () => {
     };
 
     const APIResponse = await UserService.UserRegister(userDataWithValidation);
-
+    console.log('APIResponse::', APIResponse);
     if (APIResponse?.data?.token) {
       dispatch(updateField(LocalStorageFields.Token, APIResponse.data?.token));
-      if (userDataForApi?.login_type === 'social') {
-        storeDataAPI();
-      } else {
-        setTimeout(() => {
-          navigation.replace('BottomTab');
-        }, 0);
-      }
+      storeDataAPI();
+      // if (userDataForApi?.login_type === 'social') {
+      //   storeDataAPI();
+      // } else {
+      //   setTimeout(() => {
+      //     navigation.replace('BottomTab');
+      //   }, 0);
+      // }
     } else {
       navigation.replace('LoginStack');
     }
@@ -307,7 +306,6 @@ const PhoneNumber: FC = () => {
             value={StorePhoneNumber}
             visible={visible}
             setVisible={setVisible}
-            isLoading={isLoading}
             setIsLoading={setIsLoading}
             setValue={setStorePhoneNumber}
             diallingCode={diallingCode}

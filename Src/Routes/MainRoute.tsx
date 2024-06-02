@@ -7,8 +7,6 @@ import React, {useCallback, useEffect, useState} from 'react';
 import SplashScreen from 'react-native-splash-screen';
 import {useSelector} from 'react-redux';
 import {useLocationPermission} from '../Hooks/useLocationPermission';
-
-// ========================== AUTH SCREENS ==========================
 import {
   AddDailyHabits,
   AddRecentPics,
@@ -24,8 +22,6 @@ import {
   YourEducation,
   YourIntro,
 } from '../Screens/Auth';
-
-// ========================== HOME SCREENS ==========================
 import ApiConfig from '../Config/ApiConfig';
 import {setCurrentScreenName, updateField} from '../Redux/Action/userActions';
 import {store} from '../Redux/Store/store';
@@ -44,13 +40,14 @@ import AddEmail from '../Screens/Auth/CreateProfile/AddEmail';
 import {useCustomToast} from '../Utils/toastUtils';
 
 export default function MainRoute() {
+  const {showToast} = useCustomToast();
   const Stack = createNativeStackNavigator();
+  const {checkLocationPermission} = useLocationPermission();
   const ReduxUserData = useSelector((state: any) => state.user);
   const isUserVerified: boolean = ReduxUserData?.isVerified;
+
   const [initialRoute, setInitialRoute] = useState<string>('');
-  const {checkLocationPermission} = useLocationPermission();
   const [isNavigationReady, setIsNavigationReady] = useState(false);
-  const {showToast} = useCustomToast();
 
   useEffect(() => {
     Promise.all([
@@ -77,6 +74,12 @@ export default function MainRoute() {
   const determineInitialRoute = useCallback(async () => {
     try {
       const checkLoginPermission = await checkLocationPermission();
+      const isNumber =
+        !ReduxUserData.mobile_no || ReduxUserData.mobile_no.length === 0;
+      const isImageUploaded =
+        ReduxUserData?.isImageUploaded ||
+        (ReduxUserData?.userData?.recent_pik &&
+          ReduxUserData?.userData?.recent_pik?.length !== 0);
 
       if (!isUserVerified) {
         setInitialRoute('NumberVerification');
@@ -87,7 +90,7 @@ export default function MainRoute() {
         setInitialRoute('LocationStack');
         return;
       }
-      if (!ReduxUserData.mobile_no || ReduxUserData.mobile_no.length === 0) {
+      if (isNumber) {
         setInitialRoute('NumberVerification');
         navigationRef &&
           navigationRef?.navigate('NumberVerification', {
@@ -95,11 +98,7 @@ export default function MainRoute() {
           });
         return;
       }
-      if (
-        ReduxUserData?.isImageUploaded ||
-        (ReduxUserData?.userData?.recent_pik &&
-          ReduxUserData?.userData?.recent_pik?.length !== 0)
-      ) {
+      if (isImageUploaded) {
         setInitialRoute('BottomTab');
       } else {
         setInitialRoute('LoginStack');
@@ -117,7 +116,7 @@ export default function MainRoute() {
   useEffect(() => {
     if (initialRoute) {
       SplashScreen.hide();
-      console.log('--------------- SPLASH END ----------------');
+      console.log('SPLASH END:', initialRoute);
     }
   }, [initialRoute, isUserVerified, ApiConfig]);
 
@@ -149,35 +148,34 @@ export default function MainRoute() {
   };
 
   const LoginStack = () => {
+    const userIdentityExists =
+      ReduxUserData?.identity?.length === 0 &&
+      store.getState().user?.identity?.length === 0;
+
     return (
-      <React.Fragment>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}>
-          {ReduxUserData?.identity &&
-            ReduxUserData?.identity?.length === 0 &&
-            store.getState().user?.identity &&
-            store.getState().user?.identity?.length === 0 && (
-              <Stack.Screen component={AddEmail} name="AddEmail" />
-            )}
-          <Stack.Screen component={IdentifyYourSelf} name="IdentifyYourSelf" />
-          <Stack.Screen
-            component={SexualOrientation}
-            name="SexualOrientationScreen"
-          />
-          <Stack.Screen component={HopingToFind} name="HopingToFind" />
-          <Stack.Screen
-            component={DistancePreference}
-            name="DistancePreference"
-          />
-          <Stack.Screen component={YourEducation} name="YourEducation" />
-          <Stack.Screen component={AddDailyHabits} name="AddDailyHabits" />
-          <Stack.Screen component={WhatAboutYou} name="WhatAboutYou" />
-          <Stack.Screen component={YourIntro} name="YourIntro" />
-          <Stack.Screen component={AddRecentPics} name="AddRecentPics" />
-        </Stack.Navigator>
-      </React.Fragment>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}>
+        {userIdentityExists && (
+          <Stack.Screen component={AddEmail} name="AddEmail" />
+        )}
+        <Stack.Screen component={IdentifyYourSelf} name="IdentifyYourSelf" />
+        <Stack.Screen
+          component={SexualOrientation}
+          name="SexualOrientationScreen"
+        />
+        <Stack.Screen component={HopingToFind} name="HopingToFind" />
+        <Stack.Screen
+          component={DistancePreference}
+          name="DistancePreference"
+        />
+        <Stack.Screen component={YourEducation} name="YourEducation" />
+        <Stack.Screen component={AddDailyHabits} name="AddDailyHabits" />
+        <Stack.Screen component={WhatAboutYou} name="WhatAboutYou" />
+        <Stack.Screen component={YourIntro} name="YourIntro" />
+        <Stack.Screen component={AddRecentPics} name="AddRecentPics" />
+      </Stack.Navigator>
     );
   };
 
@@ -223,6 +221,7 @@ export default function MainRoute() {
           <Stack.Navigator
             screenOptions={{
               headerShown: false,
+              animation: 'ios',
             }}
             initialRouteName={initialRoute}>
             <Stack.Screen

@@ -1,20 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
+import NetInfo from '@react-native-community/netinfo';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {FC, useCallback, useEffect, useState} from 'react';
 import {ActivityIndicator, FlatList, StatusBar, Text, View} from 'react-native';
-import {COLORS} from '../../../Common/Theme';
-import styles from './styles';
+import Modal from 'react-native-modal';
 import {useSelector} from 'react-redux';
-import NetInfo from '@react-native-community/netinfo';
-import {useCustomToast} from '../../../Utils/toastUtils';
+import {COLORS} from '../../../Common/Theme';
+import {store} from '../../../Redux/Store/store';
 import UserService from '../../../Services/AuthService';
+import {useCustomToast} from '../../../Utils/toastUtils';
+import ItsAMatch from '../../Explore/Components/ItsAMatch';
 import CategoryDetailHeader from './Components/CategoryDetailHeader';
 import CategoryRenderCard from './Components/CategoryRenderCard';
-import ItsAMatch from '../../Explore/Components/ItsAMatch';
-import Modal from 'react-native-modal';
-import {store} from '../../../Redux/Store/store';
+import styles from './styles';
 
 interface CategoryDetailCardsProps {
   params: {
@@ -40,7 +40,6 @@ const CategoryDetailCardsScreen: FC = () => {
   );
   const [CategoryData, setCategoryData] = useState([]);
   const [IsAPILoading, setIsAPILoading] = useState(true);
-  const [IsNetConnected, setIsNetConnected] = useState(false);
   const [ItsMatchModalView, setItsMatchModalView] = useState(false);
   const [CurrentCardIndex, setCurrentCardIndex] = useState<number>(-1);
 
@@ -53,11 +52,9 @@ const CategoryDetailCardsScreen: FC = () => {
     const isConnected = (await NetInfo.fetch()).isConnected;
 
     if (isConnected) {
-      setIsNetConnected(true);
       FetchAPIData();
       setItsMatchModalView(false);
     } else {
-      setIsNetConnected(false);
       setIsAPILoading(false);
       showToast(
         'No Internet Connection',
@@ -84,7 +81,6 @@ const CategoryDetailCardsScreen: FC = () => {
         limit: 200,
       };
 
-      console.log('userDataForApi', userDataForApi);
       const APIResponse = await UserService.UserRegister(userDataForApi);
 
       if (APIResponse?.code === 200) {
@@ -142,7 +138,6 @@ const CategoryDetailCardsScreen: FC = () => {
       <View style={{flex: 1}}>
         <FlatList
           numColumns={2}
-          contentContainerStyle={{flex: CategoryData.length === 0 ? 1 : 0}}
           data={CategoryData}
           style={styles.FlatListStyle}
           columnWrapperStyle={{
@@ -162,6 +157,8 @@ const CategoryDetailCardsScreen: FC = () => {
           }}
           ListEmptyComponent={<ListEmptyView />}
           showsVerticalScrollIndicator={false}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={{flex: CategoryData.length === 0 ? 1 : 0}}
         />
       </View>
 
@@ -186,10 +183,14 @@ const CategoryDetailCardsScreen: FC = () => {
           <ItsAMatch
             user={CategoryData && CategoryData[CurrentCardIndex]}
             onSayHiClick={() => {
-              setItsMatchModalView(false);
-              navigate('Chat', {
-                id: CategoryData[CurrentCardIndex]?._id,
-              });
+              if (CategoryData[CurrentCardIndex]?._id) {
+                setItsMatchModalView(false);
+                navigate('Chat', {
+                  id: CategoryData[CurrentCardIndex]?._id,
+                });
+              } else {
+                showToast('Error', "Sorry! Can't find user", 'error');
+              }
             }}
             onCloseModalClick={() => setItsMatchModalView(false)}
             setItsMatch={setItsMatchModalView}

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/react-in-jsx-scope */
-import {FC, useEffect} from 'react';
+import {FC, memo, useEffect} from 'react';
 import {
   Image,
   Keyboard,
@@ -29,7 +29,6 @@ interface CountryPickerProps {
   defaultDiallingCode: string | null;
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setDiallingCode: React.Dispatch<React.SetStateAction<string | null>>;
   setDefaultDiallingCode: React.Dispatch<React.SetStateAction<string | null>>;
@@ -40,7 +39,6 @@ const CountryPickerView: FC<CountryPickerProps> = ({
   diallingCode,
   visible,
   setVisible,
-  isLoading,
   setIsLoading,
   setDiallingCode,
   setDefaultDiallingCode,
@@ -81,14 +79,6 @@ const CountryPickerView: FC<CountryPickerProps> = ({
 
   return (
     <View style={styles.Container}>
-      {/* {isLoading ? (
-        <View style={styles.loaderView}>
-          <ActivityIndicator
-            color={COLORS.Primary}
-            style={styles.loadingIndicator}
-          />
-        </View>
-      ) : ( */}
       <View style={styles.CountyCodeAndNameContainer}>
         <TouchableOpacity
           onPress={OnRequestOpenCodeModal}
@@ -107,7 +97,6 @@ const CountryPickerView: FC<CountryPickerProps> = ({
         <View style={styles.PhoneNumberTextInput}>
           <View style={styles.TextInputView}>
             <CustomTextInput
-              autoFocus={true}
               value={value}
               onChangeText={number => {
                 const numericText = number.replace(/[^0-9]/g, '');
@@ -131,12 +120,11 @@ const CountryPickerView: FC<CountryPickerProps> = ({
           </TouchableOpacity>
         </View>
       </View>
-      {/* )} */}
     </View>
   );
 };
 
-export default CountryPickerView;
+export default memo(CountryPickerView);
 
 const styles = StyleSheet.create({
   Container: {
