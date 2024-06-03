@@ -91,6 +91,7 @@ const ChatRoomScreen = () => {
 
     socketInstance.on('connect_error', error => {
       showToast(error.name, error.message || 'Something went wrong', 'error');
+      setIsSocketLoading(false);
     });
 
     if (socketInstance.connected) {
