@@ -9,8 +9,10 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useEffect, useState} from 'react';
 import {
+  Alert,
   Image,
   ImageBackground,
+  Linking,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -282,6 +284,23 @@ const LoginScreen: FC = () => {
             ...IsSocialLoginLoading,
             Apple: false,
           });
+          Alert.alert(
+            'Remove Apple Sign In for Luvr',
+            'To remove Apple Sign In for Luvr, follow these steps:\n\n1. Open the Settings app on your device.\n\n2. Tap on your name at the top of the Settings menu.\n\n3. Select "Password & Security" from the options.\n\n4. Tap on "Apple ID logins".\n\n5. Find "Luvr" in the list of apps and tap on it.\n\n6. Tap "Stop Using Apple ID" to remove Apple Sign In for Luvr.',
+            [
+              {
+                text: 'Go to Settings',
+                onPress: () =>
+                  Linking.openURL('App-Prefs:root=ACCOUNT_SETTINGS'),
+              },
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel pressed'),
+                style: 'cancel',
+              },
+            ],
+            {cancelable: true},
+          );
         }
       } else {
         setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
