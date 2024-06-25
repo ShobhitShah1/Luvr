@@ -102,6 +102,7 @@ const CountryPickerView: FC<CountryPickerProps> = ({
                 const numericText = number.replace(/[^0-9]/g, '');
                 setValue(numericText);
               }}
+              autoFocus={true}
               keyboardType="number-pad"
               style={styles.TextInput}
               placeholderTextColor={COLORS.Gray}

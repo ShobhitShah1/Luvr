@@ -1,12 +1,13 @@
-import messaging from '@react-native-firebase/messaging';
+/* eslint-disable react-hooks/exhaustive-deps */
+import appleAuth, {
+  AppleRequestResponse,
+} from '@invertase/react-native-apple-authentication';
+import remoteConfig from '@react-native-firebase/remote-config';
 import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import appleAuth from '@invertase/react-native-apple-authentication';
-import remoteConfig from '@react-native-firebase/remote-config';
 import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useEffect, useState} from 'react';
 import {
   Alert,
@@ -22,8 +23,11 @@ import {
   View,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
+import CommonIcons from '../../../Common/CommonIcons';
 import CommonImages from '../../../Common/CommonImages';
 import CommonLogos from '../../../Common/CommonLogos';
+import TextString from '../../../Common/TextString';
+import {ActiveOpacity} from '../../../Common/Theme';
 import LoginButton from '../../../Components/AuthComponents/LoginButton';
 import OpenURL from '../../../Components/OpenURL';
 import {APP_NAME} from '../../../Config/Setting';
@@ -35,12 +39,28 @@ import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {ProfileType} from '../../../Types/ProfileType';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import styles from './styles';
-import CommonIcons from '../../../Common/CommonIcons';
-import {ActiveOpacity} from '../../../Common/Theme';
-import TextString from '../../../Common/TextString';
+
+const appleLoginAlert = () => {
+  Alert.alert(
+    'Remove Apple Sign In for Luvr',
+    'To remove Apple Sign In for Luvr, follow these steps:\n\n1. Open the Settings app on your device.\n\n2. Tap on your name at the top of the Settings menu.\n\n3. Select "Password & Security" from the options.\n\n4. Tap on "Apple ID logins".\n\n5. Find "Luvr" in the list of apps and tap on it.\n\n6. Tap "Stop Using Apple ID" to remove Apple Sign In for Luvr.',
+    [
+      {
+        text: 'Go to Settings',
+        onPress: () => Linking.openURL('App-Prefs:root=ACCOUNT_SETTINGS'),
+      },
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel pressed'),
+        style: 'cancel',
+      },
+    ],
+    {cancelable: true},
+  );
+};
 
 const LoginScreen: FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const {showToast} = useCustomToast();
   const dispatch = useDispatch();
   const userData = useSelector((state: any) => state?.user);
@@ -93,7 +113,6 @@ const LoginScreen: FC = () => {
   };
 
   const validateConfig = (configValue: string): boolean => {
-    // Add your validation logic here, e.g., check if configValue is not empty
     return configValue.trim().length > 0;
   };
 
@@ -153,6 +172,106 @@ const LoginScreen: FC = () => {
     }
   };
 
+  const handleAppleLogin = async () => {
+    if (!IsFollowTerms) {
+      showToast(
+        'Action Required',
+        'Please agree to the terms (EULA) to continue.',
+        TextString.error,
+      );
+      return;
+    }
+
+    setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: true});
+
+    try {
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+      });
+      const credentialState = await appleAuth.getCredentialStateForUser(
+        appleAuthRequestResponse.user,
+      );
+
+      if (credentialState === appleAuth.State.AUTHORIZED) {
+        handleAppleLoginResponse(appleAuthRequestResponse);
+      } else {
+        setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
+      }
+    } catch (error) {
+      showToast(
+        'Error!',
+        String(error) || 'An error occurred during Apple login',
+        'error',
+      );
+      setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
+    }
+  };
+
+  const handleAppleLoginResponse = async (
+    appleAuthRequestResponse: AppleRequestResponse,
+  ) => {
+    try {
+      const {email, fullName, user} = appleAuthRequestResponse;
+      const name = fullName?.givenName || fullName?.familyName;
+
+      await Promise.all([
+        dispatch(updateField(LocalStorageFields.apple_id, user)),
+        dispatch(updateField(LocalStorageFields.login_type, 'social')),
+      ]);
+
+      if (email && name) {
+        await Promise.all([
+          dispatch(updateField(LocalStorageFields.identity, email)),
+          dispatch(updateField(LocalStorageFields.email, email)),
+          dispatch(updateField(LocalStorageFields.full_name, name)),
+        ]);
+
+        handleNavigation(email, name);
+      } else {
+        const userDataForApi = transformUserDataForApi(userData);
+        const userDataWithValidation = {
+          ...userDataForApi,
+          eventName: 'app_user_register_social',
+          login_type: 'social',
+          validation: true,
+          apple_id: user,
+        };
+
+        const APIResponse = await UserService.UserRegister(
+          userDataWithValidation,
+        );
+
+        if (APIResponse?.data?.token) {
+          await Promise.all([
+            dispatch(
+              updateField(LocalStorageFields.Token, APIResponse.data.token),
+            ),
+            dispatch(updateField(LocalStorageFields.isVerified, true)),
+          ]);
+
+          setTimeout(CheckDataAndNavigateToNumber, 500);
+        } else {
+          navigation?.replace('NumberVerification', {
+            screen: 'PhoneNumber',
+          });
+        }
+      }
+
+      setIsSocialLoginLoading({
+        ...IsSocialLoginLoading,
+        Apple: false,
+      });
+    } catch (error) {
+      console.log('Catch Error Apple Login:', error);
+      appleLoginAlert();
+      setIsSocialLoginLoading({
+        ...IsSocialLoginLoading,
+        Apple: false,
+      });
+    }
+  };
+
   const handleNavigation = async (email: string, name: string) => {
     try {
       const userDataForApi = transformUserDataForApi(userData);
@@ -176,9 +295,7 @@ const LoginScreen: FC = () => {
           ),
           dispatch(updateField(LocalStorageFields.isVerified, true)),
         ]);
-        setTimeout(() => {
-          CheckDataAndNavigateToNumber();
-        }, 500);
+        setTimeout(CheckDataAndNavigateToNumber, 500);
       } else {
         throw new Error('Token not found in API response');
       }
@@ -220,97 +337,6 @@ const LoginScreen: FC = () => {
       showToast('Error', String(error), 'error');
     } finally {
       setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
-      setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
-    }
-  };
-
-  const handleAppleLogin = async () => {
-    if (!IsFollowTerms) {
-      showToast(
-        'Action Required',
-        'Please agree to the terms (EULA) to continue.',
-        TextString.error,
-      );
-      return;
-    }
-
-    setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: true});
-
-    try {
-      const appleAuthRequestResponse = await appleAuth.performRequest({
-        requestedOperation: appleAuth.Operation.LOGIN,
-        requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
-      });
-      const credentialState = await appleAuth.getCredentialStateForUser(
-        appleAuthRequestResponse.user,
-      );
-
-      if (credentialState === appleAuth.State.AUTHORIZED) {
-        if (
-          appleAuthRequestResponse.email &&
-          (appleAuthRequestResponse.fullName?.givenName ||
-            appleAuthRequestResponse.fullName?.familyName)
-        ) {
-          await Promise.all([
-            dispatch(
-              updateField(
-                LocalStorageFields.identity,
-                appleAuthRequestResponse?.email || '',
-              ),
-            ),
-            dispatch(
-              updateField(
-                LocalStorageFields.email,
-                appleAuthRequestResponse.email || '',
-              ),
-            ),
-            dispatch(
-              updateField(
-                LocalStorageFields.full_name,
-                appleAuthRequestResponse.fullName?.givenName || '',
-              ),
-            ),
-            dispatch(updateField(LocalStorageFields.login_type, 'social')),
-          ]);
-
-          handleNavigation(
-            appleAuthRequestResponse.email,
-            appleAuthRequestResponse.fullName?.givenName ||
-              appleAuthRequestResponse.fullName?.familyName ||
-              '',
-          );
-        } else {
-          setIsSocialLoginLoading({
-            ...IsSocialLoginLoading,
-            Apple: false,
-          });
-          Alert.alert(
-            'Remove Apple Sign In for Luvr',
-            'To remove Apple Sign In for Luvr, follow these steps:\n\n1. Open the Settings app on your device.\n\n2. Tap on your name at the top of the Settings menu.\n\n3. Select "Password & Security" from the options.\n\n4. Tap on "Apple ID logins".\n\n5. Find "Luvr" in the list of apps and tap on it.\n\n6. Tap "Stop Using Apple ID" to remove Apple Sign In for Luvr.',
-            [
-              {
-                text: 'Go to Settings',
-                onPress: () =>
-                  Linking.openURL('App-Prefs:root=ACCOUNT_SETTINGS'),
-              },
-              {
-                text: 'Cancel',
-                onPress: () => console.log('Cancel pressed'),
-                style: 'cancel',
-              },
-            ],
-            {cancelable: true},
-          );
-        }
-      } else {
-        setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
-      }
-    } catch (error) {
-      showToast(
-        'Error!',
-        String(error) || 'An error occurred during Apple login',
-        'error',
-      );
       setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
     }
   };
@@ -428,4 +454,5 @@ const LoginScreen: FC = () => {
     </ImageBackground>
   );
 };
+
 export default LoginScreen;

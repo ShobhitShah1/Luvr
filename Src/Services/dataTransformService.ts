@@ -43,6 +43,7 @@ const transformUserDataForApi = (
     radius: userData[LocalStorageFields.radius] || 0,
     recent_pik: userData[LocalStorageFields.recent_pik] || [],
     notification_token: userData[LocalStorageFields.notification_token] || '',
+    apple_id: userData[LocalStorageFields.apple_id] || '',
   };
 };
 

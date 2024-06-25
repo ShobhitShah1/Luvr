@@ -129,7 +129,7 @@ const LocationPermission: FC = () => {
 
       <View style={[CreateProfileStyles.BottomButton]}>
         <GradientButton
-          Title={'Allow'}
+          Title={'Continue'}
           Disabled={false}
           Navigation={() => {
             setIsLocationLoading(true);

@@ -110,18 +110,21 @@ const YourIntro: FC = () => {
     }
   };
 
-  const CallUpdateProfileAPI = async selectedItems => {
+  const CallUpdateProfileAPI = async (items: string[]) => {
     try {
       const userDataForApi = transformUserDataForApi(userData);
 
       const ModifyData = {
         ...userDataForApi,
-        likes_into: selectedItems,
+        likes_into: items,
         validation: false,
         eventName:
           userDataForApi?.login_type === 'social'
             ? 'app_user_register_social'
             : 'app_user_register',
+        ...(userDataForApi?.apple_id
+          ? {apple_id: userDataForApi.apple_id}
+          : {}),
       };
 
       console.log('Final Response:', ModifyData);
@@ -161,9 +164,7 @@ const YourIntro: FC = () => {
       <CreateProfileHeader
         ProgressCount={8}
         Skip={true}
-        handleSkipPress={() => {
-          onPressNext();
-        }}
+        handleSkipPress={() => onPressNext()}
       />
       <View style={styles.DataViewContainer}>
         <View style={[styles.ContentView]}>
@@ -212,7 +213,6 @@ const styles = StyleSheet.create({
   ContentView: {
     width: '100%',
     overflow: 'hidden',
-    // paddingHorizontal: hp('2.8%'),
   },
   TitleText: {
     color: COLORS.Primary,
@@ -224,7 +224,6 @@ const styles = StyleSheet.create({
     width: '84%',
     alignSelf: 'center',
     marginTop: hp('1%'),
-    // marginHorizontal: hp('5%'),
   },
   FlatListStyle: {},
   ContainerContainerStyle: {

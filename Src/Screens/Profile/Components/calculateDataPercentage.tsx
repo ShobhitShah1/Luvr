@@ -27,6 +27,8 @@ const excludeFields = [
   LocalStorageFields.setting_people_with_range,
   LocalStorageFields.setting_show_me,
   LocalStorageFields.setting_show_people_with_range,
+  LocalStorageFields.apple_id,
+  LocalStorageFields.CurrentScreen,
 ];
 
 const calculateDataPercentage = (userData: ProfileType): number => {

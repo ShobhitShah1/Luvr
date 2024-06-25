@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import React, {FC, useEffect, useRef, useState} from 'react';
 import {Alert, Keyboard, Text, View} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
@@ -21,27 +21,28 @@ interface RouteParams {
 
 const OTPScreen: FC = () => {
   const route = useRoute();
-  const OTPInputRef = useRef<SmoothPinCodeInput>(null);
   const OTPInputs: number = 4;
-  const {number} = route.params as RouteParams;
-  const userData = useSelector((state: any) => state?.user);
+  const focus = useIsFocused();
   const dispatch = useDispatch();
   const {showToast} = useCustomToast();
-  const navigation = useNavigation();
-
+  const navigation = useNavigation<any>();
+  const {number} = route.params as RouteParams;
+  const OTPInputRef = useRef<SmoothPinCodeInput>(null);
+  const userData = useSelector((state: any) => state?.user);
   const {checkLocationPermission} = useLocationPermission();
+
   const [otp, setOtp] = useState<string>('');
   const [IsAPILoading, setIsAPILoading] = useState(false);
 
   const [DisableButton, setDisableButton] = useState<boolean>(true);
   const [ResendDisabled, setResendDisabled] = useState<boolean>(false);
-  const [ResendTimer, setResendTimer] = useState<number>(0); // Timer in seconds
+  const [ResendTimer, setResendTimer] = useState<number>(0);
 
   useEffect(() => {
-    if (OTPInputRef.current) {
+    if (OTPInputRef.current && focus) {
       OTPInputRef.current.focus();
     }
-  }, []);
+  }, [focus]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -50,8 +51,8 @@ const OTPScreen: FC = () => {
         setResendTimer(prevTimer => {
           console.log('prevTimer', prevTimer);
           if (prevTimer === 0) {
-            clearInterval(interval); // Clear interval when timer is over
-            setResendDisabled(false); // Reset ResendDisabled to false
+            clearInterval(interval);
+            setResendDisabled(false);
             return 0;
           }
           return prevTimer - 1;
@@ -109,7 +110,7 @@ const OTPScreen: FC = () => {
             setIsAPILoading(false);
           }
         }, 0);
-        return; // Exit the function after allowing login for '0000'
+        return;
       }
 
       const userDataForApi = {
@@ -285,13 +286,13 @@ const OTPScreen: FC = () => {
             ref={OTPInputRef}
             codeLength={OTPInputs}
             disableFullscreenUI={false}
-            onTextChange={(code: string) => setOtp(code)}
             cellStyle={styles.OTPCellStyle}
             textStyle={styles.OTPTextStyle}
             containerStyle={styles.OTPContainerStyle}
             cellStyleFocused={styles.OTPCellStyleFocused}
             cellStyleFilled={styles.OTPCellStyleFilled}
             textStyleFocused={styles.OTPTextStyleFocused}
+            onTextChange={(code: string) => setOtp(code.trim())}
           />
         </View>
 
@@ -316,7 +317,7 @@ const OTPScreen: FC = () => {
         </View>
       </View>
 
-      <View style={[styles.VerifyOTPButtonView, {}]}>
+      <View style={[styles.VerifyOTPButtonView]}>
         <GradientButton
           Title={'Continue'}
           isLoading={IsAPILoading}

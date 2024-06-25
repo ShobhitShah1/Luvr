@@ -151,13 +151,6 @@ const PhoneNumber: FC = () => {
     if (APIResponse?.data?.token) {
       dispatch(updateField(LocalStorageFields.Token, APIResponse.data?.token));
       storeDataAPI();
-      // if (userDataForApi?.login_type === 'social') {
-      //   storeDataAPI();
-      // } else {
-      //   setTimeout(() => {
-      //     navigation.replace('BottomTab');
-      //   }, 0);
-      // }
     } else {
       navigation.replace('LoginStack');
     }

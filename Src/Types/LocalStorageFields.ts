@@ -48,6 +48,7 @@ export const LocalStorageFields = {
   setting_show_people_with_range: 'setting_show_people_with_range',
   email: 'email',
   CurrentScreen: 'CurrentScreen',
+  apple_id: 'apple_id',
 } as const;
 
 export type UserField = keyof typeof LocalStorageFields;

@@ -48,6 +48,7 @@ export interface UserDataType {
   [LocalStorageFields.setting_show_people_with_range]: boolean;
   [LocalStorageFields.email]: string;
   [LocalStorageFields.CurrentScreen]: string;
+  [LocalStorageFields.apple_id]: string;
 }
 
 export default UserDataType;
