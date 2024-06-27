@@ -16,20 +16,18 @@ const AddEmail = () => {
   const dispatch = useDispatch();
   const {showToast} = useCustomToast();
   const userData = useSelector((state: any) => state?.user);
-  const [IsAPILoading, setIsAPILoading] = useState(false);
+
   const [Email, setEmail] = useState<string>(
     userData?.identity ? userData?.identity : '',
   );
 
-  const {navigate} = useNavigation();
+  const {navigate} = useNavigation<any>();
 
   const onNextClick = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (emailRegex.test(Email)) {
       let LocalEmail = Email;
-      // Valid email
-      console.log('Email is valid');
       await dispatch(updateField(LocalStorageFields.identity, LocalEmail));
       setEmail(Email);
 
@@ -65,14 +63,7 @@ const AddEmail = () => {
             <CustomTextInput
               value={Email}
               onChangeText={value => {
-                // Check if the input starts with a space
-                if (value.startsWith(' ')) {
-                  // If it does, remove the leading space
-                  setEmail(value.trimLeft());
-                } else {
-                  // If it doesn't, update the state normally
-                  setEmail(value);
-                }
+                setEmail(value?.trimStart());
               }}
               textContentType="emailAddress"
               placeholder="Enter your email"
@@ -85,7 +76,7 @@ const AddEmail = () => {
         <View style={{marginVertical: hp('4%')}}>
           <GradientButton
             Title={'CONTINUE'}
-            isLoading={IsAPILoading}
+            isLoading={false}
             Navigation={onNextClick}
             Disabled={false}
             // Disabled={StorePhoneNumber?.length === 0 ? true : false}
@@ -129,16 +120,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Medium,
   },
   PhoneNumberView: {
-    // width: '93%',
-    // alignSelf: 'center',
-    // flexDirection: 'row',
-    // alignItems: 'center',
-    // marginTop: hp('1.9%'),
-    // paddingVertical: hp('2%'),
     paddingHorizontal: hp('1.5%'),
-    // borderRadius: SIZES.radius,
-    // backgroundColor: COLORS.White,
-    // justifyContent: 'space-between',
   },
   UserCountyAndCodeView: {
     width: '30%',

@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/react-in-jsx-scope */
-import {FC, memo, useEffect} from 'react';
+import React, {FC, forwardRef, memo, useEffect} from 'react';
 import {
   Image,
   Keyboard,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -23,6 +24,7 @@ import CustomTextInput from '../CustomTextInput';
 import {CountryWithCode} from '../Data';
 
 interface CountryPickerProps {
+  ref: any;
   value: string | undefined;
   setValue: React.Dispatch<React.SetStateAction<string>>;
   diallingCode: string | null;
@@ -33,97 +35,104 @@ interface CountryPickerProps {
   setDiallingCode: React.Dispatch<React.SetStateAction<string | null>>;
   setDefaultDiallingCode: React.Dispatch<React.SetStateAction<string | null>>;
 }
-const CountryPickerView: FC<CountryPickerProps> = ({
-  value,
-  setValue,
-  diallingCode,
-  visible,
-  setVisible,
-  setIsLoading,
-  setDiallingCode,
-  setDefaultDiallingCode,
-}) => {
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const countryCode = await fetchCountryCode();
-        console.log('countryCode', countryCode);
-        const country = CountryWithCode.find(c => c.code === countryCode);
-        if (country && !diallingCode) {
-          setDiallingCode(country.dialling_code);
-          setDefaultDiallingCode(country.dialling_code);
+
+const CountryPickerView = forwardRef<TextInput, CountryPickerProps>(
+  (
+    {
+      value,
+      setValue,
+      diallingCode,
+      visible,
+      setVisible,
+      setIsLoading,
+      setDiallingCode,
+      setDefaultDiallingCode,
+    },
+    ref,
+  ) => {
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          setIsLoading(true);
+          const countryCode = await fetchCountryCode();
+          console.log('countryCode', countryCode);
+          const country = CountryWithCode.find(c => c.code === countryCode);
+          if (country && !diallingCode) {
+            setDiallingCode(country.dialling_code);
+            setDefaultDiallingCode(country.dialling_code);
+          }
+        } catch (error) {
+          console.error('Error in component:', error);
+          setDiallingCode('+91');
+          setDefaultDiallingCode('+91');
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        console.error('Error in component:', error);
-        setDiallingCode('+91');
-        setDefaultDiallingCode('+91');
-      } finally {
-        setIsLoading(false);
+      };
+
+      fetchData();
+    }, []);
+
+    const OnRequestOpenCodeModal = () => {
+      setVisible(!visible);
+      if (Keyboard.isVisible()) {
+        Keyboard.dismiss();
       }
     };
 
-    fetchData();
-  }, []);
+    const OnCancelNumberPress = () => {
+      setValue('');
+    };
 
-  const OnRequestOpenCodeModal = () => {
-    setVisible(!visible);
-    if (Keyboard.isVisible()) {
-      Keyboard.dismiss();
-    }
-  };
-
-  const OnCancelNumberPress = () => {
-    setValue('');
-  };
-
-  return (
-    <View style={styles.Container}>
-      <View style={styles.CountyCodeAndNameContainer}>
-        <TouchableOpacity
-          onPress={OnRequestOpenCodeModal}
-          style={styles.CountryCodeAndIconView}>
-          <Text style={styles.CountryNameText}>{diallingCode || '+00'}</Text>
-          <Image
-            resizeMethod="auto"
-            resizeMode="contain"
-            source={CommonIcons.Down}
-            style={styles.downIcon}
-          />
-        </TouchableOpacity>
-
-        <View style={styles.SapLine} />
-
-        <View style={styles.PhoneNumberTextInput}>
-          <View style={styles.TextInputView}>
-            <CustomTextInput
-              value={value}
-              onChangeText={number => {
-                const numericText = number.replace(/[^0-9]/g, '');
-                setValue(numericText);
-              }}
-              autoFocus={true}
-              keyboardType="number-pad"
-              style={styles.TextInput}
-              placeholderTextColor={COLORS.Gray}
-              placeholder={'Enter phone number'}
-            />
-          </View>
-
+    return (
+      <View style={styles.Container}>
+        <View style={styles.CountyCodeAndNameContainer}>
           <TouchableOpacity
-            activeOpacity={ActiveOpacity}
-            onPress={OnCancelNumberPress}
-            style={styles.CancelIconView}>
+            onPress={OnRequestOpenCodeModal}
+            style={styles.CountryCodeAndIconView}>
+            <Text style={styles.CountryNameText}>{diallingCode || '+00'}</Text>
             <Image
-              source={CommonIcons.CancelPhoneNumber}
-              style={styles.CancelIcon}
+              resizeMethod="auto"
+              resizeMode="contain"
+              source={CommonIcons.Down}
+              style={styles.downIcon}
             />
           </TouchableOpacity>
+
+          <View style={styles.SapLine} />
+
+          <View style={styles.PhoneNumberTextInput}>
+            <View style={styles.TextInputView}>
+              <CustomTextInput
+                ref={ref}
+                value={value}
+                onChangeText={number => {
+                  const numericText = number.replace(/[^0-9]/g, '');
+                  setValue(numericText);
+                }}
+                autoFocus={false}
+                keyboardType="number-pad"
+                style={styles.TextInput}
+                placeholderTextColor={COLORS.Gray}
+                placeholder={'Enter phone number'}
+              />
+            </View>
+
+            <TouchableOpacity
+              activeOpacity={ActiveOpacity}
+              onPress={OnCancelNumberPress}
+              style={styles.CancelIconView}>
+              <Image
+                source={CommonIcons.CancelPhoneNumber}
+                style={styles.CancelIcon}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
-  );
-};
+    );
+  },
+);
 
 export default memo(CountryPickerView);
 

@@ -1,8 +1,8 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useEffect, useState} from 'react';
+import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
   Image,
@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import Animated, {
@@ -40,6 +41,8 @@ const PhoneNumber: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{NumberVerification: {}}>>();
   const userData = useSelector((state: any) => state?.user);
+  const isFocus = useIsFocused();
+  const textInputRef = useRef<TextInput>(null);
   const dispatch = useDispatch();
   const {showToast} = useCustomToast();
   const [IsAPILoading, setIsAPILoading] = useState(false);
@@ -63,6 +66,17 @@ const PhoneNumber: FC = () => {
   const PhoneNumberString: String = `${
     diallingCode || defaultDiallingCode
   }${StorePhoneNumber}`;
+
+  useEffect(() => {
+    const focusListener = navigation.addListener('focus', () => {
+      if (textInputRef.current) {
+        console.log('FOCUS CALL EFFECT');
+        textInputRef.current.focus();
+      }
+    });
+
+    return () => focusListener();
+  }, [navigation]);
 
   useEffect(() => {
     opacity.value = withTiming(visible ? 1 : 0, {
@@ -102,7 +116,10 @@ const PhoneNumber: FC = () => {
         StorePhoneNumber.match('[0-9]{10}')
       ) {
         if (StorePhoneNumber === '7041526621') {
-          GetUserWithoutOTP();
+          setIsAPILoading(true);
+          setTimeout(() => {
+            GetUserWithoutOTP();
+          }, 100);
         } else {
           handleSendOtp();
         }
@@ -153,8 +170,8 @@ const PhoneNumber: FC = () => {
       storeDataAPI();
     } else {
       navigation.replace('LoginStack');
+      setIsAPILoading(false);
     }
-    setIsAPILoading(false);
   };
 
   const storeDataAPI = async () => {
@@ -169,22 +186,22 @@ const PhoneNumber: FC = () => {
         longitude: userData?.longitude || 0,
         eventName: 'update_profile',
       };
+      Keyboard.dismiss();
       const UpdateAPIResponse = await UserService.UserRegister(ModifyData);
 
       if (UpdateAPIResponse && UpdateAPIResponse.code === 200) {
         const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
+        Keyboard.dismiss();
 
-        setTimeout(() => {
-          if (CHECK_NOTIFICATION_PERMISSION) {
-            navigation.replace('BottomTab');
-            dispatch(updateField(LocalStorageFields.isVerified, true));
-          } else {
-            navigation.replace('LocationStack', {
-              screen: 'LocationPermission',
-            });
-            setIsAPILoading(false);
-          }
-        }, 0);
+        dispatch(updateField(LocalStorageFields.isVerified, true));
+        if (CHECK_NOTIFICATION_PERMISSION) {
+          navigation.replace('BottomTab');
+        } else {
+          navigation.replace('LocationStack', {
+            screen: 'LocationPermission',
+          });
+        }
+        setIsAPILoading(false);
       } else {
         const errorMessage =
           UpdateAPIResponse && UpdateAPIResponse.error
@@ -296,6 +313,7 @@ const PhoneNumber: FC = () => {
 
         <View style={styles.PhoneNumberView}>
           <CountryPickerView
+            ref={textInputRef}
             value={StorePhoneNumber}
             visible={visible}
             setVisible={setVisible}

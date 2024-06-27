@@ -93,7 +93,6 @@ const LoginScreen: FC = () => {
         .asString();
       const EULA = remoteConfig().getValue('EULA').asString();
 
-      // Validate fetched config values before setting state
       if (
         validateConfig(privacyPolicy) &&
         validateConfig(termsOfService) &&
@@ -250,7 +249,9 @@ const LoginScreen: FC = () => {
             dispatch(updateField(LocalStorageFields.isVerified, true)),
           ]);
 
-          setTimeout(CheckDataAndNavigateToNumber, 500);
+          setTimeout(() => {
+            CheckDataAndNavigateToNumber();
+          }, 500);
         } else {
           navigation?.replace('NumberVerification', {
             screen: 'PhoneNumber',
@@ -295,7 +296,9 @@ const LoginScreen: FC = () => {
           ),
           dispatch(updateField(LocalStorageFields.isVerified, true)),
         ]);
-        setTimeout(CheckDataAndNavigateToNumber, 500);
+        setTimeout(() => {
+          CheckDataAndNavigateToNumber();
+        }, 500);
       } else {
         throw new Error('Token not found in API response');
       }
@@ -306,8 +309,11 @@ const LoginScreen: FC = () => {
       navigation?.replace('NumberVerification', {
         screen: 'PhoneNumber',
       });
-      setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
-      setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
+      setIsSocialLoginLoading({
+        ...IsSocialLoginLoading,
+        Google: false,
+        Apple: false,
+      });
     }
   };
 
@@ -336,8 +342,11 @@ const LoginScreen: FC = () => {
     } catch (error) {
       showToast('Error', String(error), 'error');
     } finally {
-      setIsSocialLoginLoading({...IsSocialLoginLoading, Google: false});
-      setIsSocialLoginLoading({...IsSocialLoginLoading, Apple: false});
+      setIsSocialLoginLoading({
+        ...IsSocialLoginLoading,
+        Google: false,
+        Apple: false,
+      });
     }
   };
 

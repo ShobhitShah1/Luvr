@@ -40,6 +40,7 @@ const OTPScreen: FC = () => {
 
   useEffect(() => {
     if (OTPInputRef.current && focus) {
+      console.log('FOCUS CALL EFFECT!');
       OTPInputRef.current.focus();
     }
   }, [focus]);

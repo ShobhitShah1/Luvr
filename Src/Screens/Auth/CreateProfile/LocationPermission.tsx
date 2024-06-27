@@ -16,7 +16,7 @@ import CreateProfileStyles from './styles';
 import {useLocationPermission} from '../../../Hooks/useLocationPermission';
 
 const LocationPermission: FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const {showToast} = useCustomToast();
   const dispatch = useDispatch();
   const userData = useSelector((state: any) => state?.user);
