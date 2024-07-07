@@ -6,7 +6,10 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React, {useCallback, useEffect, useState} from 'react';
 import SplashScreen from 'react-native-splash-screen';
 import {useSelector} from 'react-redux';
+import ApiConfig from '../Config/ApiConfig';
 import {useLocationPermission} from '../Hooks/useLocationPermission';
+import {setCurrentScreenName, updateField} from '../Redux/Action/userActions';
+import {store} from '../Redux/Store/store';
 import {
   AddDailyHabits,
   AddRecentPics,
@@ -22,9 +25,7 @@ import {
   YourEducation,
   YourIntro,
 } from '../Screens/Auth';
-import ApiConfig from '../Config/ApiConfig';
-import {setCurrentScreenName, updateField} from '../Redux/Action/userActions';
-import {store} from '../Redux/Store/store';
+import AddEmail from '../Screens/Auth/CreateProfile/AddEmail';
 import ChatScreen from '../Screens/Chat/ChatScreen';
 import DonationScreen from '../Screens/Donation/DonationScreen';
 import CategoryDetailCardsScreen from '../Screens/Home/ExploreCards/CategoryDetailCardsScreen';
@@ -34,10 +35,9 @@ import EditProfileScreen from '../Screens/Profile/EditProfileScreen';
 import SettingScreen from '../Screens/Setting/SettingScreen';
 import {initGoogleSignIn} from '../Services/AuthService';
 import {LocalStorageFields} from '../Types/LocalStorageFields';
+import {useCustomToast} from '../Utils/toastUtils';
 import BottomTab from './BottomTab';
 import {navigationRef} from './RootNavigation';
-import AddEmail from '../Screens/Auth/CreateProfile/AddEmail';
-import {useCustomToast} from '../Utils/toastUtils';
 
 export default function MainRoute() {
   const {showToast} = useCustomToast();
@@ -122,10 +122,7 @@ export default function MainRoute() {
 
   const NumberVerificationStack = () => {
     return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen component={LoginScreen} name="Login" />
         <Stack.Screen component={PhoneNumber} name="PhoneNumber" />
         <Stack.Screen component={OTPScreen} name="OTP" />
@@ -135,10 +132,7 @@ export default function MainRoute() {
 
   const LocationStack = () => {
     return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen
           component={LocationPermission}
           name="LocationPermission"
@@ -153,10 +147,7 @@ export default function MainRoute() {
       store.getState().user?.identity?.length === 0;
 
     return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
         {userIdentityExists && (
           <Stack.Screen component={AddEmail} name="AddEmail" />
         )}
@@ -179,8 +170,9 @@ export default function MainRoute() {
     );
   };
 
-  const StateChangesCall = ref => {
-    const currentRouteName = ref?.getCurrentRoute()?.name;
+  const StateChangesCall = (ref: any) => {
+    const currentRouteName = ref?.getCurrentRoute()?.name || '';
+
     if (currentRouteName) {
       if (
         !currentRouteName.includes('Login') &&
@@ -209,9 +201,7 @@ export default function MainRoute() {
       {initialRoute && (
         <NavigationContainer
           ref={navigationRef}
-          onReady={() => {
-            setIsNavigationReady(true);
-          }}
+          onReady={() => setIsNavigationReady(true)}
           onStateChange={() => {
             const currentRouteName = StateChangesCall(navigationRef.current);
             if (currentRouteName) {
@@ -219,10 +209,7 @@ export default function MainRoute() {
             }
           }}>
           <Stack.Navigator
-            screenOptions={{
-              headerShown: false,
-              animation: 'ios',
-            }}
+            screenOptions={{headerShown: false, animation: 'ios'}}
             initialRouteName={initialRoute}>
             <Stack.Screen
               name="NumberVerification"

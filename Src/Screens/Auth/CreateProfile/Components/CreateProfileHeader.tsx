@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC} from 'react';
+import React, {FC, memo} from 'react';
 import {
   Image,
   Platform,
@@ -71,7 +71,7 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({
   );
 };
 
-export default CreateProfileHeader;
+export default memo(CreateProfileHeader);
 
 const styles = StyleSheet.create({
   headerContainer: {

@@ -6,13 +6,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {CommonSize} from '../../Common/CommonSize';
 import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 
 interface ButtonProps {
   Title: string;

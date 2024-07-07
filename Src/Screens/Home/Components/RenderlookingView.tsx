@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Skeleton} from 'moti/skeleton';
-import React, {FC, useState} from 'react';
+import React, {FC, memo, useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
@@ -35,8 +35,8 @@ const RenderLookingView: FC<RenderLookingViewProps> = ({
       }}
       style={[styles.container, {marginHorizontal}]}>
       <Skeleton
-        show={IsLoading || IsImageLoading}
         colorMode="light"
+        show={IsLoading || IsImageLoading}
         colors={COLORS.LoaderGradient}>
         <View>
           <FastImage
@@ -62,7 +62,7 @@ const RenderLookingView: FC<RenderLookingViewProps> = ({
   );
 };
 
-export default RenderLookingView;
+export default memo(RenderLookingView);
 
 const styles = StyleSheet.create({
   container: {

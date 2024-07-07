@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import {useNavigation} from '@react-navigation/native';
-import React, {useEffect} from 'react';
+import React, {memo, useEffect} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import CommonIcons from '../../../Common/CommonIcons';
@@ -104,7 +104,7 @@ const RenderChatRoomList = ({item, index}: ChatRoomProps) => {
   );
 };
 
-export default RenderChatRoomList;
+export default memo(RenderChatRoomList);
 
 const styles = StyleSheet.create({
   chatRoomContainerView: {

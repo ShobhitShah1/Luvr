@@ -3,7 +3,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import NetInfo from '@react-native-community/netinfo';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import React, {FC, useCallback, useEffect, useState} from 'react';
+import React, {FC, memo, useCallback, useEffect, useState} from 'react';
 import {ActivityIndicator, FlatList, StatusBar, Text, View} from 'react-native';
 import Modal from 'react-native-modal';
 import {useSelector} from 'react-redux';
@@ -71,9 +71,7 @@ const CategoryDetailCardsScreen: FC = () => {
         eventName: 'list_neighbour_home',
         latitude: userData.latitude,
         longitude: userData.longitude,
-        radius: userData?.userData?.radius
-          ? userData?.userData?.radius
-          : 9000000000000000,
+        radius: userData?.userData?.radius || 9000000000000000,
         unlike: store.getState().user?.swipedLeftUserIds,
         like: store.getState().user?.swipedRightUserIds,
         hoping: params?.item?.title,
@@ -176,10 +174,7 @@ const CategoryDetailCardsScreen: FC = () => {
           onBackButtonPress={() => {
             setItsMatchModalView(false);
           }}
-          style={{
-            flex: 1,
-            margin: 0,
-          }}>
+          style={{flex: 1, margin: 0}}>
           <ItsAMatch
             user={CategoryData && CategoryData[CurrentCardIndex]}
             onSayHiClick={() => {
@@ -201,4 +196,4 @@ const CategoryDetailCardsScreen: FC = () => {
   );
 };
 
-export default CategoryDetailCardsScreen;
+export default memo(CategoryDetailCardsScreen);

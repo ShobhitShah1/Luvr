@@ -1,14 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useState} from 'react';
-import {
-  Alert,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -22,9 +15,9 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import {WhatAboutYouData} from '../../../Components/Data';
 import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import {useCustomToast} from '../../../Utils/toastUtils';
 
 const WhatAboutYou: FC = () => {
   const navigation =
@@ -43,7 +36,7 @@ const WhatAboutYou: FC = () => {
     useState<boolean>(false);
 
   const handleOptionPress = useCallback(
-    (habitId: number, option: string) => {
+    (habitId: string, option: string) => {
       setSelectedItems(prevSelection => ({
         ...prevSelection,
         [habitId.toString()]: option,
@@ -64,7 +57,7 @@ const WhatAboutYou: FC = () => {
           <FlatList
             numColumns={3}
             data={item.options}
-            columnWrapperStyle={{justifyContent: 'space-between'}}
+            columnWrapperStyle={styles.columnWrapperStyle}
             style={styles.HabitFlatListStyle}
             showsVerticalScrollIndicator={false}
             keyExtractor={(option, index) => index.toString()}
@@ -160,9 +153,7 @@ const WhatAboutYou: FC = () => {
         ProgressCount={7}
         Skip={true}
         handleSkipPress={() => {
-          navigation.navigate('LoginStack', {
-            screen: 'YourIntro',
-          });
+          navigation.navigate('LoginStack', {screen: 'YourIntro'});
         }}
       />
       <View style={styles.DataViewContainer}>
@@ -195,7 +186,7 @@ const WhatAboutYou: FC = () => {
           isLoading={IsSendRequestLoading}
           Navigation={() => {
             setIsSendRequestLoading(true);
-            onNextPress();
+            setTimeout(() => onNextPress(), 0);
           }}
         />
       </View>
@@ -299,5 +290,8 @@ const styles = StyleSheet.create({
   FlatListStyle: {
     height: '100%',
     marginTop: hp('2%'),
+  },
+  columnWrapperStyle: {
+    justifyContent: 'space-between',
   },
 });

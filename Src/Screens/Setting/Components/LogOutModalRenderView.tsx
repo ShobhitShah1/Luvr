@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {FC} from 'react';
+import React, {FC, memo} from 'react';
 import {ActiveOpacity, COLORS, FONTS} from '../../../Common/Theme';
 import CommonIcons from '../../../Common/CommonIcons';
 import Button from '../../../Components/Button';
@@ -67,7 +67,7 @@ const LogOutModalRenderView: FC<SettingModalProps> = ({
   );
 };
 
-export default LogOutModalRenderView;
+export default memo(LogOutModalRenderView);
 
 const styles = StyleSheet.create({
   container: {

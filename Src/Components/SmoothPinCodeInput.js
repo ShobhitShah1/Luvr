@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, {Component, memo} from 'react';
 import {StyleSheet, Text, TextInput, View} from 'react-native';
 
 const styles = StyleSheet.create({
@@ -288,4 +288,4 @@ SmoothPinCodeInput.propTypes = {
   inputProps: PropTypes.exact(TextInput.propTypes),
 };
 
-export default SmoothPinCodeInput;
+export default memo(SmoothPinCodeInput);

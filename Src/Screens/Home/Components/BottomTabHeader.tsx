@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {useNavigation} from '@react-navigation/native';
-import React, {FC, useCallback, useEffect} from 'react';
+import React, {FC, memo, useCallback, useEffect} from 'react';
 import {
   Image,
   Platform,
@@ -36,7 +37,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
   hideSettingAndNotification,
   showSetting,
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const rotation = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -47,15 +48,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
     rotation.value = withSequence(
       withTiming(-ANGLE, {duration: TIME / 2, easing: EASING}),
 
-      withRepeat(
-        withTiming(ANGLE, {
-          duration: TIME,
-          easing: EASING,
-        }),
-        7,
-        true,
-      ),
-      // go back to 0 at the end
+      withRepeat(withTiming(ANGLE, {duration: TIME, easing: EASING}), 7, true),
       withTiming(0, {duration: TIME / 2, easing: EASING}),
     );
   }, []);
@@ -70,9 +63,9 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
     <View style={styles.Container}>
       <SafeAreaView />
       <StatusBar
+        animated={true}
         barStyle={'dark-content'}
         backgroundColor={COLORS.White}
-        animated={true}
       />
       <View style={styles.ContentView}>
         <View style={styles.TitleTextView}>
@@ -125,20 +118,19 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
             </TouchableOpacity>
           )}
         </View>
-        {/* )} */}
       </View>
     </View>
   );
 };
 
-export default BottomTabHeader;
+export default memo(BottomTabHeader);
 
 const styles = StyleSheet.create({
   Container: {
     width: '100%',
-    height: Platform.OS === 'ios' ? hp('12.5%') : hp('8%'),
     justifyContent: 'center',
     backgroundColor: COLORS.White,
+    height: Platform.OS === 'ios' ? hp('12.5%') : hp('8%'),
 
     shadowColor: COLORS.Black,
     shadowOffset: {
@@ -150,9 +142,7 @@ const styles = StyleSheet.create({
 
     elevation: 10,
   },
-  DonationContainer: {
-    // flex: 1,
-  },
+  DonationContainer: {},
   ContentView: {
     width: '90%',
     alignSelf: 'center',

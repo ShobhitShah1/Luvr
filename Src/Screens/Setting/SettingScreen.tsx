@@ -207,18 +207,13 @@ const SettingScreen = () => {
         await GoogleSignin.revokeAccess();
         await GoogleSignin.signOut();
       } catch (error) {
-        // showToast('Error', String(error), 'error');
       } finally {
         dispatch(resetUserData());
         setLogOutModalView(false);
         setTimeout(() => {
           reset({
             index: 0,
-            routes: [
-              {
-                name: 'NumberVerification',
-              },
-            ],
+            routes: [{name: 'NumberVerification'}],
           });
         }, 2000);
       }
@@ -231,11 +226,7 @@ const SettingScreen = () => {
       setTimeout(() => {
         reset({
           index: 0,
-          routes: [
-            {
-              name: 'NumberVerification',
-            },
-          ],
+          routes: [{name: 'NumberVerification'}],
         });
       }, 2000);
     }

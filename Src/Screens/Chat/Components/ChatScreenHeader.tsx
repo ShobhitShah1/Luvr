@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {FC} from 'react';
+import React, {FC, memo} from 'react';
 import {
   Image,
   Platform,
@@ -85,7 +85,7 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({data, onRightIconPress}) => {
   );
 };
 
-export default ChatScreenHeader;
+export default memo(ChatScreenHeader);
 
 const styles = StyleSheet.create({
   Container: {

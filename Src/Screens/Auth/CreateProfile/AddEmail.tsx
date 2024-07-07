@@ -77,9 +77,8 @@ const AddEmail = () => {
           <GradientButton
             Title={'CONTINUE'}
             isLoading={false}
-            Navigation={onNextClick}
             Disabled={false}
-            // Disabled={StorePhoneNumber?.length === 0 ? true : false}
+            Navigation={onNextClick}
           />
         </View>
       </ScrollView>

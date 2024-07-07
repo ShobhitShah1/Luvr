@@ -4,6 +4,7 @@ import React, {FC, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
+import TextString from '../../../Common/TextString';
 import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
@@ -18,40 +19,58 @@ const YourEducation: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
   const KeyboardVisible = useKeyboardVisibility();
-  const userData = useSelector((state: any) => state?.user);
-  const {showToast} = useCustomToast();
   const dispatch = useDispatch();
+  const {showToast} = useCustomToast();
+  const userData = useSelector((state: any) => state?.user);
+
   const [EducationDegree, setEducationDegree] = useState<string>(
     userData.digree,
   );
   const [CollegeName, setCollegeName] = useState<string>(userData.college_name);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onNextPress = () => {
-    if (EducationDegree && CollegeName) {
-      Promise.all([
-        dispatch(updateField(LocalStorageFields.digree, EducationDegree)),
-        dispatch(updateField(LocalStorageFields.college_name, CollegeName)),
-      ])
-        .then(() => {
-          navigation.navigate('LoginStack', {
-            screen: 'AddDailyHabits',
+    setIsLoading(true);
+
+    try {
+      if (EducationDegree && CollegeName) {
+        Promise.all([
+          dispatch(updateField(LocalStorageFields.digree, EducationDegree)),
+          dispatch(updateField(LocalStorageFields.college_name, CollegeName)),
+        ])
+          .then(() => {
+            navigation.navigate('LoginStack', {
+              screen: 'AddDailyHabits',
+            });
+          })
+          .catch(error => {
+            showToast(
+              TextString.error.toUpperCase(),
+              String(error?.message || error),
+              TextString.error,
+            );
           });
-        })
-        .catch(error => {
-          console.error('Error updating fields:', error);
+      } else {
+        navigation.navigate('LoginStack', {
+          screen: 'AddDailyHabits',
         });
-    } else {
-      navigation.navigate('LoginStack', {
-        screen: 'AddDailyHabits',
-      });
+      }
+    } catch (error: any) {
+      showToast(
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
+        TextString.error,
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <View style={CreateProfileStyles.Container}>
       <CreateProfileHeader
-        ProgressCount={5}
         Skip={true}
+        ProgressCount={5}
         handleSkipPress={() => {
           navigation.navigate('LoginStack', {
             screen: 'AddDailyHabits',
@@ -67,33 +86,27 @@ const YourEducation: FC = () => {
           </Text>
         </View>
         <View style={styles.TextInputContainerView}>
-          {/* Degree */}
           <View style={styles.TextViewForSpace}>
             <Text style={styles.NameText}>My education degree is</Text>
             <CustomTextInput
               value={EducationDegree}
-              onChangeText={value => {
-                setEducationDegree(value);
-              }}
               textContentType="givenName"
-              placeholder="Enter your education degree"
               style={styles.TextInputStyle}
               placeholderTextColor={COLORS.Gray}
+              placeholder="Enter your education degree"
+              onChangeText={value => setEducationDegree(value.trimStart())}
             />
           </View>
 
-          {/* Name */}
           <View style={styles.TextViewForSpace}>
             <Text style={styles.NameText}>My college name is</Text>
             <CustomTextInput
               value={CollegeName}
-              onChangeText={value => {
-                setCollegeName(value);
-              }}
               textContentType="givenName"
-              placeholder="Enter your college name"
               style={styles.TextInputStyle}
               placeholderTextColor={COLORS.Gray}
+              placeholder="Enter your college name"
+              onChangeText={value => setCollegeName(value.trimStart())}
             />
           </View>
         </View>
@@ -102,10 +115,13 @@ const YourEducation: FC = () => {
       {!KeyboardVisible && (
         <View style={CreateProfileStyles.BottomButton}>
           <GradientButton
-            isLoading={false}
             Title={'Continue'}
             Disabled={false}
-            Navigation={() => onNextPress()}
+            isLoading={isLoading}
+            Navigation={() => {
+              setIsLoading(true);
+              setTimeout(() => onNextPress(), 0);
+            }}
           />
         </View>
       )}

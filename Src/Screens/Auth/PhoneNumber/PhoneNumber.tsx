@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
 import {
@@ -41,7 +41,6 @@ const PhoneNumber: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{NumberVerification: {}}>>();
   const userData = useSelector((state: any) => state?.user);
-  const isFocus = useIsFocused();
   const textInputRef = useRef<TextInput>(null);
   const dispatch = useDispatch();
   const {showToast} = useCustomToast();

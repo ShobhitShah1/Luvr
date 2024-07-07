@@ -41,18 +41,13 @@ const HopingToFind: FC = () => {
 
   const onPressLookingFor = useCallback(
     (item: string) => {
-      //* Check if the selected item is already in the array
       const isSelected = SelectedLookingForIndex === item;
 
-      //* If the selected item is already in the array, unselect it
       if (isSelected) {
         setSelectedLookingForIndex(item);
       } else {
-        //* If the selected item is not in the array, select it and unselect the previous one
         setSelectedLookingForIndex(item);
       }
-
-      console.log('SelectedLookingForIndex', SelectedLookingForIndex);
     },
     [SelectedLookingForIndex],
   );

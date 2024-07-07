@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {FC, useState} from 'react';
+import React, {FC, memo, useState} from 'react';
 import {Image, StatusBar, StyleSheet, Text, View} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -14,6 +14,7 @@ import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileStyles from './styles';
 import {useLocationPermission} from '../../../Hooks/useLocationPermission';
+import TextString from '../../../Common/TextString';
 
 const LocationPermission: FC = () => {
   const navigation = useNavigation<any>();
@@ -24,12 +25,9 @@ const LocationPermission: FC = () => {
 
   const [IsLocationLoading, setIsLocationLoading] = useState(false);
 
-  const onNextPress = async () => {
-    navigateToNextScreen();
-  };
-
   const navigateToNextScreen = async () => {
     setIsLocationLoading(true);
+
     try {
       requestLocationPermission()
         .then(isLocationGranted => {
@@ -85,31 +83,40 @@ const LocationPermission: FC = () => {
         ),
         'error',
       );
-      setTimeout(() => {
-        setIsLocationLoading(false);
-      }, 0);
+      setIsLocationLoading(false);
     }
   };
 
   const handleNavigation = async () => {
-    const userDataForApi = transformUserDataForApi(userData);
-    const userDataWithValidation = {
-      ...userDataForApi,
-      validation: true,
-    };
-    const APIResponse = await UserService.UserRegister(userDataWithValidation);
-
-    if (APIResponse?.data?.token) {
-      await dispatch(
-        updateField(LocalStorageFields.Token, APIResponse.data?.token),
+    try {
+      const userDataForApi = transformUserDataForApi(userData);
+      const userDataWithValidation = {
+        ...userDataForApi,
+        validation: true,
+      };
+      const APIResponse = await UserService.UserRegister(
+        userDataWithValidation,
       );
-      setTimeout(() => {
-        navigation.replace('BottomTab');
-      }, 0);
-    } else {
-      navigation.replace('LoginStack');
+
+      if (APIResponse?.data?.token) {
+        await dispatch(
+          updateField(LocalStorageFields.Token, APIResponse.data?.token),
+        );
+        setTimeout(() => {
+          navigation.replace('BottomTab');
+        }, 0);
+      } else {
+        navigation.replace('LoginStack');
+      }
+    } catch (error) {
+      showToast(
+        TextString.error.toUpperCase(),
+        String(error),
+        TextString.error,
+      );
+    } finally {
+      setIsLocationLoading(false);
     }
-    setIsLocationLoading(false);
   };
 
   return (
@@ -133,7 +140,7 @@ const LocationPermission: FC = () => {
           Disabled={false}
           Navigation={() => {
             setIsLocationLoading(true);
-            onNextPress();
+            setTimeout(() => navigateToNextScreen(), 0);
           }}
           isLoading={IsLocationLoading}
         />
@@ -142,7 +149,7 @@ const LocationPermission: FC = () => {
   );
 };
 
-export default LocationPermission;
+export default memo(LocationPermission);
 
 const styles = StyleSheet.create({
   container: {

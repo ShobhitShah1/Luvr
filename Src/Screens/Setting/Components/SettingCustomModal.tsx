@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {FC} from 'react';
+import React, {FC, memo} from 'react';
 import {View} from 'react-native';
 import Modal from 'react-native-modal';
 import LogOutModalRenderView from './LogOutModalRenderView'; // Assuming you have this component
@@ -56,4 +56,4 @@ const SettingCustomModal: FC<ModalProps> = ({
   );
 };
 
-export default SettingCustomModal;
+export default memo(SettingCustomModal);

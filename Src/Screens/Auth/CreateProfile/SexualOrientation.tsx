@@ -3,7 +3,6 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useState} from 'react';
 import {
-  Alert,
   Dimensions,
   FlatList,
   Image,
@@ -27,9 +26,9 @@ import CustomCheckBox from '../../../Components/CustomCheckBox';
 import {GendersData} from '../../../Components/Data';
 import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import {useCustomToast} from '../../../Utils/toastUtils';
 
 const {width} = Dimensions.get('window');
 
@@ -67,7 +66,7 @@ const SexualOrientation: FC = () => {
     [SelectedGenderIndex],
   );
 
-  const isGenderSelected = (item: string) =>
+  const isGenderSelected = (item: {name: string}) =>
     SelectedGenderIndex.includes(item?.name);
 
   const renderItem = ({item, index}: {item: any; index: number}) => (
@@ -146,7 +145,7 @@ const SexualOrientation: FC = () => {
           <Text style={styles.SelectUptoText}>Select upto 3</Text>
         </View>
 
-        <View style={{height: '67%'}}>
+        <View style={styles.genderButtonViewContainer}>
           <FlatList
             data={GendersData}
             renderItem={renderItem}
@@ -165,15 +164,12 @@ const SexualOrientation: FC = () => {
               onToggle={toggleCheckMark}
               BoxText="Show my orientation on my profile"
             />
-            {/* <Text style={styles.CheckboxText}>
-              Show my orientation on my profile
-            </Text> */}
           </View>
           <GradientButton
             isLoading={false}
             Title={'Continue'}
-            Disabled={SelectedGenderIndex.length !== 0 ? false : true}
             Navigation={OnNextButtonClick}
+            Disabled={SelectedGenderIndex.length !== 0 ? false : true}
           />
         </View>
       </View>
@@ -188,6 +184,9 @@ const styles = StyleSheet.create({
     ...GROUP_FONT.h4,
     marginVertical: hp('1%'),
     fontFamily: FONTS.SemiBold,
+  },
+  genderButtonViewContainer: {
+    height: '67%',
   },
   RenderDataContainer: {
     flex: 1,

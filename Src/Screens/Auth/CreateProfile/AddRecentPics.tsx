@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import * as ImagePicker from 'react-native-image-picker';
+import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
 import {ActiveOpacity, FONTS, GROUP_FONT} from '../../../Common/Theme';
@@ -52,16 +52,13 @@ const AddRecentPics: FC = () => {
     })),
   );
 
-  //* Toggle Modal Open
   const OnToggleModal = () => {
     setChooseModalVisible(!ChooseModalVisible);
   };
 
-  //* Manage Gallery Image Pick
-  const HandleGalleryImagePicker = async (Key: string) => {
-    // console.log('Key', Key);
+  const HandleGalleryImagePicker = async () => {
     try {
-      const res = await ImagePicker.launchImageLibrary({
+      const res = await launchImageLibrary({
         mediaType: 'photo',
         selectionLimit:
           TotalProfilePicCanUpload -
@@ -87,10 +84,9 @@ const AddRecentPics: FC = () => {
     }
   };
 
-  //* Manage Camera Image Pick
   const HandleCameraImagePicker = async () => {
     try {
-      const res = await ImagePicker.launchCamera({
+      const res = await launchCamera({
         mediaType: 'photo',
       });
 
@@ -113,7 +109,6 @@ const AddRecentPics: FC = () => {
     }
   };
 
-  //* Manage Image Select Button Click
   const HandleOnImagePress = (item: {key: string; url: string}) => {
     if (item.url.length === 0) {
       OnToggleModal();
@@ -144,7 +139,7 @@ const AddRecentPics: FC = () => {
         if (selectedOption === 'Camera') {
           await HandleCameraImagePicker();
         } else {
-          await HandleGalleryImagePicker('1');
+          await HandleGalleryImagePicker();
         }
 
         setChooseModalVisible(false);
@@ -154,7 +149,6 @@ const AddRecentPics: FC = () => {
     }
   };
 
-  //* Render Image Box's
   const renderImageView = ({item}: any) => {
     return (
       <TouchableOpacity
@@ -279,32 +273,29 @@ const AddRecentPics: FC = () => {
           <FlatList
             data={data}
             numColumns={2}
-            columnWrapperStyle={{justifyContent: 'space-between'}}
             bounces={false}
             renderItem={renderImageView}
             removeClippedSubviews={true}
-            contentContainerStyle={styles.contentContainerStyle}
             showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+            contentContainerStyle={styles.contentContainerStyle}
+            columnWrapperStyle={{justifyContent: 'space-between'}}
           />
         </View>
       </View>
 
       <ChooseFromModal
-        isModalVisible={ChooseModalVisible}
         toggleModal={OnToggleModal}
-        OnOptionPress={(option: string) => {
-          HandleUserSelection(option);
-        }}
+        isModalVisible={ChooseModalVisible}
+        OnOptionPress={(option: string) => HandleUserSelection(option)}
       />
 
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
-          Disabled={data.filter(image => image.url).length === 0 ? true : false}
-          isLoading={IsLoading}
           Title={'Continue'}
-          Navigation={() => {
-            onNextPress();
-          }}
+          isLoading={IsLoading}
+          Navigation={() => onNextPress()}
+          Disabled={data.filter(image => image.url).length === 0 ? true : false}
         />
       </View>
     </View>

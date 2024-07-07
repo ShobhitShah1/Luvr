@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import {MotiImage, MotiTransitionProp, MotiView} from 'moti';
+import {MotiImage, MotiView} from 'moti';
 import React, {FC, memo, useMemo} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {Easing} from 'react-native-reanimated';
@@ -16,10 +16,10 @@ const _colors = {
 interface SwitchComponentProps {
   isActive: boolean;
   size: number;
-  onPress: () => any;
+  onPress: () => void;
 }
 
-const transition: MotiTransitionProp = {
+const transition = {
   type: 'timing',
   duration: 300,
   easing: Easing.inOut(Easing.ease),
@@ -64,7 +64,6 @@ const SwitchComponent: FC<SwitchComponentProps> = ({
               height: trackHeight,
               borderRadius: trackHeight / 2,
               borderWidth: 1.5,
-              // backgroundColor: _colors.Active,
               paddingHorizontal: 5,
             },
           ]}
@@ -78,20 +77,14 @@ const SwitchComponent: FC<SwitchComponentProps> = ({
             width: size / 1.5,
             height: size / 1.5,
             borderRadius: size / 2,
-            // left: 5,
-            // right: -10,
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: isActive ? _colors.Active : _colors.InActive,
           }}>
           <MotiImage
             transition={transition}
-            from={{
-              opacity: 0,
-            }}
-            animate={{
-              opacity: 1,
-            }}
+            from={{opacity: 0}}
+            animate={{opacity: 1}}
             resizeMode="contain"
             style={{width: 11.5, height: 11.5}}
             source={isActive ? CommonIcons.Check : CommonIcons.Cancel}

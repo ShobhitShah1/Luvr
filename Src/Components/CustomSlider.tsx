@@ -1,14 +1,13 @@
 import React, {Component} from 'react';
 import {
-  Alert,
   Animated,
   PanResponder,
   StyleSheet,
   TextInput,
   View,
 } from 'react-native';
-import {COLORS} from '../Common/Theme';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
+import {COLORS} from '../Common/Theme';
 
 const activeColor = COLORS.Primary;
 const inactiveColor = COLORS.LightGray;
@@ -21,7 +20,6 @@ export default class CustomSlider extends Component {
 
   // Initialize progress in the constructor instead of outside the class
   constructor(props) {
-    console.log('props', props);
     super(props);
     this.progress = props.defaultProgress || 0.25; // Default progress value
   }

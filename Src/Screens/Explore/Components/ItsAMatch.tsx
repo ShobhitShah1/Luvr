@@ -27,7 +27,6 @@ interface ItsAMatchProps {
 const ItsAMatch: FC<ItsAMatchProps> = ({
   user,
   onSayHiClick,
-  setItsMatch,
   onCloseModalClick,
 }) => {
   const userData = useSelector((state: any) => state?.user);

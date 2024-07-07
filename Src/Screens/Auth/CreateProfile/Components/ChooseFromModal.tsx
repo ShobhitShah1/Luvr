@@ -1,5 +1,6 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import React, {FC} from 'react';
+import React, {FC, memo} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Modal from 'react-native-modal';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -80,9 +81,7 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({
             activeOpacity={ActiveOpacity}
             style={[
               styles.ButtonView,
-              {
-                backgroundColor: 'rgba(255, 155, 82, 1)',
-              },
+              {backgroundColor: 'rgba(255, 155, 82, 1)'},
             ]}>
             <Image
               resizeMode="contain"
@@ -101,9 +100,7 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({
             activeOpacity={ActiveOpacity}
             style={[
               styles.ButtonView,
-              {
-                backgroundColor: 'rgba(95, 197, 255, 1)',
-              },
+              {backgroundColor: 'rgba(95, 197, 255, 1)'},
             ]}>
             <Image
               resizeMode="contain"
@@ -121,7 +118,7 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({
   );
 };
 
-export default ChooseFromModal;
+export default memo(ChooseFromModal);
 
 const styles = StyleSheet.create({
   container: {
@@ -166,8 +163,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 23,
     height: 23,
-    // width: hp('3%'),
-    // height: hp('3%'),
   },
 
   ButtonContainerView: {

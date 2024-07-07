@@ -1,5 +1,5 @@
 // SettingFlexView.js
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, memo, useEffect, useState} from 'react';
 import {
   Image,
   ImageStyle,
@@ -53,8 +53,9 @@ const SettingFlexView: FC<SettingFlexViewProps> = ({
       {!hideRightIcon &&
         (IsSwitch ? (
           <SwitchComponent
-            onPress={onSwitchPress}
-            // setSetIsActive={() => setLocalIsActive(!localIsActive)}
+            onPress={() => {
+              onSwitchPress ? onSwitchPress() : {};
+            }}
             isActive={localIsActive}
             size={38}
           />
@@ -70,13 +71,12 @@ const SettingFlexView: FC<SettingFlexViewProps> = ({
     </TouchableOpacity>
   );
 };
-export default SettingFlexView;
+export default memo(SettingFlexView);
 
 const styles = StyleSheet.create({
   SettingView: {
     flexDirection: 'row',
     alignItems: 'center',
-    // marginVertical: 5,
     justifyContent: 'space-between',
   },
   RightIconView: {

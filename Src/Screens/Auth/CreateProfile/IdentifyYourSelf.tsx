@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -28,16 +29,15 @@ import CreateProfileStyles from './styles';
 import {store} from '../../../Redux/Store/store';
 
 const IdentifyYourSelf: FC = () => {
-  //* Get Key Name. From Where You Want To Store Data
   const KeyboardVisible = useKeyboardVisibility();
   const userData = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
   const {showToast} = useCustomToast();
   //* Ref's
   const ScrollViewRef = useRef<ScrollView>(null);
-  const dayInputRef = useRef(null);
-  const monthInputRef = useRef(null);
-  const yearInputRef = useRef(null);
+  const dayInputRef = useRef<TextInput>(null);
+  const monthInputRef = useRef<TextInput>(null);
+  const yearInputRef = useRef<TextInput>(null);
 
   //* All States
   const [FirstName, setFirstName] = useState<string>(userData.full_name);
@@ -92,7 +92,6 @@ const IdentifyYourSelf: FC = () => {
     try {
       Keyboard.dismiss();
 
-      //* Check if required fields are filled
       if (
         !FirstName ||
         !BirthDateDD ||
@@ -101,7 +100,6 @@ const IdentifyYourSelf: FC = () => {
         !selectedGender ||
         !CityName
       ) {
-        //* Show an alert with a proper message
         showToast(
           'Incomplete Information',
           'Please fill in all required fields.',
@@ -120,7 +118,6 @@ const IdentifyYourSelf: FC = () => {
         return;
       }
 
-      //* If all required fields are filled, update the context and navigate
       setTimeout(() => {
         dispatch(updateField(LocalStorageFields.full_name, FirstName));
         dispatch(
@@ -133,7 +130,6 @@ const IdentifyYourSelf: FC = () => {
         dispatch(updateField(LocalStorageFields.city, CityName));
       }, 0);
 
-      //* Use navigation.navigate callback to update context after navigation
       navigation.navigate('LoginStack', {
         screen: 'SexualOrientationScreen',
       });

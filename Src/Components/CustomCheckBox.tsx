@@ -1,5 +1,12 @@
-import React, {useEffect, useRef} from 'react';
-import {Animated, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {memo, useEffect, useRef} from 'react';
+import {
+  Animated,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../Common/Theme';
 import CommonIcons from '../Common/CommonIcons';
@@ -23,7 +30,7 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
       duration: 300,
       useNativeDriver: false,
     }).start();
-  }, [isChecked]);
+  }, [isChecked, scaleValue]);
 
   const animatedStyle = {
     transform: [{scale: scaleValue}],
@@ -76,7 +83,7 @@ const styles = StyleSheet.create({
     width: hp('1.2%'),
     height: hp('1.2%'),
     justifyContent: 'center',
-    alignSelf:'center'
+    alignSelf: 'center',
   },
   CheckboxText: {
     ...GROUP_FONT.h4,
@@ -87,4 +94,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomCheckBox;
+export default memo(CustomCheckBox);

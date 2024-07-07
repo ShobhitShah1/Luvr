@@ -2,14 +2,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useEffect, useState} from 'react';
-import {
-  Alert,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -23,9 +16,9 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import {LifestyleData} from '../../../Components/Data';
 import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import {useCustomToast} from '../../../Utils/toastUtils';
 
 const AddDailyHabits: FC = () => {
   const navigation =
@@ -36,7 +29,6 @@ const AddDailyHabits: FC = () => {
   const dispatch = useDispatch();
   const [IsSendRequestLoading, setIsSendRequestLoading] =
     useState<boolean>(false);
-
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
     requiredHabits.reduce((acc, habit) => {
       acc[habit] =
@@ -125,6 +117,7 @@ const AddDailyHabits: FC = () => {
 
   const onPressNext = async () => {
     setIsSendRequestLoading(true);
+
     try {
       const allHabitsSelected = requiredHabits.every(habit =>
         selectedItems.hasOwnProperty(habit),

@@ -80,6 +80,7 @@ const YourIntro: FC = () => {
 
   const onPressNext = async () => {
     setIsAPILoading(true);
+
     try {
       if (selectedItems.length === 5) {
         await Promise.all([
@@ -97,16 +98,15 @@ const YourIntro: FC = () => {
           } items remaining to reach the total of ${5}.`,
           'error',
         );
-        setIsAPILoading(false);
       }
     } catch (error: any) {
-      console.error('Error during registration:', error);
-      setIsAPILoading(false);
       showToast(
         'Registration Error',
         `Failed to complete registration. ${error?.message}`,
         'error',
       );
+    } finally {
+      setIsAPILoading(false);
     }
   };
 
@@ -197,9 +197,7 @@ const YourIntro: FC = () => {
           Disabled={false}
           Navigation={() => {
             setIsAPILoading(true);
-            setTimeout(() => {
-              onPressNext();
-            }, 0);
+            setTimeout(() => onPressNext(), 0);
           }}
         />
       </View>

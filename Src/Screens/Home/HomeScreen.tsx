@@ -67,7 +67,7 @@ const HomeScreen = () => {
     }
   };
 
-  function flattenObject(obj: any, prefix: string = ''): Record<string, any> {
+  function flattenObject(obj: any): Record<string, any> {
     if (!obj || typeof obj !== 'object') {
       return {};
     }
@@ -75,9 +75,8 @@ const HomeScreen = () => {
     return Object.entries(obj).reduce(
       (acc: Record<string, any>, [key, value]) => {
         const prefixedKey = key;
-        // const prefixedKey = prefix ? `${prefix}.${key}` : key;
         if (typeof value === 'object' && !Array.isArray(value)) {
-          const flattened = flattenObject(value, prefixedKey);
+          const flattened = flattenObject(value);
           Object.assign(acc, flattened);
         } else {
           acc[prefixedKey] = value;
@@ -186,9 +185,9 @@ const HomeScreen = () => {
         bounces={false}>
         <FlatList
           numColumns={2}
-          style={styles.FlatListStyle}
           bounces={false}
           data={HomeLookingForData}
+          style={styles.FlatListStyle}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({item, index}) => {

@@ -22,13 +22,6 @@ const Paginator: FC<PaginatorProps> = ({data, scrollX}) => {
           useNativeDriver: true,
         });
 
-        // const opacity = scrollX.interpolate({
-        //   inputRange,
-        //   outputRange: [0.4, 1, 0.4],
-        //   extrapolate: 'clamp',
-        //   useNativeDriver: true,
-        // });
-
         return (
           <Animated.View
             style={[styles.dot, {width: dotWidth}]}
