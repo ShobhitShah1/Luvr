@@ -1,7 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
@@ -38,15 +37,13 @@ import RenderCountryData from '../CreateProfile/Components/RenderCountryData';
 import styles from './styles';
 
 const PhoneNumber: FC = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{NumberVerification: {}}>>();
+  const navigation = useNavigation<any>();
   const userData = useSelector((state: any) => state?.user);
   const textInputRef = useRef<TextInput>(null);
   const dispatch = useDispatch();
   const {showToast} = useCustomToast();
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [visible, setVisible] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [diallingCode, setDiallingCode] = useState<string | null>(
     userData.phoneNumberCountryCode,
   );
@@ -133,24 +130,29 @@ const PhoneNumber: FC = () => {
   };
 
   const GetUserWithoutOTP = async () => {
-    await Promise.all([
-      dispatch(updateField(LocalStorageFields.mobile_no, PhoneNumberString)),
-      dispatch(
-        updateField(
-          LocalStorageFields.phoneNumberCountryCode,
-          `${diallingCode || defaultDiallingCode}`,
+    try {
+      await Promise.all([
+        dispatch(updateField(LocalStorageFields.mobile_no, PhoneNumberString)),
+        dispatch(
+          updateField(
+            LocalStorageFields.phoneNumberCountryCode,
+            `${diallingCode || defaultDiallingCode}`,
+          ),
         ),
-      ),
-      dispatch(
-        updateField(
-          LocalStorageFields.phoneNumberWithoutCode,
-          StorePhoneNumber,
+        dispatch(
+          updateField(
+            LocalStorageFields.phoneNumberWithoutCode,
+            StorePhoneNumber,
+          ),
         ),
-      ),
-      dispatch(updateField(LocalStorageFields.isVerified, true)),
-    ]);
+        dispatch(updateField(LocalStorageFields.isVerified, true)),
+      ]);
 
-    handleNavigation();
+      handleNavigation();
+    } catch (error: any) {
+      showToast('Error', String(error?.message || error), 'error');
+      setIsAPILoading(false);
+    }
   };
 
   const handleNavigation = async () => {
@@ -164,11 +166,22 @@ const PhoneNumber: FC = () => {
 
     const APIResponse = await UserService.UserRegister(userDataWithValidation);
     console.log('APIResponse::', APIResponse);
-    if (APIResponse?.data?.token) {
-      dispatch(updateField(LocalStorageFields.Token, APIResponse.data?.token));
-      storeDataAPI();
+    if (APIResponse.status) {
+      if (APIResponse?.data?.token) {
+        await dispatch(
+          updateField(LocalStorageFields.Token, APIResponse.data?.token),
+        );
+        await storeDataAPI();
+      } else {
+        navigation.replace('LoginStack');
+        setIsAPILoading(false);
+      }
     } else {
-      navigation.replace('LoginStack');
+      showToast(
+        'Server Error',
+        String(APIResponse?.error) || 'Something went wrong, try again later',
+        'error',
+      );
       setIsAPILoading(false);
     }
   };
@@ -177,37 +190,43 @@ const PhoneNumber: FC = () => {
     const userDataToSend = {
       eventName: 'get_profile',
     };
-    const APIResponse = await UserService.UserRegister(userDataToSend);
-    if (APIResponse?.code === 200) {
-      const ModifyData = {
-        ...APIResponse.data,
-        latitude: userData?.latitude || 0,
-        longitude: userData?.longitude || 0,
-        eventName: 'update_profile',
-      };
-      Keyboard.dismiss();
-      const UpdateAPIResponse = await UserService.UserRegister(ModifyData);
+    try {
+      const APIResponse = await UserService.UserRegister(userDataToSend);
 
-      if (UpdateAPIResponse && UpdateAPIResponse.code === 200) {
-        const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
+      if (APIResponse?.code === 200) {
+        const ModifyData = {
+          ...APIResponse.data,
+          latitude: userData?.latitude || 0,
+          longitude: userData?.longitude || 0,
+          eventName: 'update_profile',
+        };
         Keyboard.dismiss();
+        const UpdateAPIResponse = await UserService.UserRegister(ModifyData);
 
-        dispatch(updateField(LocalStorageFields.isVerified, true));
-        if (CHECK_NOTIFICATION_PERMISSION) {
-          navigation.replace('BottomTab');
+        if (UpdateAPIResponse && UpdateAPIResponse.code === 200) {
+          const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
+          Keyboard.dismiss();
+
+          dispatch(updateField(LocalStorageFields.isVerified, true));
+          if (CHECK_NOTIFICATION_PERMISSION) {
+            navigation.replace('BottomTab');
+          } else {
+            navigation.replace('LocationStack', {
+              screen: 'LocationPermission',
+            });
+          }
+          setIsAPILoading(false);
         } else {
-          navigation.replace('LocationStack', {
-            screen: 'LocationPermission',
-          });
+          const errorMessage =
+            UpdateAPIResponse && UpdateAPIResponse.error
+              ? UpdateAPIResponse.error
+              : 'Unknown error occurred during registration.';
+          throw new Error(errorMessage);
         }
-        setIsAPILoading(false);
-      } else {
-        const errorMessage =
-          UpdateAPIResponse && UpdateAPIResponse.error
-            ? UpdateAPIResponse.error
-            : 'Unknown error occurred during registration.';
-        throw new Error(errorMessage);
       }
+    } catch (error: any) {
+      showToast('Error', String(error?.message || error), 'error');
+      setIsAPILoading(false);
     }
   };
 
@@ -316,7 +335,6 @@ const PhoneNumber: FC = () => {
             value={StorePhoneNumber}
             visible={visible}
             setVisible={setVisible}
-            setIsLoading={setIsLoading}
             setValue={setStorePhoneNumber}
             diallingCode={diallingCode}
             defaultDiallingCode={defaultDiallingCode}

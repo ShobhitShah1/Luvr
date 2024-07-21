@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react/react-in-jsx-scope */
-import React, {FC, forwardRef, memo, useEffect} from 'react';
+import React, {forwardRef, memo, useEffect} from 'react';
 import {
   Image,
   Keyboard,
@@ -31,7 +30,6 @@ interface CountryPickerProps {
   defaultDiallingCode: string | null;
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setDiallingCode: React.Dispatch<React.SetStateAction<string | null>>;
   setDefaultDiallingCode: React.Dispatch<React.SetStateAction<string | null>>;
 }
@@ -44,7 +42,6 @@ const CountryPickerView = forwardRef<TextInput, CountryPickerProps>(
       diallingCode,
       visible,
       setVisible,
-      setIsLoading,
       setDiallingCode,
       setDefaultDiallingCode,
     },
@@ -53,7 +50,6 @@ const CountryPickerView = forwardRef<TextInput, CountryPickerProps>(
     useEffect(() => {
       const fetchData = async () => {
         try {
-          setIsLoading(true);
           const countryCode = await fetchCountryCode();
           console.log('countryCode', countryCode);
           const country = CountryWithCode.find(c => c.code === countryCode);
@@ -66,7 +62,6 @@ const CountryPickerView = forwardRef<TextInput, CountryPickerProps>(
           setDiallingCode('+91');
           setDefaultDiallingCode('+91');
         } finally {
-          setIsLoading(false);
         }
       };
 
