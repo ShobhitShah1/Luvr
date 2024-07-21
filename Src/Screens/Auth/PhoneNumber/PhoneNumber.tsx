@@ -104,6 +104,7 @@ const PhoneNumber: FC = () => {
   };
 
   const onNextClick = async () => {
+    setIsAPILoading(true);
     Keyboard.dismiss();
 
     const isValidNumber =
@@ -115,7 +116,6 @@ const PhoneNumber: FC = () => {
 
     if (isValidNumber) {
       if (isGuestNumber) {
-        setIsAPILoading(true);
         GetUserWithoutOTP();
       } else {
         handleSendOtp();
@@ -126,6 +126,7 @@ const PhoneNumber: FC = () => {
         'Please check your phone number',
         'error',
       );
+      setIsAPILoading(false);
     }
   };
 
@@ -148,6 +149,7 @@ const PhoneNumber: FC = () => {
 
       handleNavigation();
     } catch (error: any) {
+      console.log('first');
       showToast('Error', String(error?.message || error), 'error');
       setIsAPILoading(false);
     }
@@ -170,7 +172,7 @@ const PhoneNumber: FC = () => {
 
       const token = APIResponse?.data?.token || '';
 
-      if (APIResponse.status) {
+      if (APIResponse.status || APIResponse.code === 200) {
         if (token) {
           dispatch(updateField(LocalStorageFields.Token, token));
           storeDataAPI();
@@ -182,6 +184,7 @@ const PhoneNumber: FC = () => {
         throw new Error(APIResponse?.error || SOMETHING_WRONG);
       }
     } catch (error: any) {
+      console.log('first', error);
       showToast('Server Error', String(error.message || error), 'error');
       setIsAPILoading(false);
     }
@@ -241,6 +244,7 @@ const PhoneNumber: FC = () => {
       };
 
       const response = await UserService.UserRegister(userDataForApi);
+      console.log('response', response);
 
       if (response?.code === 200) {
         showToast(

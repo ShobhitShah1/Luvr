@@ -1,6 +1,6 @@
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
-import {store} from '../Redux/Store/store';
 import ApiConfig from '../Config/ApiConfig';
+import {store} from '../Redux/Store/store';
 
 interface FetchWrapper {
   get: (
@@ -56,8 +56,6 @@ export const fetchWrapper: FetchWrapper = {
   getLoc,
 };
 
-let cancelTokenSource: axios.CancelTokenSource | undefined;
-
 async function get(
   url: string,
   params?: Record<string, any>,
@@ -97,14 +95,8 @@ async function getAxios(
 ): Promise<any> {
   handleLogs(url, params);
 
-  if (cancelTokenSource) {
-    cancelTokenSource.cancel();
-  }
-
-  cancelTokenSource = axios.CancelToken.source();
   try {
     const response = await axios.get(url, {
-      cancelToken: cancelTokenSource.token,
       params,
       ...config,
     });
@@ -154,17 +146,13 @@ async function makeRequest(
   initToken();
   handleLogs(url, params);
 
-  // Retrieve token from Redux store
   const token = store.getState()?.user?.Token;
-  // console.log('TToken', token, url, params);
-  // Set the token in the headers
   const headers = {
     ...commonConfig.headers,
     Authorization: `Bearer ${token}`,
   };
 
   const mergedConfig: AxiosRequestConfig = {
-    // ...commonConfig,
     method,
     url,
     data: params,
@@ -213,16 +201,14 @@ async function handleError(error: any) {
   ) {
     return {
       status: false,
-      error: 'Please login again to proceed.',
+      error:
+        String(error.response?.data?.message) ||
+        'Please login again to proceed.',
     };
   } else {
-    console.log('Fetch Service handleError ---->', error.response.data);
     return {
       status: false,
-      error:
-        error.response && error.response.data && error.response.data.message
-          ? error.response.data.message
-          : '',
+      error: String(error.response?.data?.message || error.response.data),
     };
   }
 }
