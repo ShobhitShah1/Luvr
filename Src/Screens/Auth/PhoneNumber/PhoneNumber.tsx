@@ -36,6 +36,8 @@ import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader
 import RenderCountryData from '../CreateProfile/Components/RenderCountryData';
 import styles from './styles';
 
+const SOMETHING_WRONG = 'Something went wrong, try again later';
+
 const PhoneNumber: FC = () => {
   const navigation = useNavigation<any>();
   const userData = useSelector((state: any) => state?.user);
@@ -66,7 +68,6 @@ const PhoneNumber: FC = () => {
   useEffect(() => {
     const focusListener = navigation.addListener('focus', () => {
       if (textInputRef.current) {
-        console.log('FOCUS CALL EFFECT');
         textInputRef.current.focus();
       }
     });
@@ -105,48 +106,45 @@ const PhoneNumber: FC = () => {
   const onNextClick = async () => {
     Keyboard.dismiss();
 
-    setTimeout(() => {
-      if (
-        StorePhoneNumber?.length >= 10 &&
-        StorePhoneNumber?.length <= 12 &&
-        StorePhoneNumber.match('[0-9]{10}')
-      ) {
-        if (StorePhoneNumber === '7041526621') {
-          setIsAPILoading(true);
-          setTimeout(() => {
-            GetUserWithoutOTP();
-          }, 100);
-        } else {
-          handleSendOtp();
-        }
+    const isValidNumber =
+      StorePhoneNumber?.length >= 10 &&
+      StorePhoneNumber?.length <= 12 &&
+      StorePhoneNumber.match('[0-9]{10}');
+
+    const isGuestNumber = StorePhoneNumber === '7041526621';
+
+    if (isValidNumber) {
+      if (isGuestNumber) {
+        setIsAPILoading(true);
+        GetUserWithoutOTP();
       } else {
-        showToast(
-          'Invalid Phone Number',
-          'Please check your phone number',
-          'error',
-        );
+        handleSendOtp();
       }
-    }, 200);
+    } else {
+      showToast(
+        'Invalid Phone Number',
+        'Please check your phone number',
+        'error',
+      );
+    }
   };
 
   const GetUserWithoutOTP = async () => {
     try {
-      await Promise.all([
-        dispatch(updateField(LocalStorageFields.mobile_no, PhoneNumberString)),
-        dispatch(
-          updateField(
-            LocalStorageFields.phoneNumberCountryCode,
-            `${diallingCode || defaultDiallingCode}`,
-          ),
+      const tasks = [
+        updateField(LocalStorageFields.mobile_no, PhoneNumberString),
+        updateField(
+          LocalStorageFields.phoneNumberCountryCode,
+          `${diallingCode || defaultDiallingCode}`,
         ),
-        dispatch(
-          updateField(
-            LocalStorageFields.phoneNumberWithoutCode,
-            StorePhoneNumber,
-          ),
+        updateField(
+          LocalStorageFields.phoneNumberWithoutCode,
+          StorePhoneNumber,
         ),
-        dispatch(updateField(LocalStorageFields.isVerified, true)),
-      ]);
+        updateField(LocalStorageFields.isVerified, true),
+      ];
+
+      await Promise.all(tasks.map(task => dispatch(task)));
 
       handleNavigation();
     } catch (error: any) {
@@ -156,82 +154,86 @@ const PhoneNumber: FC = () => {
   };
 
   const handleNavigation = async () => {
-    const userDataForApi = transformUserDataForApi(userData);
+    try {
+      const userDataForApi = transformUserDataForApi(userData);
 
-    const userDataWithValidation = {
-      ...userDataForApi,
-      validation: true,
-      mobile_no: PhoneNumberString || store?.getState()?.user?.mobile_no,
-    };
+      const userDataWithValidation = {
+        ...userDataForApi,
+        validation: true,
+        mobile_no: PhoneNumberString || store?.getState()?.user?.mobile_no,
+      };
 
-    const APIResponse = await UserService.UserRegister(userDataWithValidation);
-    console.log('APIResponse::', APIResponse);
-    if (APIResponse.status) {
-      if (APIResponse?.data?.token) {
-        await dispatch(
-          updateField(LocalStorageFields.Token, APIResponse.data?.token),
-        );
-        await storeDataAPI();
-      } else {
-        navigation.replace('LoginStack');
-        setIsAPILoading(false);
-      }
-    } else {
-      showToast(
-        'Server Error',
-        String(APIResponse?.error) || 'Something went wrong, try again later',
-        'error',
+      const APIResponse = await UserService.UserRegister(
+        userDataWithValidation,
       );
+      console.log('APIResponse::', APIResponse);
+
+      const token = APIResponse?.data?.token || '';
+
+      if (APIResponse.status) {
+        if (token) {
+          dispatch(updateField(LocalStorageFields.Token, token));
+          storeDataAPI();
+        } else {
+          navigation.replace('LoginStack');
+          setIsAPILoading(false);
+        }
+      } else {
+        throw new Error(APIResponse?.error || SOMETHING_WRONG);
+      }
+    } catch (error: any) {
+      showToast('Server Error', String(error.message || error), 'error');
       setIsAPILoading(false);
     }
   };
 
   const storeDataAPI = async () => {
-    const userDataToSend = {
-      eventName: 'get_profile',
-    };
+    Keyboard.dismiss();
+    const userDataToSend = {eventName: 'get_profile'};
+
     try {
       const APIResponse = await UserService.UserRegister(userDataToSend);
 
-      if (APIResponse?.code === 200) {
-        const ModifyData = {
-          ...APIResponse.data,
-          latitude: userData?.latitude || 0,
-          longitude: userData?.longitude || 0,
-          eventName: 'update_profile',
-        };
-        Keyboard.dismiss();
-        const UpdateAPIResponse = await UserService.UserRegister(ModifyData);
-
-        if (UpdateAPIResponse && UpdateAPIResponse.code === 200) {
-          const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
-          Keyboard.dismiss();
-
-          dispatch(updateField(LocalStorageFields.isVerified, true));
-          if (CHECK_NOTIFICATION_PERMISSION) {
-            navigation.replace('BottomTab');
-          } else {
-            navigation.replace('LocationStack', {
-              screen: 'LocationPermission',
-            });
-          }
-          setIsAPILoading(false);
-        } else {
-          const errorMessage =
-            UpdateAPIResponse && UpdateAPIResponse.error
-              ? UpdateAPIResponse.error
-              : 'Unknown error occurred during registration.';
-          throw new Error(errorMessage);
-        }
+      if (APIResponse?.code !== 200) {
+        throw new Error('Failed to get profile data');
       }
+
+      const ModifyData = {
+        ...APIResponse.data,
+        latitude: userData?.latitude || 0,
+        longitude: userData?.longitude || 0,
+        eventName: 'update_profile',
+      };
+
+      const UpdateAPIResponse = await UserService.UserRegister(ModifyData);
+
+      if (UpdateAPIResponse?.code !== 200) {
+        const errorMessage =
+          UpdateAPIResponse?.error ||
+          'Unknown error occurred during registration.';
+        throw new Error(errorMessage);
+      }
+
+      Keyboard.dismiss();
+      const IS_NOTIFICATION_ENABLE = await checkLocationPermission();
+      dispatch(updateField(LocalStorageFields.isVerified, true));
+
+      const nextScreen = IS_NOTIFICATION_ENABLE ? 'BottomTab' : 'LocationStack';
+      const navigationParams = IS_NOTIFICATION_ENABLE
+        ? undefined
+        : {screen: 'LocationPermission'};
+      navigation.replace(nextScreen, navigationParams);
+
+      setIsAPILoading(false);
     } catch (error: any) {
-      showToast('Error', String(error?.message || error), 'error');
+      showToast('Error', String(error.message || error), 'error');
       setIsAPILoading(false);
     }
   };
 
   const handleSendOtp = async () => {
     setIsAPILoading(true);
+
     try {
       const userDataForApi = {
         eventName: 'send_otp',
@@ -239,7 +241,6 @@ const PhoneNumber: FC = () => {
       };
 
       const response = await UserService.UserRegister(userDataForApi);
-      console.log('Send OTP Response:', response);
 
       if (response?.code === 200) {
         showToast(
@@ -247,6 +248,7 @@ const PhoneNumber: FC = () => {
           'Please check your device for OTP',
           'success',
         );
+
         await Promise.all([
           dispatch(
             updateField(LocalStorageFields.mobile_no, PhoneNumberString),
@@ -264,26 +266,22 @@ const PhoneNumber: FC = () => {
             ),
           ),
         ]);
-        setTimeout(() => {
-          navigation.navigate('NumberVerification', {
-            screen: 'OTP',
-            params: {
-              number: PhoneNumberString,
-            },
-          });
-        }, 0);
+
+        navigation.navigate('NumberVerification', {
+          screen: 'OTP',
+          params: {number: PhoneNumberString},
+        });
       } else {
         showToast(
           'Server Error',
-          String(response?.message) || 'Something went wrong, try again later',
+          String(response?.message) || SOMETHING_WRONG,
           'error',
         );
       }
     } catch (error: any) {
       showToast(
         'Error',
-        String(error?.request?._response || error) ||
-          'Failed to send otp OTP. try again.',
+        String(error?.message || error) || 'Failed to send OTP. Try again.',
         'error',
       );
     } finally {
