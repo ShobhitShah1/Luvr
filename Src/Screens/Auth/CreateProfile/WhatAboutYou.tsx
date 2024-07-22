@@ -18,6 +18,7 @@ import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import TextString from '../../../Common/TextString';
 
 const WhatAboutYou: FC = () => {
   const navigation =
@@ -89,23 +90,22 @@ const WhatAboutYou: FC = () => {
   };
 
   const onNextPress = async () => {
-    const YourIntoFills = [
-      'communication_stry',
-      'education_level',
-      'recived_love',
-      'star_sign',
-    ];
-
-    const allIntoSelected = YourIntoFills.every(into =>
-      selectedItems.hasOwnProperty(into),
-    );
-
     setIsSendRequestLoading(true);
-    console.log('IsSendRequestLoading:', IsSendRequestLoading);
 
-    if (allIntoSelected) {
-      console.log('selectedItems', selectedItems);
-      setTimeout(async () => {
+    try {
+      const YourIntoFills = [
+        'communication_stry',
+        'education_level',
+        'recived_love',
+        'star_sign',
+      ];
+
+      const allIntoSelected = YourIntoFills.every(into =>
+        selectedItems.hasOwnProperty(into),
+      );
+
+      if (allIntoSelected) {
+        console.log('selectedItems', selectedItems);
         await Promise.all([
           dispatch(
             updateField(
@@ -130,20 +130,25 @@ const WhatAboutYou: FC = () => {
           ),
         ]);
 
+        navigation.navigate('LoginStack', {
+          screen: 'YourIntro',
+        });
         setIsSendRequestLoading(false);
-        if (!IsSendRequestLoading) {
-          navigation.navigate('LoginStack', {
-            screen: 'YourIntro',
-          });
-        }
-      }, 0);
-    } else {
-      setIsSendRequestLoading(false);
+      } else {
+        setIsSendRequestLoading(false);
+        showToast(
+          'Validation Error',
+          'Please select all required options',
+          'error',
+        );
+      }
+    } catch (error: any) {
       showToast(
-        'Validation Error',
-        'Please select all required options',
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
         'error',
       );
+      setIsSendRequestLoading(false);
     }
   };
 

@@ -22,6 +22,7 @@ import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import TextString from '../../../Common/TextString';
 
 const YourIntro: FC = () => {
   const navigation =
@@ -91,18 +92,16 @@ const YourIntro: FC = () => {
         ]);
         CallUpdateProfileAPI(selectedItems);
       } else {
-        showToast(
-          'Validation Error',
+        throw new Error(
           `You have selected ${selectedItems.length} items. ${
             5 - selectedItems.length
           } items remaining to reach the total of ${5}.`,
-          'error',
         );
       }
     } catch (error: any) {
       showToast(
-        'Registration Error',
-        `Failed to complete registration. ${error?.message}`,
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
         'error',
       );
     } finally {
@@ -152,8 +151,8 @@ const YourIntro: FC = () => {
       }
     } catch (error: any) {
       showToast(
-        'Registration Error',
-        `Failed to complete registration. ${error?.message}`,
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
         'error',
       );
     }

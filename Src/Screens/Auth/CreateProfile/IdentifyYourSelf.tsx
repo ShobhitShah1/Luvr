@@ -27,6 +27,7 @@ import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 import {store} from '../../../Redux/Store/store';
+import TextString from '../../../Common/TextString';
 
 const IdentifyYourSelf: FC = () => {
   const KeyboardVisible = useKeyboardVisibility();
@@ -61,10 +62,10 @@ const IdentifyYourSelf: FC = () => {
     setSelectedGender(gender);
   };
 
-  const calculateAge = inputDate => {
+  const calculateAge = (inputDate: any) => {
     const [day, month, year] = inputDate
       .split(',')
-      .map(item => parseInt(item.trim(), 10));
+      .map((item: any) => parseInt(item.trim(), 10));
 
     if (month < 1 || month > 12) {
       throw new Error('Invalid month. Month must be between 1 and 12.');
@@ -83,12 +84,12 @@ const IdentifyYourSelf: FC = () => {
     return age;
   };
 
-  const isEligible = age => {
+  const isEligible = (age: number) => {
     return age >= 18 && age < 100;
   };
 
   //* Modal Button Navigate To Screen
-  const OnLetsGoButtonPress = useCallback(() => {
+  const OnLetsGoButtonPress = useCallback(async () => {
     try {
       Keyboard.dismiss();
 
@@ -113,28 +114,32 @@ const IdentifyYourSelf: FC = () => {
       );
 
       if (!isEligible(age)) {
-        showToast('Error', 'Please enter a valid age.', 'Error');
+        showToast(
+          TextString.error.toUpperCase(),
+          'Please enter a valid age.',
+          'Error',
+        );
         console.log('User is not eligible.');
         return;
       }
 
-      setTimeout(() => {
-        dispatch(updateField(LocalStorageFields.full_name, FirstName));
+      await Promise.all([
+        dispatch(updateField(LocalStorageFields.full_name, FirstName)),
         dispatch(
           updateField(
             LocalStorageFields.birthdate,
             `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`,
           ),
-        );
-        dispatch(updateField(LocalStorageFields.gender, selectedGender));
-        dispatch(updateField(LocalStorageFields.city, CityName));
-      }, 0);
+        ),
+        dispatch(updateField(LocalStorageFields.gender, selectedGender)),
+        dispatch(updateField(LocalStorageFields.city, CityName)),
+      ]);
 
       navigation.navigate('LoginStack', {
         screen: 'SexualOrientationScreen',
       });
     } catch (error) {
-      showToast('Error', String(error), 'error');
+      showToast(TextString.error.toUpperCase(), String(error), 'error');
     }
   }, [
     navigation,

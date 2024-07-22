@@ -35,6 +35,7 @@ import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import RenderCountryData from '../CreateProfile/Components/RenderCountryData';
 import styles from './styles';
+import TextString from '../../../Common/TextString';
 
 const SOMETHING_WRONG = 'Something went wrong, try again later';
 
@@ -47,10 +48,10 @@ const PhoneNumber: FC = () => {
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [diallingCode, setDiallingCode] = useState<string | null>(
-    userData.phoneNumberCountryCode,
+    userData.phoneNumberCountryCode || '+91',
   );
   const [defaultDiallingCode, setDefaultDiallingCode] = useState<string | null>(
-    userData.phoneNumberCountryCode,
+    userData.phoneNumberCountryCode || '+91',
   );
   const [StorePhoneNumber, setStorePhoneNumber] = useState<string>(
     userData.phoneNumberWithoutCode,
@@ -104,8 +105,8 @@ const PhoneNumber: FC = () => {
   };
 
   const onNextClick = async () => {
-    setIsAPILoading(true);
     Keyboard.dismiss();
+    setIsAPILoading(true);
 
     const isValidNumber =
       StorePhoneNumber?.length >= 10 &&
@@ -168,7 +169,7 @@ const PhoneNumber: FC = () => {
       const APIResponse = await UserService.UserRegister(
         userDataWithValidation,
       );
-      console.log('APIResponse::', APIResponse);
+      console.log('handleNavigation APIResponse:', APIResponse);
 
       const token = APIResponse?.data?.token || '';
 
@@ -244,7 +245,7 @@ const PhoneNumber: FC = () => {
       };
 
       const response = await UserService.UserRegister(userDataForApi);
-      console.log('response', response);
+      console.log('handleSendOtp response:', response);
 
       if (response?.code === 200) {
         showToast(
@@ -276,15 +277,11 @@ const PhoneNumber: FC = () => {
           params: {number: PhoneNumberString},
         });
       } else {
-        showToast(
-          'Server Error',
-          String(response?.message) || SOMETHING_WRONG,
-          'error',
-        );
+        throw new Error(String(response?.message) || SOMETHING_WRONG);
       }
     } catch (error: any) {
       showToast(
-        'Error',
+        TextString.error.toUpperCase(),
         String(error?.message || error) || 'Failed to send OTP. Try again.',
         'error',
       );

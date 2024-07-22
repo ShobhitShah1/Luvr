@@ -1,9 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import React, {FC, useEffect, useRef, useState} from 'react';
-import {Alert, Keyboard, Text, View} from 'react-native';
+import {Keyboard, Text, TextInput, View} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
+import TextString from '../../../Common/TextString';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import SmoothPinCodeInput from '../../../Components/SmoothPinCodeInput';
 import {useLocationPermission} from '../../../Hooks/useLocationPermission';
@@ -27,7 +28,7 @@ const OTPScreen: FC = () => {
   const {showToast} = useCustomToast();
   const navigation = useNavigation<any>();
   const {number} = route.params as RouteParams;
-  const OTPInputRef = useRef<SmoothPinCodeInput>(null);
+  const OTPInputRef = useRef<TextInput>(null);
   const userData = useSelector((state: any) => state?.user);
   const {checkLocationPermission} = useLocationPermission();
 
@@ -40,7 +41,6 @@ const OTPScreen: FC = () => {
 
   useEffect(() => {
     if (OTPInputRef.current && focus) {
-      console.log('FOCUS CALL EFFECT!');
       OTPInputRef.current.focus();
     }
   }, [focus]);
@@ -66,19 +66,14 @@ const OTPScreen: FC = () => {
   }, [ResendDisabled]);
 
   useEffect(() => {
-    if (otp.length === OTPInputs) {
-      setDisableButton(false);
-    } else {
-      setDisableButton(true);
-    }
-  }, [otp]);
+    setDisableButton(otp.length !== OTPInputs);
+  }, [otp, OTPInputs]);
 
   const VerifyClick = async () => {
+    Keyboard.dismiss();
+
     if (otp.length === 4) {
-      Keyboard.dismiss();
-      setTimeout(() => {
-        verifyOtp();
-      }, 0);
+      verifyOtp();
     } else {
       showToast('Invalid OTP', 'Please Verify OTP', 'error');
     }
@@ -89,28 +84,25 @@ const OTPScreen: FC = () => {
 
     try {
       if (otp === '0000') {
-        showToast(
-          'OTP verified Successfully',
-          'Your OTP has been successfully verified. You can now proceed.',
-          'success',
-        );
-
         await Promise.all([
           dispatch(updateField(LocalStorageFields.OTP, otp)),
           dispatch(updateField(LocalStorageFields.isVerified, true)),
         ]);
         const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
 
-        setTimeout(() => {
-          if (CHECK_NOTIFICATION_PERMISSION) {
-            handleNavigation();
-          } else {
-            navigation.replace('LocationStack', {
-              screen: 'LocationPermission',
-            });
-            setIsAPILoading(false);
-          }
-        }, 0);
+        if (CHECK_NOTIFICATION_PERMISSION) {
+          handleNavigation();
+        } else {
+          navigation.replace('LocationStack', {
+            screen: 'LocationPermission',
+          });
+        }
+
+        showToast(
+          'OTP verified Successfully',
+          'Your OTP has been successfully verified. You can now proceed.',
+          'success',
+        );
         return;
       }
 
@@ -123,42 +115,34 @@ const OTPScreen: FC = () => {
       const response = await UserService.UserRegister(userDataForApi);
 
       if (response.code === 200) {
-        showToast(
-          'OTP verified Successfully',
-          'Your OTP has been successfully verified. You can now proceed.',
-          'success',
-        );
-
         await Promise.all([
           dispatch(updateField(LocalStorageFields.OTP, otp)),
           dispatch(updateField(LocalStorageFields.isVerified, true)),
         ]);
         const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
 
-        setTimeout(() => {
-          if (CHECK_NOTIFICATION_PERMISSION) {
-            handleNavigation();
-          } else {
-            navigation.replace('LocationStack', {
-              screen: 'LocationPermission',
-            });
-            setIsAPILoading(false);
-          }
-        }, 0);
-      } else {
+        if (CHECK_NOTIFICATION_PERMISSION) {
+          await handleNavigation();
+        } else {
+          navigation.replace('LocationStack', {
+            screen: 'LocationPermission',
+          });
+        }
+
         showToast(
-          'OTP Verification Failed',
-          'The OTP entered is incorrect. Please try again.',
-          'error',
+          'OTP verified Successfully',
+          'Your OTP has been successfully verified. You can now proceed.',
+          'success',
         );
+      } else {
+        throw new Error('The OTP entered is incorrect. Please try again.');
       }
     } catch (error) {
       showToast(
-        'Error',
+        TextString.error.toUpperCase(),
         'Failed to verify OTP. Please check your network connection and try again.',
         'error',
       );
-      console.error('Error verifying OTP:', error);
     } finally {
       setIsAPILoading(false);
     }
@@ -176,52 +160,57 @@ const OTPScreen: FC = () => {
       const response = await UserService.UserRegister(userDataForApi);
 
       if (response.data?.Status === 'Success') {
+        setResendDisabled(true);
+        setResendTimer(10);
         showToast(
           'OTP Resend Successfully',
           'Please check your device for OTP',
           'success',
         );
-        setResendDisabled(true);
-        setResendTimer(10);
       } else {
-        showToast(
-          'Server Error',
-          'Something went wrong, try again later',
-          'error',
+        throw new Error(
+          response?.error || response?.message || 'Something went wrong.',
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       showToast(
-        'Error',
-        'Failed to send otp OTP. Please check your network connection and try again.',
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
         'error',
       );
-      console.error('Error sending OTP:', error);
-      Alert.alert('Error', 'Failed to send OTP. Please try again.');
     } finally {
       setIsAPILoading(false);
     }
   };
 
   const handleNavigation = async () => {
-    const userDataForApi = transformUserDataForApi(userData);
+    try {
+      const userDataForApi = transformUserDataForApi(userData);
 
-    const userDataWithValidation = {
-      ...userDataForApi,
-      validation: true,
-    };
+      const userDataWithValidation = {
+        ...userDataForApi,
+        validation: true,
+      };
 
-    const APIResponse = await UserService.UserRegister(userDataWithValidation);
-
-    if (APIResponse?.data?.token) {
-      await dispatch(
-        updateField(LocalStorageFields.Token, APIResponse.data?.token),
+      const APIResponse = await UserService.UserRegister(
+        userDataWithValidation,
       );
-      storeDataAPI();
-    } else {
-      navigation.replace('LoginStack');
+
+      const token = APIResponse.data?.token || '';
+
+      if (token) {
+        dispatch(updateField(LocalStorageFields.Token, token));
+        await storeDataAPI();
+      } else {
+        navigation.replace('LoginStack');
+      }
+    } catch (error: any) {
+      showToast(
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
+        'error',
+      );
     }
-    setIsAPILoading(false);
   };
 
   const storeDataAPI = async () => {
@@ -242,17 +231,14 @@ const OTPScreen: FC = () => {
       if (UpdateAPIResponse && UpdateAPIResponse.code === 200) {
         const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
 
-        setTimeout(() => {
-          if (CHECK_NOTIFICATION_PERMISSION) {
-            navigation.replace('BottomTab');
-            dispatch(updateField(LocalStorageFields.isVerified, true));
-          } else {
-            navigation.replace('LocationStack', {
-              screen: 'LocationPermission',
-            });
-            setIsAPILoading(false);
-          }
-        }, 0);
+        if (CHECK_NOTIFICATION_PERMISSION) {
+          dispatch(updateField(LocalStorageFields.isVerified, true));
+          navigation.replace('BottomTab');
+        } else {
+          navigation.replace('LocationStack', {
+            screen: 'LocationPermission',
+          });
+        }
       } else {
         const errorMessage =
           UpdateAPIResponse && UpdateAPIResponse.error

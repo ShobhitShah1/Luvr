@@ -11,9 +11,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
+import TextString from '../../../Common/TextString';
 import {ActiveOpacity, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import ApiConfig from '../../../Config/ApiConfig';
@@ -80,7 +81,7 @@ const AddRecentPics: FC = () => {
         setData(newData);
       }
     } catch (error) {
-      showToast('Error', String(error), 'error');
+      showToast(TextString.error.toUpperCase(), String(error), 'error');
     }
   };
 
@@ -105,7 +106,7 @@ const AddRecentPics: FC = () => {
         setData(newData);
       }
     } catch (error) {
-      showToast('Error', String(error), 'error');
+      showToast(TextString.error.toUpperCase(), String(error), 'error');
     }
   };
 
@@ -125,17 +126,14 @@ const AddRecentPics: FC = () => {
           ? await requestCameraPermission()
           : await requestGalleryPermission();
 
-      if (
+      const isAllGood =
         Platform.OS === 'android'
           ? permissionStatus
           : selectedOption !== 'Camera'
           ? true
-          : permissionStatus
-      ) {
-        console.log(
-          `${selectedOption} permission granted. Opening ${selectedOption.toLowerCase()}...`,
-        );
+          : permissionStatus;
 
+      if (isAllGood) {
         if (selectedOption === 'Camera') {
           await HandleCameraImagePicker();
         } else {
@@ -145,7 +143,7 @@ const AddRecentPics: FC = () => {
         setChooseModalVisible(false);
       }
     } catch (error) {
-      showToast('Error', String(error), 'error');
+      showToast(TextString.error.toUpperCase(), String(error), 'error');
     }
   };
 
@@ -174,29 +172,31 @@ const AddRecentPics: FC = () => {
 
   const onNextPress = async () => {
     setIsLoading(true);
+
     try {
-      setTimeout(() => {
-        const validImages = data.filter(image => image.url);
-        uploadImagesSequentially(validImages)
-          .then(uploadedResults => {
-            console.log('All images uploaded successfully:', uploadedResults);
-            dispatch(updateField(LocalStorageFields.isImageUploaded, true));
-            showToast(
-              'Congratulations! Image Uploaded',
-              'Your profile is ready to go!',
-              'success',
-            );
-            navigation.replace('BottomTab', {
-              screen: 'Home',
-            });
-            setIsLoading(false);
-          })
-          .catch(error => {
-            showToast('Error', String(error), 'error');
+      const validImages = data.filter(image => image.url);
+      uploadImagesSequentially(validImages)
+        .then(() => {
+          dispatch(updateField(LocalStorageFields.isImageUploaded, true));
+          showToast(
+            'Congratulations! Image Uploaded',
+            'Your profile is ready to go!',
+            'success',
+          );
+          navigation.replace('BottomTab', {
+            screen: 'Home',
           });
-      }, 0);
-    } catch (error) {
-      showToast('Error', String(error), 'error');
+          setIsLoading(false);
+        })
+        .catch(error => {
+          throw new Error(String(error?.message || error));
+        });
+    } catch (error: any) {
+      showToast(
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
+        'error',
+      );
     }
   };
 
@@ -226,14 +226,10 @@ const AddRecentPics: FC = () => {
           },
         );
 
+        console.log('IMAGE UPLOAD RESULT', response);
         return response.data;
       } catch (error: any) {
-        showToast(
-          'Upload Error',
-          'Something went wrong while uploading image',
-          'error',
-        );
-        throw error.response.data;
+        throw new Error(error?.message || error);
       }
     }
   };
@@ -244,10 +240,11 @@ const AddRecentPics: FC = () => {
       try {
         await uploadImage(image);
         await uploadImagesSequentially(images, index + 1);
-      } catch (error) {
+      } catch (error: any) {
         showToast(
-          'Error',
-          String(error) || `Failed to upload image ${index + 1}:`,
+          TextString.error.toUpperCase(),
+          String(error?.message || error) &&
+            'Something went wrong while uploading image',
           'error',
         );
       }
@@ -292,10 +289,10 @@ const AddRecentPics: FC = () => {
 
       <View style={CreateProfileStyles.BottomButton}>
         <GradientButton
-          Title={'Continue'}
+          Title="Continue"
           isLoading={IsLoading}
-          Navigation={() => onNextPress()}
-          Disabled={data.filter(image => image.url).length === 0 ? true : false}
+          Navigation={onNextPress}
+          Disabled={IsLoading || !(data && data.some(image => image.url))}
         />
       </View>
     </View>

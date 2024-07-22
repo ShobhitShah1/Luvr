@@ -28,12 +28,10 @@ const DistancePreference: FC = () => {
   };
 
   const onNextPress = () => {
+    dispatch(updateField(LocalStorageFields.radius, milesValue));
     navigation.navigate('LoginStack', {
       screen: 'YourEducation',
     });
-    setTimeout(() => {
-      dispatch(updateField(LocalStorageFields.radius, milesValue));
-    }, 0);
   };
 
   return (

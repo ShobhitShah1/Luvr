@@ -37,9 +37,9 @@ const LikesContent: FC<LikesProps> = ({LikesData}) => {
             <Image
               style={styles.LikeImageProfile}
               source={
-                Data.recent_pik && Data.recent_pik[0]
+                Data?.recent_pik && Data?.recent_pik[0]
                   ? {
-                      uri: ApiConfig.IMAGE_BASE_URL + Data.recent_pik[0],
+                      uri: ApiConfig.IMAGE_BASE_URL + Data?.recent_pik[0],
                       cache: 'force-cache',
                     }
                   : CommonImages.WelcomeBackground

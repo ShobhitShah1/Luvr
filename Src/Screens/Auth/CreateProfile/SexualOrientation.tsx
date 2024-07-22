@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useState} from 'react';
@@ -29,8 +28,17 @@ import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import TextString from '../../../Common/TextString';
 
 const {width} = Dimensions.get('window');
+
+const ListEmptyComponent = () => {
+  return (
+    <View style={styles.EmptyViewStyle}>
+      <Text style={styles.EmptyViewText}>We Don't Have Any Genders, Sorry</Text>
+    </View>
+  );
+};
 
 const SexualOrientation: FC = () => {
   const navigation =
@@ -97,33 +105,30 @@ const SexualOrientation: FC = () => {
     </TouchableOpacity>
   );
 
-  const ListEmptyComponent = () => (
-    <View style={styles.EmptyViewStyle}>
-      <Text style={styles.EmptyViewText}>We Don't Have Any Genders, Sorry</Text>
-    </View>
-  );
+  const OnNextButtonClick = async () => {
+    try {
+      const orientations = SelectedGenderIndex.map(gender => gender);
 
-  const OnNextButtonClick = () => {
-    const orientations = SelectedGenderIndex.map(gender => gender);
-    if (orientations.length !== 0) {
+      if (orientations.length === 0) {
+        throw new Error('Please select your sexual orientation');
+      }
+
+      await Promise.all([
+        dispatch(updateField(LocalStorageFields.orientation, orientations)),
+        dispatch(
+          updateField(LocalStorageFields.is_orientation_visible, ShowOnProfile),
+        ),
+      ]);
+
       navigation.navigate('LoginStack', {
         screen: 'HopingToFind',
       });
-      setTimeout(() => {
-        try {
-          dispatch(updateField(LocalStorageFields.orientation, orientations));
-          dispatch(
-            updateField(
-              LocalStorageFields.is_orientation_visible,
-              ShowOnProfile,
-            ),
-          );
-        } catch (error) {
-          showToast('Error', String(error), 'error');
-        }
-      }, 0);
-    } else {
-      showToast('Error', 'Please select your sexual orientation', 'error');
+    } catch (error: any) {
+      showToast(
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
+        'error',
+      );
     }
   };
 

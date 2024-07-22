@@ -1,7 +1,7 @@
 import {createNavigationContainerRef} from '@react-navigation/native';
 
-export const navigationRef = createNavigationContainerRef();
-export function RootNavigation(name, type, params) {
+export const navigationRef = createNavigationContainerRef<any>();
+export function RootNavigation(name: string, type: string, params: object) {
   if (navigationRef.isReady()) {
     if (type === 'replace') {
       navigationRef.navigate(name);

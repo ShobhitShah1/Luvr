@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import NetInfo from '@react-native-community/netinfo';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Skeleton} from 'moti/skeleton';
@@ -18,6 +19,7 @@ import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import FastImage from 'react-native-fast-image';
 import {useSelector} from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
+import TextString from '../../Common/TextString';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import ApiConfig from '../../Config/ApiConfig';
 import {DummyImage} from '../../Config/Setting';
@@ -27,8 +29,6 @@ import {ProfileType} from '../../Types/ProfileType';
 import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import calculateDataPercentage from './Components/calculateDataPercentage';
-import TextString from '../../Common/TextString';
-import NetInfo from '@react-native-community/netinfo';
 
 const ProfileScreen = () => {
   const userData = useSelector((state: any) => state?.user);
@@ -56,14 +56,9 @@ const ProfileScreen = () => {
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
     if (!InInternetConnected) {
-      showToast(
-        TextString.error.toUpperCase(),
-        TextString.PleaseCheckYourInternetConnection,
-        TextString.error,
-      );
       setIsAPILoading(false);
       setRefreshing(false);
-      return;
+      throw new Error(TextString.PleaseCheckYourInternetConnection);
     }
 
     setIsAPILoading(true);
@@ -79,19 +74,13 @@ const ProfileScreen = () => {
         const ProfilePercentage = calculateDataPercentage(APIResponse.data);
         setPercentage(ProfilePercentage);
       } else {
-        showToast(
-          'Error',
-          APIResponse?.error ||
-            APIResponse?.message ||
-            'Please try again later',
-          'error',
-        );
         setProfileData({} as ProfileType);
+        throw new Error(APIResponse?.error || APIResponse?.message);
       }
-    } catch (error) {
+    } catch (error: any) {
       showToast(
-        'Error',
-        String(error) || 'Something went wrong. Please try again later.',
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
         'error',
       );
     } finally {

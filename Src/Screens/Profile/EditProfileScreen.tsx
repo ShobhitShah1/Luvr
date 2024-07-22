@@ -20,6 +20,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -62,9 +63,9 @@ export interface ViewPositionsProps {
 }
 
 const EditProfileScreen = () => {
-  const dayInputRef = useRef(null);
-  const yearInputRef = useRef(null);
-  const monthInputRef = useRef(null);
+  const dayInputRef = useRef<TextInput>(null);
+  const yearInputRef = useRef<TextInput>(null);
+  const monthInputRef = useRef<TextInput>(null);
 
   const {requestCameraPermission} = useCameraPermission();
   const {requestGalleryPermission} = useGalleryPermission();
@@ -141,10 +142,10 @@ const EditProfileScreen = () => {
   const {locationPermission, requestLocationPermission} =
     useLocationPermission();
 
-  const calculateAge = inputDate => {
+  const calculateAge = (inputDate: any) => {
     const [day, month, year] = inputDate
       .split(',')
-      .map(item => parseInt(item.trim(), 10));
+      .map((item: any) => parseInt(item.trim(), 10));
 
     // Validation for month (1-12)
     if (month < 1 || month > 12) {
@@ -164,15 +165,15 @@ const EditProfileScreen = () => {
     return age;
   };
 
-  const isEligible = age => {
+  const isEligible = (age: number) => {
     return age >= 18 && age < 100;
   };
 
   const handleTextInputChange = (
-    value,
-    setValueFunc,
-    maxLength,
-    nextInputRef,
+    value: string,
+    setValueFunc: (value: string) => void,
+    maxLength: number,
+    nextInputRef: any,
   ) => {
     const numericValue = value.replace(/[^0-9]/g, ''); // Filter out non-numeric characters
     setValueFunc(numericValue); // Set the filtered numeric value
@@ -307,7 +308,7 @@ const EditProfileScreen = () => {
         setIsFetchDataAPILoading(false);
       }
     } catch (error) {
-      showToast('Error', String(error), 'error');
+      showToast(TextString.error.toUpperCase(), String(error), 'error');
       setIsFetchDataAPILoading(false);
     }
   };
@@ -362,7 +363,7 @@ const EditProfileScreen = () => {
         UploadImage(newImages);
       }
     } catch (error) {
-      showToast('Error', String(error), 'error');
+      showToast(TextString.error.toUpperCase(), String(error), 'error');
     }
   };
 
@@ -385,7 +386,7 @@ const EditProfileScreen = () => {
         UploadImage(newImages);
       }
     } catch (error) {
-      showToast('Error', String(error), 'error');
+      showToast(TextString.error.toUpperCase(), String(error), 'error');
     }
   };
 
@@ -477,10 +478,14 @@ const EditProfileScreen = () => {
           'success',
         );
       } else {
-        showToast('Error', 'Error while uploading images', 'error');
+        showToast(
+          TextString.error.toUpperCase(),
+          'Error while uploading images',
+          'error',
+        );
       }
     } catch (error) {
-      showToast('Error', String(error), 'error');
+      showToast(TextString.error.toUpperCase(), String(error), 'error');
     } finally {
       setIsFetchDataAPILoading(false);
     }
@@ -507,7 +512,11 @@ const EditProfileScreen = () => {
       );
       const isValid = isEligible(age);
       if (!isValid) {
-        showToast('Error', 'Please enter a valid age.', 'Error');
+        showToast(
+          TextString.error.toUpperCase(),
+          'Please enter a valid age.',
+          'error',
+        );
         return;
       }
 
@@ -578,7 +587,7 @@ const EditProfileScreen = () => {
         );
       }
     } catch (error) {
-      showToast('Error', String(error), 'Error');
+      showToast(TextString.error.toUpperCase(), String(error), 'Error');
     } finally {
       setIsFetchDataAPILoading(false);
     }

@@ -5,16 +5,16 @@ import Geolocation from 'react-native-geolocation-service';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
 import CommonImages from '../../../Common/CommonImages';
+import TextString from '../../../Common/TextString';
 import {COLORS, FONTS} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
+import {useLocationPermission} from '../../../Hooks/useLocationPermission';
 import {updateField} from '../../../Redux/Action/userActions';
 import UserService from '../../../Services/AuthService';
 import {transformUserDataForApi} from '../../../Services/dataTransformService';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileStyles from './styles';
-import {useLocationPermission} from '../../../Hooks/useLocationPermission';
-import TextString from '../../../Common/TextString';
 
 const LocationPermission: FC = () => {
   const navigation = useNavigation<any>();
@@ -52,16 +52,12 @@ const LocationPermission: FC = () => {
                       ),
                     ]);
 
-                    setTimeout(() => {
-                      handleNavigation();
-                    }, 0);
+                    handleNavigation();
                   }
                 },
                 error => {
                   reject(error);
-                  setTimeout(() => {
-                    setIsLocationLoading(false);
-                  }, 0);
+                  setIsLocationLoading(false);
                 },
                 {enableHighAccuracy: true, timeout: 15000, maximumAge: 100},
               );
@@ -71,12 +67,16 @@ const LocationPermission: FC = () => {
           }
         })
         .catch(error => {
-          showToast('Error', String(error), 'error');
+          showToast(
+            TextString.error.toUpperCase(),
+            String(error?.message || error),
+            'error',
+          );
           setIsLocationLoading(false);
         });
     } catch (error: any) {
       showToast(
-        'Something went wrong',
+        TextString.error.toUpperCase(),
         String(
           error?.message ||
             'Unable to find your location please try gain letter',
@@ -94,24 +94,25 @@ const LocationPermission: FC = () => {
         ...userDataForApi,
         validation: true,
       };
+
       const APIResponse = await UserService.UserRegister(
         userDataWithValidation,
       );
 
-      if (APIResponse?.data?.token) {
-        await dispatch(
+      console.log('OTP VERIFY APIResponse:', APIResponse);
+
+      if (APIResponse.data?.token) {
+        dispatch(
           updateField(LocalStorageFields.Token, APIResponse.data?.token),
         );
-        setTimeout(() => {
-          navigation.replace('BottomTab');
-        }, 0);
+        navigation.replace('BottomTab');
       } else {
         navigation.replace('LoginStack');
       }
-    } catch (error) {
+    } catch (error: any) {
       showToast(
         TextString.error.toUpperCase(),
-        String(error),
+        String(error?.message || error),
         TextString.error,
       );
     } finally {

@@ -23,7 +23,6 @@ import {
   SIZES,
 } from '../../../../Common/Theme';
 import {
-  AllGendersType,
   CommunicationStyleData,
   ExerciseFrequencyData,
   GendersData,
@@ -50,8 +49,6 @@ interface EditProfileDataProps {
   storeViewPosition: (viewName: string, position: number) => void;
   viewPositions: ViewPositionsProps;
 }
-
-type ProfileKeys = keyof ProfileType | keyof MagicalPersonType;
 
 const EditProfileSheetView: FC<EditProfileDataProps> = ({
   profile,

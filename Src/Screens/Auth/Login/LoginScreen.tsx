@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import appleAuth, {
   AppleRequestResponse,
 } from '@invertase/react-native-apple-authentication';
@@ -93,26 +92,14 @@ const LoginScreen: FC = () => {
         .asString();
       const EULA = remoteConfig().getValue('EULA').asString();
 
-      if (
-        validateConfig(privacyPolicy) &&
-        validateConfig(termsOfService) &&
-        validateConfig(EULA)
-      ) {
-        setPrivacyLinks({
-          PrivacyPolicy: privacyPolicy,
-          TermsOfService: termsOfService,
-          EULA: EULA,
-        });
-      } else {
-        console.log('Invalid config values');
-      }
+      setPrivacyLinks({
+        PrivacyPolicy: privacyPolicy || '',
+        TermsOfService: termsOfService || '',
+        EULA: EULA || '',
+      });
     } catch (error) {
       console.error('Error fetching remote config', error);
     }
-  };
-
-  const validateConfig = (configValue: string): boolean => {
-    return configValue.trim().length > 0;
   };
 
   const handleGoogleLogin = async () => {
@@ -163,7 +150,8 @@ const LoginScreen: FC = () => {
       } else {
         showToast(
           'Error!',
-          String(error) || 'An error occurred during Google login',
+          String(error?.message || error) ||
+            'An error occurred during Google login',
           'error',
         );
       }
@@ -249,9 +237,7 @@ const LoginScreen: FC = () => {
             dispatch(updateField(LocalStorageFields.isVerified, true)),
           ]);
 
-          setTimeout(() => {
-            CheckDataAndNavigateToNumber();
-          }, 500);
+          CheckDataAndNavigateToNumber();
         } else {
           navigation?.replace('NumberVerification', {
             screen: 'PhoneNumber',
@@ -263,13 +249,18 @@ const LoginScreen: FC = () => {
         ...IsSocialLoginLoading,
         Apple: false,
       });
-    } catch (error) {
-      console.log('Catch Error Apple Login:', error);
+    } catch (error: any) {
       appleLoginAlert();
       setIsSocialLoginLoading({
         ...IsSocialLoginLoading,
         Apple: false,
       });
+      showToast(
+        'Error!',
+        String(error?.message || error) ||
+          'An error occurred during Apple login',
+        'error',
+      );
     }
   };
 
@@ -289,22 +280,19 @@ const LoginScreen: FC = () => {
         userDataWithValidation,
       );
 
-      if (APIResponse?.data?.token) {
+      const token = APIResponse?.data?.token || '';
+
+      if (token) {
         await Promise.all([
-          dispatch(
-            updateField(LocalStorageFields.Token, APIResponse.data.token),
-          ),
+          dispatch(updateField(LocalStorageFields.Token, token)),
           dispatch(updateField(LocalStorageFields.isVerified, true)),
         ]);
-        setTimeout(() => {
-          CheckDataAndNavigateToNumber();
-        }, 500);
+
+        CheckDataAndNavigateToNumber();
       } else {
         throw new Error('Token not found in API response');
       }
     } catch (error) {
-      console.error('Navigation error:', error);
-
       //* If Token Not Get From API User Not Filled Information!
       navigation?.replace('NumberVerification', {
         screen: 'PhoneNumber',
@@ -322,8 +310,10 @@ const LoginScreen: FC = () => {
       const userDataToSend = {
         eventName: 'get_profile',
       };
+
       const APIResponse = await UserService.UserRegister(userDataToSend);
       const Data: ProfileType = APIResponse?.data;
+
       if (Data.mobile_no) {
         navigation?.replace('BottomTab');
       } else if (
@@ -340,7 +330,7 @@ const LoginScreen: FC = () => {
         });
       }
     } catch (error) {
-      showToast('Error', String(error), 'error');
+      showToast(TextString.error.toUpperCase(), String(error), 'error');
     } finally {
       setIsSocialLoginLoading({
         ...IsSocialLoginLoading,

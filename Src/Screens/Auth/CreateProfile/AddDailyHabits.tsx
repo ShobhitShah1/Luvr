@@ -5,6 +5,7 @@ import React, {FC, useCallback, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
+import TextString from '../../../Common/TextString';
 import {
   ActiveOpacity,
   COLORS,
@@ -134,20 +135,18 @@ const AddDailyHabits: FC = () => {
             );
           }),
         ]);
-        setTimeout(() => {
-          navigation.navigate('LoginStack', {
-            screen: 'WhatAboutYou',
-          });
-        }, 0);
+        navigation.navigate('LoginStack', {
+          screen: 'WhatAboutYou',
+        });
       } else {
-        showToast(
-          'Validation Error',
-          'Please select all required habits',
-          'error',
-        );
+        throw new Error('Please select all required habits');
       }
-    } catch (error) {
-      showToast('Error', String(error), 'error');
+    } catch (error: any) {
+      showToast(
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
+        'error',
+      );
     } finally {
       setIsSendRequestLoading(false);
     }

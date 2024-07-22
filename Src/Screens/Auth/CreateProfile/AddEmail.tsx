@@ -11,6 +11,7 @@ import {useCustomToast} from '../../../Utils/toastUtils';
 import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useNavigation} from '@react-navigation/native';
+import TextString from '../../../Common/TextString';
 
 const AddEmail = () => {
   const dispatch = useDispatch();
@@ -24,20 +25,26 @@ const AddEmail = () => {
   const {navigate} = useNavigation<any>();
 
   const onNextClick = async () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    try {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (emailRegex.test(Email)) {
-      let LocalEmail = Email;
-      await dispatch(updateField(LocalStorageFields.identity, LocalEmail));
-      setEmail(Email);
+      if (emailRegex.test(Email)) {
+        let LocalEmail = Email;
+        dispatch(updateField(LocalStorageFields.identity, LocalEmail));
+        setEmail(Email);
 
-      setTimeout(() => {
         navigate('LoginStack', {
           screen: 'IdentifyYourSelf',
         });
-      }, 0);
-    } else {
-      showToast('Error', 'Please enter valid email', 'error');
+      } else {
+        throw new Error('Please enter valid email');
+      }
+    } catch (error: any) {
+      showToast(
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
+        'error',
+      );
     }
   };
 

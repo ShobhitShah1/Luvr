@@ -12,12 +12,10 @@ import {persistor, store} from './Src/Redux/Store/store';
 import MainRoute from './Src/Routes/MainRoute';
 import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
 import {navigationRef} from './Src/Routes/RootNavigation';
+import {setRootViewBackgroundColor} from '@pnthach95/react-native-root-view-background';
+import {COLORS} from './Src/Common/Theme';
 
 export default function App() {
-  //*
-  //* Can Implement Notification Or Firebase Stuff
-  //*
-
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log('remoteMessage', remoteMessage);
@@ -54,6 +52,10 @@ export default function App() {
     });
   }, []);
 
+  useEffect(() => {
+    setRootViewBackgroundColor(COLORS.Secondary);
+  }, []);
+
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
@@ -65,7 +67,7 @@ export default function App() {
               offset={30}
               animationType="zoom-in"
               renderType={{
-                custom_toast: toast => (
+                custom_toast: (toast: any) => (
                   <ToastStyle
                     title={toast?.title}
                     message={toast?.message}

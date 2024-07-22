@@ -2,7 +2,6 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {FC, useCallback, useState} from 'react';
 import {
-  Alert,
   Dimensions,
   FlatList,
   Image,
@@ -14,6 +13,7 @@ import {
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
+import TextString from '../../../Common/TextString';
 import {
   ActiveOpacity,
   COLORS,
@@ -23,16 +23,18 @@ import {
 } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import {LookingFor} from '../../../Components/Data';
+import {updateField} from '../../../Redux/Action/userActions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import {updateField} from '../../../Redux/Action/userActions';
 
 const {width} = Dimensions.get('window');
 
 const HopingToFind: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+  const {showToast} = useCustomToast();
 
   const userData = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
@@ -86,16 +88,16 @@ const HopingToFind: FC = () => {
 
   const onPressNext = () => {
     if (SelectedLookingForIndex) {
+      dispatch(updateField(LocalStorageFields.hoping, SelectedLookingForIndex));
       navigation.navigate('LoginStack', {
         screen: 'DistancePreference',
       });
-      setTimeout(() => {
-        dispatch(
-          updateField(LocalStorageFields.hoping, SelectedLookingForIndex),
-        );
-      }, 0);
     } else {
-      Alert.alert('Error', 'Please select your hoping');
+      showToast(
+        TextString.error.toUpperCase(),
+        'Please select your hoping',
+        'error',
+      );
     }
   };
 
