@@ -1,7 +1,6 @@
-import {Linking, Alert} from 'react-native';
+import {Alert, Linking} from 'react-native';
 import {InAppBrowser} from 'react-native-inappbrowser-reborn';
 import {COLORS} from '../Common/Theme';
-import {memo} from 'react';
 
 interface OpenURLProps {
   URL: string;
@@ -12,7 +11,7 @@ type AsyncFC<P> = (props: P) => Promise<void>;
 const OpenURL: AsyncFC<OpenURLProps> = async ({URL}) => {
   console.log('URL', URL);
   try {
-    if (await InAppBrowser.isAvailable()) {
+    if ((await InAppBrowser.isAvailable()) && URL) {
       await InAppBrowser.open(URL, {
         //* iOS Properties
         dismissButtonStyle: 'cancel',
@@ -50,4 +49,4 @@ const OpenURL: AsyncFC<OpenURLProps> = async ({URL}) => {
   }
 };
 
-export default memo(OpenURL);
+export default OpenURL;

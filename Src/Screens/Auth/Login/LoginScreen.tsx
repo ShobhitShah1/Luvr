@@ -418,8 +418,8 @@ const LoginScreen: FC = () => {
               By Login, you agree to our{' '}
               <Text
                 onPress={() => {
-                  if (privacyLinks?.TermsOfService) {
-                    OpenURL({URL: String(privacyLinks?.EULA)});
+                  if (privacyLinks?.EULA) {
+                    OpenURL({URL: String(privacyLinks?.EULA || '')});
                   }
                 }}
                 style={styles.UnderLineText}>
