@@ -419,7 +419,7 @@ const LoginScreen: FC = () => {
               <Text
                 onPress={() => {
                   if (privacyLinks?.EULA) {
-                    OpenURL({URL: String(privacyLinks?.EULA || '')});
+                    OpenURL({URL: String(privacyLinks?.EULA)});
                   }
                 }}
                 style={styles.UnderLineText}>
