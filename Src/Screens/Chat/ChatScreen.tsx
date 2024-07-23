@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
@@ -27,10 +28,16 @@ import {
   GiftedChat,
   IMessage,
   InputToolbar,
+  MessageText,
+  MessageTextProps,
 } from 'react-native-gifted-chat';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 // import socket from '../../Services/socket';
+import {TouchableOpacity} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {Socket, io} from 'socket.io-client';
+import CommonIcons from '../../Common/CommonIcons';
+import ReportUserModalView from '../../Components/ReportUserModalView';
 import ApiConfig from '../../Config/ApiConfig';
 import {
   CHAT_EVENT,
@@ -40,17 +47,13 @@ import {
   MESSAGE_EVENT,
   READ_ALL,
 } from '../../Config/Setting';
+import {onSwipeLeft} from '../../Redux/Action/userActions';
 import {store} from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
 import {ProfileType} from '../../Types/ProfileType';
 import {chatRoomDataType} from '../../Types/chatRoomDataType';
-import ChatScreenHeader from './Components/ChatScreenHeader';
 import {useCustomToast} from '../../Utils/toastUtils';
-import {TouchableOpacity} from 'react-native';
-import CommonIcons from '../../Common/CommonIcons';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {onSwipeLeft} from '../../Redux/Action/userActions';
-import ReportUserModalView from '../../Components/ReportUserModalView';
+import ChatScreenHeader from './Components/ChatScreenHeader';
 
 interface ChatData {
   params: {
@@ -63,13 +66,20 @@ type ChatScreenRouteProp = RouteProp<ParamListBase, 'ChatScreen'> & ChatData;
 
 const ChatScreen: FC = () => {
   const {params} = useRoute<ChatScreenRouteProp>();
-  const CurrentLoginUserId = store.getState().user?.userData?._id;
-  const CurrentUserImage = store.getState().user?.userData?.recent_pik;
-  const CurrentLoginUserFullName = store.getState().user?.userData?.full_name;
+
+  const {userData} = store.getState().user || ({} as any);
+  const CurrentLoginUserId = userData?._id;
+  const CurrentUserImage = userData?.recent_pik;
+  const CurrentLoginUserFullName = userData?.full_name;
+
+  // const CurrentLoginUserId = store.getState().user?.userData?._id;
+  // const CurrentUserImage = store.getState().user?.userData?.recent_pik;
+  // const CurrentLoginUserFullName = store.getState().user?.userData?.full_name;
+
   const [userMessage, setUserMessages] = useState<IMessage[]>([]);
   const [CountMessage, setCountMessage] = useState(0);
   const [OtherUserProfileData, setOtherUserProfileData] =
-    useState<ProfileType>();
+    useState<ProfileType | null>(null);
   const IsFocused = useIsFocused();
   const [socket, setSocket] = useState<Socket>();
   const [ReceiverSocketId, setReceiverSocketId] = useState('');
@@ -90,7 +100,6 @@ const ChatScreen: FC = () => {
       getOtherUserDataCall();
       const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
       setSocket(socketInstance);
-      // store.dispatch(setCurrentScreenName('Chat'));
       return () => {
         socketInstance.disconnect();
       };
@@ -122,7 +131,7 @@ const ChatScreen: FC = () => {
     });
 
     const sortedMessages = giftedChatMessages.sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+      (a: any, b: any) => b.createdAt.getTime() - a.createdAt.getTime(),
     );
     return sortedMessages;
   };
@@ -149,7 +158,8 @@ const ChatScreen: FC = () => {
 
   const removeDuplicates = (messages: any[]) => {
     const uniqueMessages = messages.reduce((unique, message) => {
-      const existingMessage = unique.find(m => m._id === message._id);
+      const existingMessage = unique.find((m: any) => m._id === message._id);
+
       if (!existingMessage) {
         unique.push(message);
       }
@@ -171,9 +181,7 @@ const ChatScreen: FC = () => {
     });
 
     //* Event: Get Receiver Socket
-    socket.emit(GET_RECEIVER_SOCKET_EVENT, {
-      to: params?.id,
-    });
+    socket.emit(GET_RECEIVER_SOCKET_EVENT, {to: params?.id});
 
     //* Event: List
     socket.emit(LIST_EVENT, {id: CurrentLoginUserId});
@@ -207,7 +215,7 @@ const ChatScreen: FC = () => {
     };
 
     //* Event: Receive Message
-    const handleReceivedMessage = (data: any) => {};
+    const handleReceivedMessage = () => {};
 
     const handleReceiverChat = async (chat: any) => {
       if (!OtherUserProfileData) {
@@ -219,14 +227,11 @@ const ChatScreen: FC = () => {
 
         const updatedMessages = giftedChatMessages.map((message: any) => ({
           ...message,
-          user: {
-            ...message.user,
-            avatar: avatarUrl,
-          },
+          user: {...message.user, avatar: avatarUrl},
         }));
 
         setUserMessages(previousMessages =>
-          GiftedChat.append(previousMessages, ...updatedMessages.flat()),
+          GiftedChat.append(previousMessages, updatedMessages.flat()),
         );
       }
     };
@@ -241,7 +246,7 @@ const ChatScreen: FC = () => {
       }
     };
 
-    const handleReadAllMessages = (data: any) => {};
+    const handleReadAllMessages = () => {};
 
     socket.on(JOIN_EVENT, handleJoinResponse);
     socket.on(READ_ALL, handleReadAllMessages);
@@ -303,15 +308,11 @@ const ChatScreen: FC = () => {
         setUserMessages(previousMessages =>
           GiftedChat.append(previousMessages, messages),
         );
-        console.log('Socket Data Going:', chatData);
+
         socket.emit(READ_ALL, {to: OtherUserProfileData?._id});
-        socket.emit(CHAT_EVENT, chatData, (err, responses) => {
-          if (err) {
-            showToast(
-              'Error',
-              String(err) || 'Something went wrong. Please try again later.',
-              'error',
-            );
+        socket.emit(CHAT_EVENT, chatData, (error: any) => {
+          if (error) {
+            showToast('Error', String(error?.message || error), 'error');
           }
         });
       }
@@ -341,110 +342,111 @@ const ChatScreen: FC = () => {
 
   const renderBubble = (props: BubbleProps<IMessage>) => {
     return (
-      <View>
-        <Bubble
-          {...props}
-          wrapperStyle={{
-            right: {
-              padding: 3,
-              // paddingVertical: 8,
-              marginVertical: 1,
-              borderTopRightRadius: 20,
-              borderTopLeftRadius: 20,
-              borderBottomRightRadius: 0,
-              borderBottomLeftRadius: 20,
-              backgroundColor: COLORS.White,
-            },
-            left: {
-              padding: 3,
-              // paddingVertical: 8,
-              marginVertical: 1,
-              borderTopRightRadius: 20,
-              borderBottomRightRadius: 20,
-              borderBottomLeftRadius: 0,
-              borderTopLeftRadius: 20,
-              backgroundColor: COLORS.Primary,
-            },
-          }}
-          textStyle={{
-            right: {
-              fontSize: 14,
-              color: COLORS.Black,
-              fontFamily: FONTS.Medium,
-            },
-            left: {
-              fontSize: 14,
-              color: COLORS.White,
-              fontFamily: FONTS.Medium,
-            },
-          }}
-          bottomContainerStyle={{
-            right: {
-              borderTopRightRadius: 20,
-              borderTopLeftRadius: 20,
-              borderBottomRightRadius: 0,
-              borderBottomLeftRadius: 20,
-            },
-            left: {
-              borderTopRightRadius: 20,
-              borderBottomRightRadius: 20,
-              borderBottomLeftRadius: 0,
-              borderTopLeftRadius: 20,
-            },
-          }}
-          containerToPreviousStyle={{
-            right: {
-              borderTopRightRadius: 20,
-              borderTopLeftRadius: 20,
-              borderBottomRightRadius: 0,
-              borderBottomLeftRadius: 20,
-            },
-            left: {
-              borderTopRightRadius: 20,
-              borderBottomRightRadius: 20,
-              borderBottomLeftRadius: 0,
-              borderTopLeftRadius: 20,
-            },
-          }}
-          containerToNextStyle={{
-            right: {
-              borderTopRightRadius: 20,
-              borderBottomRightRadius: 0,
-              borderBottomLeftRadius: 20,
-              borderTopLeftRadius: 20,
-            },
-            left: {
-              borderTopRightRadius: 20,
-              borderBottomRightRadius: 20,
-              borderBottomLeftRadius: 0,
-              borderTopLeftRadius: 20,
-            },
-          }}
-          containerStyle={{
-            right: {
-              borderTopRightRadius: 20,
-              borderBottomRightRadius: 0,
-              borderBottomLeftRadius: 20,
-              borderTopLeftRadius: 20,
-            },
-            left: {
-              borderTopRightRadius: 20,
-              borderBottomRightRadius: 0,
-              borderBottomLeftRadius: 0,
-              borderTopLeftRadius: 20,
-            },
-          }}
-        />
-        {/* <Text
-          style={[
-            styles.TimeStyle,
-            {
-              textAlign: props.position === 'left' ? 'left' : 'right',
-            },
-          ]}>
-          {formattedTime}
-        </Text> */}
-      </View>
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            padding: 3,
+            marginVertical: 1,
+            borderTopRightRadius: 20,
+            borderTopLeftRadius: 20,
+            borderBottomRightRadius: 0,
+            borderBottomLeftRadius: 20,
+            backgroundColor: COLORS.White,
+          },
+          left: {
+            padding: 3,
+            marginVertical: 1,
+            borderTopRightRadius: 20,
+            borderBottomRightRadius: 20,
+            borderBottomLeftRadius: 0,
+            borderTopLeftRadius: 20,
+            backgroundColor: COLORS.Primary,
+          },
+        }}
+        textStyle={{
+          right: {
+            lineHeight: 25,
+            fontSize: 14.2,
+            color: COLORS.Black,
+            fontFamily: FONTS.Medium,
+          },
+          left: {
+            lineHeight: 25,
+            fontSize: 14.2,
+            color: COLORS.White,
+            fontFamily: FONTS.Medium,
+          },
+        }}
+        bottomContainerStyle={{
+          right: {
+            borderTopRightRadius: 20,
+            borderTopLeftRadius: 20,
+            borderBottomRightRadius: 0,
+            borderBottomLeftRadius: 20,
+          },
+          left: {
+            borderTopRightRadius: 20,
+            borderBottomRightRadius: 20,
+            borderBottomLeftRadius: 0,
+            borderTopLeftRadius: 20,
+          },
+        }}
+        containerToPreviousStyle={{
+          right: {
+            borderTopRightRadius: 20,
+            borderTopLeftRadius: 20,
+            borderBottomRightRadius: 0,
+            borderBottomLeftRadius: 20,
+          },
+          left: {
+            borderTopRightRadius: 20,
+            borderBottomRightRadius: 20,
+            borderBottomLeftRadius: 0,
+            borderTopLeftRadius: 20,
+          },
+        }}
+        containerToNextStyle={{
+          right: {
+            borderTopRightRadius: 20,
+            borderBottomRightRadius: 0,
+            borderBottomLeftRadius: 20,
+            borderTopLeftRadius: 20,
+          },
+          left: {
+            borderTopRightRadius: 20,
+            borderBottomRightRadius: 20,
+            borderBottomLeftRadius: 0,
+            borderTopLeftRadius: 20,
+          },
+        }}
+        containerStyle={{
+          right: {
+            borderTopRightRadius: 20,
+            borderBottomRightRadius: 0,
+            borderBottomLeftRadius: 20,
+            borderTopLeftRadius: 20,
+          },
+          left: {
+            borderTopRightRadius: 20,
+            borderBottomRightRadius: 0,
+            borderBottomLeftRadius: 0,
+            borderTopLeftRadius: 20,
+          },
+        }}
+      />
+    );
+  };
+
+  const CustomMessageText: React.FC<MessageTextProps<IMessage>> = props => {
+    return (
+      <MessageText
+        {...props}
+        linkStyle={{
+          right: {color: COLORS.Primary},
+          left: {color: COLORS.White},
+        }}
+      />
     );
   };
 
@@ -463,9 +465,8 @@ const ChatScreen: FC = () => {
       eventName: ApiConfig.BlockProfile,
       blocked_to: params?.id,
     };
-    console.log('BlockData', BlockData);
+
     const APIResponse = await UserService.UserRegister(BlockData);
-    console.log('Block User', APIResponse);
     if (APIResponse && APIResponse?.code === 200) {
       await store.dispatch(onSwipeLeft(String(params?.id)));
       showToast(
@@ -481,15 +482,14 @@ const ChatScreen: FC = () => {
 
   const onReportProfileClick = async () => {
     setShowReportModalView(false);
+
     const BlockData = {
       eventName: ApiConfig.ReportProfile,
       blocked_to: params?.id,
       reason: SelectedReportReason,
     };
+
     const APIResponse = await UserService.UserRegister(BlockData);
-
-    console.log('Report APIResponse', APIResponse);
-
     if (APIResponse && APIResponse?.code === 200) {
       await store.dispatch(onSwipeLeft(String(params?.id)));
       showToast(
@@ -515,10 +515,7 @@ const ChatScreen: FC = () => {
           alignTop
           messages={userMessage}
           onSend={messages => onSend(messages)}
-          user={{
-            _id: 1,
-            avatar: avatarUrl,
-          }}
+          user={{_id: 1, avatar: avatarUrl}}
           isTyping={false}
           messagesContainerStyle={styles.messagesContainer}
           maxComposerHeight={100}
@@ -529,13 +526,8 @@ const ChatScreen: FC = () => {
             left: {color: COLORS.White},
             right: {color: COLORS.Black},
           }}
-          imageStyle={{
-            left: {
-              width: 28,
-              height: 28,
-              // bottom: 10,
-            },
-          }}
+          imageStyle={{left: 28}}
+          renderMessageText={CustomMessageText}
         />
       </View>
 
@@ -544,32 +536,17 @@ const ChatScreen: FC = () => {
         transparent
         presentationStyle="overFullScreen">
         <View style={styles.BlockAndReportProfileView}>
-          <View
-            style={{
-              flex: 1,
-              paddingVertical: 10,
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '10%',
-              borderRadius: 10,
-              flexDirection: 'row',
-            }}>
+          <View style={styles.blockAndReportContentView}>
             <TouchableOpacity
               activeOpacity={ActiveOpacity}
-              style={{
-                position: 'absolute',
-                top: 20,
-                right: 5,
-                width: 50,
-                height: 50,
-              }}
+              style={styles.blockAndReportCloseButton}
               onPress={() => setReportAndBlockModal(false)}>
               <Image
                 source={CommonIcons.CloseModal}
                 style={{width: 35, height: 35}}
               />
             </TouchableOpacity>
-            {/* Block Profile */}
+
             <TouchableOpacity
               onPress={onBlockProfileClick}
               activeOpacity={ActiveOpacity}
@@ -582,7 +559,6 @@ const ChatScreen: FC = () => {
               <Text style={styles.BlockAndReportText}>Block Profile</Text>
             </TouchableOpacity>
 
-            {/* Report Profile */}
             <TouchableOpacity
               onPress={() => {
                 setReportAndBlockModal(false);
@@ -680,5 +656,21 @@ const styles = StyleSheet.create({
     color: COLORS.Black,
     fontSize: hp('1.8%'),
     marginHorizontal: hp('0.5%'),
+  },
+  blockAndReportContentView: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '10%',
+    borderRadius: 10,
+    flexDirection: 'row',
+  },
+  blockAndReportCloseButton: {
+    position: 'absolute',
+    top: 20,
+    right: 5,
+    width: 50,
+    height: 50,
   },
 });

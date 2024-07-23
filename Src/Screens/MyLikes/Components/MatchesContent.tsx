@@ -7,48 +7,39 @@ import CommonIcons from '../../../Common/CommonIcons';
 import CommonImages from '../../../Common/CommonImages';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
-import {ProfileType} from '../../../Types/ProfileType';
+import {LikeInterface} from '../../../Types/Interface';
 
 interface LikesProps {
-  LikesData: {
-    status: string;
-    user_details: ProfileType[];
-  };
+  LikesData: LikeInterface;
 }
 
 let NO_IMAGE_CONTAINER = 150;
 
 const MatchesContent: FC<LikesProps> = ({LikesData}) => {
-  const navigation = useNavigation();
-  const userData = useSelector((state: any) => state?.user || {});
-
-  const matchData =
-    LikesData && Array.isArray(LikesData)
-      ? LikesData[0]?.user_details?.[0]
-      : LikesData?.user_details?.[0];
+  const navigation = useNavigation<any>();
+  const userData = useSelector((state: any) => state?.user?.userData || {});
+  const matchData = LikesData?.user_details?.[0];
 
   const handleChatClick = () => {
-    if (userData?.userData?._id !== matchData?._id) {
+    if (userData._id !== matchData?._id) {
       navigation.navigate('Chat', {id: matchData?._id});
     }
   };
-
   if (
-    Array.isArray(LikesData)
-      ? LikesData[0]?.status === 'match'
-      : LikesData.status === 'match' &&
-        matchData &&
-        userData?.userData?._id !== matchData?._id
+    LikesData?.status === 'match' &&
+    matchData &&
+    userData._id !== matchData._id
   ) {
     return (
-      <View style={styles.Container}>
+      <View style={styles.Container} key={matchData._id}>
         <View style={styles.DetailBoxContainerView}>
           <View style={styles.MatchImageView}>
             <Image
               style={styles.MatchCardMyProfilePic}
               source={{
                 uri:
-                  ApiConfig.IMAGE_BASE_URL + userData?.userData?.recent_pik[0],
+                  ApiConfig.IMAGE_BASE_URL + userData.recent_pik[0] ||
+                  userData?.userData?.recent_pik[0],
               }}
             />
             <Image

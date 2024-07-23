@@ -19,7 +19,7 @@ import ApiConfig from '../../../Config/ApiConfig';
 import {ProfileType} from '../../../Types/ProfileType';
 
 interface ChatHeaderProps {
-  data: ProfileType;
+  data: ProfileType | null;
   onRightIconPress: () => void;
 }
 

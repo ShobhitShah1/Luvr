@@ -58,10 +58,7 @@ const MyLikesScreen = () => {
   });
   const [userLikesCount, setUserLikesCount] = useState<number>(0);
   const [userMatchesCount, setUserMatchesCount] = useState<number>(0);
-  const [matchAndLikeData, setMatchAndLikeData] = useState<{
-    likes: LikeInterface[];
-    matches: LikeInterface[];
-  }>({likes: [], matches: []});
+  const [matchAndLikeData, setMatchAndLikeData] = useState<LikeInterface[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [isAPILoading, setIsAPILoading] = useState(true);
   const {showToast} = useCustomToast();
@@ -133,19 +130,14 @@ const MyLikesScreen = () => {
 
       if (APIResponse?.code === 200) {
         const data = APIResponse.data;
-        console.log('data', data.like);
-        let combinedData = [...data.like, ...data.match]; // Combine likes and matches data
+        let combinedData = [...data.like, ...data.match];
         setUserLikesCount(data.like.length);
         setUserMatchesCount(data.match.length);
         setMatchAndLikeData(combinedData);
       }
-    } catch (error) {
-      showToast(
-        'Error',
-        String(error) || 'Something went wrong. Please try again later.',
-        'error',
-      );
-      setMatchAndLikeData({likes: [], matches: []});
+    } catch (error: any) {
+      showToast('Error', String(error?.message || error), 'error');
+      setMatchAndLikeData([]);
     } finally {
       setRefreshing(false);
       setIsAPILoading(false);
@@ -162,7 +154,7 @@ const MyLikesScreen = () => {
   }, []);
 
   const RenderContent = useCallback(
-    ({item, index}) => {
+    ({item}: {item: LikeInterface}) => {
       switch (selectedTabIndex.index) {
         case 0:
           return <LikesContent LikesData={item} />;
@@ -180,10 +172,11 @@ const MyLikesScreen = () => {
       <BottomTabHeader showSetting={false} />
       <View style={styles.TopTabContainerView}>
         <FlatList
-          data={tabsData}
           numColumns={2}
-          contentContainerStyle={styles.FlatListContentContainerStyle}
+          data={tabsData}
+          keyExtractor={(item, index) => index.toString()}
           columnWrapperStyle={styles.FlatListColumnWrapperStyle}
+          contentContainerStyle={styles.FlatListContentContainerStyle}
           renderItem={({item}) => (
             <RenderTopBarView
               item={item}
@@ -191,7 +184,6 @@ const MyLikesScreen = () => {
               isSelected={item.index === selectedTabIndex.index}
             />
           )}
-          keyExtractor={(item, index) => index.toString()}
         />
       </View>
       <View style={styles.ContentContainer}>
@@ -218,11 +210,8 @@ const MyLikesScreen = () => {
                 }
                 initialNumToRender={20}
                 maxToRenderPerBatch={20}
-                removeClippedSubviews
-                renderItem={({item, index}) => (
-                  <RenderContent item={item} index={index} />
-                )}
                 keyExtractor={(item, index) => index.toString()}
+                renderItem={({item}) => <RenderContent item={item} />}
               />
             ) : (
               <ListEmptyLikeView />
@@ -230,7 +219,6 @@ const MyLikesScreen = () => {
           </View>
         )}
       </View>
-      {/* </ScrollView> */}
     </View>
   );
 };

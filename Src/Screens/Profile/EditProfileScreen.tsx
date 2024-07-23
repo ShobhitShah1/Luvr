@@ -738,6 +738,7 @@ const EditProfileScreen = () => {
                   />
                 );
               }}
+              keyExtractor={index => index.toString()}
             />
           </View>
 
@@ -803,11 +804,6 @@ const EditProfileScreen = () => {
               IsViewLoading={IsFetchDataAPILoading}
               PlaceholderText="Where are you from?"
             />
-            {/* <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
-              <Text style={styles.UserFullNameStyle}>
-                {profile?.city || 'Not Added Yet'}
-              </Text>
-            </EditProfileBoxView> */}
           </View>
 
           {/* I like View */}
@@ -1032,7 +1028,7 @@ const EditProfileScreen = () => {
             />
             <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
               <EditProfileCategoriesList
-                EmptyTitleText="What you drink dude?"
+                EmptyTitleText="What you drink?"
                 Item={
                   profile?.habits?.drink
                     ? Array.isArray(profile?.habits?.drink)

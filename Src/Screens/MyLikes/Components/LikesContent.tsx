@@ -1,82 +1,74 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useMemo, useState} from 'react';
 import {ActivityIndicator, Image, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
 import CommonImages from '../../../Common/CommonImages';
 import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
-import {ProfileType} from '../../../Types/ProfileType';
-import {LikeAndMatchTypes} from '../../../Types/SwiperCard';
+import {LikeAndMatchData, LikeInterface} from '../../../Types/Interface';
 
 interface LikesProps {
-  LikesData: LikeAndMatchTypes;
+  LikesData: LikeInterface;
 }
 
 let NO_IMAGE_CONTAINER = 150;
 
 const LikesContent: FC<LikesProps> = ({LikesData}) => {
-  const [IsImageLoading, setIsImageLoading] = useState(false);
-  let title = LikesData?.status;
-  let Data: ProfileType | [] = [];
+  const [isImageLoading, setIsImageLoading] = useState(false);
+  const {status, user_details} = LikesData;
 
-  if (
-    LikesData &&
-    LikesData.user_details &&
-    LikesData.user_details.length > 0
-  ) {
-    Data = LikesData.user_details[0];
-  } else {
-    Data = [];
+  const data: LikeAndMatchData | null = user_details?.[0] ?? null;
+
+  const imageSource = useMemo(
+    () =>
+      data?.recent_pik?.[0]
+        ? {uri: ApiConfig.IMAGE_BASE_URL + data.recent_pik[0]}
+        : CommonImages.WelcomeBackground,
+    [data],
+  );
+
+  if (status !== 'like') {
+    return null;
   }
 
-  if (title === 'like') {
-    return (
-      <View style={styles.Container}>
-        <View style={styles.DetailBoxContainerView}>
-          <View style={styles.LikeImageView}>
-            <Image
-              style={styles.LikeImageProfile}
-              source={
-                Data?.recent_pik && Data?.recent_pik[0]
-                  ? {
-                      uri: ApiConfig.IMAGE_BASE_URL + Data?.recent_pik[0],
-                      cache: 'force-cache',
-                    }
-                  : CommonImages.WelcomeBackground
-              }
-              onLoadStart={() => setIsImageLoading(true)}
-              onLoad={() => setIsImageLoading(false)}
-              onLoadEnd={() => setIsImageLoading(false)}
-            />
-            {IsImageLoading && (
-              <View style={styles.ImageLoadingView}>
-                <ActivityIndicator size={30} color={COLORS.Primary} />
-              </View>
-            )}
-          </View>
-          <View style={styles.LikeTextView}>
-            <Text numberOfLines={1} style={styles.TitleMatchText}>
-              You Made a Move!
+  return (
+    <View style={styles.Container} key={user_details[0]._id}>
+      <View style={styles.DetailBoxContainerView}>
+        <View style={styles.LikeImageView}>
+          <Image
+            source={imageSource}
+            style={styles.LikeImageProfile}
+            onLoadStart={() => setIsImageLoading(true)}
+            onLoad={() => setIsImageLoading(false)}
+            onLoadEnd={() => setIsImageLoading(false)}
+          />
+          {isImageLoading && (
+            <View style={styles.ImageLoadingView}>
+              <ActivityIndicator size={30} color={COLORS.Primary} />
+            </View>
+          )}
+        </View>
+        <View style={styles.LikeTextView}>
+          <Text numberOfLines={1} style={styles.TitleMatchText}>
+            You Made a Move!
+          </Text>
+          <Text numberOfLines={2} style={styles.DescriptionText}>
+            You've taken the first step! You liked{' '}
+            <Text style={{fontFamily: FONTS.Bold, color: COLORS.Primary}}>
+              {user_details[0].full_name || 'User'}
             </Text>
-            <Text numberOfLines={2} style={styles.DescriptionText}>
-              You've taken the first step! You liked{' '}
-              <Text style={{fontFamily: FONTS.Bold, color: COLORS.Primary}}>
-                {Data?.full_name || 'User'}
-              </Text>
-              's profile.
-              {/* {Data?.full_name || 'User'} liked you. */}
-            </Text>
-          </View>
-          <View style={styles.LikeButtonView}>
-            <Image
-              style={styles.LikeButtonIcon}
-              source={CommonIcons.like_button}
-            />
-          </View>
+            's profile.
+          </Text>
+        </View>
+        <View style={styles.LikeButtonView}>
+          <Image
+            style={styles.LikeButtonIcon}
+            source={CommonIcons.like_button}
+          />
         </View>
       </View>
-    );
-  }
+    </View>
+  );
 };
 
 export default LikesContent;
@@ -146,7 +138,6 @@ const styles = StyleSheet.create({
   // Like Box
   LikeImageView: {
     width: '20%',
-    // backgroundColor: 'yellow',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -163,7 +154,6 @@ const styles = StyleSheet.create({
   },
   LikeTextView: {
     width: '65%',
-    // backgroundColor: 'red',
     paddingHorizontal: 5,
     justifyContent: 'center',
   },
