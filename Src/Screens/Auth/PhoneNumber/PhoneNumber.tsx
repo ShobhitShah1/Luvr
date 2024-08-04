@@ -21,6 +21,7 @@ import Animated, {
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useDispatch, useSelector} from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
+import TextString from '../../../Common/TextString';
 import CountryPickerView from '../../../Components/AuthComponents/CountryPickerView';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
@@ -35,7 +36,6 @@ import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import RenderCountryData from '../CreateProfile/Components/RenderCountryData';
 import styles from './styles';
-import TextString from '../../../Common/TextString';
 
 const SOMETHING_WRONG = 'Something went wrong, try again later';
 
@@ -105,28 +105,35 @@ const PhoneNumber: FC = () => {
   };
 
   const onNextClick = async () => {
-    Keyboard.dismiss();
-    setIsAPILoading(true);
+    try {
+      Keyboard.dismiss();
+      setIsAPILoading(true);
 
-    const isValidNumber =
-      StorePhoneNumber?.length >= 10 &&
-      StorePhoneNumber?.length <= 12 &&
-      StorePhoneNumber.match('[0-9]{10}');
+      const isValidNumber =
+        StorePhoneNumber?.length >= 10 &&
+        StorePhoneNumber?.length <= 12 &&
+        StorePhoneNumber.match('[0-9]{10}');
 
-    const isGuestNumber = StorePhoneNumber === '7041526621';
+      const isGuestNumber = StorePhoneNumber === '7041526621';
 
-    if (isValidNumber) {
       if (isGuestNumber) {
-        GetUserWithoutOTP();
-      } else {
-        handleSendOtp();
+        await GetUserWithoutOTP();
+        return;
       }
-    } else {
+
+      if (isValidNumber) {
+        await handleSendOtp();
+        return;
+      }
+
       showToast(
         'Invalid Phone Number',
         'Please check your phone number',
         'error',
       );
+    } catch (error: any) {
+      showToast('Error', String(error?.message || error), 'error');
+    } finally {
       setIsAPILoading(false);
     }
   };
@@ -150,7 +157,6 @@ const PhoneNumber: FC = () => {
 
       handleNavigation();
     } catch (error: any) {
-      console.log('first');
       showToast('Error', String(error?.message || error), 'error');
       setIsAPILoading(false);
     }
@@ -169,11 +175,10 @@ const PhoneNumber: FC = () => {
       const APIResponse = await UserService.UserRegister(
         userDataWithValidation,
       );
-      console.log('handleNavigation APIResponse:', APIResponse);
 
-      const token = APIResponse?.data?.token || '';
+      if (APIResponse && (APIResponse?.status || APIResponse?.code === 200)) {
+        const token = APIResponse?.data?.token || '';
 
-      if (APIResponse.status || APIResponse.code === 200) {
         if (token) {
           dispatch(updateField(LocalStorageFields.Token, token));
           storeDataAPI();
@@ -248,12 +253,6 @@ const PhoneNumber: FC = () => {
       console.log('handleSendOtp response:', response);
 
       if (response?.code === 200) {
-        showToast(
-          'OTP Sent Successfully',
-          'Please check your device for OTP',
-          'success',
-        );
-
         await Promise.all([
           dispatch(
             updateField(LocalStorageFields.mobile_no, PhoneNumberString),
@@ -271,6 +270,12 @@ const PhoneNumber: FC = () => {
             ),
           ),
         ]);
+
+        showToast(
+          'OTP Sent Successfully',
+          'Please check your device for OTP',
+          'success',
+        );
 
         navigation.navigate('NumberVerification', {
           screen: 'OTP',
