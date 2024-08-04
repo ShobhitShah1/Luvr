@@ -156,7 +156,7 @@ const SexualOrientation: FC = () => {
             renderItem={renderItem}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={ListEmptyComponent}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={(item, index) => index.toString()}
           />
         </View>
       </View>

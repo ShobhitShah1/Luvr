@@ -181,7 +181,7 @@ const AddDailyHabits: FC = () => {
             style={styles.FlatList}
             initialNumToRender={20}
             nestedScrollEnabled={false}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={(item, index) => index.toString()}
             removeClippedSubviews={true}
           />
         </View>
