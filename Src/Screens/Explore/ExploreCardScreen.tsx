@@ -272,7 +272,7 @@ const ExploreCardScreen: FC = () => {
         swipeRef.current?.forceUpdate();
       } else {
         showToast(
-          'Something went wrong',
+          'error',
           APIResponse?.message || 'Please try again letter',
           'error',
         );
@@ -415,10 +415,8 @@ const ExploreCardScreen: FC = () => {
         )}
       </View>
 
-      {/* Like And Reject View */}
       {cards?.length !== 0 && IsNetConnected && (
         <View style={styles.LikeAndRejectView}>
-          {/* Reject Button */}
           <TouchableOpacity
             onPress={SwipeLeft}
             activeOpacity={ActiveOpacity}

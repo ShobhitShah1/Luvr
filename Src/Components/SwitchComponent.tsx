@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import {MotiImage, MotiView} from 'moti';
+import {MotiImage, MotiTransitionProp, MotiView} from 'moti';
 import React, {FC, memo, useMemo} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {Easing} from 'react-native-reanimated';
@@ -19,7 +19,7 @@ interface SwitchComponentProps {
   onPress: () => void;
 }
 
-const transition = {
+const transition: MotiTransitionProp = {
   type: 'timing',
   duration: 300,
   easing: Easing.inOut(Easing.ease),

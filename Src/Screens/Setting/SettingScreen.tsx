@@ -41,9 +41,15 @@ import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHead
 import SettingCustomModal from './Components/SettingCustomModal';
 import SettingFlexView from './Components/SettingFlexView';
 import styles from './styles';
-import {ANDROID_APP_VERSION, IOS_APP_VERSION} from '../../Config/Setting';
+import {
+  ANDROID_APP_VERSION,
+  IOS_APP_VERSION,
+  PLAYSTORE,
+} from '../../Config/Setting';
 
 const ShowMeArray = ['Male', 'Female', 'Everyone'];
+const SOMETHING_WENT_WRONG =
+  'Oops! Something went wrong while trying to update your Setting. Please try again later or contact support if the issue persists';
 
 const SettingScreen = () => {
   const dispatch = useDispatch();
@@ -51,7 +57,7 @@ const SettingScreen = () => {
   const [LogOutModalView, setLogOutModalView] = useState(false);
   const [DeleteAccountModalView, setDeleteAccountModalView] = useState(false);
   const [RateUsModalView, setRateUsModalView] = useState(false);
-  const [UserSetting, setProfileData] = useState<ProfileType | undefined>();
+  const [UserSetting, setProfileData] = useState<ProfileType | undefined>({});
   const {reset} = useNavigation();
   const [RatingCount, setRatingCount] = useState(3);
   const {showToast} = useCustomToast();
@@ -67,7 +73,7 @@ const SettingScreen = () => {
     [startAge, endAge] = settingAgeRangeMin?.split('-');
   }
 
-  const [RemoteConfigLinks, setRemoteConfigLinks] = useState<object>({});
+  const [RemoteConfigLinks, setRemoteConfigLinks] = useState<any>();
 
   useEffect(() => {
     Promise.all([GetRemoteConfigValue(), CheckPermission()]);
@@ -85,14 +91,14 @@ const SettingScreen = () => {
   useEffect(() => {
     const CheckConnection = async () => {
       try {
-        const IsNetOn = await NetInfo.fetch().then(info => info.isConnected);
+        const IsNetOn = (await NetInfo.fetch()).isConnected;
         if (IsNetOn) {
           await GetSetting();
         } else {
           showToast('Error', "Please check you'r internet connection", 'error');
         }
-      } catch (error) {
-        showToast('Error', String(error), 'error');
+      } catch (error: any) {
+        showToast('Error', String(error?.message || error), 'error');
       }
     };
 
@@ -194,8 +200,8 @@ const SettingScreen = () => {
         );
         setProfileData({} as ProfileType);
       }
-    } catch (error) {
-      showToast('Error', String(error), 'error');
+    } catch (error: any) {
+      showToast('Error', String(error?.message || error), 'error');
     } finally {
       setIsSettingLoading(false);
     }
@@ -206,7 +212,7 @@ const SettingScreen = () => {
       try {
         await GoogleSignin.revokeAccess();
         await GoogleSignin.signOut();
-      } catch (error) {
+      } catch (error: any) {
       } finally {
         dispatch(resetUserData());
         setLogOutModalView(false);
@@ -287,10 +293,10 @@ Let's make every moment count together! #LoveConnects`,
           'error',
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       LogoutPress();
       setDeleteAccountModalView(false);
-      showToast('Error', String(error), 'error');
+      showToast('Error', String(error?.message || error), 'error');
     } finally {
       LogoutPress();
       setDeleteAccountModalView(false);
@@ -373,20 +379,40 @@ Let's make every moment count together! #LoveConnects`,
       } else {
         showToast(
           'Error Updating Setting',
-          String(APIResponse?.error) ||
-            'Oops! Something went wrong while trying to update your Setting. Please try again later or contact support if the issue persists',
+          String(APIResponse?.error) || SOMETHING_WENT_WRONG,
           'error',
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       showToast(
         'Error Updating Setting',
-        String(error) ||
-          'Oops! Something went wrong while trying to update your Setting. Please try again later or contact support if the issue persists',
+        String(error?.message || error) || SOMETHING_WENT_WRONG,
         'error',
       );
     } finally {
       setIsSettingLoading(false);
+    }
+  };
+
+  const onRatingButtonPress = async () => {
+    try {
+      setRateUsModalView(false);
+      if (RatingCount >= 3) {
+        showToast('Success!', 'Thanks for the review ❤️', 'success');
+        return;
+      }
+
+      if (Platform.OS === 'android') {
+        Linking.openURL(RemoteConfigLinks?.PlayStore?.asString() || PLAYSTORE);
+      } else {
+        if (RemoteConfigLinks?.AppStore?.asString()) {
+          Linking.openURL(RemoteConfigLinks.AppStore.asString());
+        }
+      }
+    } catch (error: any) {
+      showToast('Error', String(error?.message || error), 'error');
+    } finally {
+      setRatingCount(3);
     }
   };
 
@@ -452,7 +478,7 @@ Let's make every moment count together! #LoveConnects`,
                     onValuesChange={v => {
                       setProfileData(prevState => ({
                         ...prevState,
-                        setting_distance_preference: v[0],
+                        setting_distance_preference: v[0] || '',
                       }));
                     }}
                     values={[
@@ -748,7 +774,6 @@ Let's make every moment count together! #LoveConnects`,
             <TouchableOpacity
               activeOpacity={ActiveOpacity}
               onPress={() => {
-                // LogOutSheetRef.current?.present()
                 setDeleteAccountModalView(!DeleteAccountModalView);
               }}
               style={[styles.DeleteAndLogoutButtonView]}>
@@ -759,7 +784,6 @@ Let's make every moment count together! #LoveConnects`,
             <TouchableOpacity
               activeOpacity={ActiveOpacity}
               onPress={() => {
-                // LogOutSheetRef.current?.present()
                 setLogOutModalView(!LogOutModalView);
               }}
               style={styles.DeleteAndLogoutButtonView}>
@@ -836,26 +860,7 @@ Let's make every moment count together! #LoveConnects`,
         }
         ButtonTitle="Rate now"
         ButtonCloseText="Maybe later"
-        onActionPress={() => {
-          setRateUsModalView(false);
-          setTimeout(() => {
-            if (RatingCount >= 3) {
-              if (Platform.OS === 'android') {
-                Linking.openURL(
-                  RemoteConfigLinks?.PlayStore?.asString() ||
-                    'https://play.google.com/store/apps/details?id=com.luvr.dating',
-                );
-              } else {
-                if (RemoteConfigLinks?.AppStore?.asString()) {
-                  Linking.openURL(RemoteConfigLinks.AppStore.asString());
-                }
-              }
-            } else {
-              showToast('Success!', 'Thanks for the review ❤️', 'success');
-            }
-            setRatingCount(3);
-          }, 0);
-        }}
+        onActionPress={onRatingButtonPress}
       />
     </View>
   );

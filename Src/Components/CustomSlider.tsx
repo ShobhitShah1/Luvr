@@ -18,10 +18,9 @@ export default class CustomSlider extends Component {
     sliderWidth: null,
   };
 
-  // Initialize progress in the constructor instead of outside the class
   constructor(props) {
     super(props);
-    this.progress = props.defaultProgress || 0.25; // Default progress value
+    this.progress = props.defaultProgress || 0.25;
   }
 
   pan = new Animated.ValueXY({x: 0, y: 0});
@@ -75,13 +74,11 @@ export default class CustomSlider extends Component {
   componentDidUpdate(prevProps, prevState) {
     const {sliderWidth} = this.state;
     if (sliderWidth !== prevState.sliderWidth) {
-      // Calculate the new position based on the updated sliderWidth and progress
       this.pan.setValue({x: (sliderWidth - dotWidth) * this.progress, y: 0});
     }
     if (prevProps.defaultProgress !== this.props.defaultProgress) {
-      // Update the progress and trigger a re-render
       this.progress = this.props.defaultProgress || 0.25;
-      this.forceUpdate(); // This forces the component to re-render
+      this.forceUpdate();
     }
   }
 

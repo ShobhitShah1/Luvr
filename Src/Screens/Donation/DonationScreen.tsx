@@ -2,7 +2,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
-  Alert,
   Image,
   Platform,
   SafeAreaView,
@@ -32,7 +31,6 @@ const DonationScreen = () => {
   const {showToast} = useCustomToast();
 
   const [PaymentSuccess, setPaymentSuccess] = useState(false);
-  const [IAPConnected, setIAPConnected] = useState(false);
   const [PaymentLoader, setPaymentLoader] = useState(false);
   const [DonationAmount, setDonationAmount] = useState<string | number>(0);
 
@@ -42,27 +40,27 @@ const DonationScreen = () => {
 
   const InitializedConnection = async () => {
     setPaymentLoader(true);
+
     try {
-      initConnection()
-        .then(res => {
-          console.log('Connection', res);
-          setIAPConnected(res);
-          GetProducts();
-          flushFailedPurchasesCachedAsPendingAndroid();
-        })
-        .catch(error => {
-          console.log('Connection ERROR CATCH:', error);
-          Alert.alert(
-            'Error',
-            String(
-              error?.Error ||
-                'Billing is unavailable. This may be a problem with your device, or the Play Store may be down.',
-            ),
-          );
-          setPaymentLoader(false);
-        });
+      const connected = await initConnection();
+
+      if (connected) {
+        await GetProducts();
+        if (Platform.OS === 'android') {
+          await flushFailedPurchasesCachedAsPendingAndroid();
+        }
+        return;
+      }
+
+      showToast(
+        'Error',
+        'Failed to connect to the store. Please check your internet connection.',
+        'error',
+      );
     } catch (error) {
       console.log('Connection Error:', error);
+      setPaymentLoader(false);
+    } finally {
       setPaymentLoader(false);
     }
   };
@@ -71,7 +69,6 @@ const DonationScreen = () => {
     const Products = await getProducts({skus});
     if (Products) {
       Products.map(res => {
-        console.log(res.localizedPrice);
         setDonationAmount(res.localizedPrice);
       });
     }
@@ -87,10 +84,8 @@ const DonationScreen = () => {
         console.log('📋 RequestIOSPayment:', request);
         DonationAPICall();
         console.log('✅ All Set');
-      } catch (error) {
-        console.log('⚠️ Error', error);
-        // Alert.alert('Error', String(error));
-        showToast('Error', String(error?.message), 'error');
+      } catch (error: any) {
+        showToast('Error', String(error?.message || error), 'error');
         setPaymentLoader(false);
       }
     } else {

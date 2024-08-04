@@ -28,3 +28,5 @@ export const ANDROID_APP_VERSION = '2.0';
 export const IOS_APP_VERSION = '1.0.0';
 
 export const APP_NAME = 'Luvr';
+
+export const PLAYSTORE = 'https://play.google.com/store/apps/details?id=com.luvr.dating';
