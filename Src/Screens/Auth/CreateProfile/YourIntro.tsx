@@ -184,7 +184,7 @@ const YourIntro: FC = () => {
             style={styles.FlatListStyle}
             removeClippedSubviews={true}
             showsVerticalScrollIndicator={false}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={(item, index) => index.toString()}
             contentContainerStyle={styles.ContainerContainerStyle}
           />
         </View>

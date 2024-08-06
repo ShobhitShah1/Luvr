@@ -29,7 +29,7 @@ const LocationPermission: FC = () => {
     setIsLocationLoading(true);
 
     try {
-      requestLocationPermission()
+      await requestLocationPermission()
         .then(isLocationGranted => {
           if (isLocationGranted) {
             return new Promise((resolve, reject) => {
@@ -52,18 +52,15 @@ const LocationPermission: FC = () => {
                       ),
                     ]);
 
-                    handleNavigation();
+                    await handleNavigation();
                   }
                 },
                 error => {
                   reject(error);
-                  setIsLocationLoading(false);
                 },
                 {enableHighAccuracy: true, timeout: 15000, maximumAge: 100},
               );
             });
-          } else {
-            setIsLocationLoading(false);
           }
         })
         .catch(error => {
@@ -72,7 +69,6 @@ const LocationPermission: FC = () => {
             String(error?.message || error),
             'error',
           );
-          setIsLocationLoading(false);
         });
     } catch (error: any) {
       showToast(
@@ -83,6 +79,7 @@ const LocationPermission: FC = () => {
         ),
         'error',
       );
+    } finally {
       setIsLocationLoading(false);
     }
   };
@@ -99,8 +96,6 @@ const LocationPermission: FC = () => {
         userDataWithValidation,
       );
 
-      console.log('OTP VERIFY APIResponse:', APIResponse);
-
       if (APIResponse.data?.token) {
         dispatch(
           updateField(LocalStorageFields.Token, APIResponse.data?.token),
@@ -115,8 +110,6 @@ const LocationPermission: FC = () => {
         String(error?.message || error),
         TextString.error,
       );
-    } finally {
-      setIsLocationLoading(false);
     }
   };
 

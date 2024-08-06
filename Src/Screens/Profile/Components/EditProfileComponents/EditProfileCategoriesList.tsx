@@ -1,12 +1,12 @@
 import React, {FC, memo} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import CommonIcons from '../../../../Common/CommonIcons';
 import {
   ActiveOpacity,
   COLORS,
   FONTS,
   GROUP_FONT,
 } from '../../../../Common/Theme';
-import CommonIcons from '../../../../Common/CommonIcons';
 
 interface CategoriesListProps {
   Item: any[];

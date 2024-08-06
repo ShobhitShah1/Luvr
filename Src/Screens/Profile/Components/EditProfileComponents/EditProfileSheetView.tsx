@@ -77,16 +77,13 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
   //* ================= Hoping Functions =================
   const onPressLookingFor = useCallback(
     (item: any) => {
-      //* Check if the selected item is already in the array
       const isSelected = profile?.hoping === item?.Title;
-      //* If the selected item is already in the array, unselect it
       if (isSelected) {
         setProfile(prevState => ({
           ...prevState,
           hoping: '',
         }));
       } else {
-        //* If the selected item is not in the array, select it and unselect the previous one
         setProfile(prevState => ({
           ...prevState,
           hoping: item,
@@ -102,12 +99,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
       <TouchableOpacity
         activeOpacity={ActiveOpacity}
         onPress={() => onPressLookingFor(item)}
-        style={[
-          styles.LookingForListView,
-          {
-            // backgroundColor: Selected ? COLORS.Primary : COLORS.White,
-          },
-        ]}
+        style={[styles.LookingForListView]}
         key={index}>
         <View style={styles.TextView}>
           <Text
@@ -115,7 +107,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
             style={[
               styles.LookingForText,
               {
-                // color: Selected ? COLORS.Black : COLORS.Black,
                 fontFamily: Selected ? FONTS.Bold : FONTS.Medium,
               },
             ]}>
@@ -161,7 +152,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
   );
 
   const renderIntrustedView = ({item, index}: {item: any; index: number}) => {
-    // const Selected = profile?.orientation === item;
     const Selected =
       profile?.orientation && profile?.orientation?.length !== 0
         ? profile?.orientation?.includes(item.name)
@@ -170,12 +160,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
       <TouchableOpacity
         activeOpacity={ActiveOpacity}
         onPress={() => onPressIntrusted(item?.name)}
-        style={[
-          styles.LookingForListView,
-          {
-            // backgroundColor: Selected ? COLORS.Primary : COLORS.White,
-          },
-        ]}
+        style={[styles.LookingForListView]}
         key={index}>
         <View style={styles.TextView}>
           <Text
@@ -183,7 +168,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
             style={[
               styles.LookingForText,
               {
-                // color: Selected ? COLORS.Black : COLORS.Black,
                 fontFamily: Selected ? FONTS.Bold : FONTS.Medium,
               },
             ]}>
@@ -313,7 +297,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
             },
           };
         } else {
-          // For properties directly in ProfileType
           return {
             ...prevProfile,
             [value]: name,
@@ -340,7 +323,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
       }) => {
         let selectedOption = false;
 
-        // Check if value is in ProfileType
         if (value in profile) {
           selectedOption = profile[value] === item;
         } else if (
@@ -473,14 +455,13 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
             removeClippedSubviews={true}
             renderItem={renderImIntoList}
             showsVerticalScrollIndicator={false}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={(item, index) => index.toString()}
             columnWrapperStyle={{justifyContent: 'space-between'}}
             contentContainerStyle={styles.ContainerContainerStyle}
           />
         </View>
       </View>
 
-      {/* Hoping || Looking For */}
       <View
         style={styles.TextViewForSpace}
         onLayout={event => {
@@ -499,13 +480,11 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
           <FlatList
             data={LookingFor}
             renderItem={renderHopingView}
-            // contentContainerStyle={styles.FlatListContainer}
             keyExtractor={(item, index) => index.toString()}
           />
         </View>
       </View>
 
-      {/* Interested in */}
       <View
         style={styles.TextViewForSpace}
         onLayout={event => {
@@ -538,13 +517,11 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
           <FlatList
             data={GendersData}
             renderItem={renderIntrustedView}
-            // contentContainerStyle={styles.FlatListContainer}
             keyExtractor={(item, index) => index.toString()}
           />
         </View>
       </View>
 
-      {/* Zodiac Sign */}
       <View
         style={styles.TextViewForSpace}
         onLayout={event => {
@@ -565,7 +542,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
             initialNumToRender={50}
             nestedScrollEnabled={false}
             removeClippedSubviews={true}
-            // renderItem={renderZodiacSign}
             renderItem={({item}) => {
               return (
                 <RenderSingleSelectionView
@@ -582,7 +558,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         </View>
       </View>
 
-      {/* Communication Style */}
       <View
         style={styles.TextViewForSpace}
         onLayout={event => {
@@ -603,7 +578,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
             initialNumToRender={50}
             nestedScrollEnabled={false}
             removeClippedSubviews={true}
-            // renderItem={renderCommunicationStyle}
             renderItem={({item}) => {
               return (
                 <RenderSingleSelectionView
@@ -620,7 +594,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         </View>
       </View>
 
-      {/* Exercise */}
       <View
         style={styles.TextViewForSpace}
         onLayout={event => {
@@ -654,7 +627,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         </View>
       </View>
 
-      {/* Smoke & Drink */}
       <View
         style={styles.TextViewForSpace}
         onLayout={event => {
@@ -686,7 +658,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         </View>
       </View>
 
-      {/* Movie */}
       <View
         style={styles.TextViewForSpace}
         onLayout={event => {
@@ -718,7 +689,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({
         </View>
       </View>
 
-      {/* Drink */}
       <View
         style={styles.TextViewForSpace}
         onLayout={event => {

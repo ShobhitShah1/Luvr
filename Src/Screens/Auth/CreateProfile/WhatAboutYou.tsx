@@ -105,7 +105,6 @@ const WhatAboutYou: FC = () => {
       );
 
       if (allIntoSelected) {
-        console.log('selectedItems', selectedItems);
         await Promise.all([
           dispatch(
             updateField(
@@ -133,9 +132,7 @@ const WhatAboutYou: FC = () => {
         navigation.navigate('LoginStack', {
           screen: 'YourIntro',
         });
-        setIsSendRequestLoading(false);
       } else {
-        setIsSendRequestLoading(false);
         showToast(
           'Validation Error',
           'Please select all required options',
@@ -148,6 +145,7 @@ const WhatAboutYou: FC = () => {
         String(error?.message || error),
         'error',
       );
+    } finally {
       setIsSendRequestLoading(false);
     }
   };
@@ -179,7 +177,7 @@ const WhatAboutYou: FC = () => {
             removeClippedSubviews={true}
             style={styles.FlatListStyle}
             showsVerticalScrollIndicator={false}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={(item, index) => index.toString()}
           />
         </View>
       </View>

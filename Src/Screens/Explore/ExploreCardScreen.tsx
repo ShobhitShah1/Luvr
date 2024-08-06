@@ -90,7 +90,6 @@ const ExploreCardScreen: FC = () => {
     }
   }, [ItsMatchModalView]);
 
-  //* Blur Screen useEffect
   useEffect(() => {
     const _unsubscribe = navigation.addListener('blur', () => {
       stopInterval();
@@ -100,7 +99,6 @@ const ExploreCardScreen: FC = () => {
     return () => _unsubscribe();
   }, []);
 
-  //* Focus Screen useEffect
   useEffect(() => {
     if (isScreenFocused) {
       startInterval();
@@ -189,7 +187,6 @@ const ExploreCardScreen: FC = () => {
     ],
   );
 
-  //* On Swipe Right Do Something
   const OnSwipeRightCard = (cardIndex: number) => {
     console.log('Swipe Right Card Index', cardIndex);
     if (cards && cards[CurrentCardIndex]?._id) {
@@ -202,14 +199,12 @@ const ExploreCardScreen: FC = () => {
     }
   };
 
-  //* On Swipe Left Do Something
   const OnSwipeLeft = (cardIndex: any) => {
     if (cards[cardIndex] && cards[cardIndex]?._id) {
       store.dispatch(onSwipeLeft(String(cards[cardIndex]?._id)));
     }
   };
 
-  //* All Card Swiped
   const OnSwiped = async (cardIndex: any) => {
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
@@ -226,7 +221,6 @@ const ExploreCardScreen: FC = () => {
     setCurrentCardIndex(cardIndex + 1);
   };
 
-  //* When Swipe All Card Fetch New
   const OnSwipeAll = () => {
     swipeRef.current?.forceUpdate();
     setIsAPILoading(true);
@@ -234,17 +228,14 @@ const ExploreCardScreen: FC = () => {
     FetchAPIData(cardToSkipNumber + CardLimit);
   };
 
-  //* This Will Just Swipe Left
   const SwipeLeft = async () => {
     swipeRef.current?.swipeLeft();
   };
 
-  //* This Will Just Swipe Right
   const SwipeRight = () => {
     swipeRef.current?.swipeRight();
   };
 
-  //* User Like API
   const LikeUserAPI = async (id: string, cardData: SwiperCard) => {
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
@@ -333,7 +324,7 @@ const ExploreCardScreen: FC = () => {
             ref={swipeRef}
             cards={cards}
             cardIndex={CurrentCardIndex}
-            stackSize={2}
+            stackSize={10}
             stackSeparation={0}
             horizontalThreshold={width / 2.5}
             key={cards?.length}
@@ -394,8 +385,7 @@ const ExploreCardScreen: FC = () => {
             }}
           />
         ) : (
-          !IsAPILoading &&
-          IsNetConnected && (
+          !IsAPILoading && (
             <View style={styles.EmptyCardView}>
               <Text style={styles.EmptyCardText}>
                 Your dating compass needs a spin! Adjust your settings and let
@@ -415,7 +405,7 @@ const ExploreCardScreen: FC = () => {
         )}
       </View>
 
-      {cards?.length !== 0 && IsNetConnected && (
+      {cards?.length !== 0 && (
         <View style={styles.LikeAndRejectView}>
           <TouchableOpacity
             onPress={SwipeLeft}

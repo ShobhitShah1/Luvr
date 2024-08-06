@@ -98,6 +98,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.Black,
     fontFamily: FONTS.Medium,
-    // justifyContent: 'flex-start',
   },
 });

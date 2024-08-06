@@ -46,7 +46,6 @@ const styles = StyleSheet.create({
   },
   item1Inner: {
     flex: 1,
-    // justifyContent: 'flex-end',
   },
   row: {
     width: '100%',

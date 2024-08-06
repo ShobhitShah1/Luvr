@@ -17,49 +17,43 @@ interface EditProfileAllImageViewProps {
   UserPicks: {
     name: string;
     type: string;
-    key: string;
     url: string;
   }[];
-  index: number;
   OnToggleModal: () => void;
-  showToast: Function;
   isLoading: boolean;
 }
 
 const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
   item,
-  index,
   setUserPicks,
   UserPicks,
   OnToggleModal,
-  showToast,
   isLoading,
 }) => {
-  const DeleteImage = async (id: string) => {
-    // const APIResponse = await ProfileService.DeleteUserImage(id);
-    // console.log('Delete Image :--:>', APIResponse);
-    // if (APIResponse.status) {
-    //   showToast(
-    //     'Deleted',
-    //     APIResponse?.message || 'Your image successfully deleted',
-    //     'success',
-    //   );
-    //   return true;
-    // } else {
-    //   showToast(
-    //     'Error',
-    //     'Sorry! cant delete this image right now. try again',
-    //     'error',
-    //   );
-    //   return false;
-    // }
-  };
+  // const DeleteImage = async (id: string) => {
+  //   const APIResponse = await ProfileService.DeleteUserImage(id);
+  //   console.log('Delete Image :--:>', APIResponse);
+  //   if (APIResponse.status) {
+  //     showToast(
+  //       'Deleted',
+  //       APIResponse?.message || 'Your image successfully deleted',
+  //       'success',
+  //     );
+  //     return true;
+  //   } else {
+  //     showToast(
+  //       'Error',
+  //       'Sorry! cant delete this image right now. try again',
+  //       'error',
+  //     );
+  //     return false;
+  //   }
+  // };
 
-  //* Manage Image Select Button Click
-  const HandleOnImagePress = (item: {key: string; url: string}) => {
-    const UserImageCount = UserPicks.filter(
-      res => res.url !== '' && res.url !== undefined,
-    ).length;
+  const handleOnImagePress = (item: {key: string; url: string}) => {
+    // const UserImageCount = UserPicks.filter(
+    //   res => res.url !== '' && res.url !== undefined,
+    // ).length;
 
     if (item?.url?.length === 0) {
       OnToggleModal();
@@ -97,14 +91,12 @@ const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
       //   }
     }
   };
+
   return (
     <TouchableOpacity
-      key={index}
       disabled={isLoading}
       activeOpacity={ActiveOpacity}
-      onPress={() => {
-        HandleOnImagePress(item);
-      }}
+      onPress={() => handleOnImagePress(item)}
       style={styles.AddUserPhotoView}>
       <EditProfileRenderImageBox
         onDelete={() => {

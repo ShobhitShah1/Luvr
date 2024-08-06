@@ -10,7 +10,7 @@ import {
 import {BlurView} from '@react-native-community/blur';
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -48,6 +48,7 @@ import EditProfileCategoriesList from './Components/EditProfileComponents/EditPr
 import EditProfileSheetView from './Components/EditProfileComponents/EditProfileSheetView';
 import EditProfileTitleView from './Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from './Components/ProfileAndSettingHeader';
+import {RefreshControl} from 'react-native';
 
 export interface ViewPositionsProps {
   Gender: number;
@@ -62,19 +63,47 @@ export interface ViewPositionsProps {
   Drink: number;
 }
 
+const calculateAge = (inputDate: any) => {
+  const [day, month, year] = inputDate
+    .split(',')
+    .map((item: any) => parseInt(item.trim(), 10));
+
+  if (month < 1 || month > 12) {
+    throw new Error('Invalid month. Month must be between 1 and 12.');
+  }
+
+  const today = new Date();
+  const birthDate = new Date(year, month - 1, day);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birthDate.getDate())
+  ) {
+    age--;
+  }
+  return age;
+};
+
+const isEligible = (age: number) => {
+  return age >= 18 && age < 100;
+};
+
 const EditProfileScreen = () => {
   const dayInputRef = useRef<TextInput>(null);
   const yearInputRef = useRef<TextInput>(null);
   const monthInputRef = useRef<TextInput>(null);
 
+  const dispatch = useDispatch();
+  const {showToast} = useCustomToast();
+  const UserData = useSelector((state: any) => state?.user);
   const {requestCameraPermission} = useCameraPermission();
   const {requestGalleryPermission} = useGalleryPermission();
-  const {showToast} = useCustomToast();
-  const dispatch = useDispatch();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const UserData = useSelector((state: any) => state?.user);
+
+  const [refreshing, setRefreshing] = useState(false);
   const [IsFetchDataAPILoading, setIsFetchDataAPILoading] = useState(false);
-  const [profile, setProfile] = useState<ProfileType>();
+  const [profile, setProfile] = useState<ProfileType>(UserData?.userData);
   const [ChooseModalVisible, setChooseModalVisible] = useState<boolean>(false);
   const [Bio, setBio] = useState(profile?.about);
   const [UserName, setUserName] = useState(profile?.full_name);
@@ -85,24 +114,21 @@ const EditProfileScreen = () => {
   const [EducationDegree, setEducationDegree] = useState(
     profile?.education?.digree,
   );
-  const Day = profile?.birthdate?.split('/')[0];
-  const Month = profile?.birthdate?.split('/')[1];
-  const Year = profile?.birthdate?.split('/')[2];
+
+  const Day = useMemo(() => {
+    return profile?.birthdate?.split('/')[0];
+  }, [profile]);
+
+  const Month = useMemo(() => {
+    return profile?.birthdate?.split('/')[1];
+  }, [profile]);
+  const Year = useMemo(() => {
+    return profile?.birthdate?.split('/')[2];
+  }, [profile]);
+
   const [BirthdateDay, setBirthdateDay] = useState(Day);
   const [BirthdateMonth, setBirthdateMonth] = useState(Month);
   const [BirthdateYear, setBirthdateYear] = useState(Year);
-
-  const [UserPicks, setUserPicks] = useState(
-    Array.from({length: TotalProfilePicCanUploadEditProfile}, (_, index) => ({
-      name: '',
-      type: '',
-      key: String(index),
-      url: '',
-    })),
-  );
-
-  const scrollViewRef = useRef<ScrollView>(null);
-
   const [viewPositions, setViewPositions] = useState({
     Gender: 0,
     ImInto: 126.0952377319336,
@@ -115,58 +141,56 @@ const EditProfileScreen = () => {
     Movie: 3216.761962890625,
     Drink: 3355.047607421875,
   });
-
   const [ClickCategoryName, setClickCategoryName] = useState('');
+  const [UserPicks, setUserPicks] = useState(
+    Array.from({length: TotalProfilePicCanUploadEditProfile}, (_, index) => ({
+      name: '',
+      type: '',
+      key: String(index),
+      url: '',
+    })),
+  );
 
-  useEffect(() => {
-    const CheckConnection = async () => {
-      try {
-        const info = await NetInfo.fetch();
-        if (info.isConnected) {
-          setIsFetchDataAPILoading(true);
-          await Promise.all([GetProfileData(), CheckLocationPermission()]);
-        }
-      } catch (error) {
-        console.error(
-          'Error fetching profile data or checking location permission:',
-          error,
-        );
-      } finally {
-        setIsFetchDataAPILoading(false);
-      }
-    };
-
-    CheckConnection();
-  }, []);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const {locationPermission, requestLocationPermission} =
     useLocationPermission();
 
-  const calculateAge = (inputDate: any) => {
-    const [day, month, year] = inputDate
-      .split(',')
-      .map((item: any) => parseInt(item.trim(), 10));
+  useEffect(() => {
+    CheckConnection();
+  }, []);
 
-    // Validation for month (1-12)
-    if (month < 1 || month > 12) {
-      throw new Error('Invalid month. Month must be between 1 and 12.');
+  const CheckConnection = async () => {
+    try {
+      const isConnected = (await NetInfo.fetch()).isConnected;
+      const localData = UserData?.userData;
+
+      if (isConnected) {
+        await checkLocationPermission();
+        const updatedPicks = Array.from(
+          {length: TotalProfilePicCanUploadEditProfile},
+          (_, index) => ({
+            name: '',
+            type: '',
+            key: String(index),
+            url: localData.recent_pik[index] || '',
+          }),
+        );
+        setUserPicks(updatedPicks);
+        if (!localData || !localData?._id || !localData?.full_name) {
+          setIsFetchDataAPILoading(true);
+          await getProfileData();
+        }
+      }
+    } catch (error: any) {
+      showToast(
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
+        TextString.error,
+      );
+    } finally {
+      setIsFetchDataAPILoading(false);
     }
-
-    const today = new Date();
-    const birthDate = new Date(year, month - 1, day);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDate.getDate())
-    ) {
-      age--;
-    }
-    return age;
-  };
-
-  const isEligible = (age: number) => {
-    return age >= 18 && age < 100;
   };
 
   const handleTextInputChange = (
@@ -175,30 +199,25 @@ const EditProfileScreen = () => {
     maxLength: number,
     nextInputRef: any,
   ) => {
-    const numericValue = value.replace(/[^0-9]/g, ''); // Filter out non-numeric characters
-    setValueFunc(numericValue); // Set the filtered numeric value
+    const numericValue = value.replace(/[^0-9]/g, '');
+    setValueFunc(numericValue);
 
-    // Check if the current input has reached its maximum length and the input is valid
     if (numericValue.length === maxLength && nextInputRef) {
-      nextInputRef.current.focus(); // Focus on the next input
+      nextInputRef.current.focus();
     }
   };
 
-  //* Check User Location Permission
-  const CheckLocationPermission = async () => {
-    if (locationPermission) {
-      StoreLocationPermission();
-    } else {
+  const checkLocationPermission = async () => {
+    if (!locationPermission) {
       const requestPermission = await requestLocationPermission();
-      if (requestPermission) {
-        StoreLocationPermission();
-      } else {
+      if (!requestPermission) {
+        return;
       }
     }
+    storeLocationPermission();
   };
 
-  //* Get User Let And Long
-  const StoreLocationPermission = async () => {
+  const storeLocationPermission = async () => {
     try {
       return new Promise((resolve, reject) => {
         Geolocation.getCurrentPosition(
@@ -221,18 +240,14 @@ const EditProfileScreen = () => {
       });
     } catch (error: any) {
       showToast(
-        'Something went wrong',
-        String(
-          error?.message ||
-            'Unable to find your location please try gain letter',
-        ),
-        'error',
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
+        TextString.error,
       );
-    } finally {
     }
   };
 
-  const GetProfileData = async () => {
+  const getProfileData = async () => {
     try {
       const userDataForApi = {
         eventName: 'get_profile',
@@ -302,18 +317,17 @@ const EditProfileScreen = () => {
             }
           });
         }
-        setIsFetchDataAPILoading(false);
       } else {
         setProfile({} as ProfileType);
-        setIsFetchDataAPILoading(false);
       }
     } catch (error) {
       showToast(TextString.error.toUpperCase(), String(error), 'error');
+    } finally {
+      setRefreshing(false);
       setIsFetchDataAPILoading(false);
     }
   };
 
-  //* Handle Sheet Open/Close
   const handlePresentModalPress = useCallback((name: string) => {
     bottomSheetModalRef.current?.present();
     setClickCategoryName(name);
@@ -336,13 +350,11 @@ const EditProfileScreen = () => {
     [ClickCategoryName, viewPositions, bottomSheetModalRef, scrollViewRef],
   );
 
-  //* Toggle Modal Open
-  const OnToggleModal = () => {
+  const onToggleModal = () => {
     setChooseModalVisible(!ChooseModalVisible);
   };
 
-  //* Manage Gallery Image Pick
-  const HandleGalleryImagePicker = async () => {
+  const handleGalleryImagePicker = async () => {
     try {
       const res = await ImagePicker.launchImageLibrary({
         mediaType: 'photo',
@@ -360,15 +372,14 @@ const EditProfileScreen = () => {
         })) || [];
 
       if (newImages.length > 0) {
-        UploadImage(newImages);
+        uploadImage(newImages);
       }
     } catch (error) {
       showToast(TextString.error.toUpperCase(), String(error), 'error');
     }
   };
 
-  //* Manage Camera Image Pick
-  const HandleCameraImagePicker = async () => {
+  const handleCameraImagePicker = async () => {
     try {
       const res = await ImagePicker.launchCamera({
         mediaType: 'photo',
@@ -383,14 +394,14 @@ const EditProfileScreen = () => {
         })) || [];
 
       if (newImages.length > 0) {
-        UploadImage(newImages);
+        uploadImage(newImages);
       }
     } catch (error) {
       showToast(TextString.error.toUpperCase(), String(error), 'error');
     }
   };
 
-  const HandleUserSelection = async (selectedOption: string) => {
+  const handleUserSelection = async (selectedOption: string) => {
     try {
       const permissionStatus =
         selectedOption === 'Camera'
@@ -405,9 +416,9 @@ const EditProfileScreen = () => {
           : permissionStatus
       ) {
         if (selectedOption === 'Camera') {
-          await HandleCameraImagePicker();
+          await handleCameraImagePicker();
         } else {
-          await HandleGalleryImagePicker();
+          await handleGalleryImagePicker();
         }
 
         setChooseModalVisible(false);
@@ -417,8 +428,7 @@ const EditProfileScreen = () => {
     }
   };
 
-  //* Upload Single Image
-  const UploadImage = async (items: any[]) => {
+  const uploadImage = async (items: any[]) => {
     setIsFetchDataAPILoading(true);
 
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
@@ -465,13 +475,12 @@ const EditProfileScreen = () => {
         }
       }
 
-      // Check if all uploads were successful
       const allUploadsSuccessful = uploadResults.every(
         result => result?.code === 200,
       );
 
       if (allUploadsSuccessful) {
-        GetProfileData();
+        getProfileData();
         showToast(
           'Image Uploaded',
           'Your images have been uploaded successfully.',
@@ -491,7 +500,6 @@ const EditProfileScreen = () => {
     }
   };
 
-  //* Update Profile API Call (API CALL)
   const onUpdateProfile = async () => {
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
@@ -573,7 +581,7 @@ const EditProfileScreen = () => {
       const APIResponse = await UserService.UserRegister(DataToSend);
 
       if (APIResponse.code === 200) {
-        GetProfileData();
+        getProfileData();
         showToast(
           'Profile Updated',
           'Your profile information has been successfully updated.',
@@ -607,10 +615,20 @@ const EditProfileScreen = () => {
         onUpdatePress={onUpdateProfile}
         isLoading={IsFetchDataAPILoading}
       />
-      {/* <ProfileAndSettingHeader Title={'Edit Profile'} /> */}
-      <ScrollView bounces={false} style={styles.ContentView}>
+      <ScrollView
+        bounces={false}
+        style={styles.ContentView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              getProfileData();
+            }}
+            tintColor={COLORS.Primary}
+          />
+        }>
         <View style={styles.ListSubView}>
-          {/* Name View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -628,14 +646,8 @@ const EditProfileScreen = () => {
               IsViewLoading={IsFetchDataAPILoading}
               PlaceholderText="What's your full name?"
             />
-            {/* <EditProfileBoxView IsViewLoading={IsFetchDataAPILoading}>
-              <Text style={styles.UserFullNameStyle}>
-                {profile?.full_name || 'User'}
-              </Text>
-            </EditProfileBoxView> */}
           </View>
 
-          {/* Age View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -714,7 +726,6 @@ const EditProfileScreen = () => {
             </EditProfileBoxView>
           </View>
 
-          {/* Media View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -725,24 +736,21 @@ const EditProfileScreen = () => {
             <FlatList
               data={UserPicks}
               numColumns={3}
-              renderItem={({item, index}) => {
+              renderItem={({item}) => {
                 return (
                   <EditProfileAllImageView
                     item={item}
-                    index={index}
-                    showToast={showToast}
                     setUserPicks={setUserPicks}
                     UserPicks={UserPicks}
-                    OnToggleModal={OnToggleModal}
+                    OnToggleModal={onToggleModal}
                     isLoading={IsFetchDataAPILoading}
                   />
                 );
               }}
-              keyExtractor={index => index.toString()}
+              keyExtractor={(item, index) => index.toString()}
             />
           </View>
 
-          {/* About me View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -764,7 +772,6 @@ const EditProfileScreen = () => {
             />
           </View>
 
-          {/* Gender View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -786,7 +793,6 @@ const EditProfileScreen = () => {
             </EditProfileBoxView>
           </View>
 
-          {/* I’m from View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -806,7 +812,6 @@ const EditProfileScreen = () => {
             />
           </View>
 
-          {/* I like View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -826,7 +831,6 @@ const EditProfileScreen = () => {
             </EditProfileBoxView>
           </View>
 
-          {/* Looking for View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -846,7 +850,6 @@ const EditProfileScreen = () => {
             </EditProfileBoxView>
           </View>
 
-          {/* Interested in View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -868,7 +871,6 @@ const EditProfileScreen = () => {
             </EditProfileBoxView>
           </View>
 
-          {/* Zodiac sign View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -890,7 +892,6 @@ const EditProfileScreen = () => {
             </EditProfileBoxView>
           </View>
 
-          {/* Education View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -931,7 +932,6 @@ const EditProfileScreen = () => {
             </EditProfileBoxView>
           </View>
 
-          {/* Communication style View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -953,7 +953,6 @@ const EditProfileScreen = () => {
             </EditProfileBoxView>
           </View>
 
-          {/* Exercise style View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -975,7 +974,6 @@ const EditProfileScreen = () => {
             </EditProfileBoxView>
           </View>
 
-          {/* Smoke & drinks style View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -997,7 +995,6 @@ const EditProfileScreen = () => {
             </EditProfileBoxView>
           </View>
 
-          {/* Movies View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -1019,7 +1016,6 @@ const EditProfileScreen = () => {
             </EditProfileBoxView>
           </View>
 
-          {/* Drink View */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               isIcon={true}
@@ -1045,9 +1041,9 @@ const EditProfileScreen = () => {
 
       <ChooseFromModal
         isModalVisible={ChooseModalVisible}
-        toggleModal={OnToggleModal}
+        toggleModal={onToggleModal}
         OnOptionPress={(option: string) => {
-          HandleUserSelection(option);
+          handleUserSelection(option);
         }}
       />
 

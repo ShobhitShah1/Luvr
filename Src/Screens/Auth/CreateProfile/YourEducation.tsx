@@ -29,32 +29,20 @@ const YourEducation: FC = () => {
   const [CollegeName, setCollegeName] = useState<string>(userData.college_name);
   const [isLoading, setIsLoading] = useState(false);
 
-  const onNextPress = () => {
+  const onNextPress = async () => {
     setIsLoading(true);
 
     try {
       if (EducationDegree && CollegeName) {
-        Promise.all([
+        await Promise.all([
           dispatch(updateField(LocalStorageFields.digree, EducationDegree)),
           dispatch(updateField(LocalStorageFields.college_name, CollegeName)),
-        ])
-          .then(() => {
-            navigation.navigate('LoginStack', {
-              screen: 'AddDailyHabits',
-            });
-          })
-          .catch(error => {
-            showToast(
-              TextString.error.toUpperCase(),
-              String(error?.message || error),
-              TextString.error,
-            );
-          });
-      } else {
-        navigation.navigate('LoginStack', {
-          screen: 'AddDailyHabits',
-        });
+        ]);
       }
+
+      navigation.navigate('LoginStack', {
+        screen: 'AddDailyHabits',
+      });
     } catch (error: any) {
       showToast(
         TextString.error.toUpperCase(),

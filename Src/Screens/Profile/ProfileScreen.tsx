@@ -37,13 +37,16 @@ const ProfileScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const [IsImageLoading, setIsImageLoading] = useState(false);
   const [IsAPILoading, setIsAPILoading] = useState(true);
-  const [ProfileData, setProfileData] = useState<ProfileType | undefined>(
-    undefined,
+  const [ProfileData, setProfileData] = useState<ProfileType>(
+    userData?.userData,
   );
   const [percentage, setPercentage] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
+    if (!userData?.userData?.full_name || !userData?.full_name) {
+      setIsAPILoading(true);
+    }
     fetchProfileData();
   }, []);
 
@@ -60,8 +63,6 @@ const ProfileScreen = () => {
       setRefreshing(false);
       throw new Error(TextString.PleaseCheckYourInternetConnection);
     }
-
-    setIsAPILoading(true);
 
     try {
       const userDataForApi = {
@@ -127,7 +128,6 @@ const ProfileScreen = () => {
                             ProfileData?.recent_pik[0],
                           priority: FastImage.priority.high,
                         }}
-                        fallback={Platform.OS === 'android'}
                       />
                     ) : (
                       <View style={styles.LottieViewStyle}>

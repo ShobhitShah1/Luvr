@@ -46,6 +46,7 @@ import {
   IOS_APP_VERSION,
   PLAYSTORE,
 } from '../../Config/Setting';
+import {RefreshControl} from 'react-native';
 
 const ShowMeArray = ['Male', 'Female', 'Everyone'];
 const SOMETHING_WENT_WRONG =
@@ -57,12 +58,15 @@ const SettingScreen = () => {
   const [LogOutModalView, setLogOutModalView] = useState(false);
   const [DeleteAccountModalView, setDeleteAccountModalView] = useState(false);
   const [RateUsModalView, setRateUsModalView] = useState(false);
-  const [UserSetting, setProfileData] = useState<ProfileType | undefined>({});
+  const [UserSetting, setProfileData] = useState<ProfileType | undefined>(
+    UserData?.userData,
+  );
   const {reset} = useNavigation();
   const [RatingCount, setRatingCount] = useState(3);
   const {showToast} = useCustomToast();
-  const [IsSettingLoading, setIsSettingLoading] = useState(true);
+  const [IsSettingLoading, setIsSettingLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   let startAge = '';
   let endAge = '';
@@ -89,21 +93,31 @@ const SettingScreen = () => {
   }, []);
 
   useEffect(() => {
-    const CheckConnection = async () => {
-      try {
-        const IsNetOn = (await NetInfo.fetch()).isConnected;
-        if (IsNetOn) {
-          await GetSetting();
-        } else {
-          showToast('Error', "Please check you'r internet connection", 'error');
-        }
-      } catch (error: any) {
-        showToast('Error', String(error?.message || error), 'error');
-      }
-    };
-
     CheckConnection();
   }, []);
+
+  const CheckConnection = async () => {
+    try {
+      const isInternetConnected = (await NetInfo.fetch()).isConnected;
+      const localData = UserData?.userData;
+
+      if (isInternetConnected) {
+        if (
+          !localData ||
+          !localData?.mobile_no ||
+          !localData?.setting_age_range_min ||
+          !localData?.setting_show_me
+        ) {
+          setIsSettingLoading(true);
+          await getSetting();
+        }
+      } else {
+        showToast('Error', "Please check you'r internet connection", 'error');
+      }
+    } catch (error: any) {
+      showToast('Error', String(error?.message || error), 'error');
+    }
+  };
 
   const GetRemoteConfigValue = async () => {
     await remoteConfig().fetch(100);
@@ -168,7 +182,7 @@ const SettingScreen = () => {
     }
   };
 
-  const GetSetting = async () => {
+  const getSetting = async () => {
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
     if (!InInternetConnected) {
@@ -181,12 +195,12 @@ const SettingScreen = () => {
       return;
     }
 
-    setIsSettingLoading(true);
     try {
       const userDataForApi = {
         eventName: 'get_profile',
       };
       const APIResponse = await UserService.UserRegister(userDataForApi);
+
       if (APIResponse?.code === 200) {
         setProfileData({
           ...APIResponse.data,
@@ -204,6 +218,7 @@ const SettingScreen = () => {
       showToast('Error', String(error?.message || error), 'error');
     } finally {
       setIsSettingLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -303,7 +318,6 @@ Let's make every moment count together! #LoveConnects`,
     }
   };
 
-  //* Update Profile API Call (API CALL)
   const onUpdateProfile = async () => {
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
@@ -370,7 +384,7 @@ Let's make every moment count together! #LoveConnects`,
       const APIResponse = await UserService.UserRegister(DataToSend);
 
       if (APIResponse.code === 200) {
-        GetSetting();
+        getSetting();
         showToast(
           'Setting Updated',
           'Your setting information has been successfully updated.',
@@ -426,7 +440,18 @@ Let's make every moment count together! #LoveConnects`,
           }
         }}
       />
-      <ScrollView bounces={false} style={styles.ContentView}>
+      <ScrollView
+        bounces={false}
+        style={styles.ContentView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              getSetting();
+            }}
+          />
+        }>
         <View style={styles.ListSubView}>
           {/* Phone Number */}
           <View style={styles.DetailContainerView}>
