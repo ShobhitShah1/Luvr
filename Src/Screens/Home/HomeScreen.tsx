@@ -29,18 +29,15 @@ const HomeScreen = () => {
 
   useEffect(() => {
     Promise.all([
-      GetMyLikes(),
-      GetProfileData(),
-      AskNotificationPermission(),
-      UpdateDeviceToken(),
+      getMyLikes(),
+      getProfileData(),
+      askNotificationPermission(),
+      updateDeviceToken(),
+      handleLocationPermissionRequest(),
     ]);
   }, []);
 
-  useEffect(() => {
-    handleLocationPermissionRequest();
-  }, []);
-
-  const AskNotificationPermission = async () => {
+  const askNotificationPermission = async () => {
     requestNotifications(['alert', 'sound']);
     await messaging().requestPermission();
   };
@@ -49,7 +46,7 @@ const HomeScreen = () => {
     requestLocationPermission();
   };
 
-  const UpdateDeviceToken = async () => {
+  const updateDeviceToken = async () => {
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
     if (!InInternetConnected) {
@@ -87,7 +84,7 @@ const HomeScreen = () => {
     );
   }
 
-  const GetProfileData = async () => {
+  const getProfileData = async () => {
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
     if (!InInternetConnected) {
@@ -127,7 +124,7 @@ const HomeScreen = () => {
     setIsAPIDataLoading(true);
 
     try {
-      await Promise.allSettled([GetMyLikes(), GetProfileData()]);
+      await Promise.allSettled([getMyLikes(), getProfileData()]);
     } catch (error) {
       console.error('Error refreshing data:', error);
     } finally {
@@ -136,7 +133,7 @@ const HomeScreen = () => {
     }
   }, []);
 
-  const GetMyLikes = async () => {
+  const getMyLikes = async () => {
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
     if (!InInternetConnected) {

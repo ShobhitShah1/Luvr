@@ -75,7 +75,6 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({
         </View>
 
         <View style={styles.ButtonContainerView}>
-          {/* Gallery */}
           <TouchableOpacity
             onPress={() => OnOptionPress('Gallery')}
             activeOpacity={ActiveOpacity}
@@ -94,7 +93,6 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({
             </View>
           </TouchableOpacity>
 
-          {/* Camera */}
           <TouchableOpacity
             onPress={() => OnOptionPress('Camera')}
             activeOpacity={ActiveOpacity}

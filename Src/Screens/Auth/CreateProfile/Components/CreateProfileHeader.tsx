@@ -20,7 +20,6 @@ interface CreateProfileProps {
   Skip: boolean;
   handleSkipPress?: () => void;
   hideBack?: boolean;
-  canGoBack?: boolean;
 }
 
 const CreateProfileHeader: FC<CreateProfileProps> = ({
@@ -28,7 +27,6 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({
   Skip,
   handleSkipPress,
   hideBack,
-  canGoBack,
 }) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();

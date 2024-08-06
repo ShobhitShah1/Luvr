@@ -8,9 +8,7 @@ const ToastStyle = ({status, title, message}: any) => {
     <View
       style={[
         styles.Container,
-        {
-          borderLeftColor: status === 'success' ? 'green' : 'red',
-        },
+        {borderLeftColor: status === 'success' ? 'green' : 'red'},
       ]}>
       <View>
         {title === null ? (

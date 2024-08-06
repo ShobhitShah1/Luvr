@@ -5,7 +5,6 @@ export interface ContactTabType {
   title: string;
 }
 
-//* ContactTab
 export const ContactTabData: ContactTabType[] = [
   {
     id: 1,
@@ -17,7 +16,6 @@ export const ContactTabData: ContactTabType[] = [
   },
 ];
 
-//* Country With Code
 export interface Country {
   name: string;
   code: string;
@@ -4253,7 +4251,6 @@ export const CountryWithCode: Country[] = [
   },
 ];
 
-//* Genders And Main Genders
 export const MainGenders = ['Male', 'Female', 'Others'];
 
 export interface AllGendersType {
@@ -4412,7 +4409,6 @@ export const GendersData: GenderTypes[] = [
   },
 ];
 
-//* Lifestyle data
 export interface LifestyleType {
   id: number;
   habit: string;
@@ -4463,7 +4459,6 @@ export const LifestyleData: LifestyleType[] = [
   },
 ];
 
-//* LoogingFor Data
 export interface LookingForType {
   Title: string;
 }
@@ -4476,7 +4471,6 @@ export const LookingFor: string[] = [
   'Prefer Not To Say',
 ];
 
-//* What About You
 export interface WhatAboutYouType {
   id: number;
   habit: string;
@@ -4546,7 +4540,6 @@ export const WhatAboutYouData: WhatAboutYouType[] = [
   },
 ];
 
-//* Your Into Data
 export interface YourIntoType {
   id: number;
   name: string;
@@ -4603,7 +4596,6 @@ export const YourIntoData: YourIntoType[] = [
   {id: 48, name: 'Karaoke King/Queen'},
 ];
 
-//* Home Looking For Data
 export const HomeLookingForData = [
   {
     id: 1,
