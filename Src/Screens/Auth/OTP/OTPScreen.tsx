@@ -114,7 +114,7 @@ const OTPScreen: FC = () => {
 
       const response = await UserService.UserRegister(userDataForApi);
 
-      if (response.code === 200) {
+      if (response?.data?.result) {
         await Promise.all([
           dispatch(updateField(LocalStorageFields.OTP, otp)),
           dispatch(updateField(LocalStorageFields.isVerified, true)),
@@ -135,12 +135,13 @@ const OTPScreen: FC = () => {
           'success',
         );
       } else {
+        setOtp('');
         throw new Error('The OTP entered is incorrect. Please try again.');
       }
-    } catch (error) {
+    } catch (error: any) {
       showToast(
         TextString.error.toUpperCase(),
-        'Failed to verify OTP. Please check your network connection and try again.',
+        String(error?.message || error),
         'error',
       );
     } finally {
@@ -150,16 +151,16 @@ const OTPScreen: FC = () => {
 
   const handleSendOtp = async () => {
     setIsAPILoading(true);
+
     try {
       const userDataForApi = {
-        eventName: 'verify_otp',
+        eventName: 'send_otp',
         mobile_no: number,
-        otp: otp,
       };
 
       const response = await UserService.UserRegister(userDataForApi);
 
-      if (response.data?.Status === 'Success') {
+      if (response?.code === 200) {
         setResendDisabled(true);
         setResendTimer(10);
         showToast(
@@ -169,10 +170,13 @@ const OTPScreen: FC = () => {
         );
       } else {
         throw new Error(
-          response?.error || response?.message || 'Something went wrong.',
+          response?.error?.message ||
+            response?.message ||
+            'OTP resend failed. Please try again.',
         );
       }
     } catch (error: any) {
+      console.log('error', error);
       showToast(
         TextString.error.toUpperCase(),
         String(error?.message || error),
@@ -274,6 +278,7 @@ const OTPScreen: FC = () => {
             codeLength={OTPInputs}
             disableFullscreenUI={false}
             cellStyle={styles.OTPCellStyle}
+            placeholder={'0'}
             textStyle={styles.OTPTextStyle}
             containerStyle={styles.OTPContainerStyle}
             cellStyleFocused={styles.OTPCellStyleFocused}

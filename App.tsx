@@ -62,7 +62,7 @@ export default function App() {
         <UserDataProvider>
           <GestureHandlerRootView style={{flex: 1}}>
             <ToastProvider
-              placement="bottom"
+              placement="top"
               duration={4000}
               offset={30}
               animationType="zoom-in"

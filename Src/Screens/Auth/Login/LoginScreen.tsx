@@ -367,7 +367,7 @@ const LoginScreen: FC = () => {
             <LoginButton
               IsLoading={false}
               Title="LOGIN WITH PHONE NUMBER"
-              Icon={CommonLogos.EmailLoginLogo}
+              Icon={CommonLogos.NumberLogin}
               onPress={() => {
                 if (!IsFollowTerms) {
                   showToast(

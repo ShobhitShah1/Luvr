@@ -34,13 +34,12 @@ const IdentifyYourSelf: FC = () => {
   const userData = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
   const {showToast} = useCustomToast();
-  //* Ref's
+
   const ScrollViewRef = useRef<ScrollView>(null);
   const dayInputRef = useRef<TextInput>(null);
   const monthInputRef = useRef<TextInput>(null);
   const yearInputRef = useRef<TextInput>(null);
 
-  //* All States
   const [FirstName, setFirstName] = useState<string>(userData.full_name);
   const [BirthDateDD, setBirthDateDD] = useState<string>(
     userData.birthdate ? String(userData.birthdate).split('/')[0] : '',
@@ -54,7 +53,6 @@ const IdentifyYourSelf: FC = () => {
   const [CityName, setCityName] = useState<string>(userData.city);
   const [selectedGender, setSelectedGender] = useState<string>(userData.gender);
 
-  //* Navigation
   const navigation =
     useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
 
@@ -88,7 +86,6 @@ const IdentifyYourSelf: FC = () => {
     return age >= 18 && age < 100;
   };
 
-  //* Modal Button Navigate To Screen
   const OnLetsGoButtonPress = useCallback(async () => {
     try {
       Keyboard.dismiss();
@@ -153,7 +150,7 @@ const IdentifyYourSelf: FC = () => {
 
   return (
     <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={1} Skip={false} />
+      <CreateProfileHeader ProgressCount={1} Skip={false} hideBack={true} />
 
       <ScrollView
         ref={ScrollViewRef}
@@ -168,7 +165,6 @@ const IdentifyYourSelf: FC = () => {
         </Text>
 
         <View style={styles.AllInputContainerView}>
-          {/* Name */}
           <View style={styles.TextViewForSpace}>
             <Text style={styles.NameText}>My name is</Text>
             <CustomTextInput
@@ -184,7 +180,6 @@ const IdentifyYourSelf: FC = () => {
             />
           </View>
 
-          {/* Birthday */}
           <View style={styles.TextViewForSpace}>
             <Text style={styles.NameText}>My birthday is</Text>
             <View style={styles.BirthdayInputView}>
@@ -244,7 +239,6 @@ const IdentifyYourSelf: FC = () => {
             </View>
           </View>
 
-          {/* Im */}
           <View style={styles.TextViewForSpace}>
             <Text style={styles.NameText}>I am a</Text>
             <View style={styles.BirthdayInputView}>
@@ -280,7 +274,6 @@ const IdentifyYourSelf: FC = () => {
             </View>
           </View>
 
-          {/* From */}
           <View style={styles.TextViewForSpace}>
             <Text style={styles.NameText}>I am from</Text>
             <CustomTextInput

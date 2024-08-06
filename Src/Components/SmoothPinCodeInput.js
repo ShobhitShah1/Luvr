@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types';
 import React, {Component, memo} from 'react';
 import {StyleSheet, Text, TextInput, View} from 'react-native';
+import {COLORS} from '../Common/Theme';
 
 const styles = StyleSheet.create({
   containerDefault: {},
@@ -102,10 +103,9 @@ class SmoothPinCodeInput extends Component {
       codeLength,
       cellSize,
       cellSpacing,
-      placeholder,
+      placeholder = '0',
       password,
       mask,
-      autoFocus,
       containerStyle,
       cellStyle,
       cellStyleFocused,
@@ -188,7 +188,16 @@ class SmoothPinCodeInput extends Component {
                 duration={500}>
                 {isCellText && !maskComponent && (
                   <Text
-                    style={[textStyle, cellFocused ? textStyleFocused : {}]}>
+                    style={[
+                      textStyle,
+                      cellFocused
+                        ? textStyleFocused
+                        : {
+                            color: !filled
+                              ? 'rgba(130,130,130,.6)'
+                              : COLORS.White,
+                          },
+                    ]}>
                     {cellText}
                   </Text>
                 )}
