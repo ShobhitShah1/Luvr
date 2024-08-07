@@ -15,7 +15,7 @@ const OpenURL: AsyncFC<OpenURLProps> = async ({URL}) => {
         //* iOS Properties
         dismissButtonStyle: 'cancel',
         preferredBarTintColor: COLORS.Primary,
-        preferredControlTintColor: 'white',
+        preferredControlTintColor: COLORS.Secondary,
         readerMode: false,
         animated: true,
         modalPresentationStyle: 'fullScreen',
@@ -25,9 +25,9 @@ const OpenURL: AsyncFC<OpenURLProps> = async ({URL}) => {
         //* Android Properties
         showTitle: true,
         toolbarColor: COLORS.Primary,
-        secondaryToolbarColor: 'black',
-        navigationBarColor: 'black',
-        navigationBarDividerColor: 'white',
+        secondaryToolbarColor: COLORS.Secondary,
+        navigationBarColor: COLORS.Secondary,
+        navigationBarDividerColor: COLORS.Primary,
         enableUrlBarHiding: true,
         enableDefaultShare: true,
         forceCloseOnRedirection: false,

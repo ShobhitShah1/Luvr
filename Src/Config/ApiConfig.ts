@@ -2,7 +2,7 @@ import remoteConfig from '@react-native-firebase/remote-config';
 import {Platform} from 'react-native';
 
 const ApiConfig = {
-  DEBUG: false,
+  DEBUG: true,
   BASE_URL: 'https://nirvanatechlabs.in/dating/',
   IMAGE_UPLOAD_BASE_URL: 'https://nirvanatechlabs.in/dating/upload',
   GET_LOCATION_API: 'http://ip-api.com/json/?fields=countryCode',

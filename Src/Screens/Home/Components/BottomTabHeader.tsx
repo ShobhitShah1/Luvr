@@ -89,7 +89,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
               </Animated.View>
             </TouchableOpacity>
           )}
-          {hideSettingAndNotification === false && (
+          {!hideSettingAndNotification && (
             <TouchableOpacity
               activeOpacity={ActiveOpacity}
               onPress={() => {
@@ -103,7 +103,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
               />
             </TouchableOpacity>
           )}
-          {(hideSettingAndNotification === false || showSetting === true) && (
+          {(!hideSettingAndNotification || showSetting) && (
             <TouchableOpacity
               activeOpacity={ActiveOpacity}
               onPress={() => {

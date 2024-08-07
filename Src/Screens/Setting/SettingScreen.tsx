@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
@@ -47,6 +48,7 @@ import {
   PLAYSTORE,
 } from '../../Config/Setting';
 import {RefreshControl} from 'react-native';
+import {getProfileData} from '../../Utils/profileUtils';
 
 const ShowMeArray = ['Male', 'Female', 'Everyone'];
 const SOMETHING_WENT_WRONG =
@@ -80,7 +82,7 @@ const SettingScreen = () => {
   const [RemoteConfigLinks, setRemoteConfigLinks] = useState<any>();
 
   useEffect(() => {
-    Promise.all([GetRemoteConfigValue(), CheckPermission()]);
+    Promise.all([getRemoteConfigValue(), checkPermission()]);
   }, []);
 
   useEffect(() => {
@@ -93,10 +95,10 @@ const SettingScreen = () => {
   }, []);
 
   useEffect(() => {
-    CheckConnection();
+    checkConnection();
   }, []);
 
-  const CheckConnection = async () => {
+  const checkConnection = async () => {
     try {
       const isInternetConnected = (await NetInfo.fetch()).isConnected;
       const localData = UserData?.userData;
@@ -119,7 +121,7 @@ const SettingScreen = () => {
     }
   };
 
-  const GetRemoteConfigValue = async () => {
+  const getRemoteConfigValue = async () => {
     await remoteConfig().fetch(100);
     const GetRemoteConfigLinks = remoteConfig().getAll();
     if (GetRemoteConfigLinks) {
@@ -166,7 +168,7 @@ const SettingScreen = () => {
     }
   };
 
-  const CheckPermission = async () => {
+  const checkPermission = async () => {
     checkNotifications().then(({status}) => {
       if (status === 'granted') {
         setIsEnabled(true);
@@ -178,7 +180,7 @@ const SettingScreen = () => {
 
   const handleAppStateChange = (appState: AppStateStatus) => {
     if (appState === 'active') {
-      CheckPermission();
+      checkPermission();
     }
   };
 
@@ -206,6 +208,7 @@ const SettingScreen = () => {
           ...APIResponse.data,
           setting_show_me: APIResponse?.data?.setting_show_me || 'Everyone',
         });
+        await getProfileData();
       } else {
         showToast(
           'Something went wrong',
@@ -384,7 +387,7 @@ Let's make every moment count together! #LoveConnects`,
       const APIResponse = await UserService.UserRegister(DataToSend);
 
       if (APIResponse.code === 200) {
-        getSetting();
+        await getSetting();
         showToast(
           'Setting Updated',
           'Your setting information has been successfully updated.',
@@ -450,6 +453,8 @@ Let's make every moment count together! #LoveConnects`,
               setRefreshing(true);
               getSetting();
             }}
+            progressBackgroundColor={COLORS.White}
+            colors={[COLORS.Primary]}
           />
         }>
         <View style={styles.ListSubView}>

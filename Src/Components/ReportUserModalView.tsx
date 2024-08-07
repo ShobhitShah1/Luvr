@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 import {BlurView} from '@react-native-community/blur';
-import React, {FC} from 'react';
+import React, {FC, memo} from 'react';
 import {
   FlatList,
   Image,
@@ -32,9 +32,9 @@ const ReportUserModalView: FC<ReportUserProps> = ({
   const BlurredBackdrop = () => (
     <View style={styles.blurContainer}>
       <BlurView
-        style={styles.blurView}
         blurAmount={5}
-        blurType="ultraThinMaterialDark"
+        blurType="dark"
+        style={styles.blurView}
         reducedTransparencyFallbackColor="transparent"
       />
     </View>
@@ -134,7 +134,7 @@ const ReportUserModalView: FC<ReportUserProps> = ({
   );
 };
 
-export default ReportUserModalView;
+export default memo(ReportUserModalView);
 
 const styles = StyleSheet.create({
   Container: {

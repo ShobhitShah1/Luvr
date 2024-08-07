@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, memo} from 'react';
 import {Animated, StyleSheet, View, useWindowDimensions} from 'react-native';
 import {COLORS} from '../Common/Theme';
 
@@ -33,7 +33,7 @@ const Paginator: FC<PaginatorProps> = ({data, scrollX}) => {
   );
 };
 
-export default Paginator;
+export default memo(Paginator);
 
 const styles = StyleSheet.create({
   container: {

@@ -100,6 +100,7 @@ const EditProfileScreen = () => {
   const {requestCameraPermission} = useCameraPermission();
   const {requestGalleryPermission} = useGalleryPermission();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const [refreshing, setRefreshing] = useState(false);
   const [IsFetchDataAPILoading, setIsFetchDataAPILoading] = useState(false);
@@ -122,6 +123,7 @@ const EditProfileScreen = () => {
   const Month = useMemo(() => {
     return profile?.birthdate?.split('/')[1];
   }, [profile]);
+
   const Year = useMemo(() => {
     return profile?.birthdate?.split('/')[2];
   }, [profile]);
@@ -151,16 +153,14 @@ const EditProfileScreen = () => {
     })),
   );
 
-  const scrollViewRef = useRef<ScrollView>(null);
-
   const {locationPermission, requestLocationPermission} =
     useLocationPermission();
 
   useEffect(() => {
-    CheckConnection();
+    checkConnection();
   }, []);
 
-  const CheckConnection = async () => {
+  const checkConnection = async () => {
     try {
       const isConnected = (await NetInfo.fetch()).isConnected;
       const localData = UserData?.userData;
@@ -249,15 +249,11 @@ const EditProfileScreen = () => {
 
   const getProfileData = async () => {
     try {
-      const userDataForApi = {
-        eventName: 'get_profile',
-      };
+      const userDataForApi = {eventName: 'get_profile'};
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
-      if (APIResponse?.code === 200) {
-        const DataToStore: ProfileType = APIResponse?.data
-          ? APIResponse?.data
-          : {};
+      if (APIResponse?.code === 200 && APIResponse?.data) {
+        const DataToStore: ProfileType = APIResponse?.data;
 
         if (
           !DataToStore.magical_person ||
@@ -320,8 +316,12 @@ const EditProfileScreen = () => {
       } else {
         setProfile({} as ProfileType);
       }
-    } catch (error) {
-      showToast(TextString.error.toUpperCase(), String(error), 'error');
+    } catch (error: any) {
+      showToast(
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
+        'error',
+      );
     } finally {
       setRefreshing(false);
       setIsFetchDataAPILoading(false);
@@ -582,6 +582,7 @@ const EditProfileScreen = () => {
 
       if (APIResponse.code === 200) {
         getProfileData();
+
         showToast(
           'Profile Updated',
           'Your profile information has been successfully updated.',
@@ -625,7 +626,8 @@ const EditProfileScreen = () => {
               setRefreshing(true);
               getProfileData();
             }}
-            tintColor={COLORS.Primary}
+            progressBackgroundColor={COLORS.White}
+            colors={[COLORS.Primary]}
           />
         }>
         <View style={styles.ListSubView}>
@@ -736,17 +738,18 @@ const EditProfileScreen = () => {
             <FlatList
               data={UserPicks}
               numColumns={3}
-              renderItem={({item}) => {
-                return (
-                  <EditProfileAllImageView
-                    item={item}
-                    setUserPicks={setUserPicks}
-                    UserPicks={UserPicks}
-                    OnToggleModal={onToggleModal}
-                    isLoading={IsFetchDataAPILoading}
-                  />
-                );
-              }}
+              initialNumToRender={6}
+              maxToRenderPerBatch={10}
+              windowSize={21}
+              renderItem={({item}) => (
+                <EditProfileAllImageView
+                  item={item}
+                  setUserPicks={setUserPicks}
+                  UserPicks={UserPicks}
+                  OnToggleModal={onToggleModal}
+                  isLoading={IsFetchDataAPILoading}
+                />
+              )}
               keyExtractor={(item, index) => index.toString()}
             />
           </View>

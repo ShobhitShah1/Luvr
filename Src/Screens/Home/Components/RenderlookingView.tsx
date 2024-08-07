@@ -31,8 +31,9 @@ const RenderLookingView: FC<RenderLookingViewProps> = ({
   return (
     <TouchableOpacity
       activeOpacity={1}
+      disabled={IsLoading}
       onPress={() => {
-        !IsLoading && navigation.navigate('CategoryDetailCards', {item});
+        navigation.navigate('CategoryDetailCards', {item});
       }}
       style={[styles.container, {marginHorizontal}]}>
       <Skeleton

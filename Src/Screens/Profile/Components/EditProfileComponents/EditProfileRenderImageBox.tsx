@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import {Skeleton} from 'moti/skeleton';
-import React, {memo, useState} from 'react';
+import React, {memo, useMemo, useState} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -26,7 +26,10 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
   picture,
   isLoading,
 }) => {
-  const hasPicture = picture?.url;
+  const hasPicture = useMemo(() => {
+    return picture?.url;
+  }, [picture?.url]);
+
   const [IsImageLoading, setIsImageLoading] = useState<boolean>(false);
 
   return (

@@ -15,6 +15,7 @@ import ItsAMatch from '../../Explore/Components/ItsAMatch';
 import CategoryDetailHeader from './Components/CategoryDetailHeader';
 import CategoryRenderCard from './Components/CategoryRenderCard';
 import styles from './styles';
+import TextString from '../../../Common/TextString';
 
 interface CategoryDetailCardsProps {
   params: {
@@ -44,28 +45,30 @@ const CategoryDetailCardsScreen: FC = () => {
   const [CurrentCardIndex, setCurrentCardIndex] = useState<number>(-1);
 
   useEffect(() => {
-    CheckConnectionAndFetchAPI();
+    checkConnectionAndFetchAPI();
   }, []);
 
-  const CheckConnectionAndFetchAPI = async () => {
+  const checkConnectionAndFetchAPI = async () => {
     setIsAPILoading(true);
+    setItsMatchModalView(false);
+
     const isConnected = (await NetInfo.fetch()).isConnected;
 
-    if (isConnected) {
-      FetchAPIData();
-      setItsMatchModalView(false);
-    } else {
+    if (!isConnected) {
       setIsAPILoading(false);
+      setItsMatchModalView(false);
       showToast(
         'No Internet Connection',
         'Please check your internet connection',
         'error',
       );
-      setItsMatchModalView(false);
+      return;
     }
+
+    await fetchAPIData();
   };
 
-  const FetchAPIData = useCallback(async () => {
+  const fetchAPIData = useCallback(async () => {
     try {
       const userDataForApi = {
         eventName: 'list_neighbour_home',
@@ -90,24 +93,26 @@ const CategoryDetailCardsScreen: FC = () => {
           'error',
         );
       }
-      setIsAPILoading(false);
-    } catch (error) {
-      console.log('Something Went Wrong With Feting API Data');
+    } catch (error: any) {
+      showToast(
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
+        'error',
+      );
     } finally {
       setIsAPILoading(false);
     }
   }, [LeftSwipedUserIds, RightSwipedUserIds, userData, params?.item?.title]);
 
   useEffect(() => {
-    FetchAPIData();
+    fetchAPIData();
   }, [LeftSwipedUserIds, RightSwipedUserIds]);
 
   const ListEmptyView = () => {
     return (
       <View style={styles.EmptyListView}>
         <Text style={styles.EmptyListText}>
-          Sorry! Unable to Find Card for{' '}
-          <Text style={{}}>"{params?.item?.title}"</Text>
+          Sorry! Unable to Find Card for <Text>"{params?.item?.title}"</Text>
         </Text>
       </View>
     );
@@ -146,7 +151,7 @@ const CategoryDetailCardsScreen: FC = () => {
               <CategoryRenderCard
                 item={item}
                 index={index}
-                FetchAPIData={FetchAPIData}
+                FetchAPIData={fetchAPIData}
                 setIsAPILoading={setIsAPILoading}
                 setCurrentCardIndex={setCurrentCardIndex}
                 setItsMatchModalView={setItsMatchModalView}

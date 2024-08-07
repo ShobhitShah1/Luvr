@@ -44,30 +44,30 @@ const SettingFlexView: FC<SettingFlexViewProps> = ({
   useEffect(() => {
     setLocalIsActive(isActive);
   }, [isActive, Item, IsSwitch]);
+
   return (
     <TouchableOpacity
       activeOpacity={ActiveOpacity}
       onPress={onPress}
       style={[styles.SettingView, style]}>
       <Text style={[styles.ItemTextStyle, itemStyle]}>{Item}</Text>
-      {!hideRightIcon &&
-        (IsSwitch ? (
-          <SwitchComponent
-            onPress={() => {
-              onSwitchPress ? onSwitchPress() : {};
-            }}
-            isActive={localIsActive}
-            size={38}
+      {!hideRightIcon && IsSwitch ? (
+        <SwitchComponent
+          onPress={() => {
+            onSwitchPress ? onSwitchPress() : {};
+          }}
+          isActive={localIsActive}
+          size={38}
+        />
+      ) : (
+        <View style={[styles.RightIconView, rightIconViewStyle]}>
+          <Image
+            resizeMode="contain"
+            source={CommonIcons.RightArrow}
+            style={[styles.RightArrowIcon, rightArrowIconStyle]}
           />
-        ) : (
-          <View style={[styles.RightIconView, rightIconViewStyle]}>
-            <Image
-              resizeMode="contain"
-              source={CommonIcons.RightArrow}
-              style={[styles.RightArrowIcon, rightArrowIconStyle]}
-            />
-          </View>
-        ))}
+        </View>
+      )}
     </TouchableOpacity>
   );
 };

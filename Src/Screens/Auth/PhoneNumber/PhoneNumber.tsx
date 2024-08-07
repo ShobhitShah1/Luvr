@@ -1,7 +1,14 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 import {useNavigation} from '@react-navigation/native';
-import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   FlatList,
   Image,
@@ -40,11 +47,12 @@ import styles from './styles';
 const SOMETHING_WRONG = 'Something went wrong, try again later';
 
 const PhoneNumber: FC = () => {
+  const dispatch = useDispatch();
+  const opacity = useSharedValue(0);
+  const {showToast} = useCustomToast();
   const navigation = useNavigation<any>();
   const userData = useSelector((state: any) => state?.user);
   const textInputRef = useRef<TextInput>(null);
-  const dispatch = useDispatch();
-  const {showToast} = useCustomToast();
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [diallingCode, setDiallingCode] = useState<string | null>(
@@ -60,11 +68,9 @@ const PhoneNumber: FC = () => {
   const [FilteredCountries, setFilteredCountries] = useState(CountryWithCode);
   const {checkLocationPermission} = useLocationPermission();
 
-  const opacity = useSharedValue(0);
-
-  const PhoneNumberString: String = `${
-    diallingCode || defaultDiallingCode
-  }${StorePhoneNumber}`;
+  const PhoneNumberString = useMemo(() => {
+    return `${diallingCode || defaultDiallingCode}${StorePhoneNumber}`;
+  }, [diallingCode, defaultDiallingCode, StorePhoneNumber]);
 
   useEffect(() => {
     const focusListener = navigation.addListener('focus', () => {
@@ -73,7 +79,7 @@ const PhoneNumber: FC = () => {
       }
     });
 
-    return () => focusListener();
+    return focusListener;
   }, [navigation]);
 
   useEffect(() => {
@@ -84,9 +90,7 @@ const PhoneNumber: FC = () => {
   }, [visible, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-    };
+    return {opacity: opacity.value};
   });
 
   const handleCountryPress = (item: any) => {
@@ -117,7 +121,7 @@ const PhoneNumber: FC = () => {
       const isGuestNumber = StorePhoneNumber === '7041526621';
 
       if (isGuestNumber) {
-        await GetUserWithoutOTP();
+        await getUserWithoutOTP();
         return;
       }
 
@@ -138,7 +142,7 @@ const PhoneNumber: FC = () => {
     }
   };
 
-  const GetUserWithoutOTP = async () => {
+  const getUserWithoutOTP = async () => {
     try {
       const tasks = [
         updateField(LocalStorageFields.mobile_no, PhoneNumberString),

@@ -32,7 +32,6 @@ import {
   MessageTextProps,
 } from 'react-native-gifted-chat';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
-// import socket from '../../Services/socket';
 import {TouchableOpacity} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {Socket, io} from 'socket.io-client';
@@ -64,6 +63,10 @@ interface ChatData {
 
 type ChatScreenRouteProp = RouteProp<ParamListBase, 'ChatScreen'> & ChatData;
 
+const generateRandomId = () => {
+  return Math.random().toString(36).substr(2, 9);
+};
+
 const ChatScreen: FC = () => {
   const {params} = useRoute<ChatScreenRouteProp>();
 
@@ -71,10 +74,6 @@ const ChatScreen: FC = () => {
   const CurrentLoginUserId = userData?._id;
   const CurrentUserImage = userData?.recent_pik;
   const CurrentLoginUserFullName = userData?.full_name;
-
-  // const CurrentLoginUserId = store.getState().user?.userData?._id;
-  // const CurrentUserImage = store.getState().user?.userData?.recent_pik;
-  // const CurrentLoginUserFullName = store.getState().user?.userData?.full_name;
 
   const [userMessage, setUserMessages] = useState<IMessage[]>([]);
   const [CountMessage, setCountMessage] = useState(0);
@@ -91,15 +90,13 @@ const ChatScreen: FC = () => {
     useState<boolean>(false);
   const [ReportAndBlockModal, setReportAndBlockModal] = useState(false);
 
-  const generateRandomId = () => {
-    return Math.random().toString(36).substr(2, 9);
-  };
-
   useEffect(() => {
     if (IsFocused) {
       getOtherUserDataCall();
+
       const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
       setSocket(socketInstance);
+
       return () => {
         socketInstance.disconnect();
       };

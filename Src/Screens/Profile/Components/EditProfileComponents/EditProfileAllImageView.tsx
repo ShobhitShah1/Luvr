@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-shadow */
-import React, {FC, memo} from 'react';
+import React, {FC, memo, useCallback} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import {ActiveOpacity} from '../../../../Common/Theme';
@@ -30,67 +30,14 @@ const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
   OnToggleModal,
   isLoading,
 }) => {
-  // const DeleteImage = async (id: string) => {
-  //   const APIResponse = await ProfileService.DeleteUserImage(id);
-  //   console.log('Delete Image :--:>', APIResponse);
-  //   if (APIResponse.status) {
-  //     showToast(
-  //       'Deleted',
-  //       APIResponse?.message || 'Your image successfully deleted',
-  //       'success',
-  //     );
-  //     return true;
-  //   } else {
-  //     showToast(
-  //       'Error',
-  //       'Sorry! cant delete this image right now. try again',
-  //       'error',
-  //     );
-  //     return false;
-  //   }
-  // };
-
-  const handleOnImagePress = (item: {key: string; url: string}) => {
-    // const UserImageCount = UserPicks.filter(
-    //   res => res.url !== '' && res.url !== undefined,
-    // ).length;
-
-    if (item?.url?.length === 0) {
-      OnToggleModal();
-    } else {
-      //* Delete Image
-      //   if (UserImageCount <= 2) {
-      //     showToast(
-      //       'Oops!',
-      //       'You can only delete up to 2 images. Minimum limit reached.',
-      //       'error',
-      //     );
-      //   } else {
-      //     Alert.alert(
-      //       'Image Removal Alert!',
-      //       'Thinking about removing this image from your profile? Deleting it is like saying goodbye to a moment captured in the digital journey. Still want to proceed?',
-      //       [
-      //         {
-      //           text: 'Keep it',
-      //           onPress: () => {},
-      //         },
-      //         {
-      //           text: 'Yes, delete it',
-      //           onPress: async () => {
-      //             // const IsDeleted = await DeleteImage(item.key);
-      //             // if (IsDeleted) {
-      //             const newPics = UserPicks.map(deleteUrlFromItem(item)).sort(
-      //               sortByUrl,
-      //             );
-      //             setUserPicks(newPics);
-      //             // }
-      //           },
-      //         },
-      //       ],
-      //     );
-      //   }
-    }
-  };
+  const handleOnImagePress = useCallback(
+    (item: {key: string; url: string}) => {
+      if (item?.url?.length === 0) {
+        OnToggleModal();
+      }
+    },
+    [OnToggleModal],
+  );
 
   return (
     <TouchableOpacity
@@ -99,12 +46,7 @@ const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
       onPress={() => handleOnImagePress(item)}
       style={styles.AddUserPhotoView}>
       <EditProfileRenderImageBox
-        onDelete={() => {
-          // const newPics = UserPicks.map(deleteUrlFromItem(item))?.sort(
-          //   sortByUrl,
-          // );
-          // setUserPicks(newPics);
-        }}
+        onDelete={() => {}}
         onAdd={() => {
           const newPics = UserPicks.map(addUrlToItem(item)).sort(sortByUrl);
           setUserPicks(newPics);

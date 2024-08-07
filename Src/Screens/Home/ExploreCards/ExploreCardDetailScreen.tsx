@@ -33,6 +33,7 @@ import {ProfileType} from '../../../Types/ProfileType';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import DetailCardHeader from './Components/DetailCardHeader';
 import RenderUserImagesView from './Components/RenderUserImagesView';
+import TextString from '../../../Common/TextString';
 
 type DetailCardRouteParams = {
   props: ProfileType;
@@ -75,9 +76,9 @@ const ExploreCardDetailScreen = () => {
         }
       } else {
         showToast(
-          'Something went wrong',
+          TextString.error.toUpperString(),
           APIResponse?.message || 'Please try again letter',
-          'error',
+          TextString.error,
         );
         setCardData({} as ProfileType);
       }
@@ -114,13 +115,17 @@ const ExploreCardDetailScreen = () => {
         navigation.goBack();
       } else {
         showToast(
-          'Something went wrong',
+          TextString.error.toUpperCase(),
           APIResponse?.message || 'Please try again letter',
-          'error',
+          TextString.error,
         );
       }
     } else {
-      showToast('Error', "Can't find UserID please try again letter", 'error');
+      showToast(
+        TextString.error.toUpperCase(),
+        "Can't find UserID please try again letter",
+        TextString.error,
+      );
     }
   };
 
@@ -129,7 +134,11 @@ const ExploreCardDetailScreen = () => {
       store.dispatch(onSwipeLeft(String(UserID)));
       navigation.goBack();
     } else {
-      showToast('Error', "Can't find UserID please try again letter", 'error');
+      showToast(
+        TextString.error.toUpperCase(),
+        "Can't find UserID please try again letter",
+        TextString.error,
+      );
     }
   };
 
@@ -141,7 +150,7 @@ const ExploreCardDetailScreen = () => {
     const APIResponse = await UserService.UserRegister(BlockData);
 
     if (APIResponse && APIResponse?.code === 200) {
-      await store.dispatch(onSwipeLeft(String(UserID)));
+      store.dispatch(onSwipeLeft(String(UserID)));
       showToast(
         'User Blocked',
         `Your request to block ${CardDetail.params?.props?.full_name} is successfully send`,
@@ -149,7 +158,11 @@ const ExploreCardDetailScreen = () => {
       );
       navigation.goBack();
     } else {
-      showToast('Error', 'Something went wrong', 'error');
+      showToast(
+        TextString.error.toUpperCase(),
+        String(APIResponse?.message) || 'Something went wrong',
+        TextString.error,
+      );
     }
   };
 
@@ -165,7 +178,7 @@ const ExploreCardDetailScreen = () => {
     console.log('Report APIResponse', APIResponse);
 
     if (APIResponse && APIResponse?.code === 200) {
-      await store.dispatch(onSwipeLeft(String(UserID)));
+      store.dispatch(onSwipeLeft(String(UserID)));
       showToast(
         'Success!',
         `Your report against ${CardDetail.params?.props?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${SelectedReportReason}`,
@@ -173,7 +186,11 @@ const ExploreCardDetailScreen = () => {
       );
       navigation.goBack();
     } else {
-      showToast('Error', 'Something went wrong', 'error');
+      showToast(
+        TextString.error.toUpperCase(),
+        String(APIResponse?.message) || 'Something went wrong',
+        TextString.error,
+      );
     }
   };
 
@@ -218,13 +235,12 @@ const ExploreCardDetailScreen = () => {
                 scrollEventThrottle={32}
                 onViewableItemsChanged={viewableItemsChanged}
                 viewabilityConfig={viewConfig}
+                keyExtractor={(item, index) => index.toString()}
               />
             )}
-            {CardData &&
-              CardData?.recent_pik?.length !== 0 &&
-              CardData?.recent_pik?.length > 1 && (
-                <Paginator data={CardData?.recent_pik} scrollX={scrollX} />
-              )}
+            {CardData && CardData?.recent_pik?.length > 1 && (
+              <Paginator data={CardData?.recent_pik} scrollX={scrollX} />
+            )}
           </View>
 
           <View style={styles.UserInfoContainerView}>
@@ -245,7 +261,6 @@ const ExploreCardDetailScreen = () => {
               </View>
             )}
 
-            {/* Birthday */}
             {CardData?.birthdate && (
               <View style={styles.DetailBoxContainerView}>
                 <View style={styles.TitleAndIconView}>
@@ -264,7 +279,6 @@ const ExploreCardDetailScreen = () => {
               </View>
             )}
 
-            {/* Looking for */}
             {CardData?.hoping &&
               CardData?.hoping?.length !== 0 &&
               CardData?.hoping?.length !== undefined && (
@@ -283,7 +297,6 @@ const ExploreCardDetailScreen = () => {
                 </View>
               )}
 
-            {/* Interested in */}
             {CardData?.orientation !== undefined &&
               CardData?.orientation?.length !== 0 && (
                 <View style={styles.DetailBoxContainerView}>
@@ -312,7 +325,6 @@ const ExploreCardDetailScreen = () => {
                 </View>
               )}
 
-            {/* Location */}
             {CardData?.city && (
               <View style={styles.DetailBoxContainerView}>
                 <View style={styles.TitleAndIconView}>
@@ -331,7 +343,6 @@ const ExploreCardDetailScreen = () => {
               </View>
             )}
 
-            {/* Education */}
             {CardData?.education?.college_name &&
               CardData?.education?.college_name && (
                 <View style={styles.DetailBoxContainerView}>
@@ -352,7 +363,6 @@ const ExploreCardDetailScreen = () => {
                 </View>
               )}
 
-            {/* I like */}
             {CardData?.likes_into &&
               Array.isArray(CardData?.likes_into) &&
               CardData?.likes_into[0] !== '' &&
@@ -380,9 +390,7 @@ const ExploreCardDetailScreen = () => {
                 </View>
               )}
 
-            {/* Block And Report Profile */}
             <View style={styles.BlockAndReportProfileView}>
-              {/* Block Profile */}
               <TouchableOpacity
                 onPress={onBlockProfileClick}
                 activeOpacity={ActiveOpacity}
@@ -395,7 +403,6 @@ const ExploreCardDetailScreen = () => {
                 <Text style={styles.BlockAndReportText}>Block Profile</Text>
               </TouchableOpacity>
 
-              {/* Report Profile */}
               <TouchableOpacity
                 onPress={() => setShowReportModalView(!ShowReportModalView)}
                 activeOpacity={ActiveOpacity}
@@ -409,9 +416,7 @@ const ExploreCardDetailScreen = () => {
               </TouchableOpacity>
             </View>
 
-            {/* Like And Reject View */}
             <View style={styles.LikeAndRejectView}>
-              {/* Reject Button */}
               <TouchableOpacity
                 onPress={onRejectPress}
                 activeOpacity={ActiveOpacity}
@@ -423,7 +428,6 @@ const ExploreCardDetailScreen = () => {
                 />
               </TouchableOpacity>
 
-              {/* Like Button */}
               <TouchableOpacity
                 onPress={onLikePress}
                 activeOpacity={ActiveOpacity}
