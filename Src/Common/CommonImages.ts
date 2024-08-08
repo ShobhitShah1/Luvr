@@ -1,12 +1,18 @@
 const WelcomeBackground = require('../../Assets/Images/WelcomeBackground.webp');
 const Camera_Icon = require('../../Assets/Images/camera_icon.png');
 const Gallery_Icon = require('../../Assets/Images/gallery_icon.png');
-const Location = require('../../Assets/Images/location.png');
-const Avoid_Contact = require('../../Assets/Images/avoid_contact.png');
-const LikeCard = require('../../Assets/Images/LikeCard.png');
+const Location = require('../../Assets/Images/location.webp');
+const Avoid_Contact = require('../../Assets/Images/avoid_contact.webp');
+const LikeCard = require('../../Assets/Images/LikeCard.webp');
 const NoChat = require('../../Assets/Images/no_chats_icon.png');
-const ItsAMatch = require('../../Assets/Images/ItsAMatch.png');
+const ItsAMatch = require('../../Assets/Images/ItsAMatch.webp');
 const NoNotification = require('../../Assets/Images/no_notification_icon.png');
+const HomeHelp = require('../../Assets/Images/HomeHelp.webp');
+const HomeHoping = require('../../Assets/Images/HomeHoping.webp');
+const HomeNewFriends = require('../../Assets/Images/HomeNewFriends.webp');
+const HomeSomethingCasual = require('../../Assets/Images/HomeSomethingCasual.webp');
+const HomeSortTermRelationship = require('../../Assets/Images/HomeSortTermRelationship.webp');
+const HomePartyPartner = require('../../Assets/Images/HomePartyPartner.webp');
 
 export default {
   WelcomeBackground,
@@ -18,4 +24,10 @@ export default {
   NoChat,
   ItsAMatch,
   NoNotification,
+  HomeHelp,
+  HomeHoping,
+  HomeNewFriends,
+  HomeSomethingCasual,
+  HomeSortTermRelationship,
+  HomePartyPartner,
 };

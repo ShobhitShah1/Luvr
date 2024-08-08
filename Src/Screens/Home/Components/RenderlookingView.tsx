@@ -1,9 +1,8 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Skeleton} from 'moti/skeleton';
-import React, {FC, memo, useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import FastImage from 'react-native-fast-image';
+import React, {FC, memo} from 'react';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {COLORS, GROUP_FONT} from '../../../Common/Theme';
@@ -12,21 +11,14 @@ interface RenderLookingViewProps {
   item: {
     id: number;
     title: string;
-    image: any;
+    image: number;
   };
-  index: number;
   IsLoading: boolean;
 }
 
-const RenderLookingView: FC<RenderLookingViewProps> = ({
-  item,
-  index,
-  IsLoading,
-}) => {
+const RenderLookingView: FC<RenderLookingViewProps> = ({item, IsLoading}) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<{CategoryDetailCards: {}}>>();
-  const marginHorizontal = index % 2 === 0 ? 0 : '3%';
-  const [IsImageLoading, setIsImageLoading] = useState(false);
 
   return (
     <TouchableOpacity
@@ -35,24 +27,21 @@ const RenderLookingView: FC<RenderLookingViewProps> = ({
       onPress={() => {
         navigation.navigate('CategoryDetailCards', {item});
       }}
-      style={[styles.container, {marginHorizontal}]}>
+      style={[styles.container, {}]}>
       <Skeleton
         colorMode="light"
-        show={IsLoading || IsImageLoading}
+        show={IsLoading}
         colors={COLORS.LoaderGradient}>
         <View>
-          <FastImage
-            onLoadStart={() => setIsImageLoading(true)}
-            onLoad={() => setIsImageLoading(false)}
-            onLoadEnd={() => setIsImageLoading(false)}
-            source={{uri: item?.image, priority: FastImage.priority.high}}
+          <Image
             resizeMode="cover"
+            source={item.image}
             style={styles.imageView}
           />
           <LinearGradient
             colors={COLORS.GradientViewForCards}
             style={styles.gradient}>
-            {!IsLoading && !IsImageLoading && (
+            {!IsLoading && (
               <Text numberOfLines={2} style={styles.TitleText}>
                 {item?.title}
               </Text>
@@ -68,11 +57,11 @@ export default memo(RenderLookingView);
 
 const styles = StyleSheet.create({
   container: {
-    width: '47%',
+    width: '48.5%',
     zIndex: 9999,
-    height: hp('23%'),
+    height: 210,
     overflow: 'hidden',
-    marginVertical: '1%',
+    marginVertical: 5,
     borderRadius: hp('3%'),
   },
   imageView: {

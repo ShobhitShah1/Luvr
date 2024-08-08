@@ -72,15 +72,12 @@ const HomeScreen = () => {
           bounces={false}
           data={HomeLookingForData}
           style={styles.FlatListStyle}
+          columnWrapperStyle={styles.columWrapper}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({item, index}) => {
+          renderItem={({item}) => {
             return (
-              <RenderLookingView
-                item={item}
-                index={index}
-                IsLoading={IsAPIDataLoading}
-              />
+              <RenderLookingView item={item} IsLoading={IsAPIDataLoading} />
             );
           }}
           ListHeaderComponent={
