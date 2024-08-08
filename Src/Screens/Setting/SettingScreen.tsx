@@ -60,7 +60,7 @@ const SettingScreen = () => {
   const [LogOutModalView, setLogOutModalView] = useState(false);
   const [DeleteAccountModalView, setDeleteAccountModalView] = useState(false);
   const [RateUsModalView, setRateUsModalView] = useState(false);
-  const [UserSetting, setProfileData] = useState<ProfileType | undefined>(
+  const [UserSetting, setUserSettingData] = useState<ProfileType>(
     UserData?.userData,
   );
   const {reset} = useNavigation();
@@ -130,7 +130,7 @@ const SettingScreen = () => {
   };
 
   const handleShowMeSelect = (gender: string) => {
-    setProfileData(prevState => ({
+    setUserSettingData(prevState => ({
       ...prevState,
       setting_show_me: gender,
     }));
@@ -141,13 +141,15 @@ const SettingScreen = () => {
       if (status === 'granted') {
         setIsEnabled(true);
       } else {
-        requestNotifications(['alert', 'badge', 'sound']).then(({result}) => {
-          if (result === 'granted') {
-            setIsEnabled(true);
-          } else {
-            setIsEnabled(false);
-          }
-        });
+        requestNotifications(['alert', 'badge', 'sound']).then(
+          ({result}: any) => {
+            if (result === 'granted') {
+              setIsEnabled(true);
+            } else {
+              setIsEnabled(false);
+            }
+          },
+        );
       }
     });
   };
@@ -204,7 +206,7 @@ const SettingScreen = () => {
       const APIResponse = await UserService.UserRegister(userDataForApi);
 
       if (APIResponse?.code === 200) {
-        setProfileData({
+        setUserSettingData({
           ...APIResponse.data,
           setting_show_me: APIResponse?.data?.setting_show_me || 'Everyone',
         });
@@ -215,7 +217,7 @@ const SettingScreen = () => {
           APIResponse?.message || 'Please try again later',
           'error',
         );
-        setProfileData({} as ProfileType);
+        setUserSettingData({} as ProfileType);
       }
     } catch (error: any) {
       showToast('Error', String(error?.message || error), 'error');
@@ -458,7 +460,6 @@ Let's make every moment count together! #LoveConnects`,
           />
         }>
         <View style={styles.ListSubView}>
-          {/* Phone Number */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               style={styles.TitleViewStyle}
@@ -481,7 +482,6 @@ Let's make every moment count together! #LoveConnects`,
             </EditProfileBoxView>
           </View>
 
-          {/* Maximum Distance */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               style={styles.TitleViewStyle}
@@ -506,9 +506,9 @@ Let's make every moment count together! #LoveConnects`,
                   }}>
                   <MultiSlider
                     onValuesChange={v => {
-                      setProfileData(prevState => ({
+                      setUserSettingData(prevState => ({
                         ...prevState,
-                        setting_distance_preference: v[0] || '',
+                        setting_distance_preference: v[0]?.toString() || '',
                       }));
                     }}
                     values={[
@@ -516,7 +516,6 @@ Let's make every moment count together! #LoveConnects`,
                     ]}
                     isMarkersSeparated={true}
                     max={100}
-                    // sliderLength={310}
                     sliderLength={Dimensions.get('window').width - 85}
                     customMarkerLeft={() => {
                       return <View style={styles.CustomMarkerStyle} />;
@@ -534,7 +533,7 @@ Let's make every moment count together! #LoveConnects`,
                   style={styles.PhoneNumberFlexStyle}
                   Item={'Show between this distance'}
                   onSwitchPress={() => {
-                    setProfileData(prevState => ({
+                    setUserSettingData(prevState => ({
                       ...prevState,
                       setting_show_people_with_range:
                         !UserSetting?.setting_show_people_with_range,
@@ -546,7 +545,6 @@ Let's make every moment count together! #LoveConnects`,
             </EditProfileBoxView>
           </View>
 
-          {/* Show me */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               style={styles.TitleViewStyle}
@@ -554,7 +552,6 @@ Let's make every moment count together! #LoveConnects`,
               Icon={CommonIcons.ProfileTab}
               Title="Show me"
             />
-            {/* <EditProfileBoxView IsViewLoading={IsSettingLoading}> */}
             <View style={styles.GenderContainer}>
               {ShowMeArray.map((gender, index) => (
                 <TouchableOpacity
@@ -593,10 +590,8 @@ Let's make every moment count together! #LoveConnects`,
                 </TouchableOpacity>
               ))}
             </View>
-            {/* </EditProfileBoxView> */}
           </View>
 
-          {/* Age range */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               style={styles.TitleViewStyle}
@@ -621,7 +616,7 @@ Let's make every moment count together! #LoveConnects`,
                   }}>
                   <MultiSlider
                     onValuesChange={v => {
-                      setProfileData(prevState => ({
+                      setUserSettingData(prevState => ({
                         ...prevState,
                         setting_age_range_min: `${v[0]}-${v[1]}`,
                       }));
@@ -645,7 +640,6 @@ Let's make every moment count together! #LoveConnects`,
             </EditProfileBoxView>
           </View>
 
-          {/* Active status */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               style={styles.TitleViewStyle}
@@ -660,7 +654,7 @@ Let's make every moment count together! #LoveConnects`,
                 Item={'Show my status'}
                 onPress={() => {}}
                 onSwitchPress={() => {
-                  setProfileData(prevState => ({
+                  setUserSettingData(prevState => ({
                     ...prevState,
                     setting_active_status: !UserSetting?.setting_active_status,
                   }));
@@ -670,7 +664,6 @@ Let's make every moment count together! #LoveConnects`,
             </EditProfileBoxView>
           </View>
 
-          {/* Notifications */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               style={styles.TitleViewStyle}
@@ -698,7 +691,7 @@ Let's make every moment count together! #LoveConnects`,
                   onPress={() => {}}
                   IsSwitch={true}
                   onSwitchPress={() => {
-                    setProfileData(prevState => ({
+                    setUserSettingData(prevState => ({
                       ...prevState,
                       setting_notification_email:
                         !UserSetting?.setting_notification_email,
@@ -709,7 +702,6 @@ Let's make every moment count together! #LoveConnects`,
             </EditProfileBoxView>
           </View>
 
-          {/* Privacy */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               style={styles.TitleViewStyle}
@@ -773,7 +765,6 @@ Let's make every moment count together! #LoveConnects`,
             </EditProfileBoxView>
           </View>
 
-          {/* Other */}
           <View style={styles.DetailContainerView}>
             <EditProfileTitleView
               style={styles.TitleViewStyle}
@@ -799,7 +790,6 @@ Let's make every moment count together! #LoveConnects`,
             </EditProfileBoxView>
           </View>
 
-          {/* Delete And Logout Button */}
           <View style={styles.DeleteAndLogoutContainerView}>
             <TouchableOpacity
               activeOpacity={ActiveOpacity}
@@ -821,7 +811,6 @@ Let's make every moment count together! #LoveConnects`,
             </TouchableOpacity>
           </View>
 
-          {/* App Version */}
           <View style={styles.AppVersionView}>
             <Text style={styles.AppVersionText}>
               Version{' '}
@@ -874,7 +863,7 @@ Let's make every moment count together! #LoveConnects`,
               It Won’t take more than a minute. Thanks for your support!
             </Text>
             <Rating
-              onFinishRating={value => {
+              onFinishRating={(value: any) => {
                 setRatingCount(value);
               }}
               onSwipeRating={value => {

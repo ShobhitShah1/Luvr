@@ -74,6 +74,9 @@ const styles = StyleSheet.create({
     ...GROUP_FONT.h2,
     color: COLORS.White,
   },
+  columWrapper: {
+    justifyContent: 'space-between',
+  },
 });
 
 export default styles;
