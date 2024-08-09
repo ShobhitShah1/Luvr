@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
+import {addEventListener} from '@react-native-community/netinfo';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
 import {
@@ -19,6 +20,7 @@ import {Easing} from 'react-native-reanimated';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useSelector} from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
+import TextString from '../../Common/TextString';
 import {ActiveOpacity, COLORS, GROUP_FONT} from '../../Common/Theme';
 import {CardDelay, CardLimit} from '../../Config/Setting';
 import useInterval from '../../Hooks/useInterval';
@@ -30,27 +32,25 @@ import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
-import TextString from '../../Common/TextString';
-import NetInfo from '@react-native-community/netinfo';
 
 const ExploreCardScreen: FC = () => {
-  const {width} = useWindowDimensions() || {};
+  const {width} = useWindowDimensions();
 
   const swipeRef = useRef<Swiper<SwiperCard>>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const slideDownAnimation = useRef(new Animated.Value(1)).current;
 
-  const navigation = useNavigation();
+  const navigation = useNavigation() as any;
   const isScreenFocused = useIsFocused();
 
   const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
 
   const LeftSwipedUserIds = useSelector(
-    state => state?.user?.swipedLeftUserIds || [],
+    (state: any) => state?.user?.swipedLeftUserIds || [],
   );
   const RightSwipedUserIds = useSelector(
-    state => state?.user?.swipedRightUserIds || [],
+    (state: any) => state?.user?.swipedRightUserIds || [],
   );
 
   const [cards, setCards] = useState<SwiperCard[]>([]);
@@ -60,7 +60,7 @@ const ExploreCardScreen: FC = () => {
   const [firstImageLoading, setFirstImageLoading] = useState(true);
   const [IsAPILoading, setIsAPILoading] = useState(true);
   const [IsNetConnected, setIsNetConnected] = useState(true);
-  const [ItsMatchModalView, setItsMatchModalView] = useState(false);
+  const [itsMatchModalView, setItsMatchModalView] = useState(false);
   const [MatchedUserInfo, setMatchedUserInfo] = useState<SwiperCard>();
 
   const {startInterval, stopInterval, clearInterval} = useInterval(
@@ -83,21 +83,20 @@ const ExploreCardScreen: FC = () => {
   );
 
   useEffect(() => {
-    if (ItsMatchModalView) {
+    const unsubscribe = addEventListener(state => {
+      setIsNetConnected(state?.isConnected || false);
+    });
+
+    return unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (itsMatchModalView) {
       stopInterval();
     } else {
       startInterval();
     }
-  }, [ItsMatchModalView]);
-
-  useEffect(() => {
-    const _unsubscribe = navigation.addListener('blur', () => {
-      stopInterval();
-      clearInterval();
-      setCardToSkipNumber(0);
-    });
-    return () => _unsubscribe();
-  }, []);
+  }, [itsMatchModalView]);
 
   useEffect(() => {
     if (isScreenFocused) {
@@ -105,10 +104,14 @@ const ExploreCardScreen: FC = () => {
       if (cards.length === 0) {
         setIsAPILoading(true);
       }
-      FetchAPIData(0);
+      fetchAPIData(0);
       setCardToSkipNumber(0);
       setCurrentCardIndex(0);
       setCurrentImageIndex(0);
+    } else {
+      stopInterval();
+      clearInterval();
+      setCardToSkipNumber(0);
     }
   }, [isScreenFocused]);
 
@@ -122,11 +125,9 @@ const ExploreCardScreen: FC = () => {
     }
   }, [cards, slideDownAnimation]);
 
-  const FetchAPIData = useCallback(
+  const fetchAPIData = useCallback(
     async (cardSkipValue: number | undefined) => {
-      const InInternetConnected = (await NetInfo.fetch()).isConnected;
-
-      if (!InInternetConnected) {
+      if (!IsNetConnected) {
         showToast(
           TextString.error.toUpperCase(),
           TextString.PleaseCheckYourInternetConnection,
@@ -148,49 +149,42 @@ const ExploreCardScreen: FC = () => {
           latitude: userData.latitude,
           longitude: userData.longitude,
         };
+        console.log('userDataForApi:', userDataForApi);
         const APIResponse = await UserService.UserRegister(userDataForApi);
 
         if (APIResponse?.code === 200 && Array.isArray(APIResponse.data)) {
-          const newCards = APIResponse.data;
-          if (newCards.length !== 0) {
-            const filteredCards = newCards.filter(
-              card => card?.name || card?.enable === 1,
-            );
-            setCards(filteredCards);
-            swipeRef.current?.forceUpdate();
-            startInterval();
-          } else {
-            setCards([]);
-            stopInterval();
-          }
+          const filteredCards = await APIResponse.data.filter(
+            (card: any) => card?.name || card?.enable === 1,
+          );
+
+          console.log('filteredCards', filteredCards);
+
+          setCards(filteredCards);
+          swipeRef.current?.forceUpdate();
+          startInterval();
         } else {
           showToast(
-            'Something went wrong',
-            APIResponse?.message || 'Please try again later',
-            'error',
+            TextString.error.toUpperCase(),
+            APIResponse?.message || 'Something went wrong',
+            TextString.error,
           );
+          stopInterval();
         }
-      } catch (error) {
-        showToast('Error', String(error), 'error');
+      } catch (error: any) {
+        showToast('Error', String(error?.message || error), 'error');
       } finally {
         setIsAPILoading(false);
       }
     },
-    [
-      LeftSwipedUserIds,
-      RightSwipedUserIds,
-      cardToSkipNumber,
-      userData,
-      CardLimit,
-      store.getState().user?.swipedLeftUserIds,
-      store.getState().user?.swipedRightUserIds,
-    ],
+    [LeftSwipedUserIds, RightSwipedUserIds, userData, showToast, startInterval],
   );
 
-  const OnSwipeRightCard = (cardIndex: number) => {
-    console.log('Swipe Right Card Index', cardIndex);
+  const onSwipeRightCard = (cardIndex: number) => {
+    if (itsMatchModalView) {
+      return;
+    }
+
     if (cards && cards[CurrentCardIndex]?._id) {
-      console.log(cards[CurrentCardIndex]?._id, CurrentCardIndex);
       LikeUserAPI(
         String(cards[CurrentCardIndex]?._id),
         cards[CurrentCardIndex],
@@ -199,16 +193,18 @@ const ExploreCardScreen: FC = () => {
     }
   };
 
-  const OnSwipeLeft = (cardIndex: any) => {
+  const onSwipeLeftCard = (cardIndex: any) => {
+    if (itsMatchModalView) {
+      return;
+    }
+
     if (cards[cardIndex] && cards[cardIndex]?._id) {
       store.dispatch(onSwipeLeft(String(cards[cardIndex]?._id)));
     }
   };
 
-  const OnSwiped = async (cardIndex: any) => {
-    const InInternetConnected = (await NetInfo.fetch()).isConnected;
-
-    if (!InInternetConnected) {
+  const onSwipedCard = async (cardIndex: any) => {
+    if (!IsNetConnected) {
       showToast(
         TextString.error.toUpperCase(),
         TextString.PleaseCheckYourInternetConnection,
@@ -217,29 +213,34 @@ const ExploreCardScreen: FC = () => {
       swipeRef.current?.swipeBack();
       return;
     }
+
     setCurrentImageIndex(0);
     setCurrentCardIndex(cardIndex + 1);
   };
 
-  const OnSwipeAll = () => {
-    swipeRef.current?.forceUpdate();
+  const onSwipedAllCard = useCallback(() => {
     setIsAPILoading(true);
+    swipeRef.current?.forceUpdate();
     setCardToSkipNumber(cardToSkipNumber + CardLimit);
-    FetchAPIData(cardToSkipNumber + CardLimit);
-  };
+    fetchAPIData(cardToSkipNumber + CardLimit);
+  }, [cardToSkipNumber, fetchAPIData]);
 
   const SwipeLeft = async () => {
+    if (itsMatchModalView) {
+      return;
+    }
     swipeRef.current?.swipeLeft();
   };
 
   const SwipeRight = () => {
+    if (itsMatchModalView) {
+      return;
+    }
     swipeRef.current?.swipeRight();
   };
 
   const LikeUserAPI = async (id: string, cardData: SwiperCard) => {
-    const InInternetConnected = (await NetInfo.fetch()).isConnected;
-
-    if (!InInternetConnected) {
+    if (!IsNetConnected) {
       showToast(
         TextString.error.toUpperCase(),
         TextString.PleaseCheckYourInternetConnection,
@@ -313,13 +314,8 @@ const ExploreCardScreen: FC = () => {
       <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
 
       <View
-        style={[
-          styles.SwiperContainer,
-          {
-            flex: cards?.length !== 0 ? 0.9 : 1,
-          },
-        ]}>
-        {cards && cards.length !== 0 && !IsAPILoading && IsNetConnected ? (
+        style={[styles.SwiperContainer, {flex: cards?.length !== 0 ? 0.9 : 1}]}>
+        {cards && cards.length !== 0 ? (
           <Swiper
             ref={swipeRef}
             cards={cards}
@@ -330,10 +326,10 @@ const ExploreCardScreen: FC = () => {
             key={cards?.length}
             secondCardZoom={10}
             swipeBackCard={true}
-            onSwipedRight={OnSwipeRightCard}
-            onSwiped={OnSwiped}
-            onSwipedLeft={OnSwipeLeft}
-            onSwipedAll={OnSwipeAll}
+            onSwipedRight={onSwipeRightCard}
+            onSwiped={onSwipedCard}
+            onSwipedLeft={onSwipeLeftCard}
+            onSwipedAll={onSwipedAllCard}
             containerStyle={styles.CardContainerStyle}
             cardVerticalMargin={0}
             animateCardOpacity={true}
@@ -432,7 +428,7 @@ const ExploreCardScreen: FC = () => {
       )}
 
       <Modal
-        isVisible={IsAPILoading ? false : ItsMatchModalView}
+        isVisible={IsAPILoading ? false : itsMatchModalView}
         animationIn={'fadeIn'}
         animationOut={'fadeOut'}
         useNativeDriver
