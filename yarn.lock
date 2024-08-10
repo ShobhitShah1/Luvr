@@ -7022,10 +7022,9 @@ react-native-communications@2.2.1:
   resolved "https://registry.yarnpkg.com/react-native-communications/-/react-native-communications-2.2.1.tgz#7883b56b20a002eeb790c113f8616ea8692ca795"
   integrity sha512-5+C0X9mopI0+qxyQHzOPEi5v5rxNBQjxydPPiKMQSlX1RBIcJ8uTcqUPssQ9Mo8p6c1IKIWJUSqCj4jAmD0qVQ==
 
-react-native-deck-swiper@2.0.17:
+react-native-deck-swiper@ShobhitShah1/react-native-deck-swiper:
   version "2.0.17"
-  resolved "https://registry.yarnpkg.com/react-native-deck-swiper/-/react-native-deck-swiper-2.0.17.tgz#c943133954e1ed0c5c115832b0601874157296fe"
-  integrity sha512-vOGmhBLnrVQL6WtwmgdUqKOyKwoDRmozYjEygRHvFEjHwyFohpd9scDPRNc0t9HlKcXRVNunVsN45B9emqNybw==
+  resolved "https://codeload.github.com/ShobhitShah1/react-native-deck-swiper/tar.gz/00565a5f8550e6111bdb83c933c8f89b746a3417"
   dependencies:
     prop-types "15.5.10"
 
@@ -7069,6 +7068,11 @@ react-native-iap@^12.15.2:
   version "12.15.2"
   resolved "https://registry.yarnpkg.com/react-native-iap/-/react-native-iap-12.15.2.tgz#328b84d39cb15a9c0d6cec2482cdcca39a838fa6"
   integrity sha512-P5gIepfzXLOfpbdntMgGHu53tpMDoJlnYh0rX4qRygyYp+L7U7aFYON0cqf+lK4RKBpZmYHA4NRlBojMwz9pCQ==
+
+react-native-image-crop-picker@^0.41.2:
+  version "0.41.2"
+  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.41.2.tgz#824fa8fee8391fbb3e0b5ae2973221a2dff0cafb"
+  integrity sha512-GcDu/adXU/1y/MrxsbOfqcGRGWC2pTttt5VGy/jyRJ6GXfoC29fTQf8SG5kGtc5schSR6K+mKYO4uW6eJPljlQ==
 
 react-native-image-picker@7.1.2:
   version "7.1.2"
@@ -8147,9 +8151,9 @@ typescript@5.0.4:
   integrity sha512-cW9T5W9xY37cc+jfEnaUvX91foxtHkza3Nw3wkoF4sSlKn0MONdkdEndig/qPBWXNkmplh3NzayQzCiHM4/hqw==
 
 ua-parser-js@^0.7.30:
-  version "0.7.37"
-  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.37.tgz#e464e66dac2d33a7a1251d7d7a99d6157ec27832"
-  integrity sha512-xV8kqRKM+jhMvcHWUKthV9fNebIzrNy//2O9ZwWcfiBFR5f25XVZPLlEajk/sf3Ra15V92isyQqnIEXRDaZWEA==
+  version "0.7.38"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.38.tgz#f497d8a4dc1fec6e854e5caa4b2f9913422ef054"
+  integrity sha512-fYmIy7fKTSFAhG3fuPlubeGaMoAd6r0rSnfEsO5nEY55i26KSLt9EH7PLQiiqPUhNqYIJvSkTy1oArIcXAbPbA==
 
 unbox-primitive@^1.0.2:
   version "1.0.2"

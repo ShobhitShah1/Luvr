@@ -32,9 +32,10 @@ import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
+import {BlurView} from '@react-native-community/blur';
 
 const ExploreCardScreen: FC = () => {
-  const {width} = useWindowDimensions();
+  const {width, height} = useWindowDimensions();
 
   const swipeRef = useRef<Swiper<SwiperCard>>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
@@ -60,8 +61,10 @@ const ExploreCardScreen: FC = () => {
   const [firstImageLoading, setFirstImageLoading] = useState(true);
   const [IsAPILoading, setIsAPILoading] = useState(true);
   const [IsNetConnected, setIsNetConnected] = useState(true);
-  const [itsMatchModalView, setItsMatchModalView] = useState(false);
-  const [MatchedUserInfo, setMatchedUserInfo] = useState<SwiperCard>();
+  const [isMatchModalVisible, setIsMatchModalVisible] = useState(false);
+  const [MatchedUserInfo, setMatchedUserInfo] = useState<SwiperCard | null>(
+    null,
+  );
 
   const {startInterval, stopInterval, clearInterval} = useInterval(
     () => {
@@ -87,16 +90,16 @@ const ExploreCardScreen: FC = () => {
       setIsNetConnected(state?.isConnected || false);
     });
 
-    return unsubscribe();
+    return unsubscribe;
   }, []);
 
   useEffect(() => {
-    if (itsMatchModalView) {
+    if (isMatchModalVisible) {
       stopInterval();
     } else {
       startInterval();
     }
-  }, [itsMatchModalView]);
+  }, [isMatchModalVisible]);
 
   useEffect(() => {
     if (isScreenFocused) {
@@ -105,14 +108,13 @@ const ExploreCardScreen: FC = () => {
         setIsAPILoading(true);
       }
       fetchAPIData(0);
-      setCardToSkipNumber(0);
       setCurrentCardIndex(0);
       setCurrentImageIndex(0);
     } else {
       stopInterval();
       clearInterval();
-      setCardToSkipNumber(0);
     }
+    setCardToSkipNumber(0);
   }, [isScreenFocused]);
 
   useEffect(() => {
@@ -149,15 +151,12 @@ const ExploreCardScreen: FC = () => {
           latitude: userData.latitude,
           longitude: userData.longitude,
         };
-        console.log('userDataForApi:', userDataForApi);
         const APIResponse = await UserService.UserRegister(userDataForApi);
 
         if (APIResponse?.code === 200 && Array.isArray(APIResponse.data)) {
           const filteredCards = await APIResponse.data.filter(
             (card: any) => card?.name || card?.enable === 1,
           );
-
-          console.log('filteredCards', filteredCards);
 
           setCards(filteredCards);
           swipeRef.current?.forceUpdate();
@@ -179,28 +178,31 @@ const ExploreCardScreen: FC = () => {
     [LeftSwipedUserIds, RightSwipedUserIds, userData, showToast, startInterval],
   );
 
-  const onSwipeRightCard = (cardIndex: number) => {
-    if (itsMatchModalView) {
+  const swipeCardAction = (
+    cardIndex: number,
+    swipeAction: (id: string) => void,
+    shouldCallApi: boolean = false,
+  ) => {
+    if (isMatchModalVisible || !cards || !cards[cardIndex]?._id) {
       return;
     }
 
-    if (cards && cards[CurrentCardIndex]?._id) {
-      LikeUserAPI(
-        String(cards[CurrentCardIndex]?._id),
-        cards[CurrentCardIndex],
-      );
-      store.dispatch(onSwipeRight(String(cards[CurrentCardIndex]?._id)));
+    const currentCard = cards[cardIndex];
+    const cardId = String(currentCard._id);
+
+    if (shouldCallApi) {
+      likeUserAPICall(cardId, currentCard);
     }
+
+    store.dispatch(swipeAction(cardId));
   };
 
-  const onSwipeLeftCard = (cardIndex: any) => {
-    if (itsMatchModalView) {
-      return;
-    }
+  const onSwipeRightCard = (cardIndex: number) => {
+    swipeCardAction(cardIndex, onSwipeRight, true);
+  };
 
-    if (cards[cardIndex] && cards[cardIndex]?._id) {
-      store.dispatch(onSwipeLeft(String(cards[cardIndex]?._id)));
-    }
+  const onSwipeLeftCard = (cardIndex: number) => {
+    swipeCardAction(cardIndex, onSwipeLeft);
   };
 
   const onSwipedCard = async (cardIndex: any) => {
@@ -226,20 +228,20 @@ const ExploreCardScreen: FC = () => {
   }, [cardToSkipNumber, fetchAPIData]);
 
   const SwipeLeft = async () => {
-    if (itsMatchModalView) {
+    if (isMatchModalVisible) {
       return;
     }
     swipeRef.current?.swipeLeft();
   };
 
   const SwipeRight = () => {
-    if (itsMatchModalView) {
+    if (isMatchModalVisible) {
       return;
     }
     swipeRef.current?.swipeRight();
   };
 
-  const LikeUserAPI = async (id: string, cardData: SwiperCard) => {
+  const likeUserAPICall = async (id: string, cardData: SwiperCard) => {
     if (!IsNetConnected) {
       showToast(
         TextString.error.toUpperCase(),
@@ -250,28 +252,29 @@ const ExploreCardScreen: FC = () => {
     }
 
     try {
-      const userDataForApi = {
-        eventName: 'like',
-        like_to: id,
-      };
+      const userDataForApi = {eventName: 'like', like_to: id};
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
         if (APIResponse.data?.status === 'match') {
-          setItsMatchModalView(true);
           setMatchedUserInfo(cardData);
+          setIsMatchModalVisible(true);
         }
         swipeRef.current?.forceUpdate();
       } else {
         showToast(
-          'error',
+          TextString.error.toUpperCase(),
           APIResponse?.message || 'Please try again letter',
-          'error',
+          TextString.error,
         );
         swipeRef.current?.swipeBack();
       }
-    } catch (error) {
-      showToast('Error', String(error), 'error');
+    } catch (error: any) {
+      showToast(
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
+        TextString.error,
+      );
       swipeRef.current?.swipeBack();
     } finally {
       setIsAPILoading(false);
@@ -335,8 +338,10 @@ const ExploreCardScreen: FC = () => {
             animateCardOpacity={true}
             animateOverlayLabelsOpacity={true}
             backgroundColor={'transparent'}
-            disableBottomSwipe
-            disableTopSwipe
+            disableBottomSwipe={true}
+            disableTopSwipe={true}
+            disableLeftSwipe={isMatchModalVisible}
+            disableRightSwipe={isMatchModalVisible}
             stackScale={0}
             cardStyle={styles.swiperStyle}
             overlayOpacityHorizontalThreshold={1}
@@ -428,37 +433,35 @@ const ExploreCardScreen: FC = () => {
       )}
 
       <Modal
-        isVisible={IsAPILoading ? false : itsMatchModalView}
+        isVisible={!IsAPILoading && isMatchModalVisible}
         animationIn={'fadeIn'}
         animationOut={'fadeOut'}
-        useNativeDriver
-        useNativeDriverForBackdrop
-        hasBackdrop
+        useNativeDriver={true}
+        useNativeDriverForBackdrop={true}
+        hasBackdrop={true}
         onBackdropPress={() => {
-          setItsMatchModalView(false);
-          setMatchedUserInfo(undefined);
+          setIsMatchModalVisible(false);
+          setMatchedUserInfo(null);
         }}
         onBackButtonPress={() => {
-          setItsMatchModalView(false);
-          setMatchedUserInfo(undefined);
+          setIsMatchModalVisible(false);
+          setMatchedUserInfo(null);
         }}
-        style={{
-          flex: 1,
-          margin: 0,
-        }}>
+        statusBarTranslucent={true}
+        style={styles.modalContainer}>
         <ItsAMatch
           user={MatchedUserInfo}
           onSayHiClick={() => {
-            setItsMatchModalView(false);
+            setIsMatchModalVisible(false);
             navigation.navigate('Chat', {
               id: MatchedUserInfo?._id,
             });
           }}
           onCloseModalClick={() => {
-            setItsMatchModalView(false);
-            setMatchedUserInfo(undefined);
+            setIsMatchModalVisible(false);
+            setMatchedUserInfo(null);
           }}
-          setItsMatch={setItsMatchModalView}
+          setItsMatch={setIsMatchModalVisible}
         />
       </Modal>
     </View>
@@ -584,6 +587,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignSelf: 'center',
     color: COLORS.Primary,
+  },
+  modalContainer: {
+    flex: 1,
+    margin: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
 });
 

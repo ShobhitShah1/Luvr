@@ -1,6 +1,5 @@
-/* eslint-disable react-native/no-inline-styles */
 import {Image} from 'moti';
-import React, {FC} from 'react';
+import React, {FC, useMemo} from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -18,7 +17,7 @@ import {APP_NAME, DummyImage} from '../../../Config/Setting';
 import {SwiperCard} from '../../../Types/SwiperCard';
 
 interface ItsAMatchProps {
-  user: SwiperCard | undefined;
+  user: SwiperCard | null;
   onSayHiClick: () => void;
   setItsMatch: React.Dispatch<React.SetStateAction<boolean>>;
   onCloseModalClick: () => void;
@@ -30,18 +29,27 @@ const ItsAMatch: FC<ItsAMatchProps> = ({
   onCloseModalClick,
 }) => {
   const userData = useSelector((state: any) => state?.user);
+
+  const myProfile = useMemo(() => {
+    return userData?.userData?.recent_pik &&
+      userData?.userData?.recent_pik?.length !== 0
+      ? ApiConfig.IMAGE_BASE_URL + userData?.userData?.recent_pik[0]
+      : DummyImage;
+  }, [userData]);
+
+  const likedProfile = useMemo(() => {
+    return user?.recent_pik?.length !== 0
+      ? ApiConfig.IMAGE_BASE_URL + user?.recent_pik[0]
+      : DummyImage;
+  }, [user]);
+
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-      }}>
+    <View style={styles.container}>
       <ImageBackground
         imageStyle={styles.BackgroundImageStyle}
         source={CommonImages.ItsAMatch}
         style={styles.BackgroundImageContainer}>
-        <View style={{}}>
+        <View>
           <View style={styles.ItsAMatchTextView}>
             <Text style={styles.ItsAMatchText}>It’s a match!</Text>
             <Text style={styles.ItsAMatchDescriptionText}>
@@ -53,12 +61,7 @@ const ItsAMatch: FC<ItsAMatchProps> = ({
             <FastImage
               resizeMode="cover"
               source={{
-                uri:
-                  userData?.userData?.recent_pik &&
-                  userData?.userData?.recent_pik?.length !== 0
-                    ? ApiConfig.IMAGE_BASE_URL +
-                      userData?.userData?.recent_pik[0]
-                    : DummyImage,
+                uri: myProfile,
                 priority: FastImage.priority.high,
               }}
               style={[styles.UserProfileImage]}
@@ -70,10 +73,7 @@ const ItsAMatch: FC<ItsAMatchProps> = ({
             <FastImage
               resizeMode="cover"
               source={{
-                uri:
-                  user?.recent_pik?.length !== 0
-                    ? ApiConfig.IMAGE_BASE_URL + user?.recent_pik[0]
-                    : DummyImage,
+                uri: likedProfile,
                 priority: FastImage.priority.high,
               }}
               style={[styles.UserProfileImage]}
@@ -99,9 +99,10 @@ const ItsAMatch: FC<ItsAMatchProps> = ({
 export default ItsAMatch;
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     flex: 1,
     justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   BackgroundContainer: {
     width: '80%',
@@ -142,10 +143,8 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     opacity: 1,
-    // backgroundColor: 'transparent',
   },
   BackgroundImageContainer: {
-    // backgroundColor: 'transparent',
     width: '90%',
     paddingTop: 10,
     paddingBottom: 20,
