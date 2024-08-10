@@ -67,7 +67,7 @@ const generateRandomId = () => {
   return Math.random().toString(36).substr(2, 9);
 };
 
-const ChatScreen: FC = () => {
+const ChatScreen = () => {
   const {params} = useRoute<ChatScreenRouteProp>();
 
   const {userData} = store.getState().user || ({} as any);
@@ -133,7 +133,7 @@ const ChatScreen: FC = () => {
     return sortedMessages;
   };
 
-  const StoreSingleChatFormat = (message: any) => {
+  const storeSingleChatFormat = (message: any) => {
     setCountMessage(1);
 
     const singleChatMessage = {
@@ -218,7 +218,7 @@ const ChatScreen: FC = () => {
       if (!OtherUserProfileData) {
         await getOtherUserDataCall();
       }
-      const giftedChatMessages = StoreSingleChatFormat(chat);
+      const giftedChatMessages = storeSingleChatFormat(chat);
       if (giftedChatMessages) {
         socket.emit(READ_ALL, {to: OtherUserProfileData?._id});
 

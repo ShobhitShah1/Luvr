@@ -76,7 +76,9 @@ export const useLocationPermission = () => {
           ]);
         }
       },
-      error => {},
+      error => {
+        console.log('location error:', error);
+      },
       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   };

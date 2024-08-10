@@ -3,8 +3,7 @@
 import messaging from '@react-native-firebase/messaging';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React, {useCallback, useEffect, useState} from 'react';
-import SplashScreen from 'react-native-splash-screen';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useSelector} from 'react-redux';
 import ApiConfig from '../Config/ApiConfig';
 import {useLocationPermission} from '../Hooks/useLocationPermission';
@@ -38,26 +37,64 @@ import {LocalStorageFields} from '../Types/LocalStorageFields';
 import {useCustomToast} from '../Utils/toastUtils';
 import BottomTab from './BottomTab';
 import {navigationRef} from './RootNavigation';
+import BootSplash from 'react-native-bootsplash';
+const excludedRoutes = [
+  'Login',
+  'PhoneNumber',
+  'OTP',
+  'IdentifyYourSelf',
+  'SexualOrientationScreen',
+  'DistancePreference',
+  'HopingToFind',
+  'AddDailyHabits',
+  'YourEducation',
+  'WhatAboutYou',
+  'YourIntro',
+  'AddRecentPics',
+  'LocationPermission',
+  'AddEmail',
+];
+
+const Stack = createNativeStackNavigator();
+
+const NumberVerificationStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen component={LoginScreen} name="Login" />
+      <Stack.Screen component={PhoneNumber} name="PhoneNumber" />
+      <Stack.Screen component={OTPScreen} name="OTP" />
+    </Stack.Navigator>
+  );
+};
+
+const LocationStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen component={LocationPermission} name="LocationPermission" />
+    </Stack.Navigator>
+  );
+};
 
 export default function MainRoute() {
   const {showToast} = useCustomToast();
-  const Stack = createNativeStackNavigator();
   const {checkLocationPermission} = useLocationPermission();
   const ReduxUserData = useSelector((state: any) => state.user);
-  const isUserVerified: boolean = ReduxUserData?.isVerified;
+  const isUserVerified = useMemo(() => {
+    return ReduxUserData?.isVerified;
+  }, [ReduxUserData]);
 
   const [initialRoute, setInitialRoute] = useState<string>('');
   const [isNavigationReady, setIsNavigationReady] = useState(false);
 
   useEffect(() => {
     Promise.all([
-      determineInitialRoute(),
-      HandleNotificationPermission(),
+      getScreenToNavigate(),
+      handleNotificationPermission(),
       initGoogleSignIn(),
     ]);
   }, []);
 
-  const HandleNotificationPermission = async () => {
+  const handleNotificationPermission = async () => {
     const authStatus = await messaging().requestPermission();
 
     if (authStatus === 1) {
@@ -71,7 +108,7 @@ export default function MainRoute() {
     }
   };
 
-  const determineInitialRoute = useCallback(async () => {
+  const getScreenToNavigate = useCallback(async () => {
     try {
       const checkLoginPermission = await checkLocationPermission();
       const isNumber =
@@ -113,34 +150,6 @@ export default function MainRoute() {
     }
   }, [isUserVerified, navigationRef, isNavigationReady, ApiConfig]);
 
-  useEffect(() => {
-    if (initialRoute) {
-      SplashScreen.hide();
-      console.log('SPLASH END:', initialRoute);
-    }
-  }, [initialRoute, isUserVerified, ApiConfig]);
-
-  const NumberVerificationStack = () => {
-    return (
-      <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen component={LoginScreen} name="Login" />
-        <Stack.Screen component={PhoneNumber} name="PhoneNumber" />
-        <Stack.Screen component={OTPScreen} name="OTP" />
-      </Stack.Navigator>
-    );
-  };
-
-  const LocationStack = () => {
-    return (
-      <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen
-          component={LocationPermission}
-          name="LocationPermission"
-        />
-      </Stack.Navigator>
-    );
-  };
-
   const LoginStack = () => {
     const userIdentityExists =
       ReduxUserData?.identity?.length === 0 &&
@@ -170,40 +179,30 @@ export default function MainRoute() {
     );
   };
 
-  const StateChangesCall = (ref: any) => {
+  const stateChangesCall = useCallback((ref: any) => {
     const currentRouteName = ref?.getCurrentRoute()?.name || '';
 
-    if (currentRouteName) {
-      if (
-        !currentRouteName.includes('Login') &&
-        !currentRouteName.includes('PhoneNumber') &&
-        !currentRouteName.includes('OTP') &&
-        !currentRouteName.includes('IdentifyYourSelf') &&
-        !currentRouteName.includes('SexualOrientationScreen') &&
-        !currentRouteName.includes('DistancePreference') &&
-        !currentRouteName.includes('HopingToFind') &&
-        !currentRouteName.includes('AddDailyHabits') &&
-        !currentRouteName.includes('YourEducation') &&
-        !currentRouteName.includes('WhatAboutYou') &&
-        !currentRouteName.includes('YourIntro') &&
-        !currentRouteName.includes('AddRecentPics') &&
-        !currentRouteName.includes('LocationPermission') &&
-        !currentRouteName.includes('AddEmail')
-      ) {
-        return currentRouteName;
-      }
+    if (
+      currentRouteName &&
+      !excludedRoutes.some(route => currentRouteName.includes(route))
+    ) {
+      return currentRouteName;
     }
+
     return null;
-  };
+  }, []);
 
   return (
     <React.Fragment>
       {initialRoute && (
         <NavigationContainer
           ref={navigationRef}
-          onReady={() => setIsNavigationReady(true)}
+          onReady={() => {
+            setIsNavigationReady(true);
+            BootSplash.hide({fade: true});
+          }}
           onStateChange={() => {
-            const currentRouteName = StateChangesCall(navigationRef.current);
+            const currentRouteName = stateChangesCall(navigationRef.current);
             if (currentRouteName) {
               store.dispatch(setCurrentScreenName(currentRouteName));
             }

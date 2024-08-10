@@ -6,11 +6,11 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 import com.proyecto26.inappbrowser.RNInAppBrowserModule
-import org.devio.rn.splashscreen.SplashScreen
+import com.zoontek.rnbootsplash.RNBootSplash;
 
 class MainActivity : ReactActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        SplashScreen.show(this);
+        RNBootSplash.init(this, R.style.BootTheme)
         super.onCreate(null)
     }
 

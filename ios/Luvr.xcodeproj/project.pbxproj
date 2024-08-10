@@ -22,6 +22,8 @@
 		BBF1146AC73E4AD6A78CC6FB /* OpenSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6BB2A8159D784BCF8797B5C1 /* OpenSans-ExtraBold.ttf */; };
 		D39348E67CF142EB8167206B /* OpenSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 49332FC2DE754DA9AEB7711E /* OpenSans-Light.ttf */; };
 		ECE213002BE2A57900731241 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ECE212FF2BE2A57900731241 /* GoogleService-Info.plist */; };
+		8C4081A834994333A7356C0B /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 926ACAD68719435A9052C13E /* BootSplash.storyboard */; };
+		0A0866EAE999440E82A0D315 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 16CB5EAE3921443692FCA224 /* Colors.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +64,8 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		EDFED06AF1988AEAC7AAEB01 /* Pods-Luvr.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Luvr.release.xcconfig"; path = "Target Support Files/Pods-Luvr/Pods-Luvr.release.xcconfig"; sourceTree = "<group>"; };
 		F4CEEE7D05C0489A82D9E800 /* Pacifico-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pacifico-Regular.ttf"; path = "../Assets/Fonts/Pacifico-Regular.ttf"; sourceTree = "<group>"; };
+		926ACAD68719435A9052C13E /* BootSplash.storyboard */ = {isa = PBXFileReference; name = "BootSplash.storyboard"; path = "Luvr/BootSplash.storyboard"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		16CB5EAE3921443692FCA224 /* Colors.xcassets */ = {isa = PBXFileReference; name = "Colors.xcassets"; path = "Luvr/Colors.xcassets"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = folder.assetcatalog; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +117,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				926ACAD68719435A9052C13E /* BootSplash.storyboard */,
+				16CB5EAE3921443692FCA224 /* Colors.xcassets */,
 			);
 			name = Luvr;
 			sourceTree = "<group>";
@@ -289,6 +295,8 @@
 				ECE213002BE2A57900731241 /* GoogleService-Info.plist in Resources */,
 				494040DB2D2841E89ABCE3FB /* OpenSans-SemiBold.ttf in Resources */,
 				2CEAF6F896134334A20D89E7 /* Pacifico-Regular.ttf in Resources */,
+				8C4081A834994333A7356C0B /* BootSplash.storyboard in Resources */,
+				0A0866EAE999440E82A0D315 /* Colors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

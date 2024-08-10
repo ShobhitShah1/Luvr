@@ -2,7 +2,7 @@ import {useEffect, useRef} from 'react';
 
 function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef<() => void>(() => {});
-  const intervalId = useRef<number | null>(null);
+  const intervalId = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     savedCallback.current = callback;
