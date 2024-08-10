@@ -416,7 +416,7 @@ Let's make every moment count together! #LoveConnects`,
   const onRatingButtonPress = async () => {
     try {
       setRateUsModalView(false);
-      if (RatingCount >= 3) {
+      if (RatingCount <= 3) {
         showToast('Success!', 'Thanks for the review ❤️', 'success');
         return;
       }

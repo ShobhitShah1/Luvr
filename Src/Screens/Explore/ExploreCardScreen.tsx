@@ -32,10 +32,9 @@ import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
-import {BlurView} from '@react-native-community/blur';
 
 const ExploreCardScreen: FC = () => {
-  const {width, height} = useWindowDimensions();
+  const {width} = useWindowDimensions();
 
   const swipeRef = useRef<Swiper<SwiperCard>>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;

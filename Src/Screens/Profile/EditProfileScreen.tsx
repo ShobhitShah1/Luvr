@@ -17,6 +17,7 @@ import {
   FlatList,
   Image,
   Platform,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -48,8 +49,6 @@ import EditProfileCategoriesList from './Components/EditProfileComponents/EditPr
 import EditProfileSheetView from './Components/EditProfileComponents/EditProfileSheetView';
 import EditProfileTitleView from './Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from './Components/ProfileAndSettingHeader';
-import {RefreshControl} from 'react-native';
-
 export interface ViewPositionsProps {
   Gender: number;
   CommunicationStyle: number;
