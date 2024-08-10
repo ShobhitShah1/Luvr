@@ -21,7 +21,7 @@ import ApiConfig from '../../../Config/ApiConfig';
 import {TotalProfilePicCanUpload} from '../../../Config/Setting';
 import {useCameraPermission} from '../../../Hooks/useCameraPermission';
 import {useGalleryPermission} from '../../../Hooks/useGalleryPermission';
-import {updateField} from '../../../Redux/Action/userActions';
+import {updateField} from '../../../Redux/Action/actions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {
   addUrlToItem,

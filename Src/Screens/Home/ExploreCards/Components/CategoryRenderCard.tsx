@@ -17,7 +17,7 @@ import CommonImages from '../../../../Common/CommonImages';
 import {ActiveOpacity, COLORS, FONTS} from '../../../../Common/Theme';
 import ApiConfig from '../../../../Config/ApiConfig';
 import useCalculateAge from '../../../../Hooks/useCalculateAge';
-import {onSwipeRight} from '../../../../Redux/Action/userActions';
+import {onSwipeRight} from '../../../../Redux/Action/actions';
 import {store} from '../../../../Redux/Store/store';
 import UserService from '../../../../Services/AuthService';
 import {ProfileType} from '../../../../Types/ProfileType';

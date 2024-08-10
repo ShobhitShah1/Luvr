@@ -8,7 +8,7 @@ import {CommonSize} from '../../../Common/CommonSize';
 import CustomTextInput from '../../../Components/CustomTextInput';
 import {useDispatch, useSelector} from 'react-redux';
 import {useCustomToast} from '../../../Utils/toastUtils';
-import {updateField} from '../../../Redux/Action/userActions';
+import {updateField} from '../../../Redux/Action/actions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useNavigation} from '@react-navigation/native';
 import TextString from '../../../Common/TextString';

@@ -8,7 +8,7 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, {FC, useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -18,6 +18,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {
@@ -31,11 +32,10 @@ import {
   MessageText,
   MessageTextProps,
 } from 'react-native-gifted-chat';
-import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
-import {TouchableOpacity} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {Socket, io} from 'socket.io-client';
 import CommonIcons from '../../Common/CommonIcons';
+import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import ReportUserModalView from '../../Components/ReportUserModalView';
 import ApiConfig from '../../Config/ApiConfig';
 import {
@@ -46,7 +46,7 @@ import {
   MESSAGE_EVENT,
   READ_ALL,
 } from '../../Config/Setting';
-import {onSwipeLeft} from '../../Redux/Action/userActions';
+import {onSwipeLeft} from '../../Redux/Action/actions';
 import {store} from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
 import {ProfileType} from '../../Types/ProfileType';
@@ -524,6 +524,7 @@ const ChatScreen = () => {
             right: {color: COLORS.Black},
           }}
           imageStyle={{left: 28}}
+          onLongPress={() => {}}
           renderMessageText={CustomMessageText}
         />
       </View>

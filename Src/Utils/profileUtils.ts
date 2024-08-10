@@ -2,7 +2,7 @@ import NetInfo from '@react-native-community/netinfo';
 import UserService from '../Services/AuthService';
 import {LocalStorageFields} from '../Types/LocalStorageFields';
 import {store} from '../Redux/Store/store';
-import {setUserData, updateField} from '../Redux/Action/userActions';
+import {setUserData, updateField} from '../Redux/Action/actions';
 import {flattenObject} from './flattenObject';
 
 export const getProfileData = async () => {

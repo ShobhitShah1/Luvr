@@ -2,7 +2,7 @@ import remoteConfig from '@react-native-firebase/remote-config';
 import {Platform} from 'react-native';
 
 const ApiConfig = {
-  DEBUG: true,
+  DEBUG: false,
   BASE_URL: 'https://nirvanatechlabs.in/dating/',
   IMAGE_UPLOAD_BASE_URL: 'https://nirvanatechlabs.in/dating/upload',
   GET_LOCATION_API: 'http://ip-api.com/json/?fields=countryCode',
@@ -44,8 +44,8 @@ async function fetchRemoteConfigValues() {
 fetchRemoteConfigValues();
 
 export const skus = Platform.select({
-  android: ['com.luvr.dating.donation'],
-  ios: [''],
+  android: ['com.luvr.dating.donation', 'com.luvr.gold', 'com.luve.platinum'],
+  ios: ['com.luvr.dating.donation', 'com.luvr.gold', 'com.luve.platinum'],
 });
 
 export default ApiConfig;

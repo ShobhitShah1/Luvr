@@ -34,7 +34,7 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
 import {CountryWithCode} from '../../../Components/Data';
 import {useLocationPermission} from '../../../Hooks/useLocationPermission';
-import {updateField} from '../../../Redux/Action/userActions';
+import {updateField} from '../../../Redux/Action/actions';
 import {store} from '../../../Redux/Store/store';
 import UserService from '../../../Services/AuthService';
 import {transformUserDataForApi} from '../../../Services/dataTransformService';

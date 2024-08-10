@@ -30,7 +30,7 @@ import {ActiveOpacity} from '../../../Common/Theme';
 import LoginButton from '../../../Components/AuthComponents/LoginButton';
 import OpenURL from '../../../Components/OpenURL';
 import {APP_NAME} from '../../../Config/Setting';
-import {updateField} from '../../../Redux/Action/userActions';
+import {updateField} from '../../../Redux/Action/actions';
 import {store} from '../../../Redux/Store/store';
 import UserService, {initGoogleSignIn} from '../../../Services/AuthService';
 import {transformUserDataForApi} from '../../../Services/dataTransformService';

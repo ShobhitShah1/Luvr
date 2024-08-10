@@ -32,7 +32,7 @@ import CommonIcons from '../../Common/CommonIcons';
 import TextString from '../../Common/TextString';
 import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
 import OpenURL from '../../Components/OpenURL';
-import {resetUserData} from '../../Redux/Action/userActions';
+import {resetUserData} from '../../Redux/Action/actions';
 import UserService from '../../Services/AuthService';
 import {ProfileType} from '../../Types/ProfileType';
 import {useCustomToast} from '../../Utils/toastUtils';

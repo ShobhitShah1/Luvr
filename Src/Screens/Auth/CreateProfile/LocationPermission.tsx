@@ -9,7 +9,7 @@ import TextString from '../../../Common/TextString';
 import {COLORS, FONTS} from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import {useLocationPermission} from '../../../Hooks/useLocationPermission';
-import {updateField} from '../../../Redux/Action/userActions';
+import {updateField} from '../../../Redux/Action/actions';
 import UserService from '../../../Services/AuthService';
 import {transformUserDataForApi} from '../../../Services/dataTransformService';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';

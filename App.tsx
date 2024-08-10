@@ -1,19 +1,22 @@
 /* eslint-disable react-native/no-inline-styles */
 import notifee, {EventType} from '@notifee/react-native';
+import {setRootViewBackgroundColor} from '@pnthach95/react-native-root-view-background';
 import messaging from '@react-native-firebase/messaging';
 import React, {useEffect} from 'react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {getProducts, initConnection} from 'react-native-iap';
 import {ToastProvider} from 'react-native-toast-notifications';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
+import {COLORS} from './Src/Common/Theme';
 import {onDisplayNotification} from './Src/Components/onDisplayNotification';
+import {skus} from './Src/Config/ApiConfig';
 import {UserDataProvider} from './Src/Contexts/UserDataContext';
+import {MEMBERSHIP_PRODUCTS} from './Src/Redux/Action/actions';
 import {persistor, store} from './Src/Redux/Store/store';
 import MainRoute from './Src/Routes/MainRoute';
-import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
 import {navigationRef} from './Src/Routes/RootNavigation';
-import {setRootViewBackgroundColor} from '@pnthach95/react-native-root-view-background';
-import {COLORS} from './Src/Common/Theme';
+import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
 
 export default function App() {
   useEffect(() => {
@@ -54,7 +57,27 @@ export default function App() {
 
   useEffect(() => {
     setRootViewBackgroundColor(COLORS.Secondary);
+    fetchProducts();
   }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const connected = await initConnection();
+      if (connected && skus && store) {
+        const products = await getProducts({skus});
+        console.log('Products:', products);
+
+        if (products) {
+          store.dispatch({
+            type: MEMBERSHIP_PRODUCTS,
+            membershipProducts: products,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
 
   return (
     <Provider store={store}>

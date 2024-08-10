@@ -23,7 +23,7 @@ import {
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomCheckBox from '../../../Components/CustomCheckBox';
 import {GendersData} from '../../../Components/Data';
-import {updateField} from '../../../Redux/Action/userActions';
+import {updateField} from '../../../Redux/Action/actions';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';

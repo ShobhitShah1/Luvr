@@ -8,7 +8,7 @@ import TextString from '../../../Common/TextString';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import SmoothPinCodeInput from '../../../Components/SmoothPinCodeInput';
 import {useLocationPermission} from '../../../Hooks/useLocationPermission';
-import {updateField} from '../../../Redux/Action/userActions';
+import {updateField} from '../../../Redux/Action/actions';
 import UserService from '../../../Services/AuthService';
 import {transformUserDataForApi} from '../../../Services/dataTransformService';
 import {LocalStorageFields} from '../../../Types/LocalStorageFields';

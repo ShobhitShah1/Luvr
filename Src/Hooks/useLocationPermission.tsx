@@ -2,7 +2,7 @@ import {useState} from 'react';
 import {Alert, BackHandler, Linking, Platform} from 'react-native';
 import {PERMISSIONS, RESULTS, check, request} from 'react-native-permissions';
 import {store} from '../Redux/Store/store';
-import {updateField} from '../Redux/Action/userActions';
+import {updateField} from '../Redux/Action/actions';
 import {LocalStorageFields} from '../Types/LocalStorageFields';
 import Geolocation from 'react-native-geolocation-service';
 import {APP_NAME} from '../Config/Setting';

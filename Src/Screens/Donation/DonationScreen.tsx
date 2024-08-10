@@ -13,15 +13,17 @@ import {
 } from 'react-native';
 import {
   flushFailedPurchasesCachedAsPendingAndroid,
-  getProducts,
   initConnection,
   requestPurchase,
 } from 'react-native-iap';
+import {useSelector} from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
+import TextString from '../../Common/TextString';
 import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import Button from '../../Components/Button';
 import {skus} from '../../Config/ApiConfig';
 import UserService from '../../Services/AuthService';
+import {MembershipProductsType} from '../../Types/Interface';
 import {useCustomToast} from '../../Utils/toastUtils';
 
 const BackgroundImageSize = 150;
@@ -29,23 +31,32 @@ const BackgroundImageSize = 150;
 const DonationScreen = () => {
   const navigation = useNavigation();
   const {showToast} = useCustomToast();
+  const membershipStore = useSelector((state: any) => state.membership);
+
+  useEffect(() => {
+    console.log('membershipStore:', membershipStore?.membershipProducts);
+  }, [membershipStore]);
 
   const [PaymentSuccess, setPaymentSuccess] = useState(false);
   const [PaymentLoader, setPaymentLoader] = useState(false);
-  const [DonationAmount, setDonationAmount] = useState<string | number>(0);
+  const [membershipProductsList, setmembershipProductsList] = useState<
+    MembershipProductsType[]
+  >(membershipStore?.membershipProducts);
+  const [DonationAmount, setDonationAmount] = useState<string | number>(
+    membershipProductsList[0]?.price,
+  );
 
   useEffect(() => {
-    InitializedConnection();
+    initializedConnection();
   }, []);
 
-  const InitializedConnection = async () => {
+  const initializedConnection = async () => {
     setPaymentLoader(true);
 
     try {
       const connected = await initConnection();
 
       if (connected) {
-        await GetProducts();
         if (Platform.OS === 'android') {
           await flushFailedPurchasesCachedAsPendingAndroid();
         }
@@ -53,36 +64,26 @@ const DonationScreen = () => {
       }
 
       showToast(
-        'Error',
-        'Failed to connect to the store. Please check your internet connection.',
-        'error',
+        TextString.error.toUpperCase(),
+        'Failed to connect to the store.',
+        TextString.error,
       );
     } catch (error) {
-      console.log('Connection Error:', error);
       setPaymentLoader(false);
     } finally {
       setPaymentLoader(false);
     }
   };
 
-  const GetProducts = async () => {
-    const Products = await getProducts({skus});
-    if (Products) {
-      Products.map(res => {
-        setDonationAmount(res.localizedPrice);
-      });
-    }
-    setPaymentLoader(false);
-  };
-
-  const RequestPurchase = async () => {
-    if (skus) {
+  const requestDonationPurchase = async ({id}: {id: string[]}) => {
+    const skuID = id || skus;
+    if (skuID) {
       setPaymentLoader(true);
       console.log('⏳ Payment Loading .......');
       try {
-        const request = await requestPurchase({skus});
+        const request = await requestPurchase({skus: skuID});
         console.log('📋 RequestIOSPayment:', request);
-        DonationAPICall();
+        donationAPICall();
         console.log('✅ All Set');
       } catch (error: any) {
         showToast('Error', String(error?.message || error), 'error');
@@ -93,7 +94,7 @@ const DonationScreen = () => {
     }
   };
 
-  const DonationAPICall = async () => {
+  const donationAPICall = async () => {
     try {
       const userDataForApi = {
         eventName: 'donation',
@@ -161,12 +162,29 @@ const DonationScreen = () => {
           </View>
         </View>
 
+        {membershipProductsList
+          ?.filter(item => item.productId !== skus[0])
+          ?.map((res, i) => {
+            console.log('res:', res);
+            return (
+              <TouchableOpacity
+                key={i}
+                onPress={() => requestDonationPurchase({id: [res.productId]})}
+                style={{width: '100%', paddingHorizontal: 20}}>
+                <Text style={{color: COLORS.Black}}>{res.name}</Text>
+                <Text style={{color: COLORS.Black}}>{res.price}</Text>
+                <Text style={{color: COLORS.Black}}>{res.productId}</Text>
+                <Text style={{color: COLORS.Black}}>
+                  {'-------------------------------------------'}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+
         <View style={styles.DonateButtonContainer}>
           <Button
             isLoading={PaymentLoader}
-            onPress={() => {
-              RequestPurchase();
-            }}
+            onPress={() => {}}
             ButtonTitle={
               PaymentSuccess
                 ? 'Make another donation'

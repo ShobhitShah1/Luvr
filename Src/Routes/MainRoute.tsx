@@ -7,7 +7,7 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useSelector} from 'react-redux';
 import ApiConfig from '../Config/ApiConfig';
 import {useLocationPermission} from '../Hooks/useLocationPermission';
-import {setCurrentScreenName, updateField} from '../Redux/Action/userActions';
+import {setCurrentScreenName, updateField} from '../Redux/Action/actions';
 import {store} from '../Redux/Store/store';
 import {
   AddDailyHabits,

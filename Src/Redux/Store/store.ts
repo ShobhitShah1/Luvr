@@ -3,9 +3,11 @@ import {persistReducer, persistStore} from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import userReducer from '../Reducer/userReducer';
+import membershipReducer from '../Reducer/membershipReducer';
 
 const rootReducer = combineReducers({
   user: userReducer,
+  membership: membershipReducer,
 });
 
 const persistConfig = {

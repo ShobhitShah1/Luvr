@@ -1,4 +1,4 @@
-import {onSwipeRight} from '../Redux/Action/userActions';
+import {onSwipeRight} from '../Redux/Action/actions';
 import {store} from '../Redux/Store/store';
 import UserService from '../Services/AuthService';
 import NetInfo from '@react-native-community/netinfo';

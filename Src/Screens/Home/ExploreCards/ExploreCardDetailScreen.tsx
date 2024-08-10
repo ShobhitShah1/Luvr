@@ -26,7 +26,7 @@ import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
 import Paginator from '../../../Components/Paginator';
 import ReportUserModalView from '../../../Components/ReportUserModalView';
 import ApiConfig from '../../../Config/ApiConfig';
-import {onSwipeLeft, onSwipeRight} from '../../../Redux/Action/userActions';
+import {onSwipeLeft, onSwipeRight} from '../../../Redux/Action/actions';
 import {store} from '../../../Redux/Store/store';
 import UserService from '../../../Services/AuthService';
 import {ProfileType} from '../../../Types/ProfileType';

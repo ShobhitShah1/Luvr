@@ -24,7 +24,7 @@ import TextString from '../../Common/TextString';
 import {ActiveOpacity, COLORS, GROUP_FONT} from '../../Common/Theme';
 import {CardDelay, CardLimit} from '../../Config/Setting';
 import useInterval from '../../Hooks/useInterval';
-import {onSwipeLeft, onSwipeRight} from '../../Redux/Action/userActions';
+import {onSwipeLeft, onSwipeRight} from '../../Redux/Action/actions';
 import {store} from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
 import {SwiperCard} from '../../Types/SwiperCard';

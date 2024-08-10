@@ -37,7 +37,7 @@ import {TotalProfilePicCanUploadEditProfile} from '../../Config/Setting';
 import {useCameraPermission} from '../../Hooks/useCameraPermission';
 import {useGalleryPermission} from '../../Hooks/useGalleryPermission';
 import {useLocationPermission} from '../../Hooks/useLocationPermission';
-import {updateField} from '../../Redux/Action/userActions';
+import {updateField} from '../../Redux/Action/actions';
 import UserService from '../../Services/AuthService';
 import {LocalStorageFields} from '../../Types/LocalStorageFields';
 import {ProfileType} from '../../Types/ProfileType';

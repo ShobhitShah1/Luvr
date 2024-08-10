@@ -2,7 +2,7 @@ import notifee, {
   AndroidImportance,
   AndroidVisibility,
 } from '@notifee/react-native';
-import {addNotification} from '../Redux/Action/userActions';
+import {addNotification} from '../Redux/Action/actions';
 import {store} from '../Redux/Store/store';
 
 export async function onDisplayNotification(title: string, body: string) {

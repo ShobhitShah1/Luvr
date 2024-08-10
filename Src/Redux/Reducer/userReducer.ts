@@ -9,7 +9,7 @@ import {
   UPDATE_FIELD,
   ADD_NOTIFICATION,
   CURRENT_SCREEN,
-} from '../Action/userActions';
+} from '../Action/actions';
 
 const initialState: UserDataType & {
   swipedLeftUserIds: string[];
