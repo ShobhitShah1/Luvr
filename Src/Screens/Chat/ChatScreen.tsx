@@ -10,15 +10,11 @@ import {
 } from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {
-  Image,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   SafeAreaView,
   StatusBar,
   StyleSheet,
-  Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import {
@@ -32,10 +28,8 @@ import {
   MessageText,
   MessageTextProps,
 } from 'react-native-gifted-chat';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {Socket, io} from 'socket.io-client';
-import CommonIcons from '../../Common/CommonIcons';
-import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
+import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
 import ReportUserModalView from '../../Components/ReportUserModalView';
 import ApiConfig from '../../Config/ApiConfig';
 import {
@@ -53,6 +47,7 @@ import {ProfileType} from '../../Types/ProfileType';
 import {chatRoomDataType} from '../../Types/chatRoomDataType';
 import {useCustomToast} from '../../Utils/toastUtils';
 import ChatScreenHeader from './Components/ChatScreenHeader';
+import ReportOrBlockModal from './Components/ReportOrBlockModal';
 
 interface ChatData {
   params: {
@@ -529,51 +524,13 @@ const ChatScreen = () => {
         />
       </View>
 
-      <Modal
-        visible={ReportAndBlockModal}
-        transparent
-        presentationStyle="overFullScreen">
-        <View style={styles.BlockAndReportProfileView}>
-          <View style={styles.blockAndReportContentView}>
-            <TouchableOpacity
-              activeOpacity={ActiveOpacity}
-              style={styles.blockAndReportCloseButton}
-              onPress={() => setReportAndBlockModal(false)}>
-              <Image
-                source={CommonIcons.CloseModal}
-                style={{width: 35, height: 35}}
-              />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={onBlockProfileClick}
-              activeOpacity={ActiveOpacity}
-              style={styles.BlockAndReportButtonView}>
-              <Image
-                resizeMode="contain"
-                style={styles.BlockAndReportIcon}
-                source={CommonIcons.block_profile_icon}
-              />
-              <Text style={styles.BlockAndReportText}>Block Profile</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => {
-                setReportAndBlockModal(false);
-                setShowReportModalView(!ShowReportModalView);
-              }}
-              activeOpacity={ActiveOpacity}
-              style={styles.BlockAndReportButtonView}>
-              <Image
-                resizeMode="contain"
-                style={styles.BlockAndReportIcon}
-                source={CommonIcons.report_profile_icon}
-              />
-              <Text style={styles.BlockAndReportText}>Report Profile</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <ReportOrBlockModal
+        isVisible={ReportAndBlockModal}
+        setReportAndBlockModal={setReportAndBlockModal}
+        setShowReportModalView={setShowReportModalView}
+        onBlockProfileClick={onBlockProfileClick}
+        ShowReportModalView={ShowReportModalView}
+      />
 
       <ReportUserModalView
         Visible={ShowReportModalView}
@@ -621,54 +578,5 @@ const styles = StyleSheet.create({
     fontSize: 11.5,
     color: COLORS.Black,
     fontFamily: FONTS.SemiBold,
-  },
-
-  BlockAndReportProfileView: {
-    width: '100%',
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  BlockAndReportButtonView: {
-    width: '47%',
-    overflow: 'hidden',
-    height: hp('7.5%'),
-    marginVertical: hp('2%'),
-    borderRadius: hp('5%'),
-    backgroundColor: COLORS.White,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: COLORS.Black,
-    paddingHorizontal: hp('1%'),
-    marginHorizontal: hp('0.5%'),
-  },
-  BlockAndReportIcon: {
-    width: hp('2.4%'),
-    height: hp('2.4%'),
-  },
-  BlockAndReportText: {
-    fontFamily: FONTS.Bold,
-    color: COLORS.Black,
-    fontSize: hp('1.8%'),
-    marginHorizontal: hp('0.5%'),
-  },
-  blockAndReportContentView: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '10%',
-    borderRadius: 10,
-    flexDirection: 'row',
-  },
-  blockAndReportCloseButton: {
-    position: 'absolute',
-    top: 20,
-    right: 5,
-    width: 50,
-    height: 50,
   },
 });

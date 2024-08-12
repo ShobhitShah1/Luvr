@@ -33,13 +33,9 @@ const DonationScreen = () => {
   const {showToast} = useCustomToast();
   const membershipStore = useSelector((state: any) => state.membership);
 
-  useEffect(() => {
-    console.log('membershipStore:', membershipStore?.membershipProducts);
-  }, [membershipStore]);
-
   const [PaymentSuccess, setPaymentSuccess] = useState(false);
   const [PaymentLoader, setPaymentLoader] = useState(false);
-  const [membershipProductsList, setmembershipProductsList] = useState<
+  const [membershipProductsList, setMembershipProductsList] = useState<
     MembershipProductsType[]
   >(membershipStore?.membershipProducts);
   const [DonationAmount, setDonationAmount] = useState<string | number>(

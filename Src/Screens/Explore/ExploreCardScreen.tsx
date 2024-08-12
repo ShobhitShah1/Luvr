@@ -11,11 +11,10 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
   useWindowDimensions,
+  View,
 } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
-import Modal from 'react-native-modal';
 import {Easing} from 'react-native-reanimated';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useSelector} from 'react-redux';
@@ -27,6 +26,7 @@ import useInterval from '../../Hooks/useInterval';
 import {onSwipeLeft, onSwipeRight} from '../../Redux/Action/actions';
 import {store} from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
+import {ProfileType} from '../../Types/ProfileType';
 import {SwiperCard} from '../../Types/SwiperCard';
 import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
@@ -53,7 +53,7 @@ const ExploreCardScreen: FC = () => {
     (state: any) => state?.user?.swipedRightUserIds || [],
   );
 
-  const [cards, setCards] = useState<SwiperCard[]>([]);
+  const [cards, setCards] = useState<ProfileType[]>([]);
   const [cardToSkipNumber, setCardToSkipNumber] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [CurrentCardIndex, setCurrentCardIndex] = useState(0);
@@ -61,7 +61,7 @@ const ExploreCardScreen: FC = () => {
   const [IsAPILoading, setIsAPILoading] = useState(true);
   const [IsNetConnected, setIsNetConnected] = useState(true);
   const [isMatchModalVisible, setIsMatchModalVisible] = useState(false);
-  const [MatchedUserInfo, setMatchedUserInfo] = useState<SwiperCard | null>(
+  const [MatchedUserInfo, setMatchedUserInfo] = useState<ProfileType | null>(
     null,
   );
 
@@ -142,8 +142,8 @@ const ExploreCardScreen: FC = () => {
       try {
         const userDataForApi = {
           limit: CardLimit,
-          unlike: LeftSwipedUserIds,
           like: RightSwipedUserIds,
+          unlike: LeftSwipedUserIds,
           skip: cardSkipValue || cardToSkipNumber,
           radius: userData.radius,
           eventName: 'list_neighbour',
@@ -240,7 +240,7 @@ const ExploreCardScreen: FC = () => {
     swipeRef.current?.swipeRight();
   };
 
-  const likeUserAPICall = async (id: string, cardData: SwiperCard) => {
+  const likeUserAPICall = async (id: string, cardData: ProfileType) => {
     if (!IsNetConnected) {
       showToast(
         TextString.error.toUpperCase(),
@@ -431,38 +431,25 @@ const ExploreCardScreen: FC = () => {
         </View>
       )}
 
-      <Modal
+      <ItsAMatch
         isVisible={!IsAPILoading && isMatchModalVisible}
-        animationIn={'fadeIn'}
-        animationOut={'fadeOut'}
-        useNativeDriver={true}
-        useNativeDriverForBackdrop={true}
-        hasBackdrop={true}
-        onBackdropPress={() => {
+        onClose={() => {
           setIsMatchModalVisible(false);
           setMatchedUserInfo(null);
         }}
-        onBackButtonPress={() => {
+        user={MatchedUserInfo}
+        onSayHiClick={() => {
+          setIsMatchModalVisible(false);
+          navigation.navigate('Chat', {
+            id: MatchedUserInfo?._id,
+          });
+        }}
+        onCloseModalClick={() => {
           setIsMatchModalVisible(false);
           setMatchedUserInfo(null);
         }}
-        statusBarTranslucent={true}
-        style={styles.modalContainer}>
-        <ItsAMatch
-          user={MatchedUserInfo}
-          onSayHiClick={() => {
-            setIsMatchModalVisible(false);
-            navigation.navigate('Chat', {
-              id: MatchedUserInfo?._id,
-            });
-          }}
-          onCloseModalClick={() => {
-            setIsMatchModalVisible(false);
-            setMatchedUserInfo(null);
-          }}
-          setItsMatch={setIsMatchModalVisible}
-        />
-      </Modal>
+        setItsMatch={setIsMatchModalVisible}
+      />
     </View>
   );
 };

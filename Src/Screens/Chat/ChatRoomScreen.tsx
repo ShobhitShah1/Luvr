@@ -22,30 +22,7 @@ import {store} from '../../Redux/Store/store';
 import {useCustomToast} from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderChatRoomList from './Components/RenderChatRoomList';
-
-interface ChatMessage {
-  senderId: string;
-  message: string;
-  timestamp: number;
-}
-
-interface MessageItem {
-  chat: ChatMessage[];
-  last_updated_time: number;
-  name: string;
-  reciver_socket_id: string;
-  to: string;
-  profile: string;
-}
-
-interface ListResponseData {
-  data: MessageItem[];
-}
-
-interface SocketEventHandlers {
-  List: (data: ListResponseData | null) => void;
-  message: (data: any) => void;
-}
+import {MessageItem, SocketEventHandlers} from '../../Types/Interface';
 
 const ChatRoomScreen = () => {
   const [socket, setSocket] = useState<Socket | undefined>();
@@ -57,15 +34,15 @@ const ChatRoomScreen = () => {
 
   useEffect(() => {
     if (isFocused) {
-      if (messages.length === 0) {
+      if (!messages.length) {
         setIsSocketLoading(true);
       }
       ConnectSocket();
-    } else {
-      if (socket) {
-        socket.disconnect();
-      }
     }
+
+    return () => {
+      socket?.disconnect();
+    };
   }, [isFocused]);
 
   const ConnectSocket = async () => {
@@ -164,7 +141,7 @@ const ChatRoomScreen = () => {
           }
         };
 
-        const handleUpdateList = data => {
+        const handleUpdateList = () => {
           socket.emit(LIST_EVENT, {id: currentLoginUserId});
         };
 

@@ -16,19 +16,17 @@ export const getProfileData = async () => {
     const userDataForApi = {eventName: 'get_profile'};
 
     const APIResponse = await UserService.UserRegister(userDataForApi);
-    console.log('APIResponse', APIResponse);
     if (APIResponse?.code === 200) {
       const flattenedData = flattenObject(APIResponse.data);
       Object.entries(flattenedData).forEach(([field, value]) => {
         if (field in LocalStorageFields) {
           const validField = field as keyof typeof LocalStorageFields;
-          console.log('STORE PROFILE DATA:', validField, value);
           store.dispatch(updateField(validField, value));
         }
       });
       store.dispatch(setUserData(APIResponse.data));
     }
   } catch (error) {
-    console.log(String(error));
+    console.log(error);
   }
 };

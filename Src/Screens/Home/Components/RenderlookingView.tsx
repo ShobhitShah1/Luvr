@@ -27,7 +27,7 @@ const RenderLookingView: FC<RenderLookingViewProps> = ({item, IsLoading}) => {
       onPress={() => {
         navigation.navigate('CategoryDetailCards', {item});
       }}
-      style={[styles.container, {}]}>
+      style={styles.container}>
       <Skeleton
         colorMode="light"
         show={IsLoading}

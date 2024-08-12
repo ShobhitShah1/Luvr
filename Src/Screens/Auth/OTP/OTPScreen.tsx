@@ -22,7 +22,7 @@ interface RouteParams {
 
 const OTPScreen: FC = () => {
   const route = useRoute();
-  const OTPInputs: number = 4;
+  const OTPInputs = 4;
   const focus = useIsFocused();
   const dispatch = useDispatch();
   const {showToast} = useCustomToast();
@@ -83,12 +83,13 @@ const OTPScreen: FC = () => {
     setIsAPILoading(true);
 
     try {
+      const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
+
       if (otp === '0000') {
         await Promise.all([
           dispatch(updateField(LocalStorageFields.OTP, otp)),
           dispatch(updateField(LocalStorageFields.isVerified, true)),
         ]);
-        const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
 
         if (CHECK_NOTIFICATION_PERMISSION) {
           handleNavigation();
@@ -119,7 +120,6 @@ const OTPScreen: FC = () => {
           dispatch(updateField(LocalStorageFields.OTP, otp)),
           dispatch(updateField(LocalStorageFields.isVerified, true)),
         ]);
-        const CHECK_NOTIFICATION_PERMISSION = await checkLocationPermission();
 
         if (CHECK_NOTIFICATION_PERMISSION) {
           await handleNavigation();
@@ -142,7 +142,7 @@ const OTPScreen: FC = () => {
       showToast(
         TextString.error.toUpperCase(),
         String(error?.message || error),
-        'error',
+        TextString.error,
       );
     } finally {
       setIsAPILoading(false);

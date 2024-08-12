@@ -1,9 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react/no-unstable-nested-components */
+import {BlurView} from '@react-native-community/blur';
 import React, {FC, memo} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Modal from 'react-native-modal';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import CommonIcons from '../../../../Common/CommonIcons';
 import CommonImages from '../../../../Common/CommonImages';
 import {
   ActiveOpacity,
@@ -11,8 +12,6 @@ import {
   GROUP_FONT,
   SIZES,
 } from '../../../../Common/Theme';
-import {BlurView} from '@react-native-community/blur';
-import CommonIcons from '../../../../Common/CommonIcons';
 
 interface ChooseFromModalProps {
   isModalVisible: boolean;
@@ -20,25 +19,25 @@ interface ChooseFromModalProps {
   OnOptionPress: (option: string) => void;
 }
 
+const BlurredBackdrop = ({toggleModal}: {toggleModal: () => void}) => (
+  <TouchableOpacity
+    activeOpacity={1}
+    onPress={toggleModal}
+    style={styles.blurContainer}>
+    <BlurView
+      style={styles.blurView}
+      blurAmount={1}
+      blurType="dark"
+      reducedTransparencyFallbackColor="transparent"
+    />
+  </TouchableOpacity>
+);
+
 const ChooseFromModal: FC<ChooseFromModalProps> = ({
   isModalVisible,
   toggleModal,
   OnOptionPress,
 }) => {
-  const BlurredBackdrop = () => (
-    <TouchableOpacity
-      activeOpacity={1}
-      onPress={toggleModal}
-      style={styles.blurContainer}>
-      <BlurView
-        style={styles.blurView}
-        blurAmount={1}
-        blurType="dark"
-        reducedTransparencyFallbackColor="transparent"
-      />
-    </TouchableOpacity>
-  );
-
   return (
     <Modal
       hasBackdrop
@@ -48,7 +47,7 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({
       animationInTiming={300}
       animationOutTiming={300}
       backdropOpacity={1}
-      customBackdrop={<BlurredBackdrop />}
+      customBackdrop={<BlurredBackdrop toggleModal={toggleModal} />}
       animationOut={'slideOutDown'}
       useNativeDriver={true}
       useNativeDriverForBackdrop={true}

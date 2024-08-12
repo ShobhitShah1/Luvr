@@ -608,6 +608,14 @@ const EditProfileScreen = () => {
     }));
   };
 
+  const onSheetClose = useCallback(() => {
+    if (!bottomSheetModalRef?.current) {
+      return;
+    }
+
+    bottomSheetModalRef?.current.dismiss();
+  }, []);
+
   return (
     <View style={styles.Container}>
       <ProfileAndSettingHeader
@@ -1053,9 +1061,8 @@ const EditProfileScreen = () => {
         <BottomSheetModal
           ref={bottomSheetModalRef}
           enableDynamicSizing
-          backgroundStyle={{
-            backgroundColor: COLORS.Secondary,
-          }}
+          backgroundStyle={{backgroundColor: COLORS.Secondary}}
+          onDismiss={onSheetClose}
           handleComponent={null}
           backdropComponent={props => (
             <BlurView blurAmount={2} style={props.style}>
@@ -1070,12 +1077,8 @@ const EditProfileScreen = () => {
           )}
           maxDynamicContentSize={Dimensions.get('screen').height - 150}
           onChange={handleSheetChanges}
-          style={{
-            borderRadius: 0,
-          }}
-          containerStyle={{
-            borderRadius: 0,
-          }}>
+          style={{borderRadius: 0}}
+          containerStyle={{borderRadius: 0}}>
           <View style={{flex: 1}}>
             <View style={styles.CloseViewContainer}>
               <TouchableOpacity
@@ -1105,7 +1108,7 @@ const EditProfileScreen = () => {
                 </TouchableOpacity>
               )}
             </View>
-            <BottomSheetScrollView style={{}} ref={scrollViewRef}>
+            <BottomSheetScrollView ref={scrollViewRef}>
               <EditProfileSheetView
                 profile={profile}
                 setProfile={setProfile}

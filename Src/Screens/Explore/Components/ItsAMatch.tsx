@@ -11,22 +11,33 @@ import FastImage from 'react-native-fast-image';
 import {useSelector} from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
 import CommonImages from '../../../Common/CommonImages';
-import {ActiveOpacity, COLORS, FONTS} from '../../../Common/Theme';
+import {
+  ActiveOpacity,
+  COLORS,
+  deviceHeightWithStatusbar,
+  FONTS,
+} from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import {APP_NAME, DummyImage} from '../../../Config/Setting';
-import {SwiperCard} from '../../../Types/SwiperCard';
+import {ProfileType} from '../../../Types/ProfileType';
+import ReactNativeModal from 'react-native-modal';
+import {BlurredBackdrop} from '../../../Components/ReportUserModalView';
 
 interface ItsAMatchProps {
-  user: SwiperCard | null;
+  user: ProfileType | null;
   onSayHiClick: () => void;
   setItsMatch: React.Dispatch<React.SetStateAction<boolean>>;
   onCloseModalClick: () => void;
+  onClose: () => void;
+  isVisible: boolean;
 }
 
 const ItsAMatch: FC<ItsAMatchProps> = ({
   user,
   onSayHiClick,
   onCloseModalClick,
+  onClose,
+  isVisible,
 }) => {
   const userData = useSelector((state: any) => state?.user);
 
@@ -44,61 +55,78 @@ const ItsAMatch: FC<ItsAMatchProps> = ({
   }, [user]);
 
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        imageStyle={styles.BackgroundImageStyle}
-        source={CommonImages.ItsAMatch}
-        style={styles.BackgroundImageContainer}>
-        <View>
-          <View style={styles.ItsAMatchTextView}>
-            <Text style={styles.ItsAMatchText}>It’s a match!</Text>
-            <Text style={styles.ItsAMatchDescriptionText}>
-              You and {user?.full_name || `${APP_NAME} User`} have liked each
-              other.
-            </Text>
+    <ReactNativeModal
+      isVisible={isVisible}
+      customBackdrop={<BlurredBackdrop />}
+      statusBarTranslucent={true}
+      deviceHeight={deviceHeightWithStatusbar}
+      useNativeDriver={true}
+      useNativeDriverForBackdrop={true}
+      hasBackdrop={true}
+      onBackdropPress={onClose}
+      onBackButtonPress={onClose}
+      style={styles.modalContainer}>
+      <View style={styles.container}>
+        <ImageBackground
+          imageStyle={styles.BackgroundImageStyle}
+          source={CommonImages.ItsAMatch}
+          style={styles.BackgroundImageContainer}>
+          <View>
+            <View style={styles.ItsAMatchTextView}>
+              <Text style={styles.ItsAMatchText}>It’s a match!</Text>
+              <Text style={styles.ItsAMatchDescriptionText}>
+                You and {user?.full_name || `${APP_NAME} User`} have liked each
+                other.
+              </Text>
+            </View>
+            <View style={styles.MatchedProfileView}>
+              <FastImage
+                resizeMode="cover"
+                source={{
+                  uri: myProfile,
+                  priority: FastImage.priority.high,
+                }}
+                style={[styles.UserProfileImage]}
+              />
+              <Image
+                source={CommonIcons.like_button}
+                style={[styles.LikeButtonImage]}
+              />
+              <FastImage
+                resizeMode="cover"
+                source={{
+                  uri: likedProfile,
+                  priority: FastImage.priority.high,
+                }}
+                style={[styles.UserProfileImage]}
+              />
+            </View>
+            <View style={styles.ButtonsContainerView}>
+              <TouchableOpacity
+                onPress={onSayHiClick}
+                activeOpacity={ActiveOpacity}
+                style={styles.SendMessageButton}>
+                <Text style={styles.SendMessageText}>Send a message</Text>
+              </TouchableOpacity>
+              <Text onPress={onCloseModalClick} style={styles.KeepSwipingText}>
+                Keep swiping
+              </Text>
+            </View>
           </View>
-          <View style={styles.MatchedProfileView}>
-            <FastImage
-              resizeMode="cover"
-              source={{
-                uri: myProfile,
-                priority: FastImage.priority.high,
-              }}
-              style={[styles.UserProfileImage]}
-            />
-            <Image
-              source={CommonIcons.like_button}
-              style={[styles.LikeButtonImage]}
-            />
-            <FastImage
-              resizeMode="cover"
-              source={{
-                uri: likedProfile,
-                priority: FastImage.priority.high,
-              }}
-              style={[styles.UserProfileImage]}
-            />
-          </View>
-          <View style={styles.ButtonsContainerView}>
-            <TouchableOpacity
-              onPress={onSayHiClick}
-              activeOpacity={ActiveOpacity}
-              style={styles.SendMessageButton}>
-              <Text style={styles.SendMessageText}>Send a message</Text>
-            </TouchableOpacity>
-            <Text onPress={onCloseModalClick} style={styles.KeepSwipingText}>
-              Keep swiping
-            </Text>
-          </View>
-        </View>
-      </ImageBackground>
-    </View>
+        </ImageBackground>
+      </View>
+    </ReactNativeModal>
   );
 };
 
 export default ItsAMatch;
 
 const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    margin: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',

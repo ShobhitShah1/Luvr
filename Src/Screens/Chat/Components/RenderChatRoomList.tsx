@@ -1,35 +1,16 @@
 /* eslint-disable react-native/no-inline-styles */
 import {useNavigation} from '@react-navigation/native';
-import React, {memo, useEffect} from 'react';
+import React, {memo} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import CommonIcons from '../../../Common/CommonIcons';
 import CommonImages from '../../../Common/CommonImages';
 import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
-
-interface MessageType {
-  id: string;
-  is_read: number;
-  message: string;
-  time: number;
-}
-
-interface ChatRoomDataType {
-  chat: MessageType[];
-  last_updated_time: number;
-  name: string;
-  reciver_socket_id: string | null;
-  to: string;
-}
-
-interface ChatRoomProps {
-  item: ChatRoomDataType;
-  index: number;
-}
+import {ChatRoomProps} from '../../../Types/Interface';
 
 const RenderChatRoomList = ({item, index}: ChatRoomProps) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation() as any;
 
   if (!item || !item.chat || !Array.isArray(item.chat)) {
     return null;

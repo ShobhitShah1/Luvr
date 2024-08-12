@@ -65,7 +65,6 @@ export default function App() {
       const connected = await initConnection();
       if (connected && skus && store) {
         const products = await getProducts({skus});
-        console.log('Products:', products);
 
         if (products) {
           store.dispatch({

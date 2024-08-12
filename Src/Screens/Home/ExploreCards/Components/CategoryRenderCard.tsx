@@ -86,23 +86,24 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
         console.log('LikeUserAPI APIResponse Data ---:>', APIResponse.data);
         if (APIResponse.data?.status === 'match') {
           setItsMatchModalView(true);
-        } else {
-          setItsMatchModalView(false);
-          // setIsAPILoading(false);
         }
-        await store.dispatch(onSwipeRight(String(item._id)));
+        store.dispatch(onSwipeRight(String(item._id)));
         FetchAPIData();
       } else {
         showToast(
-          'Something went wrong',
+          TextString.error.toUpperCase(),
           APIResponse?.message || 'Please try again letter',
-          'error',
+          TextString.error,
         );
         setItsMatchModalView(false);
         setIsAPILoading(false);
       }
-    } catch (error) {
-      console.log('Something Went Wrong With Feting API Data');
+    } catch (error: any) {
+      showToast(
+        TextString.error.toUpperCase(),
+        String(error?.message || error),
+        TextString.error,
+      );
       setItsMatchModalView(false);
       setIsAPILoading(false);
     }
@@ -163,10 +164,7 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
               activeOpacity={ActiveOpacity}
               style={styles.LikeCardView}
               onPress={() => {
-                setIsAPILoading(true);
-                setTimeout(() => {
-                  onLikePress();
-                }, 0);
+                onLikePress();
               }}>
               <Image source={CommonImages.LikeCard} style={styles.LikeCard} />
             </TouchableOpacity>

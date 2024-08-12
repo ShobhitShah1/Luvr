@@ -1,45 +1,51 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react/no-unstable-nested-components */
 import NetInfo from '@react-native-community/netinfo';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import React, {FC, memo, useCallback, useEffect, useState} from 'react';
 import {ActivityIndicator, FlatList, StatusBar, Text, View} from 'react-native';
-import Modal from 'react-native-modal';
 import {useSelector} from 'react-redux';
+import TextString from '../../../Common/TextString';
 import {COLORS} from '../../../Common/Theme';
-import {store} from '../../../Redux/Store/store';
 import UserService from '../../../Services/AuthService';
+import {ProfileType} from '../../../Types/ProfileType';
 import {useCustomToast} from '../../../Utils/toastUtils';
 import ItsAMatch from '../../Explore/Components/ItsAMatch';
 import CategoryDetailHeader from './Components/CategoryDetailHeader';
 import CategoryRenderCard from './Components/CategoryRenderCard';
 import styles from './styles';
-import TextString from '../../../Common/TextString';
+import {store} from '../../../Redux/Store/store';
 
-interface CategoryDetailCardsProps {
-  params: {
+type RootStackParamList = {
+  CategoryDetailCards: {
     item: {
       id: number;
       title: string;
       image: any;
     };
   };
-}
+};
+
+interface CategoryDetailCardsInterface
+  extends RouteProp<RootStackParamList, 'CategoryDetailCards'> {}
+
+const ListEmptyView = ({categoryName}: {categoryName: string}) => {
+  return (
+    <View style={styles.EmptyListView}>
+      <Text style={styles.EmptyListText}>
+        Sorry! Unable to Find Card for <Text>"{categoryName}"</Text>
+      </Text>
+    </View>
+  );
+};
 
 const CategoryDetailCardsScreen: FC = () => {
-  const {params} = useRoute<CategoryDetailCardsProps>();
+  const {params} = useRoute<CategoryDetailCardsInterface>();
   const userData = useSelector((state: any) => state?.user);
   const {showToast} = useCustomToast();
-  const {navigate} = useNavigation();
+  const navigation = useNavigation() as any;
 
-  const LeftSwipedUserIds = useSelector(
-    state => state?.user?.swipedLeftUserIds || [],
-  );
-  const RightSwipedUserIds = useSelector(
-    state => state?.user?.swipedRightUserIds || [],
-  );
-  const [CategoryData, setCategoryData] = useState([]);
+  const [CategoryData, setCategoryData] = useState<ProfileType[]>([]);
   const [IsAPILoading, setIsAPILoading] = useState(true);
   const [ItsMatchModalView, setItsMatchModalView] = useState(false);
   const [CurrentCardIndex, setCurrentCardIndex] = useState<number>(-1);
@@ -47,6 +53,10 @@ const CategoryDetailCardsScreen: FC = () => {
   useEffect(() => {
     checkConnectionAndFetchAPI();
   }, []);
+
+  useEffect(() => {
+    fetchAPIData();
+  }, [userData, userData?.swipedLeftUserIds, userData?.swipedRightUserIds]);
 
   const checkConnectionAndFetchAPI = async () => {
     setIsAPILoading(true);
@@ -58,9 +68,9 @@ const CategoryDetailCardsScreen: FC = () => {
       setIsAPILoading(false);
       setItsMatchModalView(false);
       showToast(
-        'No Internet Connection',
-        'Please check your internet connection',
-        'error',
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
       );
       return;
     }
@@ -85,10 +95,11 @@ const CategoryDetailCardsScreen: FC = () => {
       const APIResponse = await UserService.UserRegister(userDataForApi);
 
       if (APIResponse?.code === 200) {
+        console.log(APIResponse?.data);
         setCategoryData(APIResponse?.data || []);
       } else {
         showToast(
-          'Something went wrong',
+          TextString.error.toUpperCase(),
           APIResponse?.message || 'Please try again letter',
           'error',
         );
@@ -102,21 +113,7 @@ const CategoryDetailCardsScreen: FC = () => {
     } finally {
       setIsAPILoading(false);
     }
-  }, [LeftSwipedUserIds, RightSwipedUserIds, userData, params?.item?.title]);
-
-  useEffect(() => {
-    fetchAPIData();
-  }, [LeftSwipedUserIds, RightSwipedUserIds]);
-
-  const ListEmptyView = () => {
-    return (
-      <View style={styles.EmptyListView}>
-        <Text style={styles.EmptyListText}>
-          Sorry! Unable to Find Card for <Text>"{params?.item?.title}"</Text>
-        </Text>
-      </View>
-    );
-  };
+  }, [userData, params?.item?.title]);
 
   if (IsAPILoading) {
     return (
@@ -143,9 +140,7 @@ const CategoryDetailCardsScreen: FC = () => {
           numColumns={2}
           data={CategoryData}
           style={styles.FlatListStyle}
-          columnWrapperStyle={{
-            justifyContent: 'space-between',
-          }}
+          columnWrapperStyle={{justifyContent: 'space-between'}}
           renderItem={({item, index}) => {
             return (
               <CategoryRenderCard
@@ -158,45 +153,34 @@ const CategoryDetailCardsScreen: FC = () => {
               />
             );
           }}
-          ListEmptyComponent={<ListEmptyView />}
+          ListEmptyComponent={
+            <ListEmptyView categoryName={params?.item?.title} />
+          }
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={{flex: CategoryData.length === 0 ? 1 : 0}}
         />
       </View>
 
-      {ItsMatchModalView && (
-        <Modal
-          isVisible={ItsMatchModalView}
-          animationIn={'fadeIn'}
-          animationOut={'fadeOut'}
-          useNativeDriver
-          useNativeDriverForBackdrop
-          hasBackdrop
-          onBackdropPress={() => {
+      <ItsAMatch
+        isVisible={ItsMatchModalView}
+        onClose={() => {
+          setItsMatchModalView(false);
+        }}
+        user={CategoryData && CategoryData[CurrentCardIndex]}
+        onSayHiClick={() => {
+          if (CategoryData[CurrentCardIndex]?._id) {
             setItsMatchModalView(false);
-          }}
-          onBackButtonPress={() => {
-            setItsMatchModalView(false);
-          }}
-          style={{flex: 1, margin: 0}}>
-          <ItsAMatch
-            user={CategoryData && CategoryData[CurrentCardIndex]}
-            onSayHiClick={() => {
-              if (CategoryData[CurrentCardIndex]?._id) {
-                setItsMatchModalView(false);
-                navigate('Chat', {
-                  id: CategoryData[CurrentCardIndex]?._id,
-                });
-              } else {
-                showToast('Error', "Sorry! Can't find user", 'error');
-              }
-            }}
-            onCloseModalClick={() => setItsMatchModalView(false)}
-            setItsMatch={setItsMatchModalView}
-          />
-        </Modal>
-      )}
+            navigation?.navigate('Chat', {
+              id: CategoryData[CurrentCardIndex]?._id,
+            });
+          } else {
+            showToast('Error', "Sorry! Can't find user", 'error');
+          }
+        }}
+        onCloseModalClick={() => setItsMatchModalView(false)}
+        setItsMatch={setItsMatchModalView}
+      />
     </View>
   );
 };

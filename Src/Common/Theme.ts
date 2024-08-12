@@ -1,5 +1,6 @@
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {CommonSize} from './CommonSize';
+import {Dimensions, StatusBar} from 'react-native';
 
 export const COLORS = {
   Primary: 'rgba(255, 65, 101, 1)', // #ff4165
@@ -49,11 +50,11 @@ export const SIZES = {
   h1: hp('3.5%'),
   h2: hp('2.5%'),
   h3: hp('1.8%'),
-  h4: 13, //hp('1.6%'),
+  h4: 13,
   body1: hp('3.5%'),
   body2: hp('2.5%'),
   body3: 16,
-  body4: 13, //hp('1.6%'),
+  body4: 13,
   body5: 12,
 };
 
@@ -114,6 +115,9 @@ export const GROUP_FONT = {
     color: COLORS.Black,
   },
 };
+
+export const deviceHeightWithStatusbar =
+  Dimensions.get('window').height + (StatusBar?.currentHeight || 10);
 
 export const ActiveOpacity = 0.8;
 

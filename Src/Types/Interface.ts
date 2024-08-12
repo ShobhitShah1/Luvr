@@ -25,3 +25,58 @@ export interface OneTimePurchaseOfferDetails {
   priceAmountMicros: string;
   priceCurrencyCode: string;
 }
+
+export interface ReportOrBlockInterface {
+  isVisible: boolean;
+  setReportAndBlockModal: (value: boolean) => void;
+  setShowReportModalView: (value: boolean) => void;
+  onBlockProfileClick: () => void;
+  ShowReportModalView: boolean;
+}
+
+export interface ChatRoomProps {
+  item: ChatRoomDataType;
+  index: number;
+}
+
+interface MessageType {
+  id: string;
+  is_read: number;
+  message: string;
+  time: number;
+}
+
+interface ChatRoomDataType {
+  chat: MessageType[];
+  profile?: string;
+  last_updated_time: number;
+  name: string;
+  reciver_socket_id: string | null;
+  to: string;
+}
+
+// ChatRoom
+interface ChatMessage {
+  senderId: string;
+  message: string;
+  timestamp: number;
+}
+
+export interface MessageItem {
+  chat: ChatMessage[];
+  last_updated_time: number;
+  name: string;
+  reciver_socket_id: string;
+  to: string;
+  profile: string;
+}
+
+interface ListResponseData {
+  data: MessageItem[];
+}
+
+export interface SocketEventHandlers {
+  List: (data: ListResponseData | null) => void;
+  message: (data: any) => void;
+}
+//

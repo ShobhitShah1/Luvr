@@ -127,6 +127,7 @@ export default function MainRoute() {
         setInitialRoute('LocationStack');
         return;
       }
+
       if (isNumber) {
         setInitialRoute('NumberVerification');
         navigationRef &&
@@ -135,6 +136,7 @@ export default function MainRoute() {
           });
         return;
       }
+
       if (isImageUploaded) {
         setInitialRoute('BottomTab');
       } else {

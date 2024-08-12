@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unstable-nested-components */
 import {BlurView} from '@react-native-community/blur';
 import React, {FC, memo} from 'react';
 import {
@@ -10,8 +9,14 @@ import {
   View,
 } from 'react-native';
 import Modal from 'react-native-modal';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import CommonIcons from '../Common/CommonIcons';
-import {ActiveOpacity, COLORS, FONTS} from '../Common/Theme';
+import {
+  ActiveOpacity,
+  COLORS,
+  deviceHeightWithStatusbar,
+  FONTS,
+} from '../Common/Theme';
 import {reportReasons} from './Data';
 
 interface ReportUserProps {
@@ -22,6 +27,17 @@ interface ReportUserProps {
   onReportPress: () => void;
 }
 
+export const BlurredBackdrop = () => (
+  <View style={styles.blurContainer}>
+    <BlurView
+      blurAmount={5}
+      blurType="dark"
+      style={styles.blurView}
+      reducedTransparencyFallbackColor="transparent"
+    />
+  </View>
+);
+
 const ReportUserModalView: FC<ReportUserProps> = ({
   Visible,
   setVisibility,
@@ -29,27 +45,18 @@ const ReportUserModalView: FC<ReportUserProps> = ({
   setSelectedReportReason,
   onReportPress,
 }) => {
-  const BlurredBackdrop = () => (
-    <View style={styles.blurContainer}>
-      <BlurView
-        blurAmount={5}
-        blurType="dark"
-        style={styles.blurView}
-        reducedTransparencyFallbackColor="transparent"
-      />
-    </View>
-  );
-
   return (
     <Modal
       isVisible={Visible}
       useNativeDriver={true}
+      deviceHeight={deviceHeightWithStatusbar}
+      statusBarTranslucent={true}
       useNativeDriverForBackdrop={true}
       onBackdropPress={() => setVisibility(false)}
       hasBackdrop={true}
       onBackButtonPress={() => setVisibility(false)}
       customBackdrop={<BlurredBackdrop />}>
-      <View style={styles.Container}>
+      <SafeAreaView style={styles.Container}>
         <View>
           <View style={styles.TitleView}>
             <View />
@@ -129,7 +136,7 @@ const ReportUserModalView: FC<ReportUserProps> = ({
             <Text style={styles.CancelButtonText}>Cancel</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
     </Modal>
   );
 };
@@ -245,8 +252,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   blurContainer: {
-    backgroundColor: 'transparent',
     flex: 1,
+    backgroundColor: 'rgba(0,0,0,.5)',
   },
   blurView: {
     position: 'absolute',
