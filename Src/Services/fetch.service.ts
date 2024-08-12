@@ -1,40 +1,7 @@
-import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
+import axios, {AxiosError, AxiosRequestConfig} from 'axios';
 import ApiConfig from '../Config/ApiConfig';
 import {store} from '../Redux/Store/store';
-
-interface FetchWrapper {
-  get: (
-    url: string,
-    params?: Record<string, any>,
-    config?: AxiosRequestConfig,
-  ) => Promise<any>;
-  post: (
-    url: string,
-    params: Record<string, any>,
-    config?: AxiosRequestConfig,
-  ) => Promise<any>;
-  put: (
-    url: string,
-    params: Record<string, any>,
-    config?: AxiosRequestConfig,
-  ) => Promise<any>;
-  delete: (
-    url: string,
-    params: Record<string, any>,
-    config?: AxiosRequestConfig,
-  ) => Promise<any>;
-  getAxios: (
-    url: string,
-    params?: Record<string, any>,
-    config?: AxiosRequestConfig,
-  ) => Promise<any>;
-  uploadHandler: (
-    url: string,
-    params?: Record<string, any>,
-    config?: AxiosRequestConfig,
-  ) => Promise<any>;
-  getLoc: (url: string, config?: AxiosRequestConfig) => Promise<any>;
-}
+import {FetchWrapper} from '../Types/Interface';
 
 const commonConfig: AxiosRequestConfig = {
   method: 'post',
@@ -49,11 +16,7 @@ const commonConfig: AxiosRequestConfig = {
 export const fetchWrapper: FetchWrapper = {
   get,
   post,
-  put,
-  delete: _delete,
-  getAxios,
   uploadHandler,
-  getLoc,
 };
 
 async function get(
@@ -72,41 +35,6 @@ async function post(
   return makeRequest(url, 'post', params, config);
 }
 
-async function put(
-  url: string,
-  params: Record<string, any>,
-  config?: AxiosRequestConfig,
-): Promise<any> {
-  return makeRequest(url, 'put', params, config);
-}
-
-async function _delete(
-  url: string,
-  params: Record<string, any>,
-  config?: AxiosRequestConfig,
-): Promise<any> {
-  return makeRequest(url, 'delete', params, config);
-}
-
-async function getAxios(
-  url: string,
-  params?: Record<string, any>,
-  config?: AxiosRequestConfig,
-): Promise<any> {
-  handleLogs(url, params);
-
-  try {
-    const response = await axios.get(url, {
-      params,
-      ...config,
-    });
-
-    return handleResponse(response);
-  } catch (error) {
-    return handleError(error);
-  }
-}
-
 async function uploadHandler(
   url: string,
   formData: FormData,
@@ -115,9 +43,7 @@ async function uploadHandler(
   handleLogs(url);
 
   try {
-    const token = store.getState()?.user?.Token;
-    console.log('token', token);
-    console.log('`Bearer ${token}`', `Bearer ${token}`);
+    const token = getToken();
     const response = await axios.post(url, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -128,95 +54,81 @@ async function uploadHandler(
     });
 
     return handleResponse(response);
-  } catch (error) {
+  } catch (error: AxiosError | any) {
     return handleError(error);
   }
 }
 
-async function getLoc(url: string, config?: AxiosRequestConfig): Promise<any> {
-  return makeRequest(url, 'get', undefined, config);
-}
-
 async function makeRequest(
   url: string,
-  method: string,
+  method: 'get' | 'post',
   params?: Record<string, any>,
   config?: AxiosRequestConfig,
 ): Promise<any> {
-  initToken();
+  const token = getToken();
   handleLogs(url, params);
-
-  const token = store.getState()?.user?.Token;
-  const headers = {
-    ...commonConfig.headers,
-    Authorization: `Bearer ${token}`,
-  };
 
   const mergedConfig: AxiosRequestConfig = {
     method,
     url,
     data: params,
-    headers,
+    headers: {
+      ...commonConfig.headers,
+      Authorization: `Bearer ${token}`,
+    },
     ...config,
   };
 
-  return axios(mergedConfig)
-    .then(response => handleResponse(response))
-    .catch(error => handleError(error));
+  try {
+    const response = await axios(mergedConfig);
+    return handleResponse(response);
+  } catch (error: AxiosError | any) {
+    return handleError(error);
+  }
 }
 
-function initToken() {
-  const userState = store.getState().user;
-  const token = userState && userState.Token ? userState.Token : '';
-
+function getToken(): string {
+  const token = store.getState()?.user?.Token || '';
   if (ApiConfig.DEBUG) {
-    console.log('Init Token DEBUG:', token);
+    console.log('Token:', token);
   }
-
-  if (token) {
-    axios.defaults.headers.common.Authorization = token;
-  }
+  return token;
 }
 
-function handleResponse(response: AxiosResponse<any>) {
+function handleResponse(response: any) {
   if (ApiConfig.DEBUG) {
     console.log('Response:', response.data);
   }
 
-  if (response && response.data?.code === 200) {
+  if (response.data?.code === 200) {
     return response.data;
   } else {
     return handleError({response});
   }
 }
 
-async function handleError(error: any) {
+async function handleError(error: AxiosError | any) {
   if (ApiConfig.DEBUG) {
     console.log('Error:', error);
   }
 
-  if (
-    (error.response && error.response.status === 403) ||
-    (error.response.data && error.response.data.errorCode === 403)
-  ) {
-    return {
-      status: false,
-      error:
-        String(error.response?.data?.message) ||
-        'Please login again to proceed.',
-    };
-  } else {
-    return {
-      status: false,
-      error: String(error.response?.data?.message || error.response.data),
-    };
-  }
+  const errorCode = error.response?.status;
+  const errorMessage =
+    error.response?.data?.message ||
+    error.message ||
+    'An unexpected error occurred';
+
+  return {
+    status: false,
+    error: errorMessage,
+    code: errorCode,
+  };
 }
 
 function handleLogs(url: string, params?: Record<string, any>) {
   if (ApiConfig.DEBUG) {
     console.log('--------------- handleLogs --------------');
-    console.log('URL: ', url);
-    console.log('Request: ', params);
+    console.log('URL:', url);
+    console.log('Request:', params);
   }
 }

@@ -1,4 +1,23 @@
+import {AxiosRequestConfig} from 'axios';
 import {ProfileType} from './ProfileType';
+
+export interface FetchWrapper {
+  get: (
+    url: string,
+    params?: Record<string, any>,
+    config?: AxiosRequestConfig,
+  ) => Promise<any>;
+  post: (
+    url: string,
+    params: Record<string, any>,
+    config?: AxiosRequestConfig,
+  ) => Promise<any>;
+  uploadHandler: (
+    url: string,
+    formData: FormData | Record<string, any> | any,
+    config?: AxiosRequestConfig,
+  ) => Promise<any>;
+}
 
 export interface LikeInterface {
   _id: string;
