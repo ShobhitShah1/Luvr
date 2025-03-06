@@ -194,7 +194,6 @@ const PhoneNumber: FC = () => {
         throw new Error(APIResponse?.error || SOMETHING_WRONG);
       }
     } catch (error: any) {
-      console.log('first', error);
       showToast('Server Error', String(error.message || error), 'error');
       setIsAPILoading(false);
     }
@@ -254,7 +253,6 @@ const PhoneNumber: FC = () => {
       };
 
       const response = await UserService.UserRegister(userDataForApi);
-      console.log('handleSendOtp response:', response);
 
       if (response?.code === 200) {
         await Promise.all([

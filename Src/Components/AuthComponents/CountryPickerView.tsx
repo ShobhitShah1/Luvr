@@ -51,7 +51,6 @@ const CountryPickerView = forwardRef<TextInput, CountryPickerProps>(
       const fetchData = async () => {
         try {
           const countryCode = await fetchCountryCode();
-          console.log('countryCode', countryCode);
           const country = CountryWithCode.find(c => c.code === countryCode);
           if (country && !diallingCode) {
             setDiallingCode(country.dialling_code);

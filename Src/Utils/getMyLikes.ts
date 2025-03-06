@@ -19,7 +19,5 @@ export const getMyLikes = async () => {
         : [APIResponse.data];
       store.dispatch(onSwipeRight(userIds));
     }
-  } catch (error) {
-    console.log(String(error));
-  }
+  } catch (error) {}
 };

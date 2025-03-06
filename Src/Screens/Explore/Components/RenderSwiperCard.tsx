@@ -111,9 +111,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
               initialScrollIndex={0}
               scrollEnabled={false}
               nestedScrollEnabled={false}
-              onScrollToIndexFailed={error => {
-                console.log('onScrollToIndexFailed', error);
-              }}
+              onScrollToIndexFailed={() => {}}
               keyExtractor={(item, index) => index.toString()}
               data={cardData?.recent_pik}
               removeClippedSubviews={true}

@@ -95,7 +95,6 @@ const CategoryDetailCardsScreen: FC = () => {
       const APIResponse = await UserService.UserRegister(userDataForApi);
 
       if (APIResponse?.code === 200) {
-        console.log(APIResponse?.data);
         setCategoryData(APIResponse?.data || []);
       } else {
         showToast(

@@ -26,7 +26,5 @@ export const getProfileData = async () => {
       });
       store.dispatch(setUserData(APIResponse.data));
     }
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };

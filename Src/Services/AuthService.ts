@@ -51,16 +51,6 @@ export const signInWithGoogle = async () => {
     const userInfo = await GoogleSignin.signIn();
     return userInfo;
   } catch (error: any) {
-    if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-      // User cancelled the login flow
-      console.log('Google sign-in cancelled');
-    } else if (error.code === statusCodes.IN_PROGRESS) {
-      console.log('Google sign-in is already in progress');
-    } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-      console.log('Play services not available');
-    } else {
-      console.log('Error in Google sign-in', error);
-    }
     return null;
   }
 };

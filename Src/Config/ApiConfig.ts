@@ -33,9 +33,6 @@ async function fetchRemoteConfigValues() {
     if (SOCKET_BASE_URL_REMOTE) {
       ApiConfig.SOCKET_BASE_URL = SOCKET_BASE_URL_REMOTE;
     }
-
-    console.log('BASE_URL_REMOTE:', ApiConfig.BASE_URL);
-    console.log('SOCKET_BASE_URL_REMOTE:', ApiConfig.SOCKET_BASE_URL);
   } catch (error) {
     console.error('Error fetching remote config:', error);
   }

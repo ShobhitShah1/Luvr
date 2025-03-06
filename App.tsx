@@ -21,7 +21,6 @@ import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
 export default function App() {
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log('remoteMessage', remoteMessage);
       const ScreenName = store ? store.getState().user?.CurrentScreen : '';
       const title = remoteMessage.notification?.title || '';
       const body = remoteMessage.notification?.body || '';
@@ -37,11 +36,7 @@ export default function App() {
   useEffect(() => {
     return notifee.onForegroundEvent(({type, detail}) => {
       switch (type) {
-        case EventType.DISMISSED:
-          console.log('User dismissed notification', detail.notification);
-          break;
         case EventType.PRESS:
-          console.log('User pressed notification', detail.notification);
           const Token = store ? store.getState().user?.Token : '';
 
           if (Token?.length !== 0) {

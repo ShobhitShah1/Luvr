@@ -76,14 +76,13 @@ const ExploreCardDetailScreen = () => {
         }
       } else {
         showToast(
-          TextString.error.toUpperString(),
+          TextString.error?.toUpperString(),
           APIResponse?.message || 'Please try again letter',
           TextString.error,
         );
         setCardData({} as ProfileType);
       }
     } catch (error) {
-      console.log('Something Went Wrong With Feting API Data');
     } finally {
       setIsAPILoading(false);
     }
@@ -174,8 +173,6 @@ const ExploreCardDetailScreen = () => {
       reason: SelectedReportReason,
     };
     const APIResponse = await UserService.UserRegister(BlockData);
-
-    console.log('Report APIResponse', APIResponse);
 
     if (APIResponse && APIResponse?.code === 200) {
       store.dispatch(onSwipeLeft(String(UserID)));

@@ -75,12 +75,9 @@ const DonationScreen = () => {
     const skuID = id || skus;
     if (skuID) {
       setPaymentLoader(true);
-      console.log('⏳ Payment Loading .......');
       try {
-        const request = await requestPurchase({skus: skuID});
-        console.log('📋 RequestIOSPayment:', request);
+        await requestPurchase({skus: skuID});
         donationAPICall();
-        console.log('✅ All Set');
       } catch (error: any) {
         showToast('Error', String(error?.message || error), 'error');
         setPaymentLoader(false);
@@ -107,7 +104,6 @@ const DonationScreen = () => {
         );
       }
     } catch (error) {
-      console.log('Something Went Wrong With Feting API Data', error);
     } finally {
       setPaymentLoader(false);
     }
@@ -161,7 +157,6 @@ const DonationScreen = () => {
         {membershipProductsList
           ?.filter(item => item.productId !== skus[0])
           ?.map((res, i) => {
-            console.log('res:', res);
             return (
               <TouchableOpacity
                 key={i}

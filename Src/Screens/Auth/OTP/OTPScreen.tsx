@@ -50,7 +50,6 @@ const OTPScreen: FC = () => {
     if (ResendDisabled) {
       interval = setInterval(() => {
         setResendTimer(prevTimer => {
-          console.log('prevTimer', prevTimer);
           if (prevTimer === 0) {
             clearInterval(interval);
             setResendDisabled(false);
@@ -176,7 +175,6 @@ const OTPScreen: FC = () => {
         );
       }
     } catch (error: any) {
-      console.log('error', error);
       showToast(
         TextString.error.toUpperCase(),
         String(error?.message || error),

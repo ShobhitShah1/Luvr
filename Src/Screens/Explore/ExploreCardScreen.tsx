@@ -14,7 +14,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import Swiper from 'react-native-deck-swiper';
+import Swiper from 'rn-swipe-deck';
 import {Easing} from 'react-native-reanimated';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useSelector} from 'react-redux';

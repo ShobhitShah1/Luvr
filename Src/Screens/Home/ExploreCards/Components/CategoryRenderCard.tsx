@@ -83,7 +83,6 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
-        console.log('LikeUserAPI APIResponse Data ---:>', APIResponse.data);
         if (APIResponse.data?.status === 'match') {
           setItsMatchModalView(true);
         }

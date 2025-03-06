@@ -116,7 +116,6 @@ const IdentifyYourSelf: FC = () => {
           'Please enter a valid age.',
           'Error',
         );
-        console.log('User is not eligible.');
         return;
       }
 

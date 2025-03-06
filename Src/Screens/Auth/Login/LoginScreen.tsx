@@ -50,7 +50,7 @@ const appleLoginAlert = () => {
       },
       {
         text: 'Cancel',
-        onPress: () => console.log('Cancel pressed'),
+        onPress: () => {},
         style: 'cancel',
       },
     ],

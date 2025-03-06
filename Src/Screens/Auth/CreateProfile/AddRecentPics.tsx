@@ -226,7 +226,6 @@ const AddRecentPics: FC = () => {
           },
         );
 
-        console.log('IMAGE UPLOAD RESULT', response);
         return response.data;
       } catch (error: any) {
         throw new Error(error?.message || error);

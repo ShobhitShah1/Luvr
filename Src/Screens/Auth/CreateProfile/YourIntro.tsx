@@ -126,8 +126,6 @@ const YourIntro: FC = () => {
           : {}),
       };
 
-      console.log('Final Response:', ModifyData);
-
       const APIResponse = await UserService.UserRegister(ModifyData);
 
       if (APIResponse && APIResponse.code === 200) {
