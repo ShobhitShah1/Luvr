@@ -110,6 +110,8 @@ function handleResponse(response: any) {
 async function handleError(error: AxiosError | any) {
   if (ApiConfig.DEBUG) {
     console.log('Error:', error);
+    console.log('Error:', error?.request);
+    console.log('Error:', error?.response);
   }
 
   const errorCode = error.response?.status;

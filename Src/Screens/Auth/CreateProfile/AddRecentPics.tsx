@@ -153,8 +153,7 @@ const AddRecentPics: FC = () => {
         activeOpacity={ActiveOpacity}
         onPress={() => {
           HandleOnImagePress(item);
-        }}
-        style={styles.AddUserPhotoView}>
+        }}>
         <AddUserPhoto
           onDelete={() => {
             const newPics = data.map(deleteUrlFromItem(item)).sort(sortByUrl);
@@ -255,7 +254,7 @@ const AddRecentPics: FC = () => {
       <CreateProfileHeader ProgressCount={9} Skip={false} />
 
       <View style={styles.DataViewContainer}>
-        <View style={{}}>
+        <View style={{width: '84%', alignSelf: 'center'}}>
           <Text style={CreateProfileStyles.TitleText}>
             Add your recent pics
           </Text>
@@ -274,8 +273,7 @@ const AddRecentPics: FC = () => {
             removeClippedSubviews={true}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => index.toString()}
-            contentContainerStyle={styles.contentContainerStyle}
-            columnWrapperStyle={{justifyContent: 'space-between'}}
+            columnWrapperStyle={{justifyContent: 'space-between', gap: 6}}
           />
         </View>
       </View>
@@ -307,16 +305,12 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Regular,
   },
   DataViewContainer: {
-    width: '84%',
-    alignSelf: 'center',
     marginTop: hp('1%'),
   },
   FlatListWrapper: {
-    height: '65%',
-    marginVertical: hp('2%'),
+    width: '100%',
+    flexGrow: 1,
+    alignItems: 'center',
+    alignSelf: 'center',
   },
-  AddUserPhotoView: {
-    marginVertical: hp('0.5%'),
-  },
-  contentContainerStyle: {},
 });

@@ -59,9 +59,10 @@ const appleLoginAlert = () => {
 };
 
 const LoginScreen: FC = () => {
-  const navigation = useNavigation<any>();
-  const {showToast} = useCustomToast();
+  const style = styles();
   const dispatch = useDispatch();
+  const {showToast} = useCustomToast();
+  const navigation = useNavigation<any>();
   const userData = useSelector((state: any) => state?.user);
 
   const [IsSocialLoginLoading, setIsSocialLoginLoading] = useState({
@@ -307,17 +308,15 @@ const LoginScreen: FC = () => {
 
   const CheckDataAndNavigateToNumber = async () => {
     try {
-      const userDataToSend = {
-        eventName: 'get_profile',
-      };
+      const userDataToSend = {eventName: 'get_profile'};
 
       const APIResponse = await UserService.UserRegister(userDataToSend);
-      const Data: ProfileType = APIResponse?.data;
+      const data: ProfileType = APIResponse?.data;
 
-      if (Data.mobile_no) {
+      if (data.mobile_no) {
         navigation?.replace('BottomTab');
       } else if (
-        Data.identity.length === 0 ||
+        data.identity.length === 0 ||
         (store.getState().user?.identity &&
           store.getState().user?.identity?.length === 0)
       ) {
@@ -345,25 +344,24 @@ const LoginScreen: FC = () => {
       resizeMode="cover"
       resizeMethod="resize"
       source={CommonImages.WelcomeBackground}
-      style={styles.Container}
-      imageStyle={styles.BGImageStyle}>
+      style={style.Container}>
       <StatusBar backgroundColor={'#843841'} barStyle="light-content" />
       <SafeAreaView />
       <ScrollView
         bounces={false}
-        style={styles.ContentView}
-        contentContainerStyle={styles.ScrollViewContainContainer}>
-        <View style={styles.AppNameTitleView}>
-          <Text style={styles.AppNameTitle}>Welcome to the {APP_NAME}</Text>
+        style={style.ContentView}
+        contentContainerStyle={style.ScrollViewContainContainer}>
+        <View style={style.AppNameTitleView}>
+          <Text style={style.AppNameTitle}>Welcome to the {APP_NAME}</Text>
         </View>
 
-        <View style={styles.LoginBoxContainer}>
-          <View style={styles.LoginAndSignInTitleTextView}>
-            <Text style={styles.LoginTitleText}>Login</Text>
-            <Text style={styles.SignInTitleText}>Sign in to continue</Text>
+        <View style={style.LoginBoxContainer}>
+          <View style={style.LoginAndSignInTitleTextView}>
+            <Text style={style.LoginTitleText}>Login</Text>
+            <Text style={style.SignInTitleText}>Sign in to continue</Text>
           </View>
 
-          <View style={styles.ButtonView}>
+          <View style={style.ButtonView}>
             <LoginButton
               IsLoading={false}
               Title="LOGIN WITH PHONE NUMBER"
@@ -402,19 +400,19 @@ const LoginScreen: FC = () => {
             )}
           </View>
 
-          <View style={styles.TermsView}>
+          <View style={style.TermsView}>
             <TouchableOpacity
               activeOpacity={ActiveOpacity}
               onPress={() => setIsFollowTerms(!IsFollowTerms)}
-              style={styles.FollowButtonView}>
+              style={style.FollowButtonView}>
               {IsFollowTerms && (
                 <Image
-                  style={styles.FollowTickMark}
+                  style={style.FollowTickMark}
                   source={CommonIcons.Check}
                 />
               )}
             </TouchableOpacity>
-            <Text style={styles.TermsViewText}>
+            <Text style={style.TermsViewText}>
               By Login, you agree to our{' '}
               <Text
                 onPress={() => {
@@ -422,7 +420,7 @@ const LoginScreen: FC = () => {
                     OpenURL({URL: String(privacyLinks?.EULA)});
                   }
                 }}
-                style={styles.UnderLineText}>
+                style={style.UnderLineText}>
                 EULA
               </Text>
               {', '}
@@ -432,7 +430,7 @@ const LoginScreen: FC = () => {
                     OpenURL({URL: String(privacyLinks?.TermsOfService)});
                   }
                 }}
-                style={styles.UnderLineText}>
+                style={style.UnderLineText}>
                 Terms of Service
               </Text>{' '}
               and
@@ -442,7 +440,7 @@ const LoginScreen: FC = () => {
                     OpenURL({URL: String(privacyLinks?.PrivacyPolicy)});
                   }
                 }}
-                style={styles.UnderLineText}>
+                style={style.UnderLineText}>
                 {' '}
                 Privacy Policy
               </Text>

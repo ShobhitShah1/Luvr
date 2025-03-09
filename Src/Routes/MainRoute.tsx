@@ -38,6 +38,7 @@ import {useCustomToast} from '../Utils/toastUtils';
 import BottomTab from './BottomTab';
 import {navigationRef} from './RootNavigation';
 import BootSplash from 'react-native-bootsplash';
+
 const excludedRoutes = [
   'Login',
   'PhoneNumber',

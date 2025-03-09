@@ -17,6 +17,7 @@ import {persistor, store} from './Src/Redux/Store/store';
 import MainRoute from './Src/Routes/MainRoute';
 import {navigationRef} from './Src/Routes/RootNavigation';
 import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
+import {ThemeProvider} from './Src/Contexts/ThemeContext';
 
 export default function App() {
   useEffect(() => {
@@ -34,7 +35,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    return notifee.onForegroundEvent(({type, detail}) => {
+    return notifee.onForegroundEvent(({type}) => {
       switch (type) {
         case EventType.PRESS:
           const Token = store ? store.getState().user?.Token : '';
@@ -76,26 +77,28 @@ export default function App() {
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
-        <UserDataProvider>
-          <GestureHandlerRootView style={{flex: 1}}>
-            <ToastProvider
-              placement="top"
-              duration={4000}
-              offset={30}
-              animationType="zoom-in"
-              renderType={{
-                custom_toast: (toast: any) => (
-                  <ToastStyle
-                    title={toast?.title}
-                    message={toast?.message}
-                    status={toast?.status}
-                  />
-                ),
-              }}>
-              <MainRoute />
-            </ToastProvider>
-          </GestureHandlerRootView>
-        </UserDataProvider>
+        <ThemeProvider>
+          <UserDataProvider>
+            <GestureHandlerRootView style={{flex: 1}}>
+              <ToastProvider
+                placement="top"
+                duration={4000}
+                offset={30}
+                animationType="zoom-in"
+                renderType={{
+                  custom_toast: (toast: any) => (
+                    <ToastStyle
+                      title={toast?.title}
+                      message={toast?.message}
+                      status={toast?.status}
+                    />
+                  ),
+                }}>
+                <MainRoute />
+              </ToastProvider>
+            </GestureHandlerRootView>
+          </UserDataProvider>
+        </ThemeProvider>
       </PersistGate>
     </Provider>
   );

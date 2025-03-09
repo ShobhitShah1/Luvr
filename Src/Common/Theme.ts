@@ -1,10 +1,11 @@
+import {Dimensions, StatusBar} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {CommonSize} from './CommonSize';
-import {Dimensions, StatusBar} from 'react-native';
+import {ThemeColors} from './ThemeTypes';
 
-export const COLORS = {
-  Primary: 'rgba(255, 65, 101, 1)', // #ff4165
-  Secondary: 'rgba(255, 229, 234, 1)', //#ffe5ea
+export const LIGHT_COLORS: ThemeColors = {
+  Primary: 'rgba(255, 65, 101, 1)', // #ff4165 - Pink
+  Secondary: 'rgba(255, 229, 234, 1)', // #ffe5ea - Light Pink
   Gradient: ['rgba(255, 229, 234, 1)', 'rgba(255, 65, 101, 1)'],
   ButtonGradient: ['rgba(234, 64, 128, 1)', 'rgba(255, 229, 234, 1)'],
   DisableButtonGradient: ['rgba(233, 235, 240, 1)', 'rgba(233, 235, 240, 1)'],
@@ -14,11 +15,11 @@ export const COLORS = {
   DescriptionGray: 'rgba(108, 108, 108, 1)',
   Silver: 'rgba(130, 134, 147, 1)',
   Black: 'rgba(0, 0, 0, 0.9)',
-  Blue: 'rgba(26,120,221,255)', //* Use For UnderLine And Link Text's
-  Gray: 'rgba(117,124,133,255)',
+  Blue: 'rgba(26, 120, 221, 1)',
+  Gray: 'rgba(117, 124, 133, 1)',
   DisableText: 'rgb(109, 114, 120)',
-  Placeholder: 'rgba(97,106,118,255)',
-  LightGray: 'rgb(218,218,218)',
+  Placeholder: 'rgba(97, 106, 118, 1)',
+  LightGray: 'rgb(218, 218, 218)',
   TabBarUnFocused: 'rgba(198, 198, 198, 1)',
   GradientViewForCards: ['rgba(217, 217, 217, 0)', 'rgba(0, 0, 0, 0.4)'],
   LoaderGradient: [
@@ -28,6 +29,48 @@ export const COLORS = {
     'rgba(198, 198, 198, 0.3)',
     'rgba(245, 113, 138, 1)',
   ],
+  Background: 'rgba(255, 255, 255, 1)',
+  CardBackground: 'rgba(255, 255, 255, 1)',
+  InputBackground: 'rgba(245, 245, 245, 1)',
+  BorderColor: 'rgba(230, 230, 230, 1)',
+  TextColor: 'rgba(0, 0, 0, 0.9)',
+  SecondaryTextColor: 'rgba(108, 108, 108, 1)',
+  ShadowColor: 'rgba(0, 0, 0, 0.1)',
+};
+
+export const DARK_COLORS: ThemeColors = {
+  Primary: 'rgba(161, 80, 255, 1)', // Purple from the dark theme images
+  Secondary: 'rgba(74, 20, 140, 1)', // Darker purple
+  Gradient: ['rgba(74, 20, 140, 1)', 'rgba(161, 80, 255, 1)'],
+  ButtonGradient: ['rgba(161, 80, 255, 1)', 'rgba(200, 109, 215, 1)'],
+  DisableButtonGradient: ['rgba(60, 60, 70, 1)', 'rgba(60, 60, 70, 1)'],
+  DisableButtonBackground: 'rgba(70, 70, 80, 1)',
+  White: 'rgba(255, 255, 255, 1)',
+  Brown: 'rgba(200, 200, 200, 1)', // Lighter in dark mode
+  DescriptionGray: 'rgba(180, 180, 180, 1)',
+  Silver: 'rgba(180, 184, 197, 1)',
+  Black: 'rgba(255, 255, 255, 1)', // Inverted for dark mode
+  Blue: 'rgba(86, 180, 255, 1)', // Brighter blue for dark mode
+  Gray: 'rgba(170, 177, 186, 1)',
+  DisableText: 'rgb(150, 155, 160)',
+  Placeholder: 'rgba(150, 159, 171, 1)',
+  LightGray: 'rgb(80, 80, 90)',
+  TabBarUnFocused: 'rgba(120, 120, 120, 1)',
+  GradientViewForCards: ['rgba(20, 20, 30, 0)', 'rgba(0, 0, 0, 0.7)'],
+  LoaderGradient: [
+    'rgba(161, 80, 255, 0.7)',
+    'rgba(80, 80, 100, 0.3)',
+    'rgba(161, 80, 255, 0.7)',
+    'rgba(80, 80, 100, 0.3)',
+    'rgba(180, 100, 255, 1)',
+  ],
+  Background: 'rgba(24, 24, 32, 1)', // Dark background from images
+  CardBackground: 'rgba(36, 36, 48, 1)',
+  InputBackground: 'rgba(45, 45, 58, 1)',
+  BorderColor: 'rgba(60, 60, 75, 1)',
+  TextColor: 'rgba(255, 255, 255, 1)',
+  SecondaryTextColor: 'rgba(180, 180, 180, 1)',
+  ShadowColor: 'rgba(0, 0, 0, 0.3)',
 };
 
 export const FONTS = {
@@ -57,6 +100,8 @@ export const SIZES = {
   body4: 13,
   body5: 12,
 };
+
+export const COLORS: ThemeColors = LIGHT_COLORS;
 
 export const GROUP_FONT = {
   h1: {
@@ -124,7 +169,9 @@ export const ActiveOpacity = 0.8;
 export default {
   COLORS,
   FONTS,
-  ActiveOpacity,
   SIZES,
   GROUP_FONT,
+  ActiveOpacity,
+  LIGHT_COLORS,
+  DARK_COLORS,
 };
