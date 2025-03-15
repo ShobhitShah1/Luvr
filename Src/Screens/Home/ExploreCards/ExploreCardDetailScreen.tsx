@@ -1,59 +1,57 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import {
-  RouteProp,
-  useIsFocused,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
-import React, {useEffect, useRef, useState} from 'react';
+import { RouteProp, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Animated,
   Dimensions,
   Image,
   Platform,
+  Pressable,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import LinearGradient from 'react-native-linear-gradient';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
-import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import GradientView from '../../../Common/GradientView';
+import TextString from '../../../Common/TextString';
+import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import Paginator from '../../../Components/Paginator';
 import ReportUserModalView from '../../../Components/ReportUserModalView';
 import ApiConfig from '../../../Config/ApiConfig';
-import {onSwipeLeft, onSwipeRight} from '../../../Redux/Action/actions';
-import {store} from '../../../Redux/Store/store';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import { onSwipeLeft, onSwipeRight } from '../../../Redux/Action/actions';
+import { store } from '../../../Redux/Store/store';
 import UserService from '../../../Services/AuthService';
-import {ProfileType} from '../../../Types/ProfileType';
-import {useCustomToast} from '../../../Utils/toastUtils';
+import { ProfileType } from '../../../Types/ProfileType';
+import { useCustomToast } from '../../../Utils/toastUtils';
 import DetailCardHeader from './Components/DetailCardHeader';
 import RenderUserImagesView from './Components/RenderUserImagesView';
-import TextString from '../../../Common/TextString';
 
 type DetailCardRouteParams = {
   props: ProfileType;
 };
 
 const ExploreCardDetailScreen = () => {
-  const CardDetail =
-    useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
+  const { colors, isDark } = useTheme();
+  const IsFocused = useIsFocused();
+  const navigation = useNavigation();
+  const { showToast } = useCustomToast();
+
+  const cardDetail = useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
 
   const scrollX = useRef(new Animated.Value(0)).current;
-  const {showToast} = useCustomToast();
-  const UserID = CardDetail.params.props?._id || {};
-  const IsFocused = useIsFocused();
+  const UserID = cardDetail?.params?.props?._id || {};
+
+  const [cardData, setCardData] = useState<ProfileType>();
+  const [isLoading, setIsAPILoading] = useState(true);
   const [CurrentIndex, setCurrentIndex] = useState<number>(0);
-  const [CardData, setCardData] = useState<ProfileType>();
-  const [IsAPILoading, setIsAPILoading] = useState(true);
-  const navigation = useNavigation();
   const [SelectedReportReason, setSelectedReportReason] = useState<string>('');
-  const [ShowReportModalView, setShowReportModalView] =
-    useState<boolean>(false);
+  const [ShowReportModalView, setShowReportModalView] = useState<boolean>(false);
 
   useEffect(() => {
     if (IsFocused) {
@@ -78,7 +76,7 @@ const ExploreCardDetailScreen = () => {
         showToast(
           TextString.error?.toUpperString(),
           APIResponse?.message || 'Please try again letter',
-          TextString.error,
+          TextString.error
         );
         setCardData({} as ProfileType);
       }
@@ -88,11 +86,11 @@ const ExploreCardDetailScreen = () => {
     }
   };
 
-  const viewableItemsChanged = useRef(({viewableItems}: any) => {
+  const viewableItemsChanged = useRef(({ viewableItems }: any) => {
     setCurrentIndex(viewableItems[0]?.index);
   }).current;
 
-  const viewConfig = useRef({viewAreaCoveragePercentThreshold: 50}).current;
+  const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
   const onLikePress = async () => {
     if (UserID) {
@@ -102,29 +100,18 @@ const ExploreCardDetailScreen = () => {
       };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
+
       if (APIResponse?.code === 200) {
-        if (APIResponse.data?.status === 'match') {
-        }
+        // if (APIResponse.data?.status === 'match') {
+        // }
         store.dispatch(onSwipeRight(String(UserID)));
-        showToast(
-          'Swipe Right Success',
-          'You swiped right! Waiting for the other user to match.',
-          'success',
-        );
+        showToast('Swipe Right Success', 'You swiped right! Waiting for the other user to match.', 'success');
         navigation.goBack();
       } else {
-        showToast(
-          TextString.error.toUpperCase(),
-          APIResponse?.message || 'Please try again letter',
-          TextString.error,
-        );
+        showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Please try again letter', TextString.error);
       }
     } else {
-      showToast(
-        TextString.error.toUpperCase(),
-        "Can't find UserID please try again letter",
-        TextString.error,
-      );
+      showToast(TextString.error.toUpperCase(), "Can't find UserID please try again letter", TextString.error);
     }
   };
 
@@ -133,11 +120,7 @@ const ExploreCardDetailScreen = () => {
       store.dispatch(onSwipeLeft(String(UserID)));
       navigation.goBack();
     } else {
-      showToast(
-        TextString.error.toUpperCase(),
-        "Can't find UserID please try again letter",
-        TextString.error,
-      );
+      showToast(TextString.error.toUpperCase(), "Can't find UserID please try again letter", TextString.error);
     }
   };
 
@@ -152,15 +135,15 @@ const ExploreCardDetailScreen = () => {
       store.dispatch(onSwipeLeft(String(UserID)));
       showToast(
         'User Blocked',
-        `Your request to block ${CardDetail.params?.props?.full_name} is successfully send`,
-        'success',
+        `Your request to block ${cardDetail.params?.props?.full_name} is successfully send`,
+        'success'
       );
       navigation.goBack();
     } else {
       showToast(
         TextString.error.toUpperCase(),
         String(APIResponse?.message) || 'Something went wrong',
-        TextString.error,
+        TextString.error
       );
     }
   };
@@ -178,285 +161,290 @@ const ExploreCardDetailScreen = () => {
       store.dispatch(onSwipeLeft(String(UserID)));
       showToast(
         'Success!',
-        `Your report against ${CardDetail.params?.props?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${SelectedReportReason}`,
-        'success',
+        `Your report against ${cardDetail.params?.props?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${SelectedReportReason}`,
+        'success'
       );
       navigation.goBack();
     } else {
       showToast(
         TextString.error.toUpperCase(),
         String(APIResponse?.message) || 'Something went wrong',
-        TextString.error,
+        TextString.error
       );
     }
   };
 
-  if (IsAPILoading) {
+  if (isLoading) {
     return (
-      <React.Fragment>
-        <DetailCardHeader props={CardData} />
+      <GradientView>
+        <DetailCardHeader props={cardData} />
         <View style={[styles.Container, styles.LoaderContainer]}>
-          <ActivityIndicator size={'large'} color={COLORS.Primary} />
+          <ActivityIndicator size={'large'} color={colors.Primary} />
         </View>
-      </React.Fragment>
+      </GradientView>
     );
   }
 
   return (
-    <View style={styles.Container}>
-      <DetailCardHeader props={CardData} />
-      <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.White} />
-
-      <View style={styles.ContentView}>
-        <ScrollView
-          bounces={false}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.ScrollViewContentContainerStyle}>
-          <View style={styles.ProfileImageView}>
-            {CardData?.recent_pik?.length !== 0 && (
-              <Animated.FlatList
-                horizontal={true}
-                pagingEnabled={true}
-                style={{flex: 1, width: '100%'}}
-                showsHorizontalScrollIndicator={false}
-                data={CardData?.recent_pik}
-                renderItem={({item, index}) => {
-                  return <RenderUserImagesView Images={item} index={index} />;
-                }}
-                onScroll={Animated.event(
-                  [{nativeEvent: {contentOffset: {x: scrollX}}}],
-                  {
+    <GradientView>
+      <View style={styles.Container}>
+        <DetailCardHeader props={cardData} />
+        <View style={styles.ContentView}>
+          <ScrollView
+            bounces={false}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.ScrollViewContentContainerStyle}
+          >
+            <View style={styles.ProfileImageView}>
+              {cardData?.recent_pik && cardData?.recent_pik?.length !== 0 && (
+                <Animated.FlatList
+                  horizontal={true}
+                  pagingEnabled={true}
+                  style={{ flex: 1, width: '100%' }}
+                  showsHorizontalScrollIndicator={false}
+                  data={cardData?.recent_pik}
+                  renderItem={({ item, index }) => {
+                    return <RenderUserImagesView Images={item} index={index} />;
+                  }}
+                  onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
                     useNativeDriver: false,
-                  },
-                )}
-                scrollEventThrottle={32}
-                onViewableItemsChanged={viewableItemsChanged}
-                viewabilityConfig={viewConfig}
-                keyExtractor={(item, index) => index.toString()}
-              />
-            )}
-            {CardData && CardData?.recent_pik?.length > 1 && (
-              <Paginator data={CardData?.recent_pik} scrollX={scrollX} />
-            )}
-          </View>
+                  })}
+                  scrollEventThrottle={32}
+                  onViewableItemsChanged={viewableItemsChanged}
+                  viewabilityConfig={viewConfig}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+              )}
+              {cardData && cardData?.recent_pik?.length > 1 && (
+                <Paginator data={cardData?.recent_pik} scrollX={scrollX} />
+              )}
+            </View>
 
-          <View style={styles.UserInfoContainerView}>
-            {/* About Me */}
-            {CardData?.about && (
-              <View style={styles.DetailBoxContainerView}>
-                <View style={styles.TitleAndIconView}>
-                  <Image
-                    style={styles.DetailIconsView}
-                    resizeMode="contain"
-                    source={CommonIcons.about_me_icon}
-                  />
-                  <Text style={styles.TitleText} numberOfLines={1}>
-                    About me
-                  </Text>
-                </View>
-                <Text style={styles.DetailText}>{CardData?.about || ''}</Text>
-              </View>
-            )}
-
-            {CardData?.birthdate && (
-              <View style={styles.DetailBoxContainerView}>
-                <View style={styles.TitleAndIconView}>
-                  <Image
-                    style={styles.DetailIconsView}
-                    resizeMode="contain"
-                    source={CommonIcons.birthday_icon}
-                  />
-                  <Text style={styles.TitleText} numberOfLines={1}>
-                    Birthday
-                  </Text>
-                </View>
-                <Text style={styles.DetailText}>
-                  {CardData?.birthdate || 0}
-                </Text>
-              </View>
-            )}
-
-            {CardData?.hoping &&
-              CardData?.hoping?.length !== 0 &&
-              CardData?.hoping?.length !== undefined && (
-                <View style={styles.DetailBoxContainerView}>
+            <View style={styles.UserInfoContainerView}>
+              {/* About Me */}
+              {cardData?.about && (
+                <View style={[styles.DetailBoxContainerView, { backgroundColor: colors.lightBackground }]}>
                   <View style={styles.TitleAndIconView}>
                     <Image
                       style={styles.DetailIconsView}
+                      tintColor={colors.TextColor}
                       resizeMode="contain"
-                      source={CommonIcons.looking_for_icon}
+                      source={CommonIcons.about_me_icon}
                     />
-                    <Text style={styles.TitleText} numberOfLines={1}>
-                      Looking for
+                    <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={1}>
+                      About me
                     </Text>
                   </View>
-                  <Text style={styles.DetailText}>{CardData?.hoping}</Text>
+                  <Text style={[styles.DetailText, { color: colors.TextColor }]}>{cardData?.about || ''}</Text>
                 </View>
               )}
 
-            {CardData?.orientation !== undefined &&
-              CardData?.orientation?.length !== 0 && (
-                <View style={styles.DetailBoxContainerView}>
+              {cardData?.birthdate && (
+                <View style={[styles.DetailBoxContainerView, { backgroundColor: colors.lightBackground }]}>
                   <View style={styles.TitleAndIconView}>
                     <Image
                       style={styles.DetailIconsView}
+                      tintColor={colors.TextColor}
+                      resizeMode="contain"
+                      source={CommonIcons.birthday_icon}
+                    />
+                    <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={1}>
+                      Birthday
+                    </Text>
+                  </View>
+                  <Text style={[styles.DetailText, { color: colors.TextColor }]}>{cardData?.birthdate || 0}</Text>
+                </View>
+              )}
+
+              {cardData?.hoping && cardData?.hoping?.length !== 0 && cardData?.hoping?.length !== undefined && (
+                <View style={[styles.DetailBoxContainerView, { backgroundColor: colors.lightBackground }]}>
+                  <View style={styles.TitleAndIconView}>
+                    <Image
+                      style={styles.DetailIconsView}
+                      tintColor={colors.TextColor}
+                      resizeMode="contain"
+                      source={CommonIcons.looking_for_icon}
+                    />
+                    <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={1}>
+                      Looking for
+                    </Text>
+                  </View>
+                  <Text style={[styles.DetailText, { color: colors.TextColor }]}>{cardData?.hoping}</Text>
+                </View>
+              )}
+
+              {cardData?.orientation !== undefined && cardData?.orientation?.length !== 0 && (
+                <View style={[styles.DetailBoxContainerView, { backgroundColor: colors.lightBackground }]}>
+                  <View style={styles.TitleAndIconView}>
+                    <Image
+                      style={styles.DetailIconsView}
+                      tintColor={colors.TextColor}
                       resizeMode="contain"
                       source={CommonIcons.interested_in_icon}
                     />
-                    <Text style={styles.TitleText} numberOfLines={1}>
+                    <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={1}>
                       Interested in
                     </Text>
                   </View>
                   <View style={styles.MultipleBoxFlexView}>
-                    {CardData?.orientation &&
-                      CardData?.orientation?.map((orientation, index) => {
+                    {cardData?.orientation &&
+                      cardData?.orientation?.map((orientation, index) => {
                         return (
-                          <View key={index} style={styles.MultipleBoxView}>
-                            <Text style={styles.MultipleDetailText} key={index}>
-                              {`${orientation}` || ''}
-                            </Text>
-                          </View>
+                          <LinearGradient
+                            start={{ x: 1, y: 0 }}
+                            end={{ x: 0, y: 1 }}
+                            colors={isDark ? colors.ButtonGradient : ['transparent', 'transparent']}
+                            key={index}
+                            style={[styles.MultipleBoxView, !isDark && { borderWidth: 1, borderColor: colors.Black }]}
+                          >
+                            <View style={{ flex: 1, justifyContent: 'center' }}>
+                              <Text style={[styles.MultipleDetailText, { color: colors.TextColor }]} key={index}>
+                                {`${orientation}` || ''}
+                              </Text>
+                            </View>
+                          </LinearGradient>
                         );
                       })}
                   </View>
                 </View>
               )}
 
-            {CardData?.city && (
-              <View style={styles.DetailBoxContainerView}>
-                <View style={styles.TitleAndIconView}>
-                  <Image
-                    style={styles.DetailIconsView}
-                    resizeMode="contain"
-                    source={CommonIcons.location_icon}
-                  />
-                  <Text style={styles.TitleText} numberOfLines={1}>
-                    Location
-                  </Text>
-                </View>
-                <Text style={styles.DetailText}>
-                  {CardData?.city || 'City'}
-                </Text>
-              </View>
-            )}
-
-            {CardData?.education?.college_name &&
-              CardData?.education?.college_name && (
-                <View style={styles.DetailBoxContainerView}>
+              {cardData?.city && (
+                <View style={[styles.DetailBoxContainerView, { backgroundColor: colors.lightBackground }]}>
                   <View style={styles.TitleAndIconView}>
                     <Image
                       style={styles.DetailIconsView}
+                      tintColor={colors.TextColor}
+                      resizeMode="contain"
+                      source={CommonIcons.location_icon}
+                    />
+                    <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={1}>
+                      Location
+                    </Text>
+                  </View>
+                  <Text style={[styles.DetailText, { color: colors.TextColor }]}>{cardData?.city || 'City'}</Text>
+                </View>
+              )}
+
+              {cardData?.education?.college_name && cardData?.education?.college_name && (
+                <View style={[styles.DetailBoxContainerView, { backgroundColor: colors.lightBackground }]}>
+                  <View style={styles.TitleAndIconView}>
+                    <Image
+                      style={styles.DetailIconsView}
+                      tintColor={colors.TextColor}
                       resizeMode="contain"
                       source={CommonIcons.education_icon}
                     />
-                    <Text style={styles.TitleText} numberOfLines={1}>
+                    <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={1}>
                       Education
                     </Text>
                   </View>
-                  <Text style={styles.DetailText}>
-                    {CardData?.education?.college_name || ''},{' '}
-                    {CardData?.education?.digree || ''}
+                  <Text style={[styles.DetailText, { color: colors.TextColor }]}>
+                    {cardData?.education?.college_name || ''}, {cardData?.education?.digree || ''}
                   </Text>
                 </View>
               )}
 
-            {CardData?.likes_into &&
-              Array.isArray(CardData?.likes_into) &&
-              CardData?.likes_into[0] !== '' &&
-              CardData?.likes_into[0]?.length > 0 && (
-                <View style={styles.DetailBoxContainerView}>
-                  <View style={styles.TitleAndIconView}>
-                    <Image
-                      style={styles.DetailIconsView}
-                      resizeMode="contain"
-                      source={CommonIcons.i_like_icon}
-                    />
-                    <Text style={styles.TitleText} numberOfLines={1}>
-                      I like
-                    </Text>
+              {cardData?.likes_into &&
+                Array.isArray(cardData?.likes_into) &&
+                cardData?.likes_into[0] !== '' &&
+                cardData?.likes_into[0]?.length > 0 && (
+                  <View style={[styles.DetailBoxContainerView, { backgroundColor: colors.lightBackground }]}>
+                    <View style={styles.TitleAndIconView}>
+                      <Image
+                        style={styles.DetailIconsView}
+                        tintColor={colors.TextColor}
+                        resizeMode="contain"
+                        source={CommonIcons.i_like_icon}
+                      />
+                      <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={1}>
+                        I like
+                      </Text>
+                    </View>
+                    <View style={styles.MultipleBoxFlexView}>
+                      {cardData?.likes_into?.map((ILikeItem, index) => (
+                        <LinearGradient
+                          start={{ x: 1, y: 0 }}
+                          end={{ x: 0, y: 1 }}
+                          colors={isDark ? colors.ButtonGradient : ['transparent', 'transparent']}
+                          key={index}
+                          style={[styles.MultipleBoxView, !isDark && { borderWidth: 1, borderColor: colors.Black }]}
+                        >
+                          <View style={{ flex: 1, justifyContent: 'center' }}>
+                            <Text style={[styles.MultipleDetailText, { color: colors.TextColor }]}>
+                              {`${ILikeItem}` || ''}
+                            </Text>
+                          </View>
+                        </LinearGradient>
+                      ))}
+                    </View>
                   </View>
-                  <View style={styles.MultipleBoxFlexView}>
-                    {CardData?.likes_into?.map((ILikeItem, index) => (
-                      <View key={index} style={styles.MultipleBoxView}>
-                        <Text style={styles.MultipleDetailText}>
-                          {`${ILikeItem}` || ''}
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-                </View>
-              )}
+                )}
 
-            <View style={styles.BlockAndReportProfileView}>
-              <TouchableOpacity
-                onPress={onBlockProfileClick}
-                activeOpacity={ActiveOpacity}
-                style={styles.BlockAndReportButtonView}>
-                <Image
-                  resizeMode="contain"
-                  style={styles.BlockAndReportIcon}
-                  source={CommonIcons.block_profile_icon}
-                />
-                <Text style={styles.BlockAndReportText}>Block Profile</Text>
-              </TouchableOpacity>
+              <View style={styles.BlockAndReportProfileView}>
+                <Pressable
+                  onPress={onBlockProfileClick}
+                  style={[
+                    styles.BlockAndReportButtonView,
+                    { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White },
+                  ]}
+                >
+                  <Image
+                    resizeMode="contain"
+                    tintColor={colors.TextColor}
+                    style={styles.BlockAndReportIcon}
+                    source={CommonIcons.block_profile_icon}
+                  />
+                  <Text style={[styles.BlockAndReportText, { color: colors.TextColor }]}>Block Profile</Text>
+                </Pressable>
 
-              <TouchableOpacity
-                onPress={() => setShowReportModalView(!ShowReportModalView)}
-                activeOpacity={ActiveOpacity}
-                style={styles.BlockAndReportButtonView}>
-                <Image
-                  resizeMode="contain"
-                  style={styles.BlockAndReportIcon}
-                  source={CommonIcons.report_profile_icon}
-                />
-                <Text style={styles.BlockAndReportText}>Report Profile</Text>
-              </TouchableOpacity>
+                <Pressable
+                  onPress={() => setShowReportModalView(!ShowReportModalView)}
+                  style={[
+                    styles.BlockAndReportButtonView,
+                    { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White },
+                  ]}
+                >
+                  <Image
+                    resizeMode="contain"
+                    tintColor={colors.TextColor}
+                    style={styles.BlockAndReportIcon}
+                    source={CommonIcons.report_profile_icon}
+                  />
+                  <Text style={[styles.BlockAndReportText, { color: colors.TextColor }]}>Report Profile</Text>
+                </Pressable>
+              </View>
+
+              <View style={styles.LikeAndRejectView}>
+                <Pressable onPress={onRejectPress} style={[styles.LikeAndRejectButtonView]}>
+                  <Image resizeMode="contain" style={styles.DislikeButton} source={CommonIcons.dislike_button} />
+                </Pressable>
+
+                <Pressable onPress={onLikePress} style={styles.LikeAndRejectButtonView}>
+                  <Image resizeMode="contain" style={styles.LikeButton} source={CommonIcons.like_button} />
+                </Pressable>
+              </View>
             </View>
 
-            <View style={styles.LikeAndRejectView}>
-              <TouchableOpacity
-                onPress={onRejectPress}
-                activeOpacity={ActiveOpacity}
-                style={styles.LikeAndRejectButtonView}>
-                <Image
-                  resizeMode="contain"
-                  style={styles.DislikeButton}
-                  source={CommonIcons.dislike_button}
-                />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={onLikePress}
-                activeOpacity={ActiveOpacity}
-                style={styles.LikeAndRejectButtonView}>
-                <Image
-                  resizeMode="contain"
-                  style={styles.LikeButton}
-                  source={CommonIcons.like_button}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <ReportUserModalView
-            Visible={ShowReportModalView}
-            setVisibility={setShowReportModalView}
-            onReportPress={onReportProfileClick}
-            SelectedReportReason={SelectedReportReason}
-            setSelectedReportReason={setSelectedReportReason}
-          />
-        </ScrollView>
+            <ReportUserModalView
+              Visible={ShowReportModalView}
+              setVisibility={setShowReportModalView}
+              onReportPress={onReportProfileClick}
+              SelectedReportReason={SelectedReportReason}
+              setSelectedReportReason={setSelectedReportReason}
+            />
+          </ScrollView>
+        </View>
       </View>
-    </View>
+    </GradientView>
   );
 };
 
-export default ExploreCardDetailScreen;
+export default memo(ExploreCardDetailScreen);
 
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
-    backgroundColor: COLORS.Secondary,
   },
   LoaderContainer: {
     justifyContent: 'center',
@@ -493,7 +481,6 @@ const styles = StyleSheet.create({
     marginVertical: hp('1%'),
     paddingVertical: hp('1.5%'),
     paddingHorizontal: hp('2%'),
-    backgroundColor: COLORS.White,
   },
   TitleAndIconView: {
     flexDirection: 'row',
@@ -516,7 +503,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     justifyContent: 'center',
     paddingVertical: hp('0.8%'),
-    color: 'rgba(130, 130, 130, 1)',
   },
   MultipleBoxFlexView: {
     flexDirection: 'row',
@@ -528,8 +514,7 @@ const styles = StyleSheet.create({
   MultipleBoxView: {
     marginTop: hp('1%'),
     borderRadius: hp('2%'),
-    borderWidth: hp('0.15%'),
-    borderColor: COLORS.Black,
+    overflow: 'hidden',
     paddingHorizontal: hp('1.5%'),
     marginRight: hp('1%'),
   },
@@ -556,12 +541,9 @@ const styles = StyleSheet.create({
     height: hp('7.5%'),
     marginVertical: hp('2%'),
     borderRadius: hp('5%'),
-    backgroundColor: COLORS.White,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: COLORS.Black,
     paddingHorizontal: hp('1%'),
     marginHorizontal: hp('0.5%'),
   },

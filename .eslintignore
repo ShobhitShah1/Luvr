@@ -1,0 +1,9 @@
+node_modules
+.eslintrc.js
+.prettierrc.js
+cli
+.expo
+.expo-shared
+.vscode
+.idea
+.storybook

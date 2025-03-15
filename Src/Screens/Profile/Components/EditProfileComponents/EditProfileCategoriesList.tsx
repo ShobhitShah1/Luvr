@@ -1,12 +1,9 @@
-import React, {FC, memo} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, { FC, memo } from 'react';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import CommonIcons from '../../../../Common/CommonIcons';
-import {
-  ActiveOpacity,
-  COLORS,
-  FONTS,
-  GROUP_FONT,
-} from '../../../../Common/Theme';
+import { COLORS, FONTS, GROUP_FONT } from '../../../../Common/Theme';
+import { useTheme } from '../../../../Contexts/ThemeContext';
+import { GradientBorderView } from '../../../../Components/GradientBorder';
 
 interface CategoriesListProps {
   Item: any[];
@@ -14,79 +11,64 @@ interface CategoriesListProps {
   EmptyTitleText: string;
 }
 
-const EditProfileCategoriesList: FC<CategoriesListProps> = ({
-  Item,
-  onPress,
-  EmptyTitleText,
-}) => {
+const EditProfileCategoriesList: FC<CategoriesListProps> = ({ Item, onPress, EmptyTitleText }) => {
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.CategoryContainerView}>
-      <View style={styles.CategoryView}>
-        {Item.length !== 0 ? (
-          Item?.map((res, index) => {
+    <View style={styles.categoryContainerView}>
+      <View style={styles.categoryView}>
+        {Item && Item.length !== 0 ? (
+          Item?.map?.((res, index) => {
             return (
-              <View key={index} style={styles.SingleCategoryView}>
-                <Text style={styles.CategoryTextStyle}>{res}</Text>
-              </View>
+              <GradientBorderView key={index} style={styles.singleCategoryView}>
+                <Text style={[styles.categoryTextStyle, { color: colors.TextColor }]}>{res}</Text>
+              </GradientBorderView>
             );
           })
         ) : (
-          <View style={[styles.EmptyCategoryView]}>
-            <Text style={styles.CategoryTextStyle}>{EmptyTitleText}</Text>
+          <View style={[styles.emptyCategoryView]}>
+            <Text style={[styles.categoryTextStyle, { color: colors.Placeholder }]}>{EmptyTitleText}</Text>
           </View>
         )}
       </View>
-      <TouchableOpacity
-        activeOpacity={ActiveOpacity}
-        onPress={onPress}
-        style={styles.RightIconView}>
-        <Image
-          resizeMode="contain"
-          source={CommonIcons.RightArrow}
-          style={styles.RightIcon}
-        />
-      </TouchableOpacity>
+      <Pressable onPress={onPress} style={styles.rightIconView}>
+        <Image resizeMode="contain" source={CommonIcons.RightArrow} style={styles.rightIcon} />
+      </Pressable>
     </View>
   );
 };
 export default memo(EditProfileCategoriesList);
 
 const styles = StyleSheet.create({
-  CategoryContainerView: {
+  categoryContainerView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  CategoryTextStyle: {
+  categoryTextStyle: {
     ...GROUP_FONT.body4,
     fontSize: 14,
-    color: COLORS.Black,
     fontFamily: FONTS.Medium,
   },
-  CategoryView: {
+  categoryView: {
     width: '85%',
     flexWrap: 'wrap',
     alignItems: 'center',
     flexDirection: 'row',
   },
-  SingleCategoryView: {
-    padding: 5,
+  singleCategoryView: {
+    padding: 8,
     borderWidth: 1,
     marginRight: 10,
     borderRadius: 15,
     marginBottom: 10,
-    paddingHorizontal: 13,
-    borderColor: COLORS.Black,
   },
-  EmptyCategoryView: {
+  emptyCategoryView: {
     padding: 5,
-    // borderWidth: 1,
     marginRight: 10,
-    // borderRadius: 15,
     marginBottom: 10,
     paddingHorizontal: 13,
-    // borderColor: COLORS.Black,
   },
-  RightIconView: {
+  rightIconView: {
     width: 35,
     height: 35,
     borderRadius: 100,
@@ -95,7 +77,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: 'rgba(234, 234, 234, 1)',
   },
-  RightIcon: {
+  rightIcon: {
     width: 15,
     height: 15,
     alignSelf: 'center',

@@ -1,15 +1,9 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {CommonSize} from '../../Common/CommonSize';
-import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
+import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { CommonSize } from '../../Common/CommonSize';
+import { COLORS, FONTS } from '../../Common/Theme';
+import { useTheme } from '../../Contexts/ThemeContext';
 
 interface LoginButtonProps {
   Title: string;
@@ -18,19 +12,13 @@ interface LoginButtonProps {
   IsLoading: boolean;
 }
 
-const LoginButton: React.FC<LoginButtonProps> = ({
-  Title,
-  onPress,
-  Icon,
-  IsLoading,
-}) => {
+const LoginButton: React.FC<LoginButtonProps> = ({ Title, onPress, Icon, IsLoading }) => {
+  const { colors } = useTheme();
+
   return (
-    <TouchableOpacity
-      activeOpacity={ActiveOpacity}
-      onPress={onPress}
-      style={styles.LoginButtonContainer}>
+    <Pressable onPress={onPress} style={styles.LoginButtonContainer}>
       {IsLoading ? (
-        <ActivityIndicator size={25} color={COLORS.Primary} />
+        <ActivityIndicator size={25} color={colors.Primary} />
       ) : (
         <View style={styles.ItemWarper}>
           <Image resizeMode="contain" source={Icon} style={styles.IconView} />
@@ -42,7 +30,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({
           </View>
         </View>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

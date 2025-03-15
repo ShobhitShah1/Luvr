@@ -1,22 +1,10 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {FC} from 'react';
-import {
-  Image,
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { useNavigation } from '@react-navigation/native';
+import React, { FC } from 'react';
+import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
-import {
-  ActiveOpacity,
-  COLORS,
-  GROUP_FONT,
-  SIZES,
-} from '../../../../Common/Theme';
+import { COLORS, GROUP_FONT, SIZES } from '../../../../Common/Theme';
+import { useTheme } from '../../../../Contexts/ThemeContext';
 
 interface CategoryHeaderProps {
   item: {
@@ -26,30 +14,27 @@ interface CategoryHeaderProps {
   };
 }
 
-const CategoryDetailHeader: FC<CategoryHeaderProps> = ({item}) => {
+const CategoryDetailHeader: FC<CategoryHeaderProps> = ({ item }) => {
+  const { colors } = useTheme();
   const navigation = useNavigation();
+
   return (
-    <View style={styles.Container}>
-      <SafeAreaView />
+    <SafeAreaView style={styles.Container}>
       <View style={styles.ContentView}>
-        <TouchableOpacity
-          activeOpacity={ActiveOpacity}
-          onPress={() => {
-            navigation.goBack();
-          }}
-          style={styles.BackIconView}>
+        <Pressable onPress={() => navigation?.canGoBack() && navigation.goBack()} style={styles.BackIconView}>
           <Image
             resizeMode="contain"
+            tintColor={colors.TextColor}
             source={CommonIcons.TinderBack}
             style={styles.BackIcon}
           />
-        </TouchableOpacity>
+        </Pressable>
         <View style={styles.CategoryNameView}>
-          <Text style={styles.CategoryNameText}>{item.title}</Text>
+          <Text style={[styles.CategoryNameText, { color: colors.Black }]}>{item.title}</Text>
         </View>
         <View />
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

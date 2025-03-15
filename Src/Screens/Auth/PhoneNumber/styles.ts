@@ -1,13 +1,13 @@
-import {GROUP_FONT} from './../../../Common/Theme';
-import {StyleSheet} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {CommonSize} from '../../../Common/CommonSize';
-import {COLORS, FONTS, SIZES} from '../../../Common/Theme';
+import { GROUP_FONT } from './../../../Common/Theme';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { CommonSize } from '../../../Common/CommonSize';
+import { FONTS, SIZES } from '../../../Common/Theme';
+import createThemedStyles from '../../../Hooks/createThemedStyles';
 
-const styles = StyleSheet.create({
+const styles = createThemedStyles((colors, isDark) => ({
   Container: {
     flex: 1,
-    backgroundColor: COLORS.Secondary,
+    backgroundColor: colors.Secondary,
   },
   SubContainerView: {
     paddingBottom: hp('1%'),
@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
   },
   NumberContainer: {
     justifyContent: 'center',
-
     marginHorizontal: hp('1.5%'),
     marginVertical: hp('1%'),
   },
@@ -23,68 +22,46 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   MyNumberText: {
-    color: COLORS.Primary,
+    color: colors.TitleText,
     fontSize: hp('3.3%'),
     fontFamily: FONTS.Bold,
   },
   MyNumberSubText: {
     width: '95%',
     marginTop: hp('1%'),
-    color: COLORS.Black,
+    color: colors.TextColor,
     fontSize: hp('1.7%'),
     fontFamily: FONTS.Medium,
-  },
-  PhoneNumberView: {
-    width: '93%',
-    alignSelf: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: hp('1.9%'),
-    paddingVertical: hp('2%'),
-    paddingHorizontal: hp('1.5%'),
-    borderRadius: SIZES.radius,
-    backgroundColor: COLORS.White,
-    justifyContent: 'space-between',
-  },
-  UserCountyAndCodeView: {
-    width: '30%',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    height: CommonSize(35),
-  },
-  UserNumberTextView: {
-    width: '65%',
-    alignSelf: 'center',
-    top: CommonSize(-3.5),
-    height: CommonSize(45),
-    justifyContent: 'center',
-    borderBottomWidth: CommonSize(2),
-    borderBottomColor: COLORS.Black,
-  },
-  UserNumberTextStyle: {
-    padding: 0,
-    top: hp(0.8),
-    fontSize: hp('2%'),
-    color: COLORS.Black,
-    alignContent: 'center',
-    fontFamily: FONTS.SemiBold,
-  },
-  NumberChangesAlertText: {
-    color: 'rgba(68, 65, 66, 1)',
-    fontFamily: FONTS.Regular,
   },
   CountryCodeModalView: {
     width: '93%',
     height: hp('35%'),
     alignSelf: 'center',
-    marginVertical: hp('4%'),
+    marginVertical: hp('4.5%'),
     borderRadius: SIZES.radius,
-    backgroundColor: COLORS.White,
+    zIndex: 9999,
+    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 1)',
+  },
+  numberBorderView: {
+    width: '93%',
+    alignSelf: 'center',
+    borderRadius: 15,
+    marginTop: hp('1.9%'),
+    borderWidth: 1,
+    backgroundColor: colors.Background,
+  },
+  numberView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    paddingVertical: hp('1.5%'),
+    paddingHorizontal: hp('1.5%'),
+    justifyContent: 'space-between',
   },
   UpIcon: {
     padding: 0,
     width: hp('6%'),
-    top: hp('-3.7%'),
+    top: hp('-4.15=%'),
     left: hp('3.4%'),
     height: hp('6%'),
     position: 'absolute',
@@ -92,7 +69,6 @@ const styles = StyleSheet.create({
   CountyListView: {
     height: '75%',
     alignItems: 'center',
-    paddingVertical: hp('1%'),
     paddingHorizontal: hp('2%'),
   },
   SelectCountryView: {
@@ -108,13 +84,13 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     borderRadius: SIZES.radius,
     paddingHorizontal: hp('2%'),
-    backgroundColor: 'rgba(234, 234, 234, 1)',
+    backgroundColor: isDark ? 'rgba(234, 234, 234, 0.1)' : 'rgba(240, 236, 255, 1)',
   },
   SearchCountryText: {
     padding: 0,
     width: '90%',
     ...GROUP_FONT.h4,
-    color: COLORS.Black,
+    color: colors.Black,
   },
   SearchIcon: {
     justifyContent: 'center',
@@ -127,7 +103,7 @@ const styles = StyleSheet.create({
   },
   ListEmptyText: {
     ...GROUP_FONT.h3,
-    color: COLORS.Black,
+    color: colors.Black,
     textAlign: 'center',
   },
   SearchIconStyle: {
@@ -137,6 +113,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
   },
-});
+}));
 
 export default styles;

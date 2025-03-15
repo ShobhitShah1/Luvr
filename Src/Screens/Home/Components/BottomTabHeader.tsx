@@ -1,16 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {useNavigation} from '@react-navigation/native';
-import React, {FC, memo, useCallback, useEffect} from 'react';
-import {
-  Image,
-  Platform,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import React, { FC, memo, useCallback, useEffect } from 'react';
+import { Image, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -19,10 +10,11 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
-import {ActiveOpacity, COLORS, FONTS} from '../../../Common/Theme';
-import {APP_NAME, DonationIconAnimationTime} from '../../../Config/Setting';
+import { ActiveOpacity, COLORS, FONTS } from '../../../Common/Theme';
+import { APP_NAME, DonationIconAnimationTime } from '../../../Config/Setting';
+import { useTheme } from '../../../Contexts/ThemeContext';
 
 interface BottomTabHeaderProps {
   hideSettingAndNotification?: boolean;
@@ -33,23 +25,21 @@ const ANGLE = 10;
 const TIME = 100;
 const EASING = Easing.elastic(1.5);
 
-const BottomTabHeader: FC<BottomTabHeaderProps> = ({
-  hideSettingAndNotification,
-  showSetting,
-}) => {
+const BottomTabHeader: FC<BottomTabHeaderProps> = ({ hideSettingAndNotification, showSetting }) => {
   const navigation = useNavigation<any>();
   const rotation = useSharedValue(0);
+  const { colors } = useTheme();
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{rotateZ: `${rotation.value}deg`}],
+    transform: [{ rotateZ: `${rotation.value}deg` }],
   }));
 
   const playAnimation = useCallback(() => {
     rotation.value = withSequence(
-      withTiming(-ANGLE, {duration: TIME / 2, easing: EASING}),
+      withTiming(-ANGLE, { duration: TIME / 2, easing: EASING }),
 
-      withRepeat(withTiming(ANGLE, {duration: TIME, easing: EASING}), 7, true),
-      withTiming(0, {duration: TIME / 2, easing: EASING}),
+      withRepeat(withTiming(ANGLE, { duration: TIME, easing: EASING }), 7, true),
+      withTiming(0, { duration: TIME / 2, easing: EASING })
     );
   }, []);
 
@@ -62,14 +52,9 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
   return (
     <View style={styles.Container}>
       <SafeAreaView />
-      <StatusBar
-        animated={true}
-        barStyle={'dark-content'}
-        backgroundColor={COLORS.White}
-      />
       <View style={styles.ContentView}>
         <View style={styles.TitleTextView}>
-          <Text style={styles.TitleText}>{APP_NAME}</Text>
+          <Text style={[styles.TitleText, { color: colors.TextColor }]}>{APP_NAME}</Text>
         </View>
 
         <View style={styles.IconsView}>
@@ -79,13 +64,10 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
               onPress={() => {
                 navigation.navigate('Donation');
               }}
-              style={[styles.DonationContainer]}>
+              style={[styles.DonationContainer]}
+            >
               <Animated.View style={[styles.IconWrapper, animatedStyle]}>
-                <Image
-                  style={styles.DonateIcon}
-                  resizeMode="contain"
-                  source={CommonIcons.donate_icon}
-                />
+                <Image style={styles.DonateIcon} resizeMode="contain" source={CommonIcons.donate_icon} />
               </Animated.View>
             </TouchableOpacity>
           )}
@@ -95,9 +77,11 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
               onPress={() => {
                 navigation.navigate('Notification');
               }}
-              style={styles.IconWrapper}>
+              style={styles.IconWrapper}
+            >
               <Image
                 style={styles.Icons}
+                tintColor={colors.TextColor}
                 resizeMode="contain"
                 source={CommonIcons.Notification}
               />
@@ -109,9 +93,11 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
               onPress={() => {
                 navigation.navigate('Setting');
               }}
-              style={styles.IconWrapper}>
+              style={styles.IconWrapper}
+            >
               <Image
                 style={styles.Icons}
+                tintColor={colors.TextColor}
                 resizeMode="contain"
                 source={CommonIcons.Setting}
               />
@@ -129,18 +115,7 @@ const styles = StyleSheet.create({
   Container: {
     width: '100%',
     justifyContent: 'center',
-    backgroundColor: COLORS.White,
     height: Platform.OS === 'ios' ? hp('12.5%') : hp('8%'),
-
-    shadowColor: COLORS.Black,
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.34,
-    shadowRadius: 6.27,
-
-    elevation: 10,
   },
   DonationContainer: {},
   ContentView: {

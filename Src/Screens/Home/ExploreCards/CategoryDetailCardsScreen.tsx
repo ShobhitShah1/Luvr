@@ -1,20 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import NetInfo from '@react-native-community/netinfo';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import React, {FC, memo, useCallback, useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, StatusBar, Text, View} from 'react-native';
-import {useSelector} from 'react-redux';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import React, { FC, memo, useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
+import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
-import {COLORS} from '../../../Common/Theme';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import { store } from '../../../Redux/Store/store';
 import UserService from '../../../Services/AuthService';
-import {ProfileType} from '../../../Types/ProfileType';
-import {useCustomToast} from '../../../Utils/toastUtils';
+import { ProfileType } from '../../../Types/ProfileType';
+import { useCustomToast } from '../../../Utils/toastUtils';
 import ItsAMatch from '../../Explore/Components/ItsAMatch';
 import CategoryDetailHeader from './Components/CategoryDetailHeader';
 import CategoryRenderCard from './Components/CategoryRenderCard';
 import styles from './styles';
-import {store} from '../../../Redux/Store/store';
 
 type RootStackParamList = {
   CategoryDetailCards: {
@@ -26,10 +27,9 @@ type RootStackParamList = {
   };
 };
 
-interface CategoryDetailCardsInterface
-  extends RouteProp<RootStackParamList, 'CategoryDetailCards'> {}
+interface CategoryDetailCardsInterface extends RouteProp<RootStackParamList, 'CategoryDetailCards'> {}
 
-const ListEmptyView = ({categoryName}: {categoryName: string}) => {
+const ListEmptyView = ({ categoryName }: { categoryName: string }) => {
   return (
     <View style={styles.EmptyListView}>
       <Text style={styles.EmptyListText}>
@@ -40,22 +40,20 @@ const ListEmptyView = ({categoryName}: {categoryName: string}) => {
 };
 
 const CategoryDetailCardsScreen: FC = () => {
-  const {params} = useRoute<CategoryDetailCardsInterface>();
-  const userData = useSelector((state: any) => state?.user);
-  const {showToast} = useCustomToast();
+  const { colors } = useTheme();
+  const { showToast } = useCustomToast();
   const navigation = useNavigation() as any;
 
-  const [CategoryData, setCategoryData] = useState<ProfileType[]>([]);
-  const [IsAPILoading, setIsAPILoading] = useState(true);
+  const { params } = useRoute<CategoryDetailCardsInterface>();
+  const userData = useSelector((state: any) => state?.user);
+
+  const [categoryData, setCategoryData] = useState<ProfileType[]>([]);
+  const [isAPILoading, setIsAPILoading] = useState(true);
   const [ItsMatchModalView, setItsMatchModalView] = useState(false);
-  const [CurrentCardIndex, setCurrentCardIndex] = useState<number>(-1);
+  const [currentCardIndex, setCurrentCardIndex] = useState<number>(-1);
 
   useEffect(() => {
     checkConnectionAndFetchAPI();
-  }, []);
-
-  useEffect(() => {
-    fetchAPIData();
   }, [userData, userData?.swipedLeftUserIds, userData?.swipedRightUserIds]);
 
   const checkConnectionAndFetchAPI = async () => {
@@ -67,11 +65,7 @@ const CategoryDetailCardsScreen: FC = () => {
     if (!isConnected) {
       setIsAPILoading(false);
       setItsMatchModalView(false);
-      showToast(
-        TextString.error.toUpperCase(),
-        TextString.PleaseCheckYourInternetConnection,
-        TextString.error,
-      );
+      showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
       return;
     }
 
@@ -97,90 +91,86 @@ const CategoryDetailCardsScreen: FC = () => {
       if (APIResponse?.code === 200) {
         setCategoryData(APIResponse?.data || []);
       } else {
-        showToast(
-          TextString.error.toUpperCase(),
-          APIResponse?.message || 'Please try again letter',
-          'error',
-        );
+        showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Please try again letter', 'error');
       }
     } catch (error: any) {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(error?.message || error),
-        'error',
-      );
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
     } finally {
       setIsAPILoading(false);
     }
   }, [userData, params?.item?.title]);
 
-  if (IsAPILoading) {
+  if (isAPILoading) {
     return (
-      <View style={styles.Container}>
-        <CategoryDetailHeader item={params?.item} />
-        <StatusBar
-          barStyle={'dark-content'}
-          backgroundColor={COLORS.Secondary}
-        />
-        <View style={[styles.container, styles.LoaderContainer]}>
-          <ActivityIndicator size={'large'} color={COLORS.Primary} />
+      <GradientView>
+        <View style={styles.container}>
+          <CategoryDetailHeader item={params?.item} />
+          <View style={[styles.container, styles.LoaderContainer]}>
+            <ActivityIndicator size={'large'} color={colors.Primary} />
+          </View>
         </View>
-      </View>
+      </GradientView>
     );
   }
 
   return (
-    <View style={styles.Container}>
-      <CategoryDetailHeader item={params?.item} />
-      <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.Secondary} />
+    <GradientView>
+      <View style={styles.container}>
+        <CategoryDetailHeader item={params?.item} />
 
-      <View style={{flex: 1}}>
-        <FlatList
-          numColumns={2}
-          data={CategoryData}
-          style={styles.FlatListStyle}
-          columnWrapperStyle={{justifyContent: 'space-between'}}
-          renderItem={({item, index}) => {
-            return (
-              <CategoryRenderCard
-                item={item}
-                index={index}
-                FetchAPIData={fetchAPIData}
-                setIsAPILoading={setIsAPILoading}
-                setCurrentCardIndex={setCurrentCardIndex}
-                setItsMatchModalView={setItsMatchModalView}
-              />
-            );
+        <View style={{ flex: 1 }}>
+          <FlatList
+            numColumns={2}
+            data={categoryData}
+            style={styles.FlatListStyle}
+            columnWrapperStyle={{ justifyContent: 'space-between' }}
+            renderItem={({ item, index }) => {
+              return (
+                <CategoryRenderCard
+                  item={item}
+                  index={index}
+                  FetchAPIData={fetchAPIData}
+                  setIsAPILoading={setIsAPILoading}
+                  setCurrentCardIndex={setCurrentCardIndex}
+                  setItsMatchModalView={setItsMatchModalView}
+                />
+              );
+            }}
+            ListEmptyComponent={
+              <View style={styles.EmptyListView}>
+                <Text style={[styles.EmptyListText, { color: colors.TextColor }]}>
+                  Sorry! Unable to Find Card for{' '}
+                  <Text style={{ color: colors.Primary }}>"{params?.item?.title || ''}"</Text>
+                </Text>
+              </View>
+            }
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+            contentContainerStyle={{ flex: categoryData.length === 0 ? 1 : 0 }}
+          />
+        </View>
+
+        <ItsAMatch
+          isVisible={ItsMatchModalView}
+          onClose={() => {
+            setItsMatchModalView(false);
           }}
-          ListEmptyComponent={
-            <ListEmptyView categoryName={params?.item?.title} />
-          }
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={{flex: CategoryData.length === 0 ? 1 : 0}}
+          user={categoryData && categoryData[currentCardIndex]}
+          onSayHiClick={() => {
+            if (categoryData[currentCardIndex]?._id) {
+              setItsMatchModalView(false);
+              navigation?.navigate('Chat', {
+                id: categoryData[currentCardIndex]?._id,
+              });
+            } else {
+              showToast('Error', "Sorry! Can't find user", 'error');
+            }
+          }}
+          onCloseModalClick={() => setItsMatchModalView(false)}
+          setItsMatch={setItsMatchModalView}
         />
       </View>
-
-      <ItsAMatch
-        isVisible={ItsMatchModalView}
-        onClose={() => {
-          setItsMatchModalView(false);
-        }}
-        user={CategoryData && CategoryData[CurrentCardIndex]}
-        onSayHiClick={() => {
-          if (CategoryData[CurrentCardIndex]?._id) {
-            setItsMatchModalView(false);
-            navigation?.navigate('Chat', {
-              id: CategoryData[CurrentCardIndex]?._id,
-            });
-          } else {
-            showToast('Error', "Sorry! Can't find user", 'error');
-          }
-        }}
-        onCloseModalClick={() => setItsMatchModalView(false)}
-        setItsMatch={setItsMatchModalView}
-      />
-    </View>
+    </GradientView>
   );
 };
 

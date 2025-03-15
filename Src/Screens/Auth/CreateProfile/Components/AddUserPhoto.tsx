@@ -1,10 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
-// AddUserPhoto.tsx
-import React, {useState} from 'react';
-import {ActivityIndicator, Image, StyleSheet, Text, View} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import React, { useState } from 'react';
+import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
-import {COLORS, GROUP_FONT, SIZES} from '../../../../Common/Theme';
+import { COLORS, GROUP_FONT, SIZES } from '../../../../Common/Theme';
+import { useTheme } from '../../../../Contexts/ThemeContext';
 
 type Picture = {
   name: string;
@@ -19,15 +19,21 @@ type AddUserPhotoProps = {
   onAdd?: () => void;
 };
 
-const AddUserPhoto: React.FC<AddUserPhotoProps> = ({picture}) => {
+const AddUserPhoto: React.FC<AddUserPhotoProps> = ({ picture }) => {
+  const { colors, isDark } = useTheme();
+
   const hasPicture = !!picture.url;
   const [IsImageLoading, setIsImageLoading] = useState<boolean>(false);
+
   return (
-    <View style={styles.item} key={picture?.url}>
-      <View style={styles.UserImageContainer}>
+    <View
+      style={[styles.item, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White }]}
+      key={picture?.url}
+    >
+      <View style={styles.userImageContainer}>
         {IsImageLoading && (
           <ActivityIndicator
-            color={COLORS.Primary}
+            color={colors.Primary}
             size={23}
             style={{
               zIndex: 9999,
@@ -40,8 +46,9 @@ const AddUserPhoto: React.FC<AddUserPhotoProps> = ({picture}) => {
         <Image
           onLoadStart={() => setIsImageLoading(true)}
           onLoad={() => setIsImageLoading(false)}
-          source={picture?.url ? {uri: picture?.url} : CommonIcons.NoImage}
+          source={picture?.url ? { uri: picture?.url } : CommonIcons.NoImage}
           resizeMode="cover"
+          tintColor={picture?.url ? undefined : 'rgba(198, 198, 198, 0.5)'}
           style={picture?.url ? styles.ImageHasImageView : styles.NoImageView}
         />
       </View>
@@ -50,9 +57,11 @@ const AddUserPhoto: React.FC<AddUserPhotoProps> = ({picture}) => {
         style={[
           styles.BlurViewContainer,
           {
-            borderColor: hasPicture ? COLORS.White : COLORS.Black,
+            // backgroundColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White,
+            borderColor: hasPicture ? colors.White : isDark ? 'rgba(198, 198, 198, 0.5)' : colors.Black,
           },
-        ]}>
+        ]}
+      >
         <View style={[styles.AddAndDeleteContainerView]}>
           <View style={styles.FlexView}>
             <Image
@@ -60,20 +69,19 @@ const AddUserPhoto: React.FC<AddUserPhotoProps> = ({picture}) => {
               style={[
                 styles.ImageView,
                 {
-                  tintColor: hasPicture ? COLORS.White : COLORS.Black,
+                  tintColor: hasPicture ? colors.White : colors.TextColor,
                 },
               ]}
-              source={
-                hasPicture ? CommonIcons.DeleteImage : CommonIcons.AddImage
-              }
+              source={hasPicture ? CommonIcons.DeleteImage : CommonIcons.AddImage}
             />
             <Text
               style={[
                 styles.AddAndRemoveText,
                 {
-                  color: hasPicture ? COLORS.White : COLORS.Black,
+                  color: hasPicture ? colors.White : colors.TextColor,
                 },
-              ]}>
+              ]}
+            >
               {hasPicture ? 'Delete Photo' : 'Add Photo'}
             </Text>
           </View>
@@ -94,7 +102,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: hp('1.5%'),
     marginVertical: hp('0.3%'),
-    backgroundColor: COLORS.White,
+    // backgroundColor: colors.White,
   },
   ImageHasImageView: {
     width: '100%',
@@ -111,7 +119,7 @@ const styles = StyleSheet.create({
   item_text: {
     ...GROUP_FONT.h4,
   },
-  UserImageContainer: {
+  userImageContainer: {
     flex: 1,
     width: '100%',
     height: '100%',

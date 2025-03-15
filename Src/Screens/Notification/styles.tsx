@@ -1,12 +1,11 @@
-import {StyleSheet} from 'react-native';
-import {COLORS, FONTS} from '../../Common/Theme';
+import { StyleSheet } from 'react-native';
+import { COLORS, FONTS } from '../../Common/Theme';
 
 let NO_NOTIFICATION_BACKGROUND = 160;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.Secondary,
   },
   NotificationViewContainer: {
     width: '90%',

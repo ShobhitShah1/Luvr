@@ -1,69 +1,61 @@
 /* eslint-disable react-native/no-inline-styles */
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useEffect, useState} from 'react';
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {useDispatch, useSelector} from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useDispatch, useSelector } from 'react-redux';
+import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
-import {
-  ActiveOpacity,
-  COLORS,
-  FONTS,
-  GROUP_FONT,
-  SIZES,
-} from '../../../Common/Theme';
+import { ActiveOpacity, COLORS, FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import {LifestyleData} from '../../../Components/Data';
-import {updateField} from '../../../Redux/Action/actions';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useCustomToast} from '../../../Utils/toastUtils';
+import { LifestyleData } from '../../../Components/Data';
+import { GradientBorderView } from '../../../Components/GradientBorder';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import { updateField } from '../../../Redux/Action/actions';
+import { LocalStorageFields } from '../../../Types/LocalStorageFields';
+import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
-const AddDailyHabits: FC = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const requiredHabits = ['drink', 'exercise', 'movies', 'smoke'];
-  const {showToast} = useCustomToast();
-  const userData = useSelector((state: any) => state?.user);
+const AddDailyHabits = () => {
+  const { colors, isDark } = useTheme();
   const dispatch = useDispatch();
-  const [IsSendRequestLoading, setIsSendRequestLoading] =
-    useState<boolean>(false);
+  const { showToast } = useCustomToast();
+  const userData = useSelector((state: any) => state?.user);
+
+  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
+  const requiredHabits = ['drink', 'exercise', 'movies', 'smoke'];
+  const [IsSendRequestLoading, setIsSendRequestLoading] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
     requiredHabits.reduce((acc, habit) => {
-      acc[habit] =
-        userData?.[LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}`]] ||
-        '';
+      acc[habit] = userData?.[LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}`]] || '';
       return acc;
-    }, {}),
+    }, {})
   );
 
   useEffect(() => {
-    setSelectedItems(prevSelectedItems => ({
+    setSelectedItems((prevSelectedItems) => ({
       ...prevSelectedItems,
       ...requiredHabits.reduce((acc, habit) => {
-        acc[habit] =
-          userData?.[
-            LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}`]
-          ] || '';
+        acc[habit] = userData?.[LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}`]] || '';
         return acc;
       }, {}),
     }));
   }, [userData]);
 
   const handleOptionPress = useCallback((habitName: string, option: string) => {
-    setSelectedItems(prevSelection => {
-      const newSelection = {...prevSelection};
+    setSelectedItems((prevSelection) => {
+      const newSelection = { ...prevSelection };
 
       if (newSelection[habitName.toString()] === option) {
         delete newSelection[habitName.toString()];
       } else {
         newSelection[habitName.toString()] = option;
 
-        LifestyleData.forEach(item => {
+        LifestyleData.forEach((item) => {
           if (item.habit === habitName) {
-            item.options.forEach(res => {
+            item.options.forEach((res) => {
               if (res !== option) {
                 delete newSelection[`${habitName}_${res}`];
               }
@@ -77,40 +69,53 @@ const AddDailyHabits: FC = () => {
   }, []);
 
   const renderItem = ({
-    item: {id, habit, options, key},
+    item: { id, habit, options, key },
   }: {
-    item: {id: number; key: string; habit: string; options: string[]};
+    item: { id: number; key: string; habit: string; options: string[] };
   }) => {
     return (
       <View style={styles.HabitsContainerView} key={id}>
-        <Text style={styles.HabitTitle}>{habit}</Text>
+        <Text style={[styles.HabitTitle, { color: colors.TitleText }]}>{habit}</Text>
+
         <View style={styles.HabitOptionContainerView}>
-          {options.map((res, index) => (
-            <TouchableOpacity
-              activeOpacity={ActiveOpacity}
-              onPress={() => handleOptionPress(key, res)}
-              style={[
-                styles.HabitOptionView,
-                {
-                  backgroundColor:
-                    selectedItems[key] === res ? COLORS.Primary : COLORS.White,
-                  borderWidth: 2,
-                  borderColor: COLORS.White,
-                },
-              ]}
-              key={index}>
-              <Text
+          {options.map((res, index) => {
+            const selected = selectedItems[key] === res;
+
+            return (
+              <GradientBorderView
+                key={index}
+                gradientProps={{
+                  colors: selected
+                    ? isDark
+                      ? colors.Gradient
+                      : ['transparent', 'transparent']
+                    : isDark
+                      ? colors.UnselectedGradient
+                      : ['transparent', 'transparent'],
+                }}
                 style={[
-                  styles.HabitOptionText,
+                  styles.HabitOptionView,
                   {
-                    color:
-                      selectedItems[key] === res ? COLORS.White : '#828282',
+                    backgroundColor: isDark ? 'transparent' : selected ? colors.Primary : colors.White,
+                    borderWidth: selected ? 2 : 0.5,
                   },
-                ]}>
-                {res}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                ]}
+              >
+                <Pressable style={{ flex: 1, justifyContent: 'center' }} onPress={() => handleOptionPress(key, res)}>
+                  <Text
+                    style={[
+                      styles.HabitOptionText,
+                      {
+                        color: selected ? colors.White : colors.TextColor,
+                      },
+                    ]}
+                  >
+                    {res}
+                  </Text>
+                </Pressable>
+              </GradientBorderView>
+            );
+          })}
         </View>
       </View>
     );
@@ -120,19 +125,12 @@ const AddDailyHabits: FC = () => {
     setIsSendRequestLoading(true);
 
     try {
-      const allHabitsSelected = requiredHabits.every(habit =>
-        selectedItems.hasOwnProperty(habit),
-      );
+      const allHabitsSelected = requiredHabits.every((habit) => selectedItems.hasOwnProperty(habit));
 
       if (allHabitsSelected) {
         await Promise.all([
-          requiredHabits.forEach(habit => {
-            dispatch(
-              updateField(
-                LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}`],
-                selectedItems[habit],
-              ),
-            );
+          requiredHabits.forEach((habit) => {
+            dispatch(updateField(LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}`], selectedItems[habit]));
           }),
         ]);
         navigation.navigate('LoginStack', {
@@ -142,62 +140,60 @@ const AddDailyHabits: FC = () => {
         throw new Error('Please select all required habits');
       }
     } catch (error: any) {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(error?.message || error),
-        'error',
-      );
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
     } finally {
       setIsSendRequestLoading(false);
     }
   };
 
   return (
-    <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader
-        ProgressCount={6}
-        Skip={true}
-        handleSkipPress={() => {
-          navigation.navigate('LoginStack', {
-            screen: 'WhatAboutYou',
-          });
-        }}
-      />
+    <GradientView>
+      <View style={CreateProfileStyles.Container}>
+        <CreateProfileHeader
+          ProgressCount={6}
+          Skip={true}
+          handleSkipPress={() => {
+            navigation.navigate('LoginStack', {
+              screen: 'WhatAboutYou',
+            });
+          }}
+        />
 
-      <View style={styles.DataViewContainer}>
-        <View style={[styles.ContentView]}>
-          <Text style={styles.TitleText}>
-            Let’s talk about your daily habits!
-          </Text>
-          <Text style={styles.HabitsMatchText}>
-            Share your daily lifestyle habits that best represent you.
-          </Text>
+        <View style={styles.DataViewContainer}>
+          <View style={[styles.ContentView]}>
+            <Text style={[styles.TitleText, { color: colors.TitleText }]}>Let’s talk about your daily habits!</Text>
+            <Text style={[styles.HabitsMatchText, { color: colors.TextColor }]}>
+              Share your daily lifestyle habits that best represent you.
+            </Text>
+          </View>
+
+          <View style={styles.FlatListView}>
+            <FlatList
+              data={LifestyleData}
+              renderItem={renderItem}
+              style={styles.FlatList}
+              initialNumToRender={20}
+              nestedScrollEnabled={false}
+              keyExtractor={(item, index) => index.toString()}
+              removeClippedSubviews={true}
+            />
+          </View>
         </View>
 
-        <View style={styles.FlatListView}>
-          <FlatList
-            data={LifestyleData}
-            renderItem={renderItem}
-            style={styles.FlatList}
-            initialNumToRender={20}
-            nestedScrollEnabled={false}
-            keyExtractor={(item, index) => index.toString()}
-            removeClippedSubviews={true}
+        <View style={CreateProfileStyles.BottomButton}>
+          <GradientButton
+            Title={'Continue'}
+            Disabled={false}
+            isLoading={IsSendRequestLoading}
+            Navigation={() => onPressNext()}
           />
         </View>
       </View>
-
-      <View style={CreateProfileStyles.BottomButton}>
-        <GradientButton
-          Title={'Continue'}
-          Disabled={false}
-          isLoading={IsSendRequestLoading}
-          Navigation={() => onPressNext()}
-        />
-      </View>
-    </View>
+    </GradientView>
   );
 };
+
+export default memo(AddDailyHabits);
 
 const styles = StyleSheet.create({
   DataViewContainer: {
@@ -309,11 +305,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   HabitOptionView: {
-    width: hp('12%'),
+    width: hp('11%'),
     height: hp('6.5%'),
     justifyContent: 'center',
     borderRadius: SIZES.radius,
-    backgroundColor: COLORS.White,
   },
   HabitOptionText: {
     ...GROUP_FONT.body4,
@@ -321,5 +316,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
-export default AddDailyHabits;

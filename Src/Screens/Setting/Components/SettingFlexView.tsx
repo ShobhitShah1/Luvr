@@ -1,18 +1,10 @@
 // SettingFlexView.js
-import React, {FC, memo, useEffect, useState} from 'react';
-import {
-  Image,
-  ImageStyle,
-  StyleSheet,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
+import React, { FC, memo, useEffect, useState } from 'react';
+import { Image, ImageStyle, Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import CommonIcons from '../../../Common/CommonIcons';
-import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import SwitchComponent from '../../../Components/SwitchComponent';
+import { useTheme } from '../../../Contexts/ThemeContext';
 
 interface SettingFlexViewProps {
   Item: string;
@@ -39,6 +31,7 @@ const SettingFlexView: FC<SettingFlexViewProps> = ({
   onSwitchPress,
   hideRightIcon,
 }) => {
+  const { colors } = useTheme();
   const [localIsActive, setLocalIsActive] = useState(isActive);
 
   useEffect(() => {
@@ -46,19 +39,10 @@ const SettingFlexView: FC<SettingFlexViewProps> = ({
   }, [isActive, Item, IsSwitch]);
 
   return (
-    <TouchableOpacity
-      activeOpacity={ActiveOpacity}
-      onPress={onPress}
-      style={[styles.SettingView, style]}>
-      <Text style={[styles.ItemTextStyle, itemStyle]}>{Item}</Text>
+    <Pressable onPress={onPress} style={[styles.SettingView, style]}>
+      <Text style={[styles.ItemTextStyle, { color: colors.TextColor }, itemStyle]}>{Item}</Text>
       {!hideRightIcon && IsSwitch ? (
-        <SwitchComponent
-          onPress={() => {
-            onSwitchPress ? onSwitchPress() : {};
-          }}
-          isActive={localIsActive}
-          size={38}
-        />
+        <SwitchComponent size={38} isActive={localIsActive} onPress={() => (onSwitchPress ? onSwitchPress() : {})} />
       ) : (
         <View style={[styles.RightIconView, rightIconViewStyle]}>
           <Image
@@ -68,7 +52,7 @@ const SettingFlexView: FC<SettingFlexViewProps> = ({
           />
         </View>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 export default memo(SettingFlexView);

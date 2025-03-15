@@ -2,35 +2,32 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 import NetInfo from '@react-native-community/netinfo';
-import {useIsFocused} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import {Socket, io} from 'socket.io-client';
+import { useIsFocused } from '@react-navigation/native';
+import React, { memo, useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { Socket, io } from 'socket.io-client';
 import CommonImages from '../../Common/CommonImages';
+import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
-import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
+import { COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
 import ApiConfig from '../../Config/ApiConfig';
-import {JOIN_EVENT, LIST_EVENT, UPDATE_LIST} from '../../Config/Setting';
-import {store} from '../../Redux/Store/store';
-import {useCustomToast} from '../../Utils/toastUtils';
+import { JOIN_EVENT, LIST_EVENT, UPDATE_LIST } from '../../Config/Setting';
+import { useTheme } from '../../Contexts/ThemeContext';
+import { store } from '../../Redux/Store/store';
+import { MessageItem, SocketEventHandlers } from '../../Types/Interface';
+import { useCustomToast } from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderChatRoomList from './Components/RenderChatRoomList';
-import {MessageItem, SocketEventHandlers} from '../../Types/Interface';
 
 const ChatRoomScreen = () => {
+  const { colors } = useTheme();
+  const isFocused = useIsFocused();
+  const { showToast } = useCustomToast();
+  const currentLoginUserId = store.getState().user?.userData?._id || '';
+
   const [socket, setSocket] = useState<Socket | undefined>();
   const [messages, setMessages] = useState<MessageItem[]>([]);
   const [isSocketLoading, setIsSocketLoading] = useState(true);
-  const {showToast} = useCustomToast();
-  const currentLoginUserId = store.getState().user?.userData?._id;
-  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (isFocused) {
@@ -49,11 +46,7 @@ const ChatRoomScreen = () => {
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
     if (!InInternetConnected) {
-      showToast(
-        TextString.error.toUpperCase(),
-        TextString.PleaseCheckYourInternetConnection,
-        TextString.error,
-      );
+      showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
       setIsSocketLoading(false);
       return;
     }
@@ -66,7 +59,7 @@ const ChatRoomScreen = () => {
       setSocket(socketInstance);
     });
 
-    socketInstance.on('connect_error', error => {
+    socketInstance.on('connect_error', (error) => {
       showToast(error.name, error.message || 'Something went wrong', 'error');
       setIsSocketLoading(false);
     });
@@ -82,18 +75,17 @@ const ChatRoomScreen = () => {
     try {
       if (socket && isFocused) {
         //* Event: Join
-        socket.emit(JOIN_EVENT, {id: currentLoginUserId});
+        socket.emit(JOIN_EVENT, { id: currentLoginUserId });
 
         //* Event: List
-        socket.emit(LIST_EVENT, {id: currentLoginUserId});
+        socket.emit(LIST_EVENT, { id: currentLoginUserId });
 
         //* Event: List - Response
-        const handleListResponse: SocketEventHandlers['List'] = data => {
+        const handleListResponse: SocketEventHandlers['List'] = (data) => {
           try {
             if (data && data?.data) {
               const filteredData = data.data.filter(
-                (item: MessageItem | null) =>
-                  item !== null && item?.to !== currentLoginUserId,
+                (item: MessageItem | null) => item !== null && item?.to !== currentLoginUserId
               );
               // const filteredData = data.data.filter(
               //   (item: MessageItem) => item?.to !== currentLoginUserId,
@@ -102,10 +94,8 @@ const ChatRoomScreen = () => {
               if (filteredData && filteredData?.length !== 0) {
                 const usersWithFirstChat =
                   filteredData &&
-                  filteredData.map(message => {
-                    const otherUserChats = message?.chat?.filter(
-                      chat => chat?.id !== currentLoginUserId,
-                    );
+                  filteredData.map((message) => {
+                    const otherUserChats = message?.chat?.filter((chat) => chat?.id !== currentLoginUserId);
 
                     //* With Both Side Chat
                     // const firstChat =
@@ -114,10 +104,7 @@ const ChatRoomScreen = () => {
                     //     : null;
 
                     //* Only Other User Chat
-                    const firstChat =
-                      otherUserChats?.length > 0
-                        ? otherUserChats[otherUserChats?.length - 1]
-                        : null;
+                    const firstChat = otherUserChats?.length > 0 ? otherUserChats[otherUserChats?.length - 1] : null;
 
                     return {
                       chat: firstChat ? [firstChat] : [],
@@ -142,7 +129,7 @@ const ChatRoomScreen = () => {
         };
 
         const handleUpdateList = () => {
-          socket.emit(LIST_EVENT, {id: currentLoginUserId});
+          socket.emit(LIST_EVENT, { id: currentLoginUserId });
         };
 
         socket.on(LIST_EVENT, handleListResponse);
@@ -164,10 +151,9 @@ const ChatRoomScreen = () => {
         <View style={styles.NoChatIconBackground}>
           <Image source={CommonImages.NoChat} style={styles.NoChatIcon} />
         </View>
-        <Text style={styles.NoChatText}>No chats, Get swiping</Text>
-        <Text style={styles.NoChatDescription}>
-          When you match with other peoples they’ll appear here, where you can
-          send them a message.
+        <Text style={[styles.NoChatText, { color: colors.TitleText }]}>No chats, Get swiping</Text>
+        <Text style={[styles.NoChatDescription, { color: colors.TextColor }]}>
+          When you match with other peoples they’ll appear here, where you can send them a message.
         </Text>
       </View>
     );
@@ -175,48 +161,46 @@ const ChatRoomScreen = () => {
 
   if (isSocketLoading) {
     return (
-      <React.Fragment>
-        <BottomTabHeader
-          showSetting={true}
-          hideSettingAndNotification={false}
-        />
+      <GradientView>
+        <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
         <View style={[styles.container, styles.LoaderContainer]}>
-          <ActivityIndicator size={'large'} color={COLORS.Primary} />
+          <ActivityIndicator size={'large'} color={colors.Primary} />
         </View>
-      </React.Fragment>
+      </GradientView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
+    <GradientView>
+      <View style={styles.container}>
+        <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
 
-      <View style={styles.ListChatView}>
-        {!isSocketLoading && (
-          <FlatList
-            data={messages}
-            contentContainerStyle={{
-              flex: 1,
-              justifyContent: messages.length === 0 ? 'center' : undefined,
-            }}
-            maxToRenderPerBatch={10}
-            renderItem={({item, index}) => {
-              return <RenderChatRoomList item={item} index={index} />;
-            }}
-            ListEmptyComponent={<ListEmptyView />}
-          />
-        )}
+        <View style={styles.ListChatView}>
+          {!isSocketLoading && (
+            <FlatList
+              data={messages}
+              contentContainerStyle={{
+                flex: 1,
+                justifyContent: messages.length === 0 ? 'center' : undefined,
+              }}
+              maxToRenderPerBatch={10}
+              renderItem={({ item, index }) => {
+                return <RenderChatRoomList item={item} index={index} />;
+              }}
+              ListEmptyComponent={<ListEmptyView />}
+            />
+          )}
+        </View>
       </View>
-    </View>
+    </GradientView>
   );
 };
 
-export default ChatRoomScreen;
+export default memo(ChatRoomScreen);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.Secondary,
   },
   LoaderContainer: {
     justifyContent: 'center',
@@ -250,7 +234,6 @@ const styles = StyleSheet.create({
     fontSize: 27,
     marginTop: 20,
     textAlign: 'center',
-    color: COLORS.Primary,
   },
   NoChatDescription: {
     marginTop: 8,
@@ -259,6 +242,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 15,
     fontFamily: FONTS.SemiBold,
-    color: COLORS.Black,
   },
 });

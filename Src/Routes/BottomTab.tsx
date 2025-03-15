@@ -1,16 +1,17 @@
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
-import {Image, Platform, StyleSheet} from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {COLORS} from '../Common/Theme';
+import { Image, Platform, StyleSheet } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../Common/CommonIcons';
-import {HomeScreen} from '../Screens/Home/index';
+import { useTheme } from '../Contexts/ThemeContext';
 import ChatRoomScreen from '../Screens/Chat/ChatRoomScreen';
-import ProfileScreen from '../Screens/Profile/ProfileScreen';
 import ExploreCardScreen from '../Screens/Explore/ExploreCardScreen';
+import { HomeScreen } from '../Screens/Home/index';
 import MyLikesScreen from '../Screens/MyLikes/MyLikesScreen';
+import ProfileScreen from '../Screens/Profile/ProfileScreen';
 
-const BottomTab: React.FC = () => {
+const BottomTab = () => {
+  const { colors, isDark } = useTheme();
   const Tab = createBottomTabNavigator();
 
   interface TabScreen {
@@ -25,42 +26,46 @@ const BottomTab: React.FC = () => {
       style={[
         styles.TabBarIcon,
         {
-          tintColor: focused ? COLORS.Primary : COLORS.TabBarUnFocused,
+          tintColor: focused ? (isDark ? colors.White : colors.Primary) : isDark ? undefined : colors.White,
         },
       ]}
     />
   );
 
   const tabScreens: TabScreen[] = [
-    {name: 'Home', component: HomeScreen, icon: CommonIcons.HomeTab},
+    { name: 'Home', component: HomeScreen, icon: isDark ? CommonIcons.DarkHomeTab : CommonIcons.LightHomeTab },
     {
       name: 'ExploreCard',
       component: ExploreCardScreen,
-      icon: CommonIcons.FindMatchTab,
+      icon: isDark ? CommonIcons.DarkFindMatchTab : CommonIcons.LightFindMatchTab,
     },
     {
       name: 'MyLikes',
       component: MyLikesScreen,
-      icon: CommonIcons.bottom_likes_icon,
+      icon: isDark ? CommonIcons.DarkLikeTab : CommonIcons.LightLikeTab,
     },
-    {name: 'ChatRoom', component: ChatRoomScreen, icon: CommonIcons.MessageTab},
-    {name: 'Profile', component: ProfileScreen, icon: CommonIcons.ProfileTab},
+    {
+      name: 'ChatRoom',
+      component: ChatRoomScreen,
+      icon: isDark ? CommonIcons.DarkMessageTab : CommonIcons.LightMessageTab,
+    },
+    {
+      name: 'Profile',
+      component: ProfileScreen,
+      icon: isDark ? CommonIcons.DarkProfileTab : CommonIcons.LightProfileTab,
+    },
   ];
 
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarStyle: styles.TabBarStyle,
-        headerShown: false,
-      }}>
-      {tabScreens.map(tab => (
+    <Tab.Navigator screenOptions={{ tabBarStyle: styles.TabBarStyle, headerShown: false }}>
+      {tabScreens.map((tab) => (
         <Tab.Screen
           key={tab.name}
           name={tab.name}
           component={tab.component}
           options={{
             tabBarShowLabel: false,
-            tabBarIcon: ({focused}) => getTabBarIcon(tab.icon, focused),
+            tabBarIcon: ({ focused }) => getTabBarIcon(tab.icon, focused),
           }}
         />
       ))}
@@ -83,5 +88,7 @@ const styles = StyleSheet.create({
     height: Platform.OS === 'ios' ? hp(8.7) : hp(7),
     marginLeft: hp('-0.5%'),
     marginRight: hp('-0.5%'),
+    borderTopWidth: 0,
+    backgroundColor: 'rgba(74, 20, 140, 1)',
   },
 });

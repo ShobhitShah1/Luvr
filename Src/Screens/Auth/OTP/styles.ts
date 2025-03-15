@@ -1,12 +1,12 @@
-import {StyleSheet} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {CommonSize} from '../../../Common/CommonSize';
-import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { CommonSize } from '../../../Common/CommonSize';
+import { FONTS, GROUP_FONT } from '../../../Common/Theme';
+import createThemedStyles from '../../../Hooks/createThemedStyles';
 
-const styles = StyleSheet.create({
+const styles = createThemedStyles((colors) => ({
   Container: {
     flex: 1,
-    backgroundColor: COLORS.Secondary,
+    // backgroundColor: colors.Secondary,
   },
   SubContainerView: {
     marginHorizontal: hp('2.7%'),
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     marginHorizontal: hp('2.7%'),
   },
   MyCodeText: {
-    color: COLORS.Primary,
+    color: colors.TitleText,
     fontSize: hp('3.3%'),
     fontFamily: FONTS.Bold,
   },
@@ -29,13 +29,13 @@ const styles = StyleSheet.create({
     marginVertical: hp('1.5%'),
     fontSize: hp('1.8%'),
     fontFamily: FONTS.Medium,
-    color: COLORS.Black,
+    color: colors.Black,
   },
   NumberText: {
     marginVertical: hp('1.5%'),
     fontSize: hp('1.9%'),
     fontFamily: FONTS.Bold,
-    color: COLORS.Primary,
+    color: colors.Primary,
     textDecorationLine: 'underline',
   },
   borderStyleHighLighted: {
@@ -55,12 +55,12 @@ const styles = StyleSheet.create({
   NoCodeText: {
     fontSize: hp('1.7%'),
     fontFamily: FONTS.Medium,
-    color: COLORS.Black,
+    color: colors.Black,
   },
   ResendText: {
     fontSize: hp('1.6%'),
     fontFamily: FONTS.Bold,
-    color: COLORS.Primary,
+    color: colors.Primary,
     textDecorationLine: 'underline',
     paddingTop: hp(0.5),
   },
@@ -78,29 +78,29 @@ const styles = StyleSheet.create({
     marginLeft: hp(2),
     marginRight: hp(2),
     borderRadius: 500,
-    backgroundColor: COLORS.White,
+    backgroundColor: colors.White,
   },
   OTPCellStyleFocused: {
     borderWidth: 1,
-    borderColor: COLORS.Primary,
+    borderColor: colors.Primary,
   },
   OTPCellStyleFilled: {
-    backgroundColor: COLORS.Primary,
-    borderColor: COLORS.White,
-    borderWidth: 1,
+    // backgroundColor: colors.Primary,
+    // borderColor: colors.White,
+    // borderWidth: 1,
   },
   OTPTextStyle: {
     textAlign: 'center',
     ...GROUP_FONT.h4,
     fontSize: hp('2%'),
-    color: COLORS.White,
+    color: colors.White,
   },
   OTPTextStyleFocused: {
     textAlign: 'center',
     ...GROUP_FONT.h4,
     fontSize: hp('2%'),
-    color: COLORS.White,
+    color: colors.White,
   },
-});
+}));
 
 export default styles;

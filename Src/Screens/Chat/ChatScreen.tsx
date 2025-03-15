@@ -1,22 +1,9 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import {
-  ParamListBase,
-  RouteProp,
-  useIsFocused,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
-import React, {useCallback, useEffect, useState} from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { ParamListBase, RouteProp, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
 import {
   Bubble,
   BubbleProps,
@@ -28,8 +15,8 @@ import {
   MessageText,
   MessageTextProps,
 } from 'react-native-gifted-chat';
-import {Socket, io} from 'socket.io-client';
-import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
+import { Socket, io } from 'socket.io-client';
+import { COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
 import ReportUserModalView from '../../Components/ReportUserModalView';
 import ApiConfig from '../../Config/ApiConfig';
 import {
@@ -40,14 +27,16 @@ import {
   MESSAGE_EVENT,
   READ_ALL,
 } from '../../Config/Setting';
-import {onSwipeLeft} from '../../Redux/Action/actions';
-import {store} from '../../Redux/Store/store';
+import { onSwipeLeft } from '../../Redux/Action/actions';
+import { store } from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
-import {ProfileType} from '../../Types/ProfileType';
-import {chatRoomDataType} from '../../Types/chatRoomDataType';
-import {useCustomToast} from '../../Utils/toastUtils';
+import { ProfileType } from '../../Types/ProfileType';
+import { chatRoomDataType } from '../../Types/chatRoomDataType';
+import { useCustomToast } from '../../Utils/toastUtils';
 import ChatScreenHeader from './Components/ChatScreenHeader';
 import ReportOrBlockModal from './Components/ReportOrBlockModal';
+import GradientView from '../../Common/GradientView';
+import { useTheme } from '../../Contexts/ThemeContext';
 
 interface ChatData {
   params: {
@@ -63,30 +52,30 @@ const generateRandomId = () => {
 };
 
 const ChatScreen = () => {
-  const {params} = useRoute<ChatScreenRouteProp>();
+  const { colors, isDark } = useTheme();
 
-  const {userData} = store.getState().user || ({} as any);
+  const isFocused = useIsFocused();
+  const navigation = useNavigation();
+  const { showToast } = useCustomToast();
+  const { params } = useRoute<ChatScreenRouteProp>();
+
+  const { userData } = store.getState().user || ({} as any);
   const CurrentLoginUserId = userData?._id;
   const CurrentUserImage = userData?.recent_pik;
   const CurrentLoginUserFullName = userData?.full_name;
 
   const [userMessage, setUserMessages] = useState<IMessage[]>([]);
   const [CountMessage, setCountMessage] = useState(0);
-  const [OtherUserProfileData, setOtherUserProfileData] =
-    useState<ProfileType | null>(null);
-  const IsFocused = useIsFocused();
+  const [OtherUserProfileData, setOtherUserProfileData] = useState<ProfileType | null>(null);
   const [socket, setSocket] = useState<Socket>();
   const [ReceiverSocketId, setReceiverSocketId] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string>('');
-  const {showToast} = useCustomToast();
-  const navigation = useNavigation();
   const [SelectedReportReason, setSelectedReportReason] = useState<string>('');
-  const [ShowReportModalView, setShowReportModalView] =
-    useState<boolean>(false);
+  const [ShowReportModalView, setShowReportModalView] = useState<boolean>(false);
   const [ReportAndBlockModal, setReportAndBlockModal] = useState(false);
 
   useEffect(() => {
-    if (IsFocused) {
+    if (isFocused) {
       getOtherUserDataCall();
 
       const socketInstance = io(ApiConfig.SOCKET_BASE_URL);
@@ -96,12 +85,12 @@ const ChatScreen = () => {
         socketInstance.disconnect();
       };
     }
-  }, [IsFocused]);
+  }, [isFocused]);
 
   const transformDataForGiftedChat = (apiData: any) => {
     let dataArray = Array.isArray(apiData) ? apiData : [apiData];
 
-    const filteredMessages = dataArray.filter(item => {
+    const filteredMessages = dataArray.filter((item) => {
       return item.to === CurrentLoginUserId || item.to === params?.id;
     });
     const allMessages = filteredMessages.reduce((accumulator, currentItem) => {
@@ -115,16 +104,13 @@ const ChatScreen = () => {
         createdAt: new Date(message.time),
         user: {
           _id: message.id === CurrentLoginUserId ? 1 : 0,
-          name:
-            message.id === CurrentLoginUserId ? CurrentLoginUserFullName : '',
+          name: message.id === CurrentLoginUserId ? CurrentLoginUserFullName : '',
           avatar: avatarUrl,
         },
       };
     });
 
-    const sortedMessages = giftedChatMessages.sort(
-      (a: any, b: any) => b.createdAt.getTime() - a.createdAt.getTime(),
-    );
+    const sortedMessages = giftedChatMessages.sort((a: any, b: any) => b.createdAt.getTime() - a.createdAt.getTime());
     return sortedMessages;
   };
 
@@ -137,10 +123,7 @@ const ChatScreen = () => {
       createdAt: new Date(message?.last_updated_time),
       user: {
         _id: message?.from === CurrentLoginUserId ? 1 : 0,
-        name:
-          message?.from === CurrentLoginUserId
-            ? CurrentLoginUserFullName
-            : message?.from_name,
+        name: message?.from === CurrentLoginUserId ? CurrentLoginUserFullName : message?.from_name,
         avatar: avatarUrl,
       },
     };
@@ -173,16 +156,16 @@ const ChatScreen = () => {
     });
 
     //* Event: Get Receiver Socket
-    socket.emit(GET_RECEIVER_SOCKET_EVENT, {to: params?.id});
+    socket.emit(GET_RECEIVER_SOCKET_EVENT, { to: params?.id });
 
     //* Event: List
-    socket.emit(LIST_EVENT, {id: CurrentLoginUserId});
+    socket.emit(LIST_EVENT, { id: CurrentLoginUserId });
 
     //* Read Chat (Read Receipts)
-    socket.emit(READ_ALL, {to: OtherUserProfileData?._id});
+    socket.emit(READ_ALL, { to: OtherUserProfileData?._id });
 
     //* Event: List - Response
-    const handleListResponse = (data: {data: any}) => {
+    const handleListResponse = (data: { data: any }) => {
       let dataArray = Array.isArray(data.data) ? data.data : [data.data];
 
       const filteredMessages = dataArray.filter((item: any) => {
@@ -197,10 +180,7 @@ const ChatScreen = () => {
       }
 
       if (giftedChatMessages.length !== 0) {
-        const uniqueMessages = removeDuplicates([
-          ...userMessage,
-          ...giftedChatMessages,
-        ]);
+        const uniqueMessages = removeDuplicates([...userMessage, ...giftedChatMessages]);
 
         setUserMessages(uniqueMessages);
       }
@@ -215,20 +195,18 @@ const ChatScreen = () => {
       }
       const giftedChatMessages = storeSingleChatFormat(chat);
       if (giftedChatMessages) {
-        socket.emit(READ_ALL, {to: OtherUserProfileData?._id});
+        socket.emit(READ_ALL, { to: OtherUserProfileData?._id });
 
         const updatedMessages = giftedChatMessages.map((message: any) => ({
           ...message,
-          user: {...message.user, avatar: avatarUrl},
+          user: { ...message.user, avatar: avatarUrl },
         }));
 
-        setUserMessages(previousMessages =>
-          GiftedChat.append(previousMessages, updatedMessages.flat()),
-        );
+        setUserMessages((previousMessages) => GiftedChat.append(previousMessages, updatedMessages.flat()));
       }
     };
 
-    const handleReceiverSocketId = (data: {to_socket_id: string}) => {
+    const handleReceiverSocketId = (data: { to_socket_id: string }) => {
       setReceiverSocketId(data?.to_socket_id);
     };
 
@@ -269,9 +247,7 @@ const ChatScreen = () => {
       if (apiResponse?.code === 200 && apiResponse.data) {
         setOtherUserProfileData(apiResponse.data);
         if (apiResponse.data && apiResponse.data?.recent_pik) {
-          setAvatarUrl(
-            ApiConfig.IMAGE_BASE_URL + apiResponse.data?.recent_pik[0],
-          );
+          setAvatarUrl(ApiConfig.IMAGE_BASE_URL + apiResponse.data?.recent_pik[0]);
         }
       }
     } catch (error) {
@@ -288,7 +264,7 @@ const ChatScreen = () => {
 
       if (socket) {
         const chatData = {
-          ...(userMessage?.length === 0 ? {is_first: 1} : {}),
+          ...(userMessage?.length === 0 ? { is_first: 1 } : {}),
           to: params?.id,
           reciver_socket_id: ReceiverSocketId || null,
           from_name: CurrentLoginUserFullName,
@@ -297,11 +273,9 @@ const ChatScreen = () => {
           to_profile: OtherUserProfileData?.recent_pik[0],
           from_profile: CurrentUserImage[0],
         };
-        setUserMessages(previousMessages =>
-          GiftedChat.append(previousMessages, messages),
-        );
+        setUserMessages((previousMessages) => GiftedChat.append(previousMessages, messages));
 
-        socket.emit(READ_ALL, {to: OtherUserProfileData?._id});
+        socket.emit(READ_ALL, { to: OtherUserProfileData?._id });
         socket.emit(CHAT_EVENT, chatData, (error: any) => {
           if (error) {
             showToast('Error', String(error?.message || error), 'error');
@@ -317,7 +291,7 @@ const ChatScreen = () => {
       ReceiverSocketId,
       CountMessage,
       userMessage,
-    ],
+    ]
   );
 
   const renderInputToolbar = (props: any) => {
@@ -325,7 +299,7 @@ const ChatScreen = () => {
       <InputToolbar
         {...props}
         primaryStyle={styles.inputToolbarPrimary}
-        optionTintColor={COLORS.Primary}
+        optionTintColor={colors.Primary}
         accessoryStyle={styles.inputToolbarAccessory}
         containerStyle={styles.inputToolbarContainer}
       />
@@ -344,7 +318,7 @@ const ChatScreen = () => {
             borderTopLeftRadius: 20,
             borderBottomRightRadius: 0,
             borderBottomLeftRadius: 20,
-            backgroundColor: COLORS.White,
+            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White,
           },
           left: {
             padding: 3,
@@ -353,20 +327,20 @@ const ChatScreen = () => {
             borderBottomRightRadius: 20,
             borderBottomLeftRadius: 0,
             borderTopLeftRadius: 20,
-            backgroundColor: COLORS.Primary,
+            backgroundColor: colors.Primary,
           },
         }}
         textStyle={{
           right: {
             lineHeight: 25,
             fontSize: 14.2,
-            color: COLORS.Black,
+            color: isDark ? colors.White : colors.Black,
             fontFamily: FONTS.Medium,
           },
           left: {
             lineHeight: 25,
             fontSize: 14.2,
-            color: COLORS.White,
+            color: colors.White,
             fontFamily: FONTS.Medium,
           },
         }}
@@ -430,13 +404,13 @@ const ChatScreen = () => {
     );
   };
 
-  const CustomMessageText: React.FC<MessageTextProps<IMessage>> = props => {
+  const CustomMessageText: React.FC<MessageTextProps<IMessage>> = (props) => {
     return (
       <MessageText
         {...props}
         linkStyle={{
-          right: {color: COLORS.Primary},
-          left: {color: COLORS.White},
+          right: { color: colors.Primary },
+          left: { color: colors.White },
         }}
       />
     );
@@ -447,7 +421,7 @@ const ChatScreen = () => {
       <Composer
         {...props}
         placeholder="Write your message here"
-        textInputStyle={styles.composerTextInput}
+        textInputStyle={[styles.composerTextInput, { color: colors.TextColor }]}
       />
     );
   };
@@ -464,7 +438,7 @@ const ChatScreen = () => {
       showToast(
         'User Blocked',
         `Your request to block ${OtherUserProfileData?.full_name} is successfully send`,
-        'success',
+        'success'
       );
       navigation.goBack();
     } else {
@@ -487,7 +461,7 @@ const ChatScreen = () => {
       showToast(
         'Success!',
         `Your report against ${OtherUserProfileData?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${SelectedReportReason}`,
-        'success',
+        'success'
       );
       navigation.goBack();
     } else {
@@ -496,61 +470,59 @@ const ChatScreen = () => {
   };
 
   return (
-    <View style={styles.Container}>
-      <ChatScreenHeader
-        data={OtherUserProfileData}
-        onRightIconPress={() => setReportAndBlockModal(true)}
-      />
-      <StatusBar backgroundColor={COLORS.White} barStyle={'dark-content'} />
-      <View style={styles.ChatContainer}>
-        <GiftedChat
-          alignTop
-          messages={userMessage}
-          onSend={messages => onSend(messages)}
-          user={{_id: 1, avatar: avatarUrl}}
-          isTyping={false}
-          messagesContainerStyle={styles.messagesContainer}
-          maxComposerHeight={100}
-          renderComposer={renderComposer}
-          renderInputToolbar={props => renderInputToolbar(props)}
-          renderBubble={renderBubble}
-          timeTextStyle={{
-            left: {color: COLORS.White},
-            right: {color: COLORS.Black},
-          }}
-          imageStyle={{left: 28}}
-          onLongPress={() => {}}
-          renderMessageText={CustomMessageText}
+    <GradientView>
+      <View style={styles.Container}>
+        <ChatScreenHeader data={OtherUserProfileData} onRightIconPress={() => setReportAndBlockModal(true)} />
+        <StatusBar backgroundColor={colors.White} barStyle={'dark-content'} />
+        <View style={styles.ChatContainer}>
+          <GiftedChat
+            alignTop
+            messages={userMessage}
+            onSend={(messages) => onSend(messages)}
+            user={{ _id: 1, avatar: avatarUrl }}
+            isTyping={false}
+            messagesContainerStyle={styles.messagesContainer}
+            maxComposerHeight={100}
+            renderComposer={renderComposer}
+            renderInputToolbar={(props) => renderInputToolbar(props)}
+            renderBubble={renderBubble}
+            timeTextStyle={{
+              left: { color: colors.White },
+              right: { color: isDark ? colors.White : colors.Black },
+            }}
+            imageStyle={{ left: 28 }}
+            onLongPress={() => {}}
+            renderMessageText={CustomMessageText}
+          />
+        </View>
+
+        <ReportOrBlockModal
+          isVisible={ReportAndBlockModal}
+          setReportAndBlockModal={setReportAndBlockModal}
+          setShowReportModalView={setShowReportModalView}
+          onBlockProfileClick={onBlockProfileClick}
+          ShowReportModalView={ShowReportModalView}
         />
+
+        <ReportUserModalView
+          Visible={ShowReportModalView}
+          setVisibility={setShowReportModalView}
+          onReportPress={onReportProfileClick}
+          SelectedReportReason={SelectedReportReason}
+          setSelectedReportReason={setSelectedReportReason}
+        />
+        {Platform.OS === 'android' && <KeyboardAvoidingView behavior="height" />}
+        <SafeAreaView />
       </View>
-
-      <ReportOrBlockModal
-        isVisible={ReportAndBlockModal}
-        setReportAndBlockModal={setReportAndBlockModal}
-        setShowReportModalView={setShowReportModalView}
-        onBlockProfileClick={onBlockProfileClick}
-        ShowReportModalView={ShowReportModalView}
-      />
-
-      <ReportUserModalView
-        Visible={ShowReportModalView}
-        setVisibility={setShowReportModalView}
-        onReportPress={onReportProfileClick}
-        SelectedReportReason={SelectedReportReason}
-        setSelectedReportReason={setSelectedReportReason}
-      />
-      {Platform.OS === 'android' && <KeyboardAvoidingView behavior="height" />}
-      <SafeAreaView />
-    </View>
+    </GradientView>
   );
 };
 
-export default ChatScreen;
+export default memo(ChatScreen);
 
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
-    backgroundColor: COLORS.Secondary,
   },
   messagesContainer: {
     marginBottom: 10,
@@ -562,7 +534,6 @@ const styles = StyleSheet.create({
   composerTextInput: {
     ...GROUP_FONT.h3,
     fontFamily: FONTS.SemiBold,
-    color: COLORS.Black,
   },
   inputToolbarPrimary: {
     justifyContent: 'center',
@@ -576,7 +547,6 @@ const styles = StyleSheet.create({
   TimeStyle: {
     top: 5,
     fontSize: 11.5,
-    color: COLORS.Black,
     fontFamily: FONTS.SemiBold,
   },
 });

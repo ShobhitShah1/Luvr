@@ -1,13 +1,7 @@
-import React, {Component} from 'react';
-import {
-  Animated,
-  PanResponder,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
-import {heightPercentageToDP} from 'react-native-responsive-screen';
-import {COLORS} from '../Common/Theme';
+import React, { Component } from 'react';
+import { Animated, PanResponder, StyleSheet, TextInput, View } from 'react-native';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
+import { COLORS } from '../Common/Theme';
 
 const activeColor = COLORS.Primary;
 const inactiveColor = COLORS.LightGray;
@@ -23,22 +17,19 @@ export default class CustomSlider extends Component {
     this.progress = props.defaultProgress || 0.25;
   }
 
-  pan = new Animated.ValueXY({x: 0, y: 0});
+  pan = new Animated.ValueXY({ x: 0, y: 0 });
   scaleY = new Animated.Value(1);
   translateX = new Animated.Value(0);
   panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
     onPanResponderGrant: () => {
-      this.pan.setOffset({x: this.pan.x._value, y: this.pan.y._value});
-      this.pan.setValue({x: 0, y: 0});
+      this.pan.setOffset({ x: this.pan.x._value, y: this.pan.y._value });
+      this.pan.setValue({ x: 0, y: 0 });
       this.animateScale(true);
     },
-    onPanResponderMove: Animated.event(
-      [null, {dx: this.pan.x, dy: this.pan.y}],
-      {
-        useNativeDriver: false,
-      },
-    ),
+    onPanResponderMove: Animated.event([null, { dx: this.pan.x, dy: this.pan.y }], {
+      useNativeDriver: false,
+    }),
     onPanResponderRelease: () => {
       this.pan.flattenOffset();
       this.animateScale();
@@ -47,23 +38,23 @@ export default class CustomSlider extends Component {
   });
 
   setListener() {
-    const {sliderWidth} = this.state;
+    const { sliderWidth } = this.state;
     this.translateX.removeAllListeners();
-    this.translateX.addListener(x => {
+    this.translateX.addListener((x) => {
       const progress = (x.value / (sliderWidth - dotWidth)).toFixed(2);
       this.onSeek(progress);
       this.progress = progress;
     });
   }
 
-  onSeek = progress => {
-    this.textRef.setNativeProps({text: progress.toString()});
+  onSeek = (progress) => {
+    this.textRef.setNativeProps({ text: progress.toString() });
     if (this.props?.onProgressChange) {
       this.props?.onProgressChange(parseFloat(progress));
     }
   };
 
-  animateScale = expand => {
+  animateScale = (expand) => {
     Animated.spring(this.scaleY, {
       toValue: expand ? 2 : 1,
       useNativeDriver: true,
@@ -72,9 +63,9 @@ export default class CustomSlider extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const {sliderWidth} = this.state;
+    const { sliderWidth } = this.state;
     if (sliderWidth !== prevState.sliderWidth) {
-      this.pan.setValue({x: (sliderWidth - dotWidth) * this.progress, y: 0});
+      this.pan.setValue({ x: (sliderWidth - dotWidth) * this.progress, y: 0 });
     }
     if (prevProps.defaultProgress !== this.props.defaultProgress) {
       this.progress = this.props.defaultProgress || 0.25;
@@ -83,13 +74,13 @@ export default class CustomSlider extends Component {
   }
 
   render() {
-    const {sliderWidth} = this.state;
+    const { sliderWidth } = this.state;
     this.translateX = Animated.diffClamp(this.pan.x, 0, sliderWidth - dotWidth);
     this.setListener();
     return (
       <View style={styles.container}>
         <TextInput
-          ref={e => (this.textRef = e)}
+          ref={(e) => (this.textRef = e)}
           defaultValue={this.progress.toString()}
           style={styles.txt}
           editable={false}
@@ -97,25 +88,16 @@ export default class CustomSlider extends Component {
         <View
           style={styles.barContainer}
           {...this.panResponder.panHandlers}
-          onLayout={e => {
-            this.setState({sliderWidth: e.nativeEvent.layout.width});
-          }}>
+          onLayout={(e) => {
+            this.setState({ sliderWidth: e.nativeEvent.layout.width });
+          }}
+        >
           {!!sliderWidth && (
-            <Animated.View
-              style={[styles.bar, {transform: [{scaleY: this.scaleY}]}]}>
-              <Animated.View
-                style={[
-                  styles.activeLine,
-                  {transform: [{translateX: this.translateX}]},
-                ]}
-              />
+            <Animated.View style={[styles.bar, { transform: [{ scaleY: this.scaleY }] }]}>
+              <Animated.View style={[styles.activeLine, { transform: [{ translateX: this.translateX }] }]} />
             </Animated.View>
           )}
-          {!!sliderWidth && (
-            <Animated.View
-              style={[styles.dot, {transform: [{translateX: this.translateX}]}]}
-            />
-          )}
+          {!!sliderWidth && <Animated.View style={[styles.dot, { transform: [{ translateX: this.translateX }] }]} />}
         </View>
       </View>
     );

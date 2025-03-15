@@ -1,31 +1,33 @@
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {useDispatch, useSelector} from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { memo, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useDispatch, useSelector } from 'react-redux';
+import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
-import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
+import { COLORS, FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
+import { GradientBorderView } from '../../../Components/GradientBorder';
+import { useTheme } from '../../../Contexts/ThemeContext';
 import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
-import {updateField} from '../../../Redux/Action/actions';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useCustomToast} from '../../../Utils/toastUtils';
+import { updateField } from '../../../Redux/Action/actions';
+import { LocalStorageFields } from '../../../Types/LocalStorageFields';
+import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
-const YourEducation: FC = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const KeyboardVisible = useKeyboardVisibility();
+const YourEducation = () => {
   const dispatch = useDispatch();
-  const {showToast} = useCustomToast();
+  const { colors, isDark } = useTheme();
+  const { showToast } = useCustomToast();
+
+  const KeyboardVisible = useKeyboardVisibility();
+  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
   const userData = useSelector((state: any) => state?.user);
 
-  const [EducationDegree, setEducationDegree] = useState<string>(
-    userData.digree,
-  );
+  const [EducationDegree, setEducationDegree] = useState<string>(userData.digree);
   const [CollegeName, setCollegeName] = useState<string>(userData.college_name);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -44,80 +46,90 @@ const YourEducation: FC = () => {
         screen: 'AddDailyHabits',
       });
     } catch (error: any) {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(error?.message || error),
-        TextString.error,
-      );
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), TextString.error);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader
-        Skip={true}
-        ProgressCount={5}
-        handleSkipPress={() => {
-          navigation.navigate('LoginStack', {
-            screen: 'AddDailyHabits',
-          });
-        }}
-      />
+    <GradientView>
+      <View style={CreateProfileStyles.Container}>
+        <CreateProfileHeader
+          Skip={true}
+          ProgressCount={5}
+          handleSkipPress={() => {
+            navigation.navigate('LoginStack', {
+              screen: 'AddDailyHabits',
+            });
+          }}
+        />
 
-      <View style={styles.DataViewContainer}>
-        <View style={CreateProfileStyles.ContentView}>
-          <Text style={styles.TitleText}>What is your {'\n'}education?</Text>
-          <Text style={styles.CompatibilityText}>
-            Add your education details so people know more about you.
-          </Text>
+        <View style={styles.DataViewContainer}>
+          <View style={CreateProfileStyles.ContentView}>
+            <Text style={[styles.TitleText, { color: colors.TitleText }]}>What is your {'\n'}education?</Text>
+            <Text style={[styles.CompatibilityText, { color: colors.TextColor }]}>
+              Add your education details so people know more about you.
+            </Text>
+          </View>
+          <View style={styles.TextInputContainerView}>
+            <View style={styles.TextViewForSpace}>
+              <Text style={[styles.NameText, { color: colors.TextColor }]}>My education degree is</Text>
+
+              <GradientBorderView
+                gradientProps={{ colors: isDark ? colors.ButtonGradient : ['transparent', 'transparent'] }}
+                style={[styles.TextInputViewStyle, { backgroundColor: isDark ? 'transparent' : colors.White }]}
+              >
+                <CustomTextInput
+                  value={EducationDegree}
+                  textContentType="givenName"
+                  placeholderTextColor={COLORS.Gray}
+                  placeholder="Enter your education degree"
+                  style={[styles.TextInputStyle, { color: colors.TextColor }]}
+                  onChangeText={(value) => setEducationDegree(value.trimStart())}
+                />
+              </GradientBorderView>
+            </View>
+
+            <View style={styles.TextViewForSpace}>
+              <Text style={[styles.NameText, { color: colors.TextColor }]}>My college name is</Text>
+
+              <GradientBorderView
+                gradientProps={{ colors: isDark ? colors.ButtonGradient : ['transparent', 'transparent'] }}
+                style={[styles.TextInputViewStyle, { backgroundColor: isDark ? 'transparent' : colors.White }]}
+              >
+                <CustomTextInput
+                  value={CollegeName}
+                  textContentType="givenName"
+                  placeholderTextColor={COLORS.Gray}
+                  placeholder="Enter your college name"
+                  style={[styles.TextInputStyle, { color: colors.TextColor }]}
+                  onChangeText={(value) => setCollegeName(value.trimStart())}
+                />
+              </GradientBorderView>
+            </View>
+          </View>
         </View>
-        <View style={styles.TextInputContainerView}>
-          <View style={styles.TextViewForSpace}>
-            <Text style={styles.NameText}>My education degree is</Text>
-            <CustomTextInput
-              value={EducationDegree}
-              textContentType="givenName"
-              style={styles.TextInputStyle}
-              placeholderTextColor={COLORS.Gray}
-              placeholder="Enter your education degree"
-              onChangeText={value => setEducationDegree(value.trimStart())}
+
+        {!KeyboardVisible && (
+          <View style={CreateProfileStyles.BottomButton}>
+            <GradientButton
+              Title={'Continue'}
+              Disabled={false}
+              isLoading={isLoading}
+              Navigation={() => {
+                setIsLoading(true);
+                setTimeout(() => onNextPress(), 0);
+              }}
             />
           </View>
-
-          <View style={styles.TextViewForSpace}>
-            <Text style={styles.NameText}>My college name is</Text>
-            <CustomTextInput
-              value={CollegeName}
-              textContentType="givenName"
-              style={styles.TextInputStyle}
-              placeholderTextColor={COLORS.Gray}
-              placeholder="Enter your college name"
-              onChangeText={value => setCollegeName(value.trimStart())}
-            />
-          </View>
-        </View>
+        )}
       </View>
-
-      {!KeyboardVisible && (
-        <View style={CreateProfileStyles.BottomButton}>
-          <GradientButton
-            Title={'Continue'}
-            Disabled={false}
-            isLoading={isLoading}
-            Navigation={() => {
-              setIsLoading(true);
-              setTimeout(() => onNextPress(), 0);
-            }}
-          />
-        </View>
-      )}
-    </View>
+    </GradientView>
   );
 };
 
-export default YourEducation;
+export default memo(YourEducation);
 
 const styles = StyleSheet.create({
   DataViewContainer: {
@@ -164,22 +176,21 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Medium,
   },
   TitleText: {
-    color: COLORS.Primary,
     fontSize: hp('3.3%'),
     fontFamily: FONTS.Bold,
   },
-
-  TextInputStyle: {
+  TextInputViewStyle: {
     padding: 0,
-    color: COLORS.Black,
-    fontSize: hp('1.7%'),
     borderColor: COLORS.Black,
-    backgroundColor: COLORS.White,
     height: hp('6.8%'),
-    fontFamily: FONTS.SemiBold,
+    borderWidth: 1,
+    justifyContent: 'center',
     borderRadius: SIZES.radius,
+  },
+  TextInputStyle: {
+    fontSize: hp('1.7%'),
+    fontFamily: FONTS.SemiBold,
     textAlign: 'center',
-    // paddingHorizontal: hp('1.5%')
   },
   TextViewForSpace: {
     alignContent: 'center',
@@ -189,7 +200,6 @@ const styles = StyleSheet.create({
     marginTop: hp('2%'),
     marginBottom: hp('1.5%'),
     fontSize: hp('1.8%'),
-    color: COLORS.Primary,
     fontFamily: FONTS.Bold,
   },
 });

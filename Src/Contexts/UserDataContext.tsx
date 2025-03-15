@@ -4,11 +4,7 @@ import UserDataType from '../Types/UserDataType';
 
 /**
 
-** Data Will Store In React Native Context
-
-** This Will Help To Track Data While App Open
-
-*! On App Close This Will Not Work
+* Data Will Store In React Native Context, This Will Help To Track Data While App Open, On App Close This Will Not Work
 
 **/
 

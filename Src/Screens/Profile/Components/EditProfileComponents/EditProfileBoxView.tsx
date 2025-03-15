@@ -1,15 +1,8 @@
-import {Skeleton} from 'moti/skeleton';
-import React, {FC, memo} from 'react';
-import {
-  LayoutChangeEvent,
-  StyleProp,
-  StyleSheet,
-  TextInput,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
-import {COLORS, FONTS, GROUP_FONT} from '../../../../Common/Theme';
+import { Skeleton } from 'moti/skeleton';
+import React, { FC, memo } from 'react';
+import { LayoutChangeEvent, StyleProp, StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
+import { FONTS, GROUP_FONT } from '../../../../Common/Theme';
+import { useTheme } from '../../../../Contexts/ThemeContext';
 
 interface EditProfileBoxViewProps {
   children: React.ReactElement;
@@ -38,8 +31,9 @@ const EditProfileBoxView: FC<EditProfileBoxViewProps> = ({
   TextInputStyle,
   PlaceholderText,
 }) => {
+  const { colors, isDark } = useTheme();
   return IsViewLoading ? (
-    <Skeleton colors={COLORS.LoaderGradient} show={true}>
+    <Skeleton colors={colors.BackgroundGradient} show={true}>
       <View style={styles.LoadingView} />
     </Skeleton>
   ) : withTextInput ? (
@@ -50,10 +44,10 @@ const EditProfileBoxView: FC<EditProfileBoxViewProps> = ({
         editable={true}
         maxLength={maxLength}
         defaultValue={value}
-        cursorColor={COLORS.Primary}
+        cursorColor={colors.Primary}
         onChangeText={onChangeText}
-        style={[styles.AboutMeTextViewStyle, TextInputStyle]}
-        placeholderTextColor={COLORS.Placeholder}
+        style={[styles.AboutMeTextViewStyle, { color: isDark ? colors.White : 'rgba(0,0,0,1)' }, TextInputStyle]}
+        placeholderTextColor={colors.Placeholder}
         placeholder={PlaceholderText}
       />
       {TextInputChildren}
@@ -71,11 +65,10 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 25,
     marginVertical: 10,
-    paddingVertical: 20,
+    paddingVertical: 5,
     paddingHorizontal: 20,
     alignContent: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.White,
   },
   LoadingView: {
     borderRadius: 25,
@@ -84,19 +77,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignContent: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.White,
   },
   AboutMeCustomView: {
     borderRadius: 25,
-    marginVertical: 10,
-    paddingVertical: 5,
+    marginVertical: 5,
+    paddingVertical: 3,
     paddingHorizontal: 20,
-    backgroundColor: COLORS.White,
   },
   AboutMeTextViewStyle: {
     ...GROUP_FONT.body4,
     fontSize: 14,
-    color: COLORS.Black,
     fontFamily: FONTS.Medium,
   },
 });

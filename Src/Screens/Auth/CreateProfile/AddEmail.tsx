@@ -1,28 +1,35 @@
-import React, {useState} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
-import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../../Common/Theme';
-import {CommonSize} from '../../../Common/CommonSize';
-import CustomTextInput from '../../../Components/CustomTextInput';
-import {useDispatch, useSelector} from 'react-redux';
-import {useCustomToast} from '../../../Utils/toastUtils';
-import {updateField} from '../../../Redux/Action/actions';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import React, { memo, useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useDispatch, useSelector } from 'react-redux';
+import { CommonSize } from '../../../Common/CommonSize';
+import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
+import { FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
+import GradientButton from '../../../Components/AuthComponents/GradientButton';
+import CustomTextInput from '../../../Components/CustomTextInput';
+import { GradientBorderView } from '../../../Components/GradientBorder';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import createThemedStyles from '../../../Hooks/createThemedStyles';
+import { useThemedStyles } from '../../../Hooks/useThemedStyles';
+import { updateField } from '../../../Redux/Action/actions';
+import { LocalStorageFields } from '../../../Types/LocalStorageFields';
+import { useCustomToast } from '../../../Utils/toastUtils';
+import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 
 const AddEmail = () => {
   const dispatch = useDispatch();
-  const {showToast} = useCustomToast();
+
+  const { colors } = useTheme();
+  const style = useThemedStyles(styles);
+
+  const { showToast } = useCustomToast();
   const userData = useSelector((state: any) => state?.user);
 
-  const [Email, setEmail] = useState<string>(
-    userData?.identity ? userData?.identity : '',
-  );
+  const [Email, setEmail] = useState<string>(userData?.identity ? userData?.identity : '');
 
-  const {navigate} = useNavigation<any>();
+  const { navigate } = useNavigation<any>();
 
   const onNextClick = async () => {
     try {
@@ -40,65 +47,58 @@ const AddEmail = () => {
         throw new Error('Please enter valid email');
       }
     } catch (error: any) {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(error?.message || error),
-        'error',
-      );
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
     }
   };
 
   return (
-    <View style={styles.Container}>
-      <CreateProfileHeader ProgressCount={0} Skip={false} hideBack={true} />
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        automaticallyAdjustKeyboardInsets={true}
-        style={styles.SubContainerView}>
-        <View style={styles.NumberContainer}>
-          <View style={styles.MyNumberTextView}>
-            <Text style={styles.MyNumberText}>What’s your {'\n'}email?</Text>
-            <Text style={styles.MyNumberSubText}>
-              Please enter your valid email to verify your account.
-            </Text>
+    <GradientView>
+      <View style={style.Container}>
+        <CreateProfileHeader ProgressCount={0} Skip={false} hideBack={true} />
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets={true}
+          style={style.SubContainerView}
+        >
+          <View style={style.NumberContainer}>
+            <View style={style.MyNumberTextView}>
+              <Text style={style.MyNumberText}>What’s your {'\n'}email?</Text>
+              <Text style={style.MyNumberSubText}>Please enter your valid email to verify your account.</Text>
+            </View>
           </View>
-        </View>
 
-        <View style={styles.PhoneNumberView}>
-          <View style={styles.TextViewForSpace}>
-            <Text style={styles.NameText}>My email is</Text>
-            <CustomTextInput
-              value={Email}
-              onChangeText={value => {
-                setEmail(value?.trimStart());
-              }}
-              textContentType="emailAddress"
-              placeholder="Enter your email"
-              style={styles.TextInputStyle}
-              placeholderTextColor={COLORS.Gray}
-            />
+          <View style={style.PhoneNumberView}>
+            <View style={style.TextViewForSpace}>
+              <Text style={style.NameText}>My email is</Text>
+              <GradientBorderView style={style.TextInputViewStyle} gradientProps={{ colors: colors.Gradient }}>
+                <CustomTextInput
+                  value={Email}
+                  onChangeText={(value) => {
+                    setEmail(value?.trimStart());
+                  }}
+                  textContentType="emailAddress"
+                  placeholder="Enter your email"
+                  style={style.textInputStyle}
+                  placeholderTextColor={colors.Gray}
+                />
+              </GradientBorderView>
+            </View>
           </View>
-        </View>
 
-        <View style={{marginVertical: hp('4%')}}>
-          <GradientButton
-            Title={'CONTINUE'}
-            isLoading={false}
-            Disabled={false}
-            Navigation={onNextClick}
-          />
-        </View>
-      </ScrollView>
-    </View>
+          <View style={{ marginVertical: hp('4%') }}>
+            <GradientButton Title={'CONTINUE'} isLoading={false} Disabled={false} Navigation={onNextClick} />
+          </View>
+        </ScrollView>
+      </View>
+    </GradientView>
   );
 };
 
-export default AddEmail;
+export default memo(AddEmail);
 
-const styles = StyleSheet.create({
+const styles = createThemedStyles((colors) => ({
   Container: {
     flex: 1,
-    backgroundColor: COLORS.Secondary,
   },
   SubContainerView: {
     paddingBottom: hp('1%'),
@@ -106,7 +106,6 @@ const styles = StyleSheet.create({
   },
   NumberContainer: {
     justifyContent: 'center',
-
     marginHorizontal: hp('1.5%'),
     marginVertical: hp('1%'),
   },
@@ -114,14 +113,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   MyNumberText: {
-    color: COLORS.Primary,
+    color: colors.TitleText,
     fontSize: hp('3.3%'),
     fontFamily: FONTS.Bold,
   },
   MyNumberSubText: {
     width: '95%',
     marginTop: hp('1%'),
-    color: COLORS.Black,
+    color: colors.TextColor,
     fontSize: hp('1.7%'),
     fontFamily: FONTS.Medium,
   },
@@ -141,13 +140,13 @@ const styles = StyleSheet.create({
     height: CommonSize(45),
     justifyContent: 'center',
     borderBottomWidth: CommonSize(2),
-    borderBottomColor: COLORS.Black,
+    borderBottomColor: colors.Black,
   },
   UserNumberTextStyle: {
     padding: 0,
     top: hp(0.8),
     fontSize: hp('2%'),
-    color: COLORS.Black,
+    color: colors.Black,
     alignContent: 'center',
     fontFamily: FONTS.SemiBold,
   },
@@ -161,7 +160,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: hp('4%'),
     borderRadius: SIZES.radius,
-    backgroundColor: COLORS.White,
+    backgroundColor: colors.White,
   },
   UpIcon: {
     padding: 0,
@@ -196,7 +195,7 @@ const styles = StyleSheet.create({
     padding: 0,
     width: '90%',
     ...GROUP_FONT.h4,
-    color: COLORS.Black,
+    color: colors.Black,
   },
   SearchIcon: {
     justifyContent: 'center',
@@ -209,7 +208,7 @@ const styles = StyleSheet.create({
   },
   ListEmptyText: {
     ...GROUP_FONT.h3,
-    color: COLORS.Black,
+    color: colors.Black,
     textAlign: 'center',
   },
   SearchIconStyle: {
@@ -227,18 +226,22 @@ const styles = StyleSheet.create({
     marginTop: hp('2%'),
     marginBottom: hp('1.5%'),
     fontSize: hp('1.8%'),
-    color: COLORS.Primary,
+    color: colors.TextColor,
     fontFamily: FONTS.Bold,
   },
-  TextInputStyle: {
+  TextInputViewStyle: {
     padding: 0,
-    color: COLORS.Black,
-    fontSize: hp('1.7%'),
-    borderColor: COLORS.Black,
-    backgroundColor: COLORS.White,
+    borderWidth: 1,
     height: hp('6.8%'),
-    fontFamily: FONTS.SemiBold,
+    justifyContent: 'center',
     borderRadius: SIZES.radius,
-    textAlign: 'center',
   },
-});
+  textInputStyle: {
+    fontFamily: FONTS.SemiBold,
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    color: colors.Black,
+    fontSize: hp('1.7%'),
+  },
+}));

@@ -1,17 +1,15 @@
 /* eslint-disable react-native/no-inline-styles */
-import {BlurView} from '@react-native-community/blur';
-import React, {FC, memo} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { BlurView } from '@react-native-community/blur';
+import React, { FC, memo } from 'react';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import Modal from 'react-native-modal';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
 import CommonImages from '../../../../Common/CommonImages';
-import {
-  ActiveOpacity,
-  COLORS,
-  GROUP_FONT,
-  SIZES,
-} from '../../../../Common/Theme';
+import { COLORS, GROUP_FONT, SIZES } from '../../../../Common/Theme';
+import GradientView from '../../../../Common/GradientView';
+import { useTheme } from '../../../../Contexts/ThemeContext';
+import LinearGradient from 'react-native-linear-gradient';
 
 interface ChooseFromModalProps {
   isModalVisible: boolean;
@@ -19,25 +17,15 @@ interface ChooseFromModalProps {
   OnOptionPress: (option: string) => void;
 }
 
-const BlurredBackdrop = ({toggleModal}: {toggleModal: () => void}) => (
-  <TouchableOpacity
-    activeOpacity={1}
-    onPress={toggleModal}
-    style={styles.blurContainer}>
-    <BlurView
-      style={styles.blurView}
-      blurAmount={1}
-      blurType="dark"
-      reducedTransparencyFallbackColor="transparent"
-    />
-  </TouchableOpacity>
+const BlurredBackdrop = ({ toggleModal }: { toggleModal: () => void }) => (
+  <Pressable onPress={toggleModal} style={styles.blurContainer}>
+    <BlurView style={styles.blurView} blurAmount={1} blurType="dark" reducedTransparencyFallbackColor="transparent" />
+  </Pressable>
 );
 
-const ChooseFromModal: FC<ChooseFromModalProps> = ({
-  isModalVisible,
-  toggleModal,
-  OnOptionPress,
-}) => {
+const ChooseFromModal: FC<ChooseFromModalProps> = ({ isModalVisible, toggleModal, OnOptionPress }) => {
+  const { colors, isDark } = useTheme();
+
   return (
     <Modal
       hasBackdrop
@@ -55,62 +43,61 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({
       onBackdropPress={toggleModal}
       isVisible={isModalVisible}
       swipeDirection={['up', 'left', 'right', 'down']}
-      style={styles.container}>
-      <View style={styles.ModalView}>
-        <View style={styles.TopViewContainer}>
-          <View style={styles.TopTitleViewContainer}>
-            <Text style={styles.TitleText}>Add photos from</Text>
-            <Text style={styles.DescriptionText}>
-              Select source for upload photos
-            </Text>
+      style={styles.container}
+    >
+      <LinearGradient
+        start={{ x: 0, y: 1 }}
+        end={{ x: 1, y: 0 }}
+        colors={isDark ? ['rgba(255, 255, 255, 0.35)', 'rgba(255, 255, 255, 0.35)'] : [colors.White, colors.White]}
+        style={styles.ModalView}
+      >
+        <View style={{}}>
+          <View style={styles.TopViewContainer}>
+            <View style={styles.TopTitleViewContainer}>
+              <Text style={[styles.TitleText, { color: colors.TitleText }]}>Add photos from</Text>
+              <Text style={[styles.DescriptionText, { color: colors.TextColor }]}>Select source for upload photos</Text>
+            </View>
+
+            <Pressable style={styles.CloseButton} onPress={toggleModal}>
+              <Image source={CommonIcons.CloseModal} style={styles.CloseButtonIcon} />
+            </Pressable>
           </View>
 
-          <TouchableOpacity style={styles.CloseButton} onPress={toggleModal}>
-            <Image
-              source={CommonIcons.CloseModal}
-              style={styles.CloseButtonIcon}
-            />
-          </TouchableOpacity>
-        </View>
+          <View style={styles.ButtonContainerView}>
+            <Pressable
+              onPress={() => OnOptionPress('Gallery')}
+              style={[styles.ButtonView, { backgroundColor: isDark ? colors.White : 'rgba(255, 155, 82, 1)' }]}
+            >
+              <Image
+                resizeMode="contain"
+                tintColor={isDark ? colors.Black : colors.White}
+                source={CommonImages.Gallery_Icon}
+                style={styles.IconView}
+              />
+              <View style={styles.TextView}>
+                <Text style={[styles.Title, { color: isDark ? colors.Black : colors.White }]}>Upload from</Text>
+                <Text style={[styles.Pick, { color: isDark ? colors.Black : colors.White }]}>Gallery</Text>
+              </View>
+            </Pressable>
 
-        <View style={styles.ButtonContainerView}>
-          <TouchableOpacity
-            onPress={() => OnOptionPress('Gallery')}
-            activeOpacity={ActiveOpacity}
-            style={[
-              styles.ButtonView,
-              {backgroundColor: 'rgba(255, 155, 82, 1)'},
-            ]}>
-            <Image
-              resizeMode="contain"
-              source={CommonImages.Gallery_Icon}
-              style={styles.IconView}
-            />
-            <View style={styles.TextView}>
-              <Text style={styles.Title}>Upload from</Text>
-              <Text style={styles.Pick}>Gallery</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => OnOptionPress('Camera')}
-            activeOpacity={ActiveOpacity}
-            style={[
-              styles.ButtonView,
-              {backgroundColor: 'rgba(95, 197, 255, 1)'},
-            ]}>
-            <Image
-              resizeMode="contain"
-              source={CommonImages.Camera_Icon}
-              style={styles.IconView}
-            />
-            <View style={styles.TextView}>
-              <Text style={styles.Title}>Capture from</Text>
-              <Text style={styles.Pick}>Camera</Text>
-            </View>
-          </TouchableOpacity>
+            <Pressable
+              onPress={() => OnOptionPress('Camera')}
+              style={[styles.ButtonView, { backgroundColor: isDark ? colors.White : 'rgba(95, 197, 255, 1)' }]}
+            >
+              <Image
+                resizeMode="contain"
+                tintColor={isDark ? colors.Black : colors.White}
+                source={CommonImages.Camera_Icon}
+                style={styles.IconView}
+              />
+              <View style={styles.TextView}>
+                <Text style={[styles.Title, { color: isDark ? colors.Black : colors.White }]}>Capture from</Text>
+                <Text style={[styles.Pick, { color: isDark ? colors.Black : colors.White }]}>Camera</Text>
+              </View>
+            </Pressable>
+          </View>
         </View>
-      </View>
+      </LinearGradient>
     </Modal>
   );
 };
@@ -129,7 +116,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: SIZES.radius,
     paddingVertical: hp('2.5%'),
-    backgroundColor: COLORS.White,
   },
 
   TopViewContainer: {
@@ -180,7 +166,6 @@ const styles = StyleSheet.create({
     width: hp('4.5%'),
     height: hp('4.5%'),
     alignSelf: 'center',
-    tintColor: COLORS.White,
     justifyContent: 'center',
   },
 

@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-shadow */
-import React, {FC, memo, useCallback} from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
-import {heightPercentageToDP} from 'react-native-responsive-screen';
-import {ActiveOpacity} from '../../../../Common/Theme';
-import {addUrlToItem, sortByUrl} from '../../../../Utils/ImagePickerUtils';
+import React, { FC, memo, useCallback } from 'react';
+import { Pressable, StyleSheet } from 'react-native';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
+import { addUrlToItem, sortByUrl } from '../../../../Utils/ImagePickerUtils';
 import EditProfileRenderImageBox from './EditProfileRenderImageBox';
 
 interface EditProfileAllImageViewProps {
@@ -31,20 +30,16 @@ const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
   isLoading,
 }) => {
   const handleOnImagePress = useCallback(
-    (item: {key: string; url: string}) => {
+    (item: { key: string; url: string }) => {
       if (item?.url?.length === 0) {
         OnToggleModal();
       }
     },
-    [OnToggleModal],
+    [OnToggleModal]
   );
 
   return (
-    <TouchableOpacity
-      disabled={isLoading}
-      activeOpacity={ActiveOpacity}
-      onPress={() => handleOnImagePress(item)}
-      style={styles.AddUserPhotoView}>
+    <Pressable disabled={isLoading} onPress={() => handleOnImagePress(item)} style={styles.AddUserPhotoView}>
       <EditProfileRenderImageBox
         onDelete={() => {}}
         onAdd={() => {
@@ -54,7 +49,7 @@ const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
         picture={item}
         isLoading={isLoading}
       />
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

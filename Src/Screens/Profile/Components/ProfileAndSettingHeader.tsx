@@ -1,20 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC} from 'react';
-import {
-  Image,
-  Platform,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { FC } from 'react';
+import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
-import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
+import { COLORS, GROUP_FONT } from '../../../Common/Theme';
+import { useTheme } from '../../../Contexts/ThemeContext';
 
 interface HeaderProps {
   Title: string;
@@ -22,49 +14,29 @@ interface HeaderProps {
   isLoading?: boolean;
 }
 
-const ProfileAndSettingHeader: FC<HeaderProps> = ({
-  Title,
-  onUpdatePress,
-  isLoading,
-}) => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+const ProfileAndSettingHeader: FC<HeaderProps> = ({ Title, onUpdatePress, isLoading }) => {
+  const { colors } = useTheme();
+  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
 
   return (
     <View style={styles.Container}>
       <SafeAreaView />
-      <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.White} />
       <View style={styles.ContentView}>
-        <TouchableOpacity
-          disabled={isLoading}
-          activeOpacity={ActiveOpacity}
-          onPress={() => navigation.goBack()}
-          style={styles.ViewStyle}>
+        <Pressable disabled={isLoading} onPress={() => navigation.goBack()} style={styles.ViewStyle}>
           <Image
             resizeMode="contain"
+            tintColor={colors.TextColor}
             style={styles.BackIcon}
             source={CommonIcons.TinderBack}
           />
-        </TouchableOpacity>
-        <View
-          style={[
-            styles.TitleView,
-            {right: Title === 'Notification' ? 10 : 0},
-          ]}>
-          <Text style={styles.Title}>{Title}</Text>
+        </Pressable>
+        <View style={[styles.TitleView, { right: Title === 'Notification' ? 10 : 0 }]}>
+          <Text style={[styles.Title, { color: colors.TextColor }]}>{Title}</Text>
         </View>
         {Title !== 'Notification' ? (
-          <TouchableOpacity
-            disabled={isLoading}
-            style={styles.ModalSubmitButton}
-            onPress={onUpdatePress}
-            activeOpacity={ActiveOpacity}>
-            <Image
-              source={CommonIcons.Check}
-              tintColor={COLORS.White}
-              style={styles.ModalSubmitIcon}
-            />
-          </TouchableOpacity>
+          <Pressable disabled={isLoading} style={styles.ModalSubmitButton} onPress={onUpdatePress}>
+            <Image source={CommonIcons.Check} tintColor={colors.TextColor} style={styles.ModalSubmitIcon} />
+          </Pressable>
         ) : (
           <View />
         )}
@@ -81,15 +53,6 @@ const styles = StyleSheet.create({
     height: Platform.OS === 'ios' ? hp('12%') : hp('6.8%'),
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.White,
-    shadowColor: COLORS.Black,
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.34,
-    shadowRadius: 6.27,
-    elevation: 10,
   },
   ContentView: {
     width: '90%',

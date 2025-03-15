@@ -1,25 +1,18 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import {useNavigation} from '@react-navigation/native';
-import React, {FC, memo, useEffect, useRef, useState} from 'react';
-import {
-  FlatList,
-  Image,
-  LayoutChangeEvent,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import React, { FC, memo, useEffect, useRef, useState } from 'react';
+import { FlatList, Image, LayoutChangeEvent, Pressable, Text, TouchableWithoutFeedback, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import Animated, {FadeIn, FadeOut} from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import CommonIcons from '../../../Common/CommonIcons';
-import {ActiveOpacity} from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
-import {DummyImage} from '../../../Config/Setting';
+import { DummyImage } from '../../../Config/Setting';
+import { useTheme } from '../../../Contexts/ThemeContext';
 import useCalculateAge from '../../../Hooks/useCalculateAge';
-import {SwiperCard} from '../../../Types/SwiperCard';
+import { SwiperCard } from '../../../Types/SwiperCard';
 import styles from '../styles';
+import LinearGradient from 'react-native-linear-gradient';
 
 interface RenderCardProps {
   CurrentCardIndex: number;
@@ -42,8 +35,10 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
   startInterval,
   stopInterval,
 }) => {
-  const IsFirstCard = CurrentCardIndex === card;
-  const Age = useCalculateAge(cardData?.birthdate);
+  const { colors, isDark } = useTheme();
+
+  const isFirstCard = CurrentCardIndex === card;
+  const age = useCalculateAge(cardData?.birthdate);
   const navigation = useNavigation();
 
   const handlePressIn = () => {
@@ -73,7 +68,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
   useEffect(() => {
     if (
       flatListRef.current &&
-      IsFirstCard &&
+      isFirstCard &&
       cardData?.recent_pik?.length > 0 &&
       currentImageIndex >= 0 &&
       currentImageIndex < cardData.recent_pik.length
@@ -96,13 +91,11 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
     <TouchableWithoutFeedback
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      onLayout={event => LayOutChange(event)}>
-      <View style={styles.card}>
-        <Animated.View
-          entering={FadeIn.duration(500)}
-          exiting={FadeOut.duration(500)}
-          style={[styles.imageContainer]}>
-          {cardData?.recent_pik?.length !== 0 ? (
+      onLayout={(event) => LayOutChange(event)}
+    >
+      <View style={[styles.card, { backgroundColor: colors.Secondary }]}>
+        <Animated.View entering={FadeIn.duration(500)} exiting={FadeOut.duration(500)} style={[styles.imageContainer]}>
+          {cardData?.recent_pik && cardData?.recent_pik?.length !== 0 ? (
             <FlatList
               horizontal
               pagingEnabled
@@ -116,26 +109,21 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
               data={cardData?.recent_pik}
               removeClippedSubviews={true}
               showsHorizontalScrollIndicator={false}
-              renderItem={({item, index}) => {
+              renderItem={({ item, index }) => {
                 return (
                   <View
                     style={{
-                      height: ContainerWidthAndHeight.height
-                        ? ContainerWidthAndHeight.height
-                        : 530.9091186523438,
-                      width: ContainerWidthAndHeight.width
-                        ? ContainerWidthAndHeight.width
-                        : 350.5454406738281,
-                    }}>
+                      height: ContainerWidthAndHeight.height ? ContainerWidthAndHeight.height : 530.9091186523438,
+                      width: ContainerWidthAndHeight.width ? ContainerWidthAndHeight.width : 350.5454406738281,
+                    }}
+                  >
                     <FastImage
                       key={index}
                       resizeMode="cover"
                       onLoad={ImageLoaded}
                       onLoadStart={ImageLoading}
                       source={{
-                        uri: item
-                          ? ApiConfig.IMAGE_BASE_URL + item
-                          : DummyImage,
+                        uri: item ? ApiConfig.IMAGE_BASE_URL + item : DummyImage,
                         priority: FastImage.priority.high,
                       }}
                       style={styles.ImageStyle}
@@ -148,84 +136,63 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
           ) : (
             <View
               style={{
-                height: ContainerWidthAndHeight.height
-                  ? ContainerWidthAndHeight.height
-                  : 530.9091186523438,
-                width: ContainerWidthAndHeight.width
-                  ? ContainerWidthAndHeight.width
-                  : 350.5454406738281,
-              }}>
-              <FastImage
+                height: ContainerWidthAndHeight.height ? ContainerWidthAndHeight.height : 530.9091186523438,
+                width: ContainerWidthAndHeight.width ? ContainerWidthAndHeight.width : 350.5454406738281,
+              }}
+            >
+              <Image
                 resizeMode="cover"
                 onLoad={ImageLoaded}
                 onLoadStart={ImageLoading}
-                source={{
-                  uri: DummyImage,
-                  priority: FastImage.priority.high,
-                }}
+                source={{ uri: DummyImage }}
                 style={styles.ImageStyle}
-                removeClippedSubviews={true}
               />
             </View>
           )}
         </Animated.View>
 
         <View style={styles.CardBottomDetailView}>
-          <View
-            style={{
-              width: '90%',
-            }}>
+          <View style={{ width: '90%' }}>
             <View style={styles.TitleView}>
-              <Text style={styles.TitleText}>
-                {`${cardData?.full_name ? cardData?.full_name : 'User'}, ${
-                  Age ? Age : 0
-                }`}
+              <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={2}>
+                {`${cardData?.full_name ? cardData?.full_name : 'User'}, ${age ? age : 0}`}
               </Text>
-              <Image
-                source={CommonIcons.Verification_Icon}
-                style={styles.VerifyIconImage}
-              />
+              <Image source={CommonIcons.Verification_Icon} style={styles.VerifyIconImage} />
             </View>
 
             <View style={styles.LocationView}>
-              <Image
-                tintColor={'rgba(198, 198, 198, 1)'}
-                style={styles.LocationIcon}
-                source={CommonIcons.Location}
-              />
-              <Text numberOfLines={1} style={styles.LocationText}>
+              <Image tintColor={colors.TextColor} style={styles.LocationIcon} source={CommonIcons.Location} />
+              <Text numberOfLines={1} style={[styles.LocationText, { color: colors.TextColor }]}>
                 {cardData?.city || 'Somewhere in earth'}
               </Text>
             </View>
 
             <View style={styles.MultipleBoxFlexView}>
-              {cardData?.likes_into &&
-                cardData?.likes_into !== null &&
-                cardData?.likes_into?.length !== 0 &&
-                cardData?.likes_into[0] !== '' &&
-                cardData?.likes_into?.map((interestedInItem, index) => {
-                  return (
-                    <View key={index} style={styles.MultipleBoxView}>
-                      <Text style={styles.MultipleDetailText}>
-                        {interestedInItem}
-                      </Text>
-                    </View>
-                  );
-                })}
+              {Array.isArray(cardData?.likes_into) &&
+                cardData.likes_into.length > 0 &&
+                cardData.likes_into[0] !== '' &&
+                cardData.likes_into.map((interestedInItem, index) => (
+                  <LinearGradient
+                    start={{ x: 1, y: 0 }}
+                    end={{ x: 0, y: 1 }}
+                    colors={colors.ButtonGradient}
+                    key={index}
+                    style={styles.MultipleBoxView}
+                  >
+                    <Text style={styles.MultipleDetailText}>{interestedInItem || ''}</Text>
+                  </LinearGradient>
+                ))}
             </View>
           </View>
 
-          <TouchableOpacity
-            activeOpacity={ActiveOpacity}
+          <Pressable
             onPress={() => {
-              navigation.navigate('ExploreCardDetail', {props: cardData});
+              navigation.navigate('ExploreCardDetail', { props: cardData });
             }}
-            style={styles.ViewProfileBTN}>
-            <Image
-              source={CommonIcons.view_profile}
-              style={styles.ViewProfileIcon}
-            />
-          </TouchableOpacity>
+            style={styles.ViewProfileBTN}
+          >
+            <Image source={CommonIcons.view_profile} style={styles.ViewProfileIcon} />
+          </Pressable>
         </View>
       </View>
     </TouchableWithoutFeedback>

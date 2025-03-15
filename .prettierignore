@@ -1,0 +1,12 @@
+node_modules
+.eslintrc.js
+.prettierrc.js
+.expo
+.expo-shared
+.vscode
+.idea
+.storybook
+dist
+ios
+android
+.maestro

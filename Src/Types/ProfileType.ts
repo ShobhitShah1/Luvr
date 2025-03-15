@@ -33,7 +33,7 @@ export type ProfileType = {
   full_name: string | null;
   gender: string;
   habits: HabitsType;
-  hoping: string;
+  hoping: string[];
   identity: string;
   is_block_contact: string;
   is_orientation_visible: boolean;

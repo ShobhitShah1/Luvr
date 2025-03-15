@@ -1,31 +1,29 @@
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useState} from 'react';
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {useDispatch, useSelector} from 'react-redux';
-import {
-  ActiveOpacity,
-  COLORS,
-  FONTS,
-  GROUP_FONT,
-  SIZES,
-} from '../../../Common/Theme';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { memo, useCallback, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useDispatch, useSelector } from 'react-redux';
+import GradientView from '../../../Common/GradientView';
+import TextString from '../../../Common/TextString';
+import { ActiveOpacity, COLORS, FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import {WhatAboutYouData} from '../../../Components/Data';
-import {updateField} from '../../../Redux/Action/actions';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useCustomToast} from '../../../Utils/toastUtils';
+import { WhatAboutYouData } from '../../../Components/Data';
+import { GradientBorderView } from '../../../Components/GradientBorder';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import { updateField } from '../../../Redux/Action/actions';
+import { LocalStorageFields } from '../../../Types/LocalStorageFields';
+import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import TextString from '../../../Common/TextString';
 
-const WhatAboutYou: FC = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const userData = useSelector((state: any) => state?.user);
+const WhatAboutYou = () => {
+  const { colors, isDark } = useTheme();
   const dispatch = useDispatch();
-  const {showToast} = useCustomToast();
+  const { showToast } = useCustomToast();
+  const userData = useSelector((state: any) => state?.user);
+
+  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
   const [selectedItems, setSelectedItems] = useState<Record<string, String>>({
     communication_stry: userData.communication_stry,
     education_level: userData.education_level,
@@ -33,27 +31,23 @@ const WhatAboutYou: FC = () => {
     star_sign: userData.star_sign,
   });
 
-  const [IsSendRequestLoading, setIsSendRequestLoading] =
-    useState<boolean>(false);
+  const [isLoading, setIsSendRequestLoading] = useState<boolean>(false);
 
   const handleOptionPress = useCallback(
     (habitId: string, option: string) => {
-      setSelectedItems(prevSelection => ({
+      setSelectedItems((prevSelection) => ({
         ...prevSelection,
         [habitId.toString()]: option,
       }));
     },
-    [setSelectedItems],
+    [setSelectedItems]
   );
 
-  const renderItem = ({
-    item,
-  }: {
-    item: {id: number; key: string; habit: string; options: string[]};
-  }) => {
+  const renderItem = ({ item }: { item: { id: number; key: string; habit: string; options: string[] } }) => {
     return (
       <View key={item.id} style={styles.habitContainer}>
-        <Text style={styles.habitTitle}>{item.habit}</Text>
+        <Text style={[styles.habitTitle, { color: colors.TitleText }]}>{item.habit}</Text>
+
         <View style={styles.HabitFlatListView}>
           <FlatList
             numColumns={3}
@@ -62,27 +56,40 @@ const WhatAboutYou: FC = () => {
             style={styles.HabitFlatListStyle}
             showsVerticalScrollIndicator={false}
             keyExtractor={(option, index) => index.toString()}
-            renderItem={({item: option, index}) => (
-              <TouchableOpacity
-                activeOpacity={ActiveOpacity}
-                key={index}
-                style={[
-                  styles.optionButton,
-                  selectedItems[item.key.toString()] === option &&
-                    styles.selectedOption,
-                ]}
-                onPress={() => handleOptionPress(item?.key, option)}>
-                <Text
-                  numberOfLines={2}
+            renderItem={({ item: option, index }) => {
+              const selected = selectedItems[item.key.toString()] === option;
+
+              return (
+                <GradientBorderView
+                  key={index}
+                  gradientProps={{
+                    colors: selected
+                      ? isDark
+                        ? colors.Gradient
+                        : ['transparent', 'transparent']
+                      : isDark
+                        ? colors.UnselectedGradient
+                        : ['transparent', 'transparent'],
+                  }}
                   style={[
-                    styles.CategoriesText,
-                    selectedItems[item.key.toString()] === option &&
-                      styles.SelectedCategoriesText,
-                  ]}>
-                  {option}
-                </Text>
-              </TouchableOpacity>
-            )}
+                    styles.optionButton,
+                    { backgroundColor: isDark ? 'transparent' : selected ? colors.Primary : colors.White },
+                  ]}
+                >
+                  <Pressable
+                    style={{ flex: 1, justifyContent: 'center' }}
+                    onPress={() => handleOptionPress(item?.key, option)}
+                  >
+                    <Text
+                      numberOfLines={2}
+                      style={[styles.CategoriesText, { color: selected ? colors.White : colors.TextColor }]}
+                    >
+                      {option}
+                    </Text>
+                  </Pressable>
+                </GradientBorderView>
+              );
+            }}
           />
         </View>
       </View>
@@ -93,111 +100,80 @@ const WhatAboutYou: FC = () => {
     setIsSendRequestLoading(true);
 
     try {
-      const YourIntoFills = [
-        'communication_stry',
-        'education_level',
-        'recived_love',
-        'star_sign',
-      ];
+      const YourIntoFills = ['communication_stry', 'education_level', 'recived_love', 'star_sign'];
 
-      const allIntoSelected = YourIntoFills.every(into =>
-        selectedItems.hasOwnProperty(into),
-      );
+      const allIntoSelected = YourIntoFills.every((into) => selectedItems.hasOwnProperty(into));
 
       if (allIntoSelected) {
         await Promise.all([
-          dispatch(
-            updateField(
-              LocalStorageFields.communication_stry,
-              selectedItems.communication_stry,
-            ),
-          ),
-          dispatch(
-            updateField(
-              LocalStorageFields.education_level,
-              selectedItems.education_level,
-            ),
-          ),
-          dispatch(
-            updateField(
-              LocalStorageFields.recived_love,
-              selectedItems.recived_love,
-            ),
-          ),
-          dispatch(
-            updateField(LocalStorageFields.star_sign, selectedItems.star_sign),
-          ),
+          dispatch(updateField(LocalStorageFields.communication_stry, selectedItems.communication_stry)),
+          dispatch(updateField(LocalStorageFields.education_level, selectedItems.education_level)),
+          dispatch(updateField(LocalStorageFields.recived_love, selectedItems.recived_love)),
+          dispatch(updateField(LocalStorageFields.star_sign, selectedItems.star_sign)),
         ]);
 
         navigation.navigate('LoginStack', {
           screen: 'YourIntro',
         });
       } else {
-        showToast(
-          'Validation Error',
-          'Please select all required options',
-          'error',
-        );
+        showToast('Validation Error', 'Please select all required options', 'error');
       }
     } catch (error: any) {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(error?.message || error),
-        'error',
-      );
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
     } finally {
       setIsSendRequestLoading(false);
     }
   };
 
   return (
-    <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader
-        ProgressCount={7}
-        Skip={true}
-        handleSkipPress={() => {
-          navigation.navigate('LoginStack', {screen: 'YourIntro'});
-        }}
-      />
-      <View style={styles.DataViewContainer}>
-        <View style={[styles.ContentView]}>
-          <Text style={styles.TitleText}>What's about {'\n'}you?</Text>
-          <Text style={styles.AboutYouDescription}>
-            Say something about yourself. so you can match with your magical
-            person
-          </Text>
+    <GradientView>
+      <View style={CreateProfileStyles.Container}>
+        <CreateProfileHeader
+          ProgressCount={7}
+          Skip={true}
+          handleSkipPress={() => {
+            navigation.navigate('LoginStack', { screen: 'YourIntro' });
+          }}
+        />
+        <View style={styles.DataViewContainer}>
+          <View style={[styles.ContentView]}>
+            <Text style={[styles.TitleText, { color: colors.TitleText }]}>What's about {'\n'}you?</Text>
+            <Text style={[styles.AboutYouDescription, { color: colors.TextColor }]}>
+              Say something about yourself. so you can match with your magical person
+            </Text>
+          </View>
+
+          <View style={[styles.FlatListContainerView]}>
+            <FlatList
+              data={WhatAboutYouData}
+              renderItem={renderItem}
+              initialNumToRender={20}
+              nestedScrollEnabled={false}
+              removeClippedSubviews={true}
+              style={styles.FlatListStyle}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </View>
         </View>
 
-        <View style={[styles.FlatListContainerView]}>
-          <FlatList
-            data={WhatAboutYouData}
-            renderItem={renderItem}
-            initialNumToRender={20}
-            nestedScrollEnabled={false}
-            removeClippedSubviews={true}
-            style={styles.FlatListStyle}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
+        <View style={[CreateProfileStyles.BottomButton]}>
+          <GradientButton
+            Title={'Continue'}
+            Disabled={false}
+            isLoading={isLoading}
+            Navigation={() => {
+              setIsSendRequestLoading(true);
+              setTimeout(() => onNextPress(), 0);
+            }}
           />
         </View>
       </View>
-
-      <View style={[CreateProfileStyles.BottomButton]}>
-        <GradientButton
-          Title={'Continue'}
-          Disabled={false}
-          isLoading={IsSendRequestLoading}
-          Navigation={() => {
-            setIsSendRequestLoading(true);
-            setTimeout(() => onNextPress(), 0);
-          }}
-        />
-      </View>
-    </View>
+    </GradientView>
   );
 };
 
-export default WhatAboutYou;
+export default memo(WhatAboutYou);
 
 const styles = StyleSheet.create({
   DataViewContainer: {
@@ -241,13 +217,13 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   optionButton: {
-    width: hp('12%'),
+    width: hp('11%'),
     overflow: 'hidden',
     height: hp('6.8%'),
+    borderWidth: 0.5,
     justifyContent: 'center',
     marginVertical: hp('1%'),
     borderRadius: SIZES.radius,
-    backgroundColor: COLORS.White,
   },
   selectedOption: {
     backgroundColor: COLORS.Primary,

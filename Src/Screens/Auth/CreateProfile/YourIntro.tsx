@@ -1,45 +1,40 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useMemo, useState} from 'react';
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {useDispatch, useSelector} from 'react-redux';
-import {
-  ActiveOpacity,
-  COLORS,
-  FONTS,
-  GROUP_FONT,
-  SIZES,
-} from '../../../Common/Theme';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { memo, useCallback, useMemo, useState } from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useDispatch, useSelector } from 'react-redux';
+import GradientView from '../../../Common/GradientView';
+import TextString from '../../../Common/TextString';
+import { ActiveOpacity, COLORS, FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import {YourIntoData} from '../../../Components/Data';
-import {updateField} from '../../../Redux/Action/actions';
+import { YourIntoData } from '../../../Components/Data';
+import { GradientBorderView } from '../../../Components/GradientBorder';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import { updateField } from '../../../Redux/Action/actions';
 import UserService from '../../../Services/AuthService';
-import {transformUserDataForApi} from '../../../Services/dataTransformService';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useCustomToast} from '../../../Utils/toastUtils';
+import { transformUserDataForApi } from '../../../Services/dataTransformService';
+import { LocalStorageFields } from '../../../Types/LocalStorageFields';
+import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import TextString from '../../../Common/TextString';
 
-const YourIntro: FC = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+const YourIntro = () => {
+  const { colors, isDark } = useTheme();
+  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
   const userData = useSelector((state: any) => state?.user);
 
   const dispatch = useDispatch();
-  const {showToast} = useCustomToast();
+  const { showToast } = useCustomToast();
   const [IsAPILoading, setIsAPILoading] = useState<boolean>(false);
-  const [selectedItems, setSelectedItems] = useState<string[]>(
-    userData.likes_into || [],
-  );
+  const [selectedItems, setSelectedItems] = useState<string[]>(userData.likes_into || []);
 
   const handleOptionPress = useCallback((YourIntoID: number, name: string) => {
-    setSelectedItems(prevSelection => {
+    setSelectedItems((prevSelection) => {
       if (prevSelection?.includes(name)) {
-        return prevSelection.filter(item => item !== name);
+        return prevSelection.filter((item) => item !== name);
       }
 
       if (prevSelection.length >= 5) {
@@ -52,31 +47,44 @@ const YourIntro: FC = () => {
 
   const renderItem = useMemo(
     () =>
-      ({item}: {item: {id: number; name: string}}) => {
-        const selectedOption =
-          selectedItems && selectedItems?.includes(item.name);
+      ({ item }: { item: { id: number; name: string } }) => {
+        const selected = selectedItems && selectedItems?.includes(item.name);
+
         return (
-          <View style={styles.YourIntoScrollViewContainer}>
+          <GradientBorderView
+            gradientProps={{
+              colors: selected
+                ? isDark
+                  ? colors.Gradient
+                  : ['transparent', 'transparent']
+                : isDark
+                  ? colors.UnselectedGradient
+                  : ['transparent', 'transparent'],
+            }}
+            style={[
+              styles.YourIntoButton,
+              {
+                borderWidth: selected ? 2 : 0.5,
+                backgroundColor: isDark ? 'transparent' : selected ? colors.Primary : colors.White,
+              },
+            ]}
+          >
             <TouchableOpacity
               activeOpacity={ActiveOpacity}
-              style={[
-                styles.YourIntoButton,
-                selectedOption && styles.selectedOption,
-              ]}
-              onPress={() => handleOptionPress(item.id, item.name)}>
+              style={{ flex: 1, justifyContent: 'center' }}
+              onPress={() => handleOptionPress(item.id, item.name)}
+            >
               <Text
                 numberOfLines={2}
-                style={[
-                  styles.CategoriesText,
-                  selectedOption && styles.SelectedCategoriesText,
-                ]}>
+                style={[styles.CategoriesText, { color: selected ? colors.White : colors.TextColor }]}
+              >
                 {item.name}
               </Text>
             </TouchableOpacity>
-          </View>
+          </GradientBorderView>
         );
       },
-    [selectedItems, handleOptionPress],
+    [selectedItems, handleOptionPress]
   );
 
   const onPressNext = async () => {
@@ -86,24 +94,18 @@ const YourIntro: FC = () => {
       if (selectedItems.length === 5) {
         await Promise.all([
           dispatch(updateField(LocalStorageFields.likes_into, selectedItems)),
-          dispatch(
-            updateField(LocalStorageFields.eventName, 'app_user_register'),
-          ),
+          dispatch(updateField(LocalStorageFields.eventName, 'app_user_register')),
         ]);
         CallUpdateProfileAPI(selectedItems);
       } else {
         throw new Error(
           `You have selected ${selectedItems.length} items. ${
             5 - selectedItems.length
-          } items remaining to reach the total of ${5}.`,
+          } items remaining to reach the total of ${5}.`
         );
       }
     } catch (error: any) {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(error?.message || error),
-        'error',
-      );
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
     } finally {
       setIsAPILoading(false);
     }
@@ -117,92 +119,73 @@ const YourIntro: FC = () => {
         ...userDataForApi,
         likes_into: items,
         validation: false,
-        eventName:
-          userDataForApi?.login_type === 'social'
-            ? 'app_user_register_social'
-            : 'app_user_register',
-        ...(userDataForApi?.apple_id
-          ? {apple_id: userDataForApi.apple_id}
-          : {}),
+        eventName: userDataForApi?.login_type === 'social' ? 'app_user_register_social' : 'app_user_register',
+        ...(userDataForApi?.apple_id ? { apple_id: userDataForApi.apple_id } : {}),
       };
 
       const APIResponse = await UserService.UserRegister(ModifyData);
 
       if (APIResponse && APIResponse.code === 200) {
-        showToast(
-          'Registration Successful',
-          'Thank you for registering! You can now proceed.',
-          'success',
-        );
-        dispatch(
-          updateField(LocalStorageFields.Token, APIResponse.data?.token),
-        );
+        showToast('Registration Successful', 'Thank you for registering! You can now proceed.', 'success');
+        dispatch(updateField(LocalStorageFields.Token, APIResponse.data?.token));
         navigation.replace('LoginStack', {
           screen: 'AddRecentPics',
         });
       } else {
         const errorMessage =
-          APIResponse && APIResponse.error
-            ? APIResponse.error
-            : 'Unknown error occurred during registration.';
+          APIResponse && APIResponse.error ? APIResponse.error : 'Unknown error occurred during registration.';
         throw new Error(errorMessage);
       }
     } catch (error: any) {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(error?.message || error),
-        'error',
-      );
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
     }
   };
 
   return (
-    <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader
-        ProgressCount={8}
-        Skip={true}
-        handleSkipPress={() => onPressNext()}
-      />
-      <View style={styles.DataViewContainer}>
-        <View style={[styles.ContentView]}>
-          <Text style={styles.TitleText}>What are you into?</Text>
-          <Text style={styles.YourIntoMatchText}>
-            You like what you like. Now, let everyone know.
-          </Text>
-        </View>
+    <GradientView>
+      <View style={CreateProfileStyles.Container}>
+        <CreateProfileHeader ProgressCount={8} Skip={true} handleSkipPress={() => onPressNext()} />
+        <View style={styles.DataViewContainer}>
+          <View style={[styles.ContentView]}>
+            <Text style={[styles.TitleText, { color: colors.TitleText }]}>What are you into?</Text>
+            <Text style={[styles.YourIntoMatchText, { color: colors.TextColor }]}>
+              You like what you like. Now, let everyone know.
+            </Text>
+          </View>
 
-        <View style={[styles.FlatListContainer]}>
-          <FlatList
-            numColumns={3}
-            columnWrapperStyle={{justifyContent: 'space-between'}}
-            data={YourIntoData}
-            renderItem={renderItem}
-            initialNumToRender={50}
-            nestedScrollEnabled={false}
-            style={styles.FlatListStyle}
-            removeClippedSubviews={true}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
-            contentContainerStyle={styles.ContainerContainerStyle}
+          <View style={[styles.FlatListContainer]}>
+            <FlatList
+              numColumns={3}
+              columnWrapperStyle={{ justifyContent: 'space-between' }}
+              data={YourIntoData}
+              renderItem={renderItem}
+              initialNumToRender={50}
+              nestedScrollEnabled={false}
+              style={styles.FlatListStyle}
+              removeClippedSubviews={true}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={(item, index) => index.toString()}
+              contentContainerStyle={styles.ContainerContainerStyle}
+            />
+          </View>
+        </View>
+        <View style={[CreateProfileStyles.BottomButton]}>
+          <GradientButton
+            isLoading={IsAPILoading}
+            Title={`Next ${selectedItems?.length || 0}/5`}
+            Disabled={false}
+            Navigation={() => {
+              setIsAPILoading(true);
+              setTimeout(() => onPressNext(), 0);
+            }}
           />
         </View>
       </View>
-      <View style={[CreateProfileStyles.BottomButton]}>
-        <GradientButton
-          isLoading={IsAPILoading}
-          Title={`Next ${selectedItems?.length || 0}/5`}
-          Disabled={false}
-          Navigation={() => {
-            setIsAPILoading(true);
-            setTimeout(() => onPressNext(), 0);
-          }}
-        />
-      </View>
-    </View>
+    </GradientView>
   );
 };
 
-export default YourIntro;
+export default memo(YourIntro);
 
 const styles = StyleSheet.create({
   ContentView: {
@@ -243,14 +226,12 @@ const styles = StyleSheet.create({
     borderTopWidth: hp('0.07%'),
     borderTopColor: COLORS.Placeholder,
   },
-  YourIntoScrollViewContainer: {},
   YourIntoButton: {
     width: hp('12%'),
     height: hp('6.8%'),
     justifyContent: 'center',
     borderRadius: SIZES.radius,
     marginVertical: hp('1%'),
-    backgroundColor: COLORS.White,
   },
   selectedOption: {
     backgroundColor: COLORS.Primary,

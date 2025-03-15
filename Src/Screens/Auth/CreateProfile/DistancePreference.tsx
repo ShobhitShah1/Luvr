@@ -1,28 +1,30 @@
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 // import Slider from 'azir-slider';
-import React, {FC, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {useDispatch, useSelector} from 'react-redux';
-import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import React, { FC, memo, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useDispatch, useSelector } from 'react-redux';
+import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import {updateField} from '../../../Redux/Action/actions';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
+import { updateField } from '../../../Redux/Action/actions';
+import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 import CustomSlider from '../../../Components/CustomSlider';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import GradientView from '../../../Common/GradientView';
 
 const DistancePreference: FC = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const userData = useSelector((state: any) => state.user);
+  const { colors, isDark } = useTheme();
 
   const dispatch = useDispatch();
-  const [milesValue, setMilesValue] = useState<number>(
-    userData.radius ? userData.radius : 75,
-  );
-  const OnChangeKM = (value: number) => {
+  const userData = useSelector((state: any) => state.user);
+  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
+
+  const [milesValue, setMilesValue] = useState<number>(userData.radius ? userData.radius : 75);
+
+  const onChangeKM = (value: number) => {
     const roundedValue = parseFloat((value * 100).toFixed(2));
     setMilesValue(roundedValue);
   };
@@ -35,46 +37,38 @@ const DistancePreference: FC = () => {
   };
 
   return (
-    <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={4} Skip={false} />
+    <GradientView>
+      <View style={CreateProfileStyles.Container}>
+        <CreateProfileHeader ProgressCount={4} Skip={false} />
 
-      <View style={styles.DataViewContainer}>
-        <View style={CreateProfileStyles.ContentView}>
-          <Text style={styles.TitleText}>
-            Set your distance {'\n'}Preference
-          </Text>
-          <Text style={styles.CompatibilityText}>
-            Adjusting distance, It's like searching by location.
-          </Text>
-        </View>
-
-        <View style={styles.SliderContainerView}>
-          <View style={styles.DistancePrefView}>
-            <Text style={styles.SliderInfoText}>Distance Preference</Text>
-            <Text style={styles.SliderValue}>{`${milesValue} KM`}</Text>
+        <View style={styles.DataViewContainer}>
+          <View style={CreateProfileStyles.ContentView}>
+            <Text style={[styles.TitleText, { color: colors.TitleText }]}>Set your distance {'\n'}Preference</Text>
+            <Text style={[styles.CompatibilityText, { color: colors.TextColor }]}>
+              Adjusting distance, It's like searching by location.
+            </Text>
           </View>
-          <View style={styles.SliderView}>
-            <CustomSlider
-              defaultProgress={milesValue / 100}
-              onProgressChange={OnChangeKM}
-            />
+
+          <View style={styles.SliderContainerView}>
+            <View style={styles.DistancePrefView}>
+              <Text style={[styles.SliderInfoText, { color: colors.TextColor }]}>Distance Preference</Text>
+              <Text style={[styles.SliderValue, { color: colors.TextColor }]}>{`${milesValue} KM`}</Text>
+            </View>
+            <View style={styles.SliderView}>
+              <CustomSlider defaultProgress={(milesValue ?? 0) / 100} onProgressChange={onChangeKM} />
+            </View>
           </View>
         </View>
-      </View>
 
-      <View style={CreateProfileStyles.BottomButton}>
-        <GradientButton
-          Title={'Continue'}
-          isLoading={false}
-          Disabled={false}
-          Navigation={() => onNextPress()}
-        />
+        <View style={CreateProfileStyles.BottomButton}>
+          <GradientButton Title={'Continue'} isLoading={false} Disabled={false} Navigation={() => onNextPress()} />
+        </View>
       </View>
-    </View>
+    </GradientView>
   );
 };
 
-export default DistancePreference;
+export default memo(DistancePreference);
 
 const styles = StyleSheet.create({
   CompatibilityText: {

@@ -1,27 +1,19 @@
-import {Image} from 'moti';
-import React, {FC, useMemo} from 'react';
-import {
-  ImageBackground,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Image } from 'moti';
+import React, { FC, useMemo } from 'react';
+import { ImageBackground, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {useSelector} from 'react-redux';
+import ReactNativeModal from 'react-native-modal';
+import { useSelector } from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
 import CommonImages from '../../../Common/CommonImages';
-import {
-  ActiveOpacity,
-  COLORS,
-  deviceHeightWithStatusbar,
-  FONTS,
-} from '../../../Common/Theme';
+import { ActiveOpacity, COLORS, deviceHeightWithStatusbar, FONTS } from '../../../Common/Theme';
+import { BlurredBackdrop } from '../../../Components/ReportUserModalView';
 import ApiConfig from '../../../Config/ApiConfig';
-import {APP_NAME, DummyImage} from '../../../Config/Setting';
-import {ProfileType} from '../../../Types/ProfileType';
-import ReactNativeModal from 'react-native-modal';
-import {BlurredBackdrop} from '../../../Components/ReportUserModalView';
+import { APP_NAME, DummyImage } from '../../../Config/Setting';
+import { ProfileType } from '../../../Types/ProfileType';
+import { GradientBorderView } from '../../../Components/GradientBorder';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import LinearGradient from 'react-native-linear-gradient';
 
 interface ItsAMatchProps {
   user: ProfileType | null;
@@ -32,26 +24,19 @@ interface ItsAMatchProps {
   isVisible: boolean;
 }
 
-const ItsAMatch: FC<ItsAMatchProps> = ({
-  user,
-  onSayHiClick,
-  onCloseModalClick,
-  onClose,
-  isVisible,
-}) => {
+const ItsAMatch: FC<ItsAMatchProps> = ({ user, onSayHiClick, onCloseModalClick, onClose, isVisible }) => {
+  const { colors, isDark } = useTheme();
+
   const userData = useSelector((state: any) => state?.user);
 
   const myProfile = useMemo(() => {
-    return userData?.userData?.recent_pik &&
-      userData?.userData?.recent_pik?.length !== 0
+    return userData?.userData?.recent_pik && userData?.userData?.recent_pik?.length !== 0
       ? ApiConfig.IMAGE_BASE_URL + userData?.userData?.recent_pik[0]
       : DummyImage;
   }, [userData]);
 
   const likedProfile = useMemo(() => {
-    return user?.recent_pik?.length !== 0
-      ? ApiConfig.IMAGE_BASE_URL + user?.recent_pik[0]
-      : DummyImage;
+    return user?.recent_pik?.length !== 0 ? ApiConfig.IMAGE_BASE_URL + user?.recent_pik[0] : DummyImage;
   }, [user]);
 
   return (
@@ -65,56 +50,48 @@ const ItsAMatch: FC<ItsAMatchProps> = ({
       hasBackdrop={true}
       onBackdropPress={onClose}
       onBackButtonPress={onClose}
-      style={styles.modalContainer}>
-      <View style={styles.container}>
-        <ImageBackground
-          imageStyle={styles.BackgroundImageStyle}
-          source={CommonImages.ItsAMatch}
-          style={styles.BackgroundImageContainer}>
+      style={[styles.modalContainer, { backgroundColor: isDark ? 'rgba(13, 1, 38, 0.7)' : 'rgba(18, 18, 19, 0.65)' }]}
+    >
+      <GradientBorderView
+        style={[
+          styles.BackgroundImageContainer,
+          {
+            borderWidth: 2,
+            backgroundColor: isDark ? 'rgba(13, 1, 38, 0.5)' : colors.White,
+          },
+        ]}
+      >
+        <View style={styles.BackgroundImageContainer}>
           <View>
             <View style={styles.ItsAMatchTextView}>
-              <Text style={styles.ItsAMatchText}>It’s a match!</Text>
-              <Text style={styles.ItsAMatchDescriptionText}>
-                You and {user?.full_name || `${APP_NAME} User`} have liked each
-                other.
+              <Text style={[styles.ItsAMatchText, { color: colors.TitleText }]}>It’s a match!</Text>
+              <Text style={[styles.ItsAMatchDescriptionText, { color: colors.TextColor }]}>
+                You and {user?.full_name || `${APP_NAME} User`} have liked each other.
               </Text>
             </View>
             <View style={styles.MatchedProfileView}>
-              <FastImage
-                resizeMode="cover"
-                source={{
-                  uri: myProfile,
-                  priority: FastImage.priority.high,
-                }}
-                style={[styles.UserProfileImage]}
-              />
-              <Image
-                source={CommonIcons.like_button}
-                style={[styles.LikeButtonImage]}
-              />
-              <FastImage
-                resizeMode="cover"
-                source={{
-                  uri: likedProfile,
-                  priority: FastImage.priority.high,
-                }}
-                style={[styles.UserProfileImage]}
-              />
+              <Image resizeMode="cover" source={{ uri: myProfile }} style={[styles.UserProfileImage]} />
+              <Image source={CommonIcons.like_button} style={[styles.LikeButtonImage]} />
+              <Image resizeMode="cover" source={{ uri: likedProfile }} style={[styles.UserProfileImage]} />
             </View>
             <View style={styles.ButtonsContainerView}>
-              <TouchableOpacity
-                onPress={onSayHiClick}
-                activeOpacity={ActiveOpacity}
-                style={styles.SendMessageButton}>
-                <Text style={styles.SendMessageText}>Send a message</Text>
-              </TouchableOpacity>
-              <Text onPress={onCloseModalClick} style={styles.KeepSwipingText}>
+              <LinearGradient
+                start={{ x: 1, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                colors={colors.ButtonGradient}
+                style={styles.SendMessageButton}
+              >
+                <Pressable onPress={onSayHiClick} style={{ flex: 1, justifyContent: 'center' }}>
+                  <Text style={styles.SendMessageText}>Send a message</Text>
+                </Pressable>
+              </LinearGradient>
+              <Text onPress={onCloseModalClick} style={[styles.KeepSwipingText, { color: colors.TextColor }]}>
                 Keep swiping
               </Text>
             </View>
           </View>
-        </ImageBackground>
-      </View>
+        </View>
+      </GradientBorderView>
     </ReactNativeModal>
   );
 };
@@ -125,12 +102,10 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     margin: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   BackgroundContainer: {
     width: '80%',

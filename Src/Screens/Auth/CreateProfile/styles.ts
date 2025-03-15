@@ -1,11 +1,10 @@
-import {StyleSheet} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {COLORS, FONTS} from '../../../Common/Theme';
+import { StyleSheet } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { COLORS, FONTS } from '../../../Common/Theme';
 
 const CreateProfileStyles = StyleSheet.create({
   Container: {
     flex: 1,
-    backgroundColor: COLORS.Secondary,
   },
   BottomButton: {
     width: '90%',

@@ -1,4 +1,5 @@
 const WelcomeBackground = require('../../Assets/Images/WelcomeBackground.webp');
+const LoginBackground = require('../../Assets/Images/LoginBackground.png');
 const Camera_Icon = require('../../Assets/Images/camera_icon.png');
 const Gallery_Icon = require('../../Assets/Images/gallery_icon.png');
 const Location = require('../../Assets/Images/location.webp');
@@ -16,6 +17,7 @@ const HomePartyPartner = require('../../Assets/Images/HomePartyPartner.webp');
 
 export default {
   WelcomeBackground,
+  LoginBackground,
   Camera_Icon,
   Gallery_Icon,
   Location,

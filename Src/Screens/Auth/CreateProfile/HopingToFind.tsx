@@ -1,45 +1,35 @@
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useState} from 'react';
-import {
-  Dimensions,
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {useDispatch, useSelector} from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { FC, memo, useCallback, useState } from 'react';
+import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useDispatch, useSelector } from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
 import TextString from '../../../Common/TextString';
-import {
-  ActiveOpacity,
-  COLORS,
-  FONTS,
-  GROUP_FONT,
-  SIZES,
-} from '../../../Common/Theme';
+import { ActiveOpacity, COLORS, FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import {LookingFor} from '../../../Components/Data';
-import {updateField} from '../../../Redux/Action/actions';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useCustomToast} from '../../../Utils/toastUtils';
+import { LookingFor } from '../../../Components/Data';
+import { updateField } from '../../../Redux/Action/actions';
+import { LocalStorageFields } from '../../../Types/LocalStorageFields';
+import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import GradientView from '../../../Common/GradientView';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import { GradientBorderView } from '../../../Components/GradientBorder';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const HopingToFind: FC = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
-  const {showToast} = useCustomToast();
+  const { colors, isDark } = useTheme();
+  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
+  const { showToast } = useCustomToast();
 
   const userData = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
-  const [SelectedLookingForIndex, setSelectedLookingForIndex] =
-    useState<string>(userData.hoping ? userData.hoping : {});
+  const [SelectedLookingForIndex, setSelectedLookingForIndex] = useState<string>(
+    userData.hoping ? userData.hoping : {}
+  );
 
   const onPressLookingFor = useCallback(
     (item: string) => {
@@ -51,38 +41,54 @@ const HopingToFind: FC = () => {
         setSelectedLookingForIndex(item);
       }
     },
-    [SelectedLookingForIndex],
+    [SelectedLookingForIndex]
   );
 
-  const renderItem = ({item, index}: {item: any; index: number}) => {
-    const Selected = SelectedLookingForIndex === item;
+  const renderItem = ({ item, index }: { item: any; index: number }) => {
+    const selected = SelectedLookingForIndex === item;
+
     return (
-      <TouchableOpacity
-        activeOpacity={ActiveOpacity}
-        onPress={() => onPressLookingFor(item)}
-        style={styles.LookingForListView}
-        key={index}>
-        <View style={styles.TextView}>
-          <Text
-            numberOfLines={2}
-            style={[
-              styles.LookingForText,
-              {
-                fontFamily: Selected ? FONTS.Bold : FONTS.Medium,
-              },
-            ]}>
-            {item}
-          </Text>
-          {Selected && (
-            <Image
-              resizeMethod="auto"
-              resizeMode="contain"
-              source={CommonIcons.CheckMark}
-              style={{width: hp('2.5%'), height: hp('2.5%')}}
-            />
-          )}
-        </View>
-      </TouchableOpacity>
+      <GradientBorderView
+        style={[
+          styles.LookingForListView,
+          { borderWidth: selected ? 2 : 0.5, backgroundColor: isDark ? 'transparent' : colors.White },
+        ]}
+        gradientProps={{
+          colors: selected
+            ? isDark
+              ? colors.Gradient
+              : ['transparent', 'transparent']
+            : isDark
+              ? colors.UnselectedGradient
+              : ['transparent', 'transparent'],
+        }}
+      >
+        <TouchableOpacity activeOpacity={ActiveOpacity} onPress={() => onPressLookingFor(item)} key={index}>
+          <View style={styles.TextView}>
+            <Text
+              numberOfLines={2}
+              style={[
+                styles.LookingForText,
+                {
+                  color: colors.TextColor,
+                  fontFamily: selected ? FONTS.Bold : FONTS.Medium,
+                },
+              ]}
+            >
+              {item}
+            </Text>
+            {selected && (
+              <Image
+                resizeMethod="auto"
+                resizeMode="contain"
+                tintColor={colors.Primary}
+                source={CommonIcons.CheckMark}
+                style={{ width: hp('2.5%'), height: hp('2.5%') }}
+              />
+            )}
+          </View>
+        </TouchableOpacity>
+      </GradientBorderView>
     );
   };
 
@@ -93,49 +99,45 @@ const HopingToFind: FC = () => {
         screen: 'DistancePreference',
       });
     } else {
-      showToast(
-        TextString.error.toUpperCase(),
-        'Please select your hoping',
-        'error',
-      );
+      showToast(TextString.error.toUpperCase(), 'Please select your hoping', 'error');
     }
   };
 
   return (
-    <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={3} Skip={false} />
+    <GradientView>
+      <View style={CreateProfileStyles.Container}>
+        <CreateProfileHeader ProgressCount={3} Skip={false} />
 
-      <View style={styles.DataViewContainer}>
-        <View style={CreateProfileStyles.ContentView}>
-          <Text style={styles.TitleText}>
-            What’s your hoping {'\n'}to find?
-          </Text>
-          <Text style={styles.CompatibilityText}>
-            Honesty helps you and everyone on find what you're looking for.
-          </Text>
+        <View style={styles.DataViewContainer}>
+          <View style={CreateProfileStyles.ContentView}>
+            <Text style={[styles.TitleText, { color: colors.TitleText }]}>What’s your hoping {'\n'}to find?</Text>
+            <Text style={[styles.CompatibilityText, { color: colors.TextColor }]}>
+              Honesty helps you and everyone on find what you're looking for.
+            </Text>
+          </View>
+
+          <FlatList
+            data={LookingFor}
+            renderItem={renderItem}
+            contentContainerStyle={styles.FlatListContainer}
+            keyExtractor={(item, index) => index.toString()}
+          />
         </View>
 
-        <FlatList
-          data={LookingFor}
-          renderItem={renderItem}
-          contentContainerStyle={styles.FlatListContainer}
-          keyExtractor={(item, index) => index.toString()}
-        />
+        <View style={CreateProfileStyles.BottomButton}>
+          <GradientButton
+            isLoading={false}
+            Title={'Continue'}
+            Disabled={SelectedLookingForIndex ? false : true}
+            Navigation={() => onPressNext()}
+          />
+        </View>
       </View>
-
-      <View style={CreateProfileStyles.BottomButton}>
-        <GradientButton
-          isLoading={false}
-          Title={'Continue'}
-          Disabled={SelectedLookingForIndex ? false : true}
-          Navigation={() => onPressNext()}
-        />
-      </View>
-    </View>
+    </GradientView>
   );
 };
 
-export default HopingToFind;
+export default memo(HopingToFind);
 
 const styles = StyleSheet.create({
   CompatibilityText: {
@@ -177,7 +179,7 @@ const styles = StyleSheet.create({
     width: width - hp('8%'),
     marginVertical: hp('0.5%'),
     alignSelf: 'center',
-    backgroundColor: COLORS.White,
+    borderWidth: 1,
     borderRadius: SIZES.radius,
     justifyContent: 'center',
     alignContent: 'center',

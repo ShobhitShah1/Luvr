@@ -3,7 +3,9 @@ export interface ThemeColors {
   Primary: string;
   Secondary: string;
   Gradient: string[];
+  UnselectedGradient: string[];
   ButtonGradient: string[];
+  BackgroundGradient: string[];
   DisableButtonGradient: string[];
   DisableButtonBackground: string;
   White: string;
@@ -23,9 +25,16 @@ export interface ThemeColors {
   CardBackground: string;
   InputBackground: string;
   BorderColor: string;
+  InputBorderColor: string;
+  TitleText: string;
   TextColor: string;
+  ButtonText: string;
   SecondaryTextColor: string;
   ShadowColor: string;
+  sheetBackground: string[];
+  lightBackground: string;
+  editFiledBackground: string[];
+  lightFiledBackground: string;
 }
 
 // Theme preference options

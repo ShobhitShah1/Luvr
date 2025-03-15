@@ -1,27 +1,35 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {FC, memo, useState} from 'react';
-import {Image, StatusBar, StyleSheet, Text, View} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import React, { FC, memo, useState } from 'react';
+import { Image, Text, View } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {useDispatch, useSelector} from 'react-redux';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useDispatch, useSelector } from 'react-redux';
 import CommonImages from '../../../Common/CommonImages';
+import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
-import {COLORS, FONTS} from '../../../Common/Theme';
+import { FONTS } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
-import {useLocationPermission} from '../../../Hooks/useLocationPermission';
-import {updateField} from '../../../Redux/Action/actions';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import createThemedStyles from '../../../Hooks/createThemedStyles';
+import { useLocationPermission } from '../../../Hooks/useLocationPermission';
+import { useThemedStyles } from '../../../Hooks/useThemedStyles';
+import { updateField } from '../../../Redux/Action/actions';
 import UserService from '../../../Services/AuthService';
-import {transformUserDataForApi} from '../../../Services/dataTransformService';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useCustomToast} from '../../../Utils/toastUtils';
+import { transformUserDataForApi } from '../../../Services/dataTransformService';
+import { LocalStorageFields } from '../../../Types/LocalStorageFields';
+import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileStyles from './styles';
 
 const LocationPermission: FC = () => {
-  const navigation = useNavigation<any>();
-  const {showToast} = useCustomToast();
+  const { colors } = useTheme();
   const dispatch = useDispatch();
+  const style = useThemedStyles(styles);
+
+  const navigation = useNavigation<any>();
+  const { showToast } = useCustomToast();
+
   const userData = useSelector((state: any) => state?.user);
-  const {requestLocationPermission} = useLocationPermission();
+  const { requestLocationPermission } = useLocationPermission();
 
   const [IsLocationLoading, setIsLocationLoading] = useState(false);
 
@@ -30,54 +38,37 @@ const LocationPermission: FC = () => {
 
     try {
       await requestLocationPermission()
-        .then(isLocationGranted => {
+        .then((isLocationGranted) => {
           if (isLocationGranted) {
             return new Promise((resolve, reject) => {
               Geolocation.getCurrentPosition(
-                async position => {
-                  const {coords} = position;
+                async (position) => {
+                  const { coords } = position;
                   if (coords) {
                     await Promise.all([
-                      dispatch(
-                        updateField(
-                          LocalStorageFields.longitude,
-                          coords.longitude,
-                        ),
-                      ),
-                      dispatch(
-                        updateField(
-                          LocalStorageFields.latitude,
-                          coords.latitude,
-                        ),
-                      ),
+                      dispatch(updateField(LocalStorageFields.longitude, coords.longitude)),
+                      dispatch(updateField(LocalStorageFields.latitude, coords.latitude)),
                     ]);
 
                     await handleNavigation();
                   }
                 },
-                error => {
+                (error) => {
                   reject(error);
                 },
-                {enableHighAccuracy: true, timeout: 15000, maximumAge: 100},
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 100 }
               );
             });
           }
         })
-        .catch(error => {
-          showToast(
-            TextString.error.toUpperCase(),
-            String(error?.message || error),
-            'error',
-          );
+        .catch((error) => {
+          showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
         });
     } catch (error: any) {
       showToast(
         TextString.error.toUpperCase(),
-        String(
-          error?.message ||
-            'Unable to find your location please try gain letter',
-        ),
-        'error',
+        String(error?.message || 'Unable to find your location please try gain letter'),
+        'error'
       );
     } finally {
       setIsLocationLoading(false);
@@ -92,64 +83,55 @@ const LocationPermission: FC = () => {
         validation: true,
       };
 
-      const APIResponse = await UserService.UserRegister(
-        userDataWithValidation,
-      );
+      const APIResponse = await UserService.UserRegister(userDataWithValidation);
 
       if (APIResponse.data?.token) {
-        dispatch(
-          updateField(LocalStorageFields.Token, APIResponse.data?.token),
-        );
+        dispatch(updateField(LocalStorageFields.Token, APIResponse.data?.token));
         navigation.replace('BottomTab');
       } else {
         navigation.replace('LoginStack');
       }
     } catch (error: any) {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(error?.message || error),
-        TextString.error,
-      );
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), TextString.error);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar backgroundColor={COLORS.Secondary} barStyle={'dark-content'} />
-      <View style={styles.MiddleImageView}>
-        <Image source={CommonImages.Location} style={styles.LocationImage} />
-      </View>
+    <GradientView>
+      <View style={style.container}>
+        <View style={style.MiddleImageView}>
+          <Image source={CommonImages.Location} style={style.LocationImage} />
+        </View>
 
-      <View style={styles.MiddleTextView}>
-        <Text style={styles.TitleText}>Allow your location</Text>
-        <Text style={styles.DescriptionText}>
-          Set your location to see nearby people. You won’t be able to match
-          with people otherwise.
-        </Text>
-      </View>
+        <View style={style.MiddleTextView}>
+          <Text style={style.TitleText}>Allow your location</Text>
+          <Text style={style.DescriptionText}>
+            Set your location to see nearby people. You won’t be able to match with people otherwise.
+          </Text>
+        </View>
 
-      <View style={[CreateProfileStyles.BottomButton]}>
-        <GradientButton
-          Title={'Continue'}
-          Disabled={false}
-          Navigation={() => {
-            setIsLocationLoading(true);
-            setTimeout(() => navigateToNextScreen(), 0);
-          }}
-          isLoading={IsLocationLoading}
-        />
+        <View style={[CreateProfileStyles.BottomButton]}>
+          <GradientButton
+            Title={'Continue'}
+            Disabled={false}
+            Navigation={() => {
+              setIsLocationLoading(true);
+              setTimeout(() => navigateToNextScreen(), 0);
+            }}
+            isLoading={IsLocationLoading}
+          />
+        </View>
       </View>
-    </View>
+    </GradientView>
   );
 };
 
 export default memo(LocationPermission);
 
-const styles = StyleSheet.create({
+const styles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
     paddingHorizontal: hp('1.3%'),
-    backgroundColor: COLORS.Secondary,
   },
   MiddleImageView: {
     flex: 0.5,
@@ -166,13 +148,13 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Bold,
     fontSize: hp('3%'),
     lineHeight: 36,
-    color: COLORS.Primary,
+    color: colors.TitleText,
   },
   DescriptionText: {
     width: '85%',
     top: hp('0.5%'),
     fontFamily: FONTS.Regular,
-    color: COLORS.Black,
+    color: colors.Black,
     fontSize: hp('1.5%'),
     textAlign: 'center',
   },
@@ -190,4 +172,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
   },
-});
+}));

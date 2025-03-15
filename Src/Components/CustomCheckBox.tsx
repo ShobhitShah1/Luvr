@@ -1,15 +1,9 @@
-import React, {memo, useEffect, useRef} from 'react';
-import {
-  Animated,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../Common/Theme';
+import React, { memo, useEffect, useRef } from 'react';
+import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { ActiveOpacity, COLORS, FONTS, GROUP_FONT } from '../Common/Theme';
 import CommonIcons from '../Common/CommonIcons';
+import { useTheme } from '../Contexts/ThemeContext';
 
 interface CustomCheckBoxProps {
   isChecked: boolean;
@@ -17,11 +11,8 @@ interface CustomCheckBoxProps {
   BoxText?: string;
 }
 
-const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
-  isChecked,
-  onToggle,
-  BoxText,
-}) => {
+const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({ isChecked, onToggle, BoxText }) => {
+  const { colors } = useTheme();
   const scaleValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -33,21 +24,25 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
   }, [isChecked, scaleValue]);
 
   const animatedStyle = {
-    transform: [{scale: scaleValue}],
+    transform: [{ scale: scaleValue }],
   };
 
   return (
     <TouchableOpacity onPress={onToggle} activeOpacity={ActiveOpacity}>
       <View style={styles.BoxContainer}>
-        <View style={[styles.checkbox, isChecked && styles.checked]}>
+        <View
+          style={[
+            styles.checkbox,
+            { borderColor: colors.TextColor },
+            isChecked && { backgroundColor: colors.Primary, borderColor: colors.Primary },
+          ]}
+        >
           <Animated.View style={[styles.checkboxIcon, animatedStyle]}>
-            {isChecked && (
-              <Image source={CommonIcons.Check} style={styles.IconCheck} />
-            )}
+            {isChecked && <Image source={CommonIcons.Check} style={styles.IconCheck} />}
           </Animated.View>
         </View>
 
-        {BoxText && <Text style={styles.CheckboxText}>{BoxText}</Text>}
+        {BoxText && <Text style={[styles.CheckboxText, { color: colors.TextColor }]}>{BoxText}</Text>}
       </View>
     </TouchableOpacity>
   );
@@ -68,10 +63,6 @@ const styles = StyleSheet.create({
     borderColor: COLORS.Black,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  checked: {
-    backgroundColor: COLORS.Primary,
-    borderColor: COLORS.Primary,
   },
   checkboxIcon: {
     width: '100%',

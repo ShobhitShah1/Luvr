@@ -1,14 +1,7 @@
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-  ImageStyle,
-  TextStyle,
-} from 'react-native';
-import React, {FC, memo} from 'react';
-import {COLORS, GROUP_FONT} from '../../../../Common/Theme';
+import { Image, StyleSheet, Text, View, ViewStyle, ImageStyle, TextStyle } from 'react-native';
+import React, { FC, memo } from 'react';
+import { COLORS, GROUP_FONT } from '../../../../Common/Theme';
+import { useTheme } from '../../../../Contexts/ThemeContext';
 
 interface EditProfileProps {
   Icon: any;
@@ -19,25 +12,14 @@ interface EditProfileProps {
   titleStyle?: TextStyle;
 }
 
-const EditProfileTitleView: FC<EditProfileProps> = ({
-  Icon,
-  Title,
-  isIcon,
-  style,
-  iconStyle,
-  titleStyle,
-}) => {
+const EditProfileTitleView: FC<EditProfileProps> = ({ Icon, Title, isIcon, style, iconStyle, titleStyle }) => {
+  const { colors } = useTheme();
   return (
     <View style={[styles.TitleViewContainer, style]}>
       {isIcon && (
-        <Image
-          resizeMode="contain"
-          source={Icon}
-          tintColor={COLORS.Black}
-          style={[styles.IconView, iconStyle]}
-        />
+        <Image resizeMode="contain" source={Icon} tintColor={colors.TextColor} style={[styles.IconView, iconStyle]} />
       )}
-      <Text style={[styles.TitleText, titleStyle]}>{Title}</Text>
+      <Text style={[styles.TitleText, { color: colors.TextColor }, titleStyle]}>{Title}</Text>
     </View>
   );
 };

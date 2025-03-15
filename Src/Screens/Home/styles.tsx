@@ -1,15 +1,14 @@
-import {Dimensions, StyleSheet} from 'react-native';
-import {COLORS, GROUP_FONT} from '../../Common/Theme';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { Dimensions, StyleSheet } from 'react-native';
+import { COLORS, GROUP_FONT } from '../../Common/Theme';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
-const {width} = Dimensions.get('screen');
+const { width } = Dimensions.get('screen');
 
 const smallWidth = width / 2.7;
 
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
-    backgroundColor: COLORS.Secondary,
   },
   FlatListStyle: {
     width: '90%',

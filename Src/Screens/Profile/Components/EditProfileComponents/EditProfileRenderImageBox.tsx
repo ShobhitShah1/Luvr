@@ -1,12 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Skeleton} from 'moti/skeleton';
-import React, {memo, useMemo, useState} from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import { Skeleton } from 'moti/skeleton';
+import React, { memo, useMemo, useState } from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
-import {COLORS, GROUP_FONT, SIZES} from '../../../../Common/Theme';
+import { COLORS, GROUP_FONT, SIZES } from '../../../../Common/Theme';
 import ApiConfig from '../../../../Config/ApiConfig';
+import { useTheme } from '../../../../Contexts/ThemeContext';
 
 type Picture = {
   name: string;
@@ -22,10 +23,8 @@ type EditProfileRenderImageBoxProps = {
   isLoading?: boolean;
 };
 
-const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
-  picture,
-  isLoading,
-}) => {
+const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({ picture, isLoading }) => {
+  const { isDark, colors } = useTheme();
   const hasPicture = useMemo(() => {
     return picture?.url;
   }, [picture?.url]);
@@ -33,19 +32,21 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
   const [IsImageLoading, setIsImageLoading] = useState<boolean>(false);
 
   return (
-    <View style={styles.item}>
+    <View style={[styles.item, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : colors.White }]}>
       <View style={styles.UserImageContainer}>
         <Skeleton
           width={'100%'}
           height={'100%'}
           show={(IsImageLoading || isLoading) && hasPicture ? true : false}
-          colors={COLORS.LoaderGradient}>
+          colors={colors.Gradient}
+        >
           <View
             style={{
               justifyContent: 'center',
               alignItems: 'center',
               height: '100%',
-            }}>
+            }}
+          >
             <FastImage
               onLoadStart={() => setIsImageLoading(true)}
               onLoad={() => setIsImageLoading(false)}
@@ -83,7 +84,8 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
             {
               borderColor: hasPicture ? COLORS.White : COLORS.Black,
             },
-          ]}>
+          ]}
+        >
           <View style={[styles.AddAndDeleteContainerView]}>
             <View style={styles.FlexView}>
               <Image
@@ -91,22 +93,21 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
                 style={[
                   styles.ImageView,
                   {
-                    tintColor: hasPicture ? COLORS.White : COLORS.Black,
+                    tintColor: hasPicture ? COLORS.White : colors.TextColor,
                     width: hasPicture ? hp('1.4%') : hp('1.4%'),
                     height: hasPicture ? hp('1.4%') : hp('1.4%'),
                   },
                 ]}
-                source={
-                  hasPicture ? CommonIcons.DeleteImage : CommonIcons.AddImage
-                }
+                source={hasPicture ? CommonIcons.DeleteImage : CommonIcons.AddImage}
               />
               <Text
                 style={[
                   styles.AddAndRemoveText,
                   {
-                    color: hasPicture ? COLORS.White : COLORS.Black,
+                    color: hasPicture ? COLORS.White : colors.TextColor,
                   },
-                ]}>
+                ]}
+              >
                 {hasPicture ? 'Delete Photo' : 'Add Photo'}
               </Text>
             </View>
@@ -127,7 +128,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: hp('1.5%'),
     marginVertical: hp('0.3%'),
-    backgroundColor: COLORS.White,
   },
   ImageHasImageView: {
     width: '100%',

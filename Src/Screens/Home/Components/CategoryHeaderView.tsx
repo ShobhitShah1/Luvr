@@ -1,21 +1,20 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React, {FC} from 'react';
-import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { StyleSheet, Text, View } from 'react-native';
+import React, { FC } from 'react';
+import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useTheme } from '../../../Contexts/ThemeContext';
 
 interface CategoryHeaderViewProps {
   Title: string;
   Description: string;
 }
 
-const CategoryHeaderView: FC<CategoryHeaderViewProps> = ({
-  Title,
-  Description,
-}) => {
+const CategoryHeaderView: FC<CategoryHeaderViewProps> = ({ Title, Description }) => {
+  const { colors } = useTheme();
   return (
     <View style={styles.Container}>
-      <Text style={styles.TitleText}>{Title}</Text>
-      <Text style={styles.DescriptionText}>{Description}</Text>
+      <Text style={[styles.TitleText, { color: colors.TextColor }]}>{Title}</Text>
+      <Text style={[styles.DescriptionText, { color: colors.TextColor }]}>{Description}</Text>
     </View>
   );
 };

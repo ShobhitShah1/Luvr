@@ -1,4 +1,3 @@
 module.exports = {
-  root: true,
-  extends: '@react-native',
+   extends: '@yieldstudio/eslint-config/react-native',
 };

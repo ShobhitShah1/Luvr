@@ -1,29 +1,23 @@
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import React, {FC} from 'react';
-import {
-  Image,
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import React, { FC } from 'react';
+import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
-import {ActiveOpacity, COLORS, FONTS} from '../../../../Common/Theme';
-import {ProfileType} from '../../../../Types/ProfileType';
+import { ActiveOpacity, COLORS, FONTS } from '../../../../Common/Theme';
+import { ProfileType } from '../../../../Types/ProfileType';
 import useCalculateAge from '../../../../Hooks/useCalculateAge';
+import { useTheme } from '../../../../Contexts/ThemeContext';
 
 type DetailCardRouteParams = {
   props: ProfileType | undefined;
 };
 
-const DetailCardHeader: FC<DetailCardRouteParams> = ({props}) => {
-  const CardDetail =
-    useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
-  const {goBack} = useNavigation();
-  const item = props || CardDetail.params.props;
+const DetailCardHeader: FC<DetailCardRouteParams> = ({ props }) => {
+  const { goBack } = useNavigation();
+  const { colors } = useTheme();
+
+  const cardDetail = useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
+  const item = props || cardDetail?.params?.props || { full_name: '', age: 0, profile_image: '', birthdate: '' };
 
   const Age = useCalculateAge(item?.birthdate || '00/00/0000');
 
@@ -31,27 +25,19 @@ const DetailCardHeader: FC<DetailCardRouteParams> = ({props}) => {
     <View style={styles.Container}>
       <SafeAreaView />
       <View style={styles.ContentView}>
-        <TouchableOpacity
-          activeOpacity={ActiveOpacity}
-          onPress={() => {
-            goBack();
-          }}
-          style={styles.BackIconView}>
+        <Pressable onPress={() => goBack()} style={styles.BackIconView}>
           <Image
             resizeMode="contain"
-            source={CommonIcons.TinderBack}
             style={styles.BackIcon}
+            tintColor={colors.TextColor}
+            source={CommonIcons.TinderBack}
           />
-        </TouchableOpacity>
+        </Pressable>
         <View style={styles.NameAndBadgeView}>
-          <Text numberOfLines={1} style={styles.HeaderText}>
+          <Text numberOfLines={1} style={[styles.HeaderText, { color: colors.TextColor }]}>
             {item?.full_name || 'User'}, {Age || 0}
           </Text>
-          <Image
-            resizeMode="contain"
-            style={styles.VerifyIcon}
-            source={CommonIcons.Verification_Icon}
-          />
+          <Image resizeMode="contain" style={styles.VerifyIcon} source={CommonIcons.Verification_Icon} />
         </View>
       </View>
     </View>
@@ -63,10 +49,8 @@ export default DetailCardHeader;
 const styles = StyleSheet.create({
   Container: {
     width: '100%',
-    // height: hp('7%'),
-    height: Platform.OS === 'ios' ? hp('12.5%') : hp('7%'),
     justifyContent: 'center',
-    backgroundColor: COLORS.White,
+    height: Platform.OS === 'ios' ? hp('12.5%') : hp('7%'),
   },
   ContentView: {
     width: '90%',

@@ -1,12 +1,8 @@
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {FC} from 'react';
-import {ActiveOpacity, COLORS, FONTS} from '../Common/Theme';
+import { ActivityIndicator, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { FC } from 'react';
+import { ActiveOpacity, COLORS, FONTS } from '../Common/Theme';
+import { useTheme } from '../Contexts/ThemeContext';
+import LinearGradient from 'react-native-linear-gradient';
 
 interface ButtonProps {
   onPress: () => void;
@@ -14,23 +10,25 @@ interface ButtonProps {
   isLoading: boolean;
 }
 
-const Button: FC<ButtonProps> = ({onPress, ButtonTitle, isLoading}) => {
+const Button: FC<ButtonProps> = ({ onPress, ButtonTitle, isLoading }) => {
+  const { colors } = useTheme();
   return (
-    <View style={styles.ButtonContainer}>
-      <TouchableOpacity
-        disabled={isLoading}
-        onPress={onPress}
-        activeOpacity={ActiveOpacity}
-        style={styles.LogoutButtonContainer}>
+    <LinearGradient
+      start={{ x: 1, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      colors={colors.ButtonGradient}
+      style={styles.LogoutButtonContainer}
+    >
+      <Pressable disabled={isLoading} onPress={onPress} style={{ flex: 1, justifyContent: 'center' }}>
         {isLoading ? (
           <View style={styles.LoadingView}>
-            <ActivityIndicator size={28} color={COLORS.White} />
+            <ActivityIndicator size={28} color={colors.Primary} />
           </View>
         ) : (
           <Text style={styles.LogoutButtonText}>{ButtonTitle}</Text>
         )}
-      </TouchableOpacity>
-    </View>
+      </Pressable>
+    </LinearGradient>
   );
 };
 

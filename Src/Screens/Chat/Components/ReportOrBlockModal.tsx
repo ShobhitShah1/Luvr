@@ -1,17 +1,13 @@
-import React, {FC} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, { FC } from 'react';
+import { Dimensions, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import ReactNativeModal from 'react-native-modal';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CommonIcons from '../../../Common/CommonIcons';
-import {
-  ActiveOpacity,
-  COLORS,
-  deviceHeightWithStatusbar,
-  FONTS,
-} from '../../../Common/Theme';
-import {BlurredBackdrop} from '../../../Components/ReportUserModalView';
-import {ReportOrBlockInterface} from '../../../Types/Interface';
+import { COLORS, FONTS, deviceHeightWithStatusbar } from '../../../Common/Theme';
+import { GradientBorderView } from '../../../Components/GradientBorder';
+import { ReportOrBlockInterface } from '../../../Types/Interface';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import LinearGradient from 'react-native-linear-gradient';
 
 const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
   isVisible,
@@ -20,6 +16,8 @@ const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
   onBlockProfileClick,
   ShowReportModalView,
 }) => {
+  const { colors, isDark } = useTheme();
+
   const closeModal = () => {
     setReportAndBlockModal(false);
   };
@@ -27,50 +25,85 @@ const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
   return (
     <ReactNativeModal
       deviceHeight={deviceHeightWithStatusbar}
-      customBackdrop={<BlurredBackdrop />}
       statusBarTranslucent={true}
       useNativeDriver={true}
       isVisible={isVisible}
       onBackdropPress={closeModal}
       onBackButtonPress={closeModal}
       style={styles.modalContainer}
-      presentationStyle="overFullScreen">
-      <SafeAreaView style={styles.BlockAndReportProfileView}>
-        <View style={styles.blockAndReportContentView}>
-          <TouchableOpacity
-            activeOpacity={ActiveOpacity}
-            style={styles.blockAndReportCloseButton}
-            onPress={() => setReportAndBlockModal(false)}>
-            <Image source={CommonIcons.CloseModal} style={styles.closeIcon} />
-          </TouchableOpacity>
+      animationIn="fadeIn"
+      animationOut="fadeOut"
+    >
+      <SafeAreaView style={styles.safeAreaContainer}>
+        <GradientBorderView
+          style={[
+            styles.modalContent,
+            {
+              backgroundColor: isDark ? 'rgba(13, 1, 38, 0.9)' : colors.White,
+            },
+          ]}
+        >
+          <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'center', marginVertical: 10 }}>
+            <Text style={[styles.title, { color: colors.TextColor }]}>Choose an Action</Text>
 
-          <TouchableOpacity
-            onPress={onBlockProfileClick}
-            activeOpacity={ActiveOpacity}
-            style={styles.BlockAndReportButtonView}>
-            <Image
-              resizeMode="contain"
-              style={styles.BlockAndReportIcon}
-              source={CommonIcons.block_profile_icon}
-            />
-            <Text style={styles.BlockAndReportText}>Block Profile</Text>
-          </TouchableOpacity>
+            <Pressable
+              style={styles.closeButton}
+              onPress={closeModal}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Image source={CommonIcons.CloseModal} style={styles.closeIcon} />
+            </Pressable>
+          </View>
 
-          <TouchableOpacity
-            onPress={() => {
-              setReportAndBlockModal(false);
-              setShowReportModalView(!ShowReportModalView);
-            }}
-            activeOpacity={ActiveOpacity}
-            style={styles.BlockAndReportButtonView}>
-            <Image
-              resizeMode="contain"
-              style={styles.BlockAndReportIcon}
-              source={CommonIcons.report_profile_icon}
-            />
-            <Text style={styles.BlockAndReportText}>Report Profile</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={styles.buttonContainer}>
+            <LinearGradient
+              start={{ x: 0, y: 1 }}
+              end={{ x: 1, y: 0 }}
+              colors={isDark ? colors.ButtonGradient : [colors.White, colors.White]}
+              style={styles.actionButton}
+            >
+              <Pressable
+                style={{ flex: 1, justifyContent: 'center', flexDirection: 'row', alignItems: 'center' }}
+                onPress={onBlockProfileClick}
+              >
+                <Image
+                  resizeMode="contain"
+                  tintColor={colors.TextColor}
+                  style={styles.actionIcon}
+                  source={CommonIcons.block_profile_icon}
+                />
+                <Text style={[styles.actionText, { color: colors.TextColor }]}>Block Profile</Text>
+              </Pressable>
+            </LinearGradient>
+
+            <LinearGradient
+              start={{ x: 0, y: 1 }}
+              end={{ x: 1, y: 0 }}
+              colors={isDark ? colors.ButtonGradient : [colors.White, colors.White]}
+              style={styles.actionButton}
+            >
+              <Pressable
+                onPress={() => {
+                  setReportAndBlockModal(false);
+                  setShowReportModalView(!ShowReportModalView);
+                }}
+                style={{ flex: 1, justifyContent: 'center', flexDirection: 'row', alignItems: 'center' }}
+              >
+                <Image
+                  resizeMode="contain"
+                  tintColor={colors.TextColor}
+                  style={styles.actionIcon}
+                  source={CommonIcons.report_profile_icon}
+                />
+                <Text style={[styles.actionText, { color: colors.TextColor }]}>Report Profile</Text>
+              </Pressable>
+            </LinearGradient>
+          </View>
+
+          <Pressable onPress={closeModal} style={styles.cancelButton}>
+            <Text style={[styles.cancelText, { color: colors.TextColor }]}>Cancel</Text>
+          </Pressable>
+        </GradientBorderView>
       </SafeAreaView>
     </ReactNativeModal>
   );
@@ -81,58 +114,72 @@ export default ReportOrBlockModal;
 const styles = StyleSheet.create({
   modalContainer: {
     margin: 0,
-    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  BlockAndReportProfileView: {
+  safeAreaContainer: {
     width: '100%',
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  BlockAndReportButtonView: {
-    width: '47%',
-    overflow: 'hidden',
-    height: hp('7.5%'),
-    marginVertical: hp('2%'),
-    borderRadius: hp('5%'),
-    backgroundColor: COLORS.White,
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  modalContent: {
+    width: Dimensions.get('screen').width - 50,
+    borderRadius: 30,
+    alignItems: 'center',
     borderWidth: 2,
-    borderColor: COLORS.Black,
-    paddingHorizontal: hp('1%'),
-    marginHorizontal: hp('0.5%'),
   },
-  BlockAndReportIcon: {
-    width: hp('2.4%'),
-    height: hp('2.4%'),
-  },
-  BlockAndReportText: {
-    fontFamily: FONTS.Bold,
-    color: COLORS.Black,
-    fontSize: hp('1.8%'),
-    marginHorizontal: hp('0.5%'),
-  },
-  blockAndReportContentView: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '10%',
-    borderRadius: 10,
-    flexDirection: 'row',
-  },
-  blockAndReportCloseButton: {
+  closeButton: {
     position: 'absolute',
     top: 10,
-    right: 5,
-    width: 50,
-    height: 50,
+    right: 20,
+    zIndex: 10,
   },
   closeIcon: {
-    width: 35,
-    height: 35,
+    width: 26,
+    height: 26,
+  },
+  title: {
+    fontSize: 19,
+    fontFamily: FONTS.Bold,
+    marginVertical: 10,
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    width: '100%',
+    gap: 15,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 10,
+    padding: 15,
+    borderRadius: 20,
+    borderWidth: 1,
+
+    // borderColor: 'rgba(100, 100, 100, 0.2)',
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 3,
+    // elevation: 2,
+  },
+  actionIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+  },
+  actionText: {
+    fontFamily: FONTS.SemiBold,
+    fontSize: 16,
+  },
+  cancelButton: {
+    marginVertical: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  cancelText: {
+    fontSize: 15,
+    fontFamily: FONTS.Medium,
   },
 });

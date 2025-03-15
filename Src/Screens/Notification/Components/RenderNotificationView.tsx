@@ -1,9 +1,10 @@
-import React, {FC, memo} from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import React, { FC, memo } from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonImages from '../../../Common/CommonImages';
-import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
-import {formatDate} from '../../../Utils/formatDate';
+import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
+import { formatDate } from '../../../Utils/formatDate';
+import { useTheme } from '../../../Contexts/ThemeContext';
 
 interface NotificationData {
   title: string;
@@ -11,31 +12,26 @@ interface NotificationData {
   date: string;
 }
 
-const RenderNotificationView: FC<NotificationData> = ({
-  title,
-  description,
-  date,
-}) => {
+const RenderNotificationView: FC<NotificationData> = ({ title, description, date }) => {
+  const { colors } = useTheme();
   const formattedDate = formatDate(date);
+
   return (
     <View style={styles.Container}>
       <View style={styles.DetailBoxContainerView}>
         <View style={styles.LikeImageView}>
-          <Image
-            style={styles.LikeImageProfile}
-            source={CommonImages.WelcomeBackground}
-          />
+          <Image style={styles.LikeImageProfile} source={CommonImages.WelcomeBackground} />
         </View>
         <View style={styles.LikeTextView}>
-          <Text numberOfLines={3} style={styles.TitleMatchText}>
+          <Text numberOfLines={3} style={[styles.TitleMatchText, { color: colors.TitleText }]}>
             {title}
           </Text>
-          <Text numberOfLines={5} style={styles.DescriptionText}>
+          <Text numberOfLines={5} style={[styles.DescriptionText, { color: colors.TextColor }]}>
             {description}
           </Text>
         </View>
         <View style={styles.LikeButtonView}>
-          <Text style={styles.TimeText}>{String(formattedDate)}</Text>
+          <Text style={[styles.TimeText, { color: colors.TextColor }]}>{String(formattedDate)}</Text>
         </View>
       </View>
     </View>

@@ -1,36 +1,25 @@
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useState} from 'react';
-import {
-  Dimensions,
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {useDispatch, useSelector} from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { FC, memo, useCallback, useState } from 'react';
+import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useDispatch, useSelector } from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
-import {
-  ActiveOpacity,
-  COLORS,
-  FONTS,
-  GROUP_FONT,
-  SIZES,
-} from '../../../Common/Theme';
+import { ActiveOpacity, COLORS, FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomCheckBox from '../../../Components/CustomCheckBox';
-import {GendersData} from '../../../Components/Data';
-import {updateField} from '../../../Redux/Action/actions';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useCustomToast} from '../../../Utils/toastUtils';
+import { GendersData } from '../../../Components/Data';
+import { updateField } from '../../../Redux/Action/actions';
+import { LocalStorageFields } from '../../../Types/LocalStorageFields';
+import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 import TextString from '../../../Common/TextString';
+import GradientView from '../../../Common/GradientView';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import { GradientBorderView } from '../../../Components/GradientBorder';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const ListEmptyComponent = () => {
   return (
@@ -40,74 +29,85 @@ const ListEmptyComponent = () => {
   );
 };
 
-const SexualOrientation: FC = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+const SexualOrientation = () => {
+  const { colors, isDark } = useTheme();
+  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
   const userData = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
-  const {showToast} = useCustomToast();
-  const initialSexualOrientation: string[] =
-    userData.orientation.length !== 0 ? userData.orientation : [];
+  const { showToast } = useCustomToast();
+  const initialSexualOrientation: string[] = userData.orientation.length !== 0 ? userData.orientation : [];
 
-  const [ShowOnProfile, setShowOnProfile] = useState<boolean>(
-    userData.is_orientation_visible,
-  );
-  const [SelectedGenderIndex, setSelectedGenderIndex] = useState<string[]>(
-    initialSexualOrientation,
-  );
+  const [ShowOnProfile, setShowOnProfile] = useState<boolean>(userData.is_orientation_visible);
+  const [SelectedGenderIndex, setSelectedGenderIndex] = useState<string[]>(initialSexualOrientation);
 
   const toggleCheckMark = useCallback(() => {
-    setShowOnProfile(prev => !prev);
+    setShowOnProfile((prev) => !prev);
   }, []);
 
   const onPressGenders = useCallback(
-    (item: {id: number; name: string}) => {
-      const {name} = item;
+    (item: { id: number; name: string }) => {
+      const { name } = item;
       if (SelectedGenderIndex.includes(name)) {
-        setSelectedGenderIndex(prev =>
-          prev.filter(selectedName => selectedName !== name),
-        );
+        setSelectedGenderIndex((prev) => prev.filter((selectedName) => selectedName !== name));
       } else if (SelectedGenderIndex.length < 3) {
-        setSelectedGenderIndex(prev => [...prev, name]);
+        setSelectedGenderIndex((prev) => [...prev, name]);
       }
     },
-    [SelectedGenderIndex],
+    [SelectedGenderIndex]
   );
 
-  const isGenderSelected = (item: {name: string}) =>
-    SelectedGenderIndex.includes(item?.name);
+  const isGenderSelected = (item: { name: string }) => SelectedGenderIndex.includes(item?.name);
 
-  const renderItem = ({item, index}: {item: any; index: number}) => (
-    <TouchableOpacity
+  const renderItem = ({ item, index }: { item: any; index: number }) => (
+    <GradientBorderView
+      style={[
+        styles.GenderButtonView,
+        {
+          borderWidth: isGenderSelected(item) ? 2 : 0.5,
+          backgroundColor: isDark ? 'transparent' : colors.White,
+        },
+      ]}
+      gradientProps={{
+        colors: isGenderSelected(item)
+          ? isDark
+            ? colors.Gradient
+            : ['transparent', 'transparent']
+          : isDark
+            ? colors.UnselectedGradient
+            : ['transparent', 'transparent'],
+      }}
       key={index}
-      activeOpacity={ActiveOpacity}
-      onPress={() => onPressGenders(item)}
-      style={styles.GenderButtonView}>
-      <View style={styles.GenderFlexView}>
-        <Text
-          style={[
-            styles.SelectGenderText,
-            {
-              fontFamily: isGenderSelected(item) ? FONTS.Bold : FONTS.Medium,
-            },
-          ]}>
-          {item.name}
-        </Text>
-        {isGenderSelected(item) && (
-          <Image
-            resizeMethod="auto"
-            resizeMode="contain"
-            source={CommonIcons.CheckMark}
-            style={{width: hp('2.5%'), height: hp('2.5%')}}
-          />
-        )}
-      </View>
-    </TouchableOpacity>
+    >
+      <Pressable onPress={() => onPressGenders(item)} style={{ flex: 1, justifyContent: 'center' }}>
+        <View style={styles.GenderFlexView}>
+          <Text
+            style={[
+              styles.SelectGenderText,
+              {
+                fontFamily: isGenderSelected(item) ? FONTS.Bold : FONTS.Medium,
+                color: colors.TextColor,
+              },
+            ]}
+          >
+            {item.name}
+          </Text>
+          {isGenderSelected(item) && (
+            <Image
+              resizeMethod="auto"
+              resizeMode="contain"
+              tintColor={colors.Primary}
+              source={CommonIcons.CheckMark}
+              style={{ width: hp('2.5%'), height: hp('2.5%') }}
+            />
+          )}
+        </View>
+      </Pressable>
+    </GradientBorderView>
   );
 
   const OnNextButtonClick = async () => {
     try {
-      const orientations = SelectedGenderIndex.map(gender => gender);
+      const orientations = SelectedGenderIndex.map((gender) => gender);
 
       if (orientations.length === 0) {
         throw new Error('Please select your sexual orientation');
@@ -115,74 +115,70 @@ const SexualOrientation: FC = () => {
 
       await Promise.all([
         dispatch(updateField(LocalStorageFields.orientation, orientations)),
-        dispatch(
-          updateField(LocalStorageFields.is_orientation_visible, ShowOnProfile),
-        ),
+        dispatch(updateField(LocalStorageFields.is_orientation_visible, ShowOnProfile)),
       ]);
 
       navigation.navigate('LoginStack', {
         screen: 'HopingToFind',
       });
     } catch (error: any) {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(error?.message || error),
-        'error',
-      );
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
     }
   };
 
   return (
-    <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader
-        ProgressCount={2}
-        Skip={true}
-        handleSkipPress={() => {
-          navigation.navigate('LoginStack', {
-            screen: 'HopingToFind',
-          });
-        }}
-      />
+    <GradientView>
+      <View style={CreateProfileStyles.Container}>
+        <CreateProfileHeader
+          ProgressCount={2}
+          Skip={true}
+          handleSkipPress={() => {
+            navigation.navigate('LoginStack', {
+              screen: 'HopingToFind',
+            });
+          }}
+        />
 
-      <View style={styles.RenderDataContainer}>
-        <View style={CreateProfileStyles.ContentView}>
-          <Text style={styles.TitleText}>What is your sexual orientation?</Text>
-          <Text style={styles.SelectUptoText}>Select upto 3</Text>
-        </View>
+        <View style={styles.RenderDataContainer}>
+          <View style={CreateProfileStyles.ContentView}>
+            <Text style={[styles.TitleText, { color: colors.TitleText }]}>What is your sexual orientation?</Text>
+            <Text style={[styles.SelectUptoText, { color: colors.TextColor }]}>Select upto 3</Text>
+          </View>
 
-        <View style={styles.genderButtonViewContainer}>
-          <FlatList
-            data={GendersData}
-            renderItem={renderItem}
-            showsVerticalScrollIndicator={false}
-            ListEmptyComponent={ListEmptyComponent}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </View>
-      </View>
-
-      <View style={[styles.BottomContainer]}>
-        <View style={styles.BottomView}>
-          <View style={styles.CheckBoxView}>
-            <CustomCheckBox
-              isChecked={ShowOnProfile}
-              onToggle={toggleCheckMark}
-              BoxText="Show my orientation on my profile"
+          <View style={styles.genderButtonViewContainer}>
+            <FlatList
+              data={GendersData}
+              renderItem={renderItem}
+              showsVerticalScrollIndicator={false}
+              ListEmptyComponent={ListEmptyComponent}
+              keyExtractor={(item, index) => index.toString()}
             />
           </View>
-          <GradientButton
-            isLoading={false}
-            Title={'Continue'}
-            Navigation={OnNextButtonClick}
-            Disabled={SelectedGenderIndex.length !== 0 ? false : true}
-          />
+        </View>
+
+        <View style={[styles.BottomContainer]}>
+          <View style={styles.BottomView}>
+            <View style={styles.CheckBoxView}>
+              <CustomCheckBox
+                isChecked={ShowOnProfile}
+                onToggle={toggleCheckMark}
+                BoxText="Show my orientation on my profile"
+              />
+            </View>
+            <GradientButton
+              isLoading={false}
+              Title={'Continue'}
+              Navigation={OnNextButtonClick}
+              Disabled={SelectedGenderIndex.length !== 0 ? false : true}
+            />
+          </View>
         </View>
       </View>
-    </View>
+    </GradientView>
   );
 };
 
-export default SexualOrientation;
+export default memo(SexualOrientation);
 
 const styles = StyleSheet.create({
   SelectUptoText: {
@@ -224,7 +220,7 @@ const styles = StyleSheet.create({
     width: width - hp('8%'),
     marginVertical: hp('0.5%'),
     alignSelf: 'center',
-    backgroundColor: COLORS.White,
+    borderWidth: 2,
     borderRadius: SIZES.radius,
     justifyContent: 'center',
     alignContent: 'center',

@@ -1,5 +1,5 @@
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {ProfileType} from '../../../Types/ProfileType';
+import { LocalStorageFields } from '../../../Types/LocalStorageFields';
+import { ProfileType } from '../../../Types/ProfileType';
 
 const excludeFields = [
   'socket_id',
@@ -33,12 +33,7 @@ const excludeFields = [
 
 const calculateDataPercentage = (userData: ProfileType): number => {
   const isFilled = (value: any): boolean => {
-    if (
-      value === null ||
-      value === 'null' ||
-      value === undefined ||
-      value === ''
-    ) {
+    if (value === null || value === 'null' || value === undefined || value === '') {
       return false;
     } else if (typeof value === 'object' && !Array.isArray(value)) {
       // Treat null values as filled only for object fields
@@ -51,9 +46,7 @@ const calculateDataPercentage = (userData: ProfileType): number => {
     }
   };
 
-  const totalFields = Object.keys(userData).filter(
-    key => !excludeFields.includes(key),
-  ).length;
+  const totalFields = Object.keys(userData).filter((key) => !excludeFields.includes(key)).length;
 
   let filledFieldsCount = 0;
   const missingFields: string[] = [];
@@ -69,7 +62,7 @@ const calculateDataPercentage = (userData: ProfileType): number => {
       } else if (typeof value === 'object' && !Array.isArray(value)) {
         // If the value is an object and not an array, recursively log its details
         console.info(`- ${key}:`);
-        Object.entries(value).forEach(([nestedKey, nestedValue]) => {
+        Object.entries(value as any).forEach(([nestedKey, nestedValue]) => {
           console.info(`  - ${nestedKey}: ${nestedValue}`);
         });
       } else {
@@ -86,7 +79,7 @@ const calculateDataPercentage = (userData: ProfileType): number => {
 
   if (missingFields.length > 0) {
     console.info('Missing Fields:');
-    missingFields.forEach(field => {
+    missingFields.forEach((field) => {
       console.info(`  - ${field}`);
     });
   } else {

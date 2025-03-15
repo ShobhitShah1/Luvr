@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import {addEventListener} from '@react-native-community/netinfo';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
+import { addEventListener } from '@react-native-community/netinfo';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Animated,
@@ -15,26 +15,30 @@ import {
   View,
 } from 'react-native';
 import Swiper from 'rn-swipe-deck';
-import {Easing} from 'react-native-reanimated';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {useSelector} from 'react-redux';
+import { Easing } from 'react-native-reanimated';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useSelector } from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
 import TextString from '../../Common/TextString';
-import {ActiveOpacity, COLORS, GROUP_FONT} from '../../Common/Theme';
-import {CardDelay, CardLimit} from '../../Config/Setting';
+import { ActiveOpacity, COLORS, GROUP_FONT } from '../../Common/Theme';
+import { CardDelay, CardLimit } from '../../Config/Setting';
 import useInterval from '../../Hooks/useInterval';
-import {onSwipeLeft, onSwipeRight} from '../../Redux/Action/actions';
-import {store} from '../../Redux/Store/store';
+import { onSwipeLeft, onSwipeRight } from '../../Redux/Action/actions';
+import { store } from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
-import {ProfileType} from '../../Types/ProfileType';
-import {SwiperCard} from '../../Types/SwiperCard';
-import {useCustomToast} from '../../Utils/toastUtils';
+import { ProfileType } from '../../Types/ProfileType';
+import { SwiperCard } from '../../Types/SwiperCard';
+import { useCustomToast } from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
+import { useTheme } from '../../Contexts/ThemeContext';
+import GradientView from '../../Common/GradientView';
+import GradientButton from '../../Components/AuthComponents/GradientButton';
 
 const ExploreCardScreen: FC = () => {
-  const {width} = useWindowDimensions();
+  const { colors } = useTheme();
+  const { width } = useWindowDimensions();
 
   const swipeRef = useRef<Swiper<SwiperCard>>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
@@ -44,14 +48,10 @@ const ExploreCardScreen: FC = () => {
   const isScreenFocused = useIsFocused();
 
   const userData = useSelector((state: any) => state?.user);
-  const {showToast} = useCustomToast();
+  const { showToast } = useCustomToast();
 
-  const LeftSwipedUserIds = useSelector(
-    (state: any) => state?.user?.swipedLeftUserIds || [],
-  );
-  const RightSwipedUserIds = useSelector(
-    (state: any) => state?.user?.swipedRightUserIds || [],
-  );
+  const LeftSwipedUserIds = useSelector((state: any) => state?.user?.swipedLeftUserIds || []);
+  const RightSwipedUserIds = useSelector((state: any) => state?.user?.swipedRightUserIds || []);
 
   const [cards, setCards] = useState<ProfileType[]>([]);
   const [cardToSkipNumber, setCardToSkipNumber] = useState(0);
@@ -61,17 +61,12 @@ const ExploreCardScreen: FC = () => {
   const [IsAPILoading, setIsAPILoading] = useState(true);
   const [IsNetConnected, setIsNetConnected] = useState(true);
   const [isMatchModalVisible, setIsMatchModalVisible] = useState(false);
-  const [MatchedUserInfo, setMatchedUserInfo] = useState<ProfileType | null>(
-    null,
-  );
+  const [MatchedUserInfo, setMatchedUserInfo] = useState<ProfileType | null>(null);
 
-  const {startInterval, stopInterval, clearInterval} = useInterval(
+  const { startInterval, stopInterval, clearInterval } = useInterval(
     () => {
       if (cards && isScreenFocused) {
-        setCurrentImageIndex(
-          prevIndex =>
-            (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik?.length || 0,
-        );
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik?.length || 0);
         Animated.timing(animatedOpacity, {
           toValue: 1,
           duration: 1000,
@@ -81,11 +76,11 @@ const ExploreCardScreen: FC = () => {
         swipeRef.current?.forceUpdate();
       }
     },
-    cards && cards?.length > 0 ? CardDelay : null,
+    cards && cards?.length > 0 ? CardDelay : null
   );
 
   useEffect(() => {
-    const unsubscribe = addEventListener(state => {
+    const unsubscribe = addEventListener((state) => {
       setIsNetConnected(state?.isConnected || false);
     });
 
@@ -129,11 +124,7 @@ const ExploreCardScreen: FC = () => {
   const fetchAPIData = useCallback(
     async (cardSkipValue: number | undefined) => {
       if (!IsNetConnected) {
-        showToast(
-          TextString.error.toUpperCase(),
-          TextString.PleaseCheckYourInternetConnection,
-          TextString.error,
-        );
+        showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
         setIsAPILoading(false);
         return;
       }
@@ -153,19 +144,13 @@ const ExploreCardScreen: FC = () => {
         const APIResponse = await UserService.UserRegister(userDataForApi);
 
         if (APIResponse?.code === 200 && Array.isArray(APIResponse.data)) {
-          const filteredCards = await APIResponse.data.filter(
-            (card: any) => card?.name || card?.enable === 1,
-          );
+          const filteredCards = await APIResponse.data.filter((card: any) => card?.name || card?.enable === 1);
 
           setCards(filteredCards);
           swipeRef.current?.forceUpdate();
           startInterval();
         } else {
-          showToast(
-            TextString.error.toUpperCase(),
-            APIResponse?.message || 'Something went wrong',
-            TextString.error,
-          );
+          showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Something went wrong', TextString.error);
           stopInterval();
         }
       } catch (error: any) {
@@ -174,14 +159,10 @@ const ExploreCardScreen: FC = () => {
         setIsAPILoading(false);
       }
     },
-    [LeftSwipedUserIds, RightSwipedUserIds, userData, showToast, startInterval],
+    [LeftSwipedUserIds, RightSwipedUserIds, userData, showToast, startInterval]
   );
 
-  const swipeCardAction = (
-    cardIndex: number,
-    swipeAction: (id: string) => void,
-    shouldCallApi: boolean = false,
-  ) => {
+  const swipeCardAction = (cardIndex: number, swipeAction: (id: string) => void, shouldCallApi: boolean = false) => {
     if (isMatchModalVisible || !cards || !cards[cardIndex]?._id) {
       return;
     }
@@ -206,11 +187,7 @@ const ExploreCardScreen: FC = () => {
 
   const onSwipedCard = async (cardIndex: any) => {
     if (!IsNetConnected) {
-      showToast(
-        TextString.error.toUpperCase(),
-        TextString.PleaseCheckYourInternetConnection,
-        TextString.error,
-      );
+      showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
       swipeRef.current?.swipeBack();
       return;
     }
@@ -242,16 +219,12 @@ const ExploreCardScreen: FC = () => {
 
   const likeUserAPICall = async (id: string, cardData: ProfileType) => {
     if (!IsNetConnected) {
-      showToast(
-        TextString.error.toUpperCase(),
-        TextString.PleaseCheckYourInternetConnection,
-        TextString.error,
-      );
+      showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
       return;
     }
 
     try {
-      const userDataForApi = {eventName: 'like', like_to: id};
+      const userDataForApi = { eventName: 'like', like_to: id };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
@@ -261,19 +234,11 @@ const ExploreCardScreen: FC = () => {
         }
         swipeRef.current?.forceUpdate();
       } else {
-        showToast(
-          TextString.error.toUpperCase(),
-          APIResponse?.message || 'Please try again letter',
-          TextString.error,
-        );
+        showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Please try again letter', TextString.error);
         swipeRef.current?.swipeBack();
       }
     } catch (error: any) {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(error?.message || error),
-        TextString.error,
-      );
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), TextString.error);
       swipeRef.current?.swipeBack();
     } finally {
       setIsAPILoading(false);
@@ -282,182 +247,148 @@ const ExploreCardScreen: FC = () => {
 
   if (IsAPILoading) {
     return (
-      <React.Fragment>
-        <BottomTabHeader
-          showSetting={true}
-          hideSettingAndNotification={false}
-        />
+      <GradientView>
+        <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
         <View style={[styles.container, styles.LoaderContainer]}>
-          <ActivityIndicator size={'large'} color={COLORS.Primary} />
+          <ActivityIndicator size={'large'} color={colors.Primary} />
         </View>
-      </React.Fragment>
+      </GradientView>
     );
   }
 
   if (!IsNetConnected && !IsAPILoading) {
     return (
-      <React.Fragment>
-        <BottomTabHeader
-          showSetting={true}
-          hideSettingAndNotification={false}
-        />
+      <GradientView>
+        <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
         <View style={[styles.container, styles.LoaderContainer]}>
           <Text style={styles.NoNetText}>
-            Unable to establish an internet connection at the moment. Please
-            check your network settings and try again."
+            Unable to establish an internet connection at the moment. Please check your network settings and try again."
           </Text>
         </View>
-      </React.Fragment>
+      </GradientView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
+    <GradientView>
+      <View style={styles.container}>
+        <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
 
-      <View
-        style={[styles.SwiperContainer, {flex: cards?.length !== 0 ? 0.9 : 1}]}>
-        {cards && cards.length !== 0 ? (
-          <Swiper
-            ref={swipeRef}
-            cards={cards}
-            cardIndex={CurrentCardIndex}
-            stackSize={10}
-            stackSeparation={0}
-            horizontalThreshold={width / 2.5}
-            key={cards?.length}
-            secondCardZoom={10}
-            swipeBackCard={true}
-            onSwipedRight={onSwipeRightCard}
-            onSwiped={onSwipedCard}
-            onSwipedLeft={onSwipeLeftCard}
-            onSwipedAll={onSwipedAllCard}
-            containerStyle={styles.CardContainerStyle}
-            cardVerticalMargin={0}
-            animateCardOpacity={true}
-            animateOverlayLabelsOpacity={true}
-            backgroundColor={'transparent'}
-            disableBottomSwipe={true}
-            disableTopSwipe={true}
-            disableLeftSwipe={isMatchModalVisible}
-            disableRightSwipe={isMatchModalVisible}
-            stackScale={0}
-            cardStyle={styles.swiperStyle}
-            overlayOpacityHorizontalThreshold={1}
-            onSwiping={() => stopInterval()}
-            onSwipedAborted={() => startInterval()}
-            inputOverlayLabelsOpacityRangeX={
-              Platform.OS === 'ios'
-                ? [-width / 3, -1, 0, 1, width / 3]
-                : [-width / 3, -1, 0, 1, width / 3]
-            }
-            overlayLabels={{
-              left: {
-                element: (
-                  <Image
-                    source={CommonIcons.dislike_button}
-                    style={styles.LeftImage}
+        <View style={[styles.SwiperContainer, { flex: cards?.length !== 0 ? 0.9 : 1 }]}>
+          {cards && cards.length !== 0 ? (
+            <Swiper
+              ref={swipeRef}
+              cards={cards}
+              cardIndex={CurrentCardIndex}
+              stackSize={10}
+              stackSeparation={0}
+              horizontalThreshold={width / 2.5}
+              key={cards?.length}
+              secondCardZoom={10}
+              swipeBackCard={true}
+              onSwipedRight={onSwipeRightCard}
+              onSwiped={onSwipedCard}
+              onSwipedLeft={onSwipeLeftCard}
+              onSwipedAll={onSwipedAllCard}
+              containerStyle={styles.CardContainerStyle}
+              cardVerticalMargin={0}
+              animateCardOpacity={true}
+              animateOverlayLabelsOpacity={true}
+              backgroundColor={'transparent'}
+              disableBottomSwipe={true}
+              disableTopSwipe={true}
+              disableLeftSwipe={isMatchModalVisible}
+              disableRightSwipe={isMatchModalVisible}
+              stackScale={0}
+              cardStyle={styles.swiperStyle}
+              overlayOpacityHorizontalThreshold={1}
+              onSwiping={() => stopInterval()}
+              onSwipedAborted={() => startInterval()}
+              inputOverlayLabelsOpacityRangeX={
+                Platform.OS === 'ios' ? [-width / 3, -1, 0, 1, width / 3] : [-width / 3, -1, 0, 1, width / 3]
+              }
+              overlayLabels={{
+                left: {
+                  element: <Image source={CommonIcons.dislike_button} style={styles.LeftImage} />,
+                },
+                right: {
+                  element: <Image source={CommonIcons.like_button} style={styles.RightImage} />,
+                },
+              }}
+              renderCard={(cardData: any, cardIndex: any) => {
+                return (
+                  <RenderSwiperCard
+                    CurrentCardIndex={CurrentCardIndex}
+                    cardData={cardData}
+                    card={cardIndex}
+                    firstImageLoading={firstImageLoading}
+                    setFirstImageLoading={setFirstImageLoading}
+                    currentImageIndex={currentImageIndex}
+                    startInterval={startInterval}
+                    stopInterval={stopInterval}
                   />
-                ),
-              },
-              right: {
-                element: (
-                  <Image
-                    source={CommonIcons.like_button}
-                    style={styles.RightImage}
+                );
+              }}
+            />
+          ) : (
+            !IsAPILoading && (
+              <View style={styles.EmptyCardView}>
+                <Text style={[styles.EmptyCardText, { color: colors.TextColor }]}>
+                  Your dating compass needs a spin! Adjust your settings and let the matchmaking magic begin. 🧭✨
+                </Text>
+
+                <View style={{ marginTop: 15 }}>
+                  <GradientButton
+                    Disabled={false}
+                    isLoading={false}
+                    Title="Change Setting"
+                    Navigation={() => navigation.navigate('Setting')}
                   />
-                ),
-              },
-            }}
-            renderCard={(cardData: any, cardIndex: any) => {
-              return (
-                <RenderSwiperCard
-                  CurrentCardIndex={CurrentCardIndex}
-                  cardData={cardData}
-                  card={cardIndex}
-                  firstImageLoading={firstImageLoading}
-                  setFirstImageLoading={setFirstImageLoading}
-                  currentImageIndex={currentImageIndex}
-                  startInterval={startInterval}
-                  stopInterval={stopInterval}
-                />
-              );
-            }}
-          />
-        ) : (
-          !IsAPILoading && (
-            <View style={styles.EmptyCardView}>
-              <Text style={styles.EmptyCardText}>
-                Your dating compass needs a spin! Adjust your settings and let
-                the matchmaking magic begin. 🧭✨
-              </Text>
-
-              <TouchableOpacity
-                activeOpacity={ActiveOpacity}
-                onPress={() => {
-                  navigation.navigate('Setting');
-                }}
-                style={styles.ChangeSettingButton}>
-                <Text style={styles.ChangeSettingText}>Change Setting</Text>
-              </TouchableOpacity>
-            </View>
-          )
-        )}
-      </View>
-
-      {cards?.length !== 0 && (
-        <View style={styles.LikeAndRejectView}>
-          <TouchableOpacity
-            onPress={SwipeLeft}
-            activeOpacity={ActiveOpacity}
-            style={styles.LikeAndRejectButtonView}>
-            <Image
-              resizeMode="contain"
-              style={styles.DislikeButton}
-              source={CommonIcons.dislike_button}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={SwipeRight}
-            activeOpacity={ActiveOpacity}
-            style={styles.LikeAndRejectButtonView}>
-            <Image
-              resizeMode="contain"
-              style={styles.LikeButton}
-              source={CommonIcons.like_button}
-            />
-          </TouchableOpacity>
+                </View>
+              </View>
+            )
+          )}
         </View>
-      )}
 
-      <ItsAMatch
-        isVisible={!IsAPILoading && isMatchModalVisible}
-        onClose={() => {
-          setIsMatchModalVisible(false);
-          setMatchedUserInfo(null);
-        }}
-        user={MatchedUserInfo}
-        onSayHiClick={() => {
-          setIsMatchModalVisible(false);
-          navigation.navigate('Chat', {
-            id: MatchedUserInfo?._id,
-          });
-        }}
-        onCloseModalClick={() => {
-          setIsMatchModalVisible(false);
-          setMatchedUserInfo(null);
-        }}
-        setItsMatch={setIsMatchModalVisible}
-      />
-    </View>
+        {cards?.length !== 0 && (
+          <View style={styles.LikeAndRejectView}>
+            <TouchableOpacity onPress={SwipeLeft} activeOpacity={ActiveOpacity} style={styles.LikeAndRejectButtonView}>
+              <Image resizeMode="contain" style={styles.DislikeButton} source={CommonIcons.dislike_button} />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={SwipeRight} activeOpacity={ActiveOpacity} style={styles.LikeAndRejectButtonView}>
+              <Image resizeMode="contain" style={styles.LikeButton} source={CommonIcons.like_button} />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <ItsAMatch
+          isVisible={!IsAPILoading && isMatchModalVisible}
+          onClose={() => {
+            setIsMatchModalVisible(false);
+            setMatchedUserInfo(null);
+          }}
+          user={MatchedUserInfo}
+          onSayHiClick={() => {
+            setIsMatchModalVisible(false);
+            navigation.navigate('Chat', {
+              id: MatchedUserInfo?._id,
+            });
+          }}
+          onCloseModalClick={() => {
+            setIsMatchModalVisible(false);
+            setMatchedUserInfo(null);
+          }}
+          setItsMatch={setIsMatchModalVisible}
+        />
+      </View>
+    </GradientView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.Secondary,
   },
   LoaderContainer: {
     justifyContent: 'center',

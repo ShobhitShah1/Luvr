@@ -1,19 +1,11 @@
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, memo} from 'react';
-import {
-  Image,
-  Platform,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { FC, memo } from 'react';
+import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
-import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../../Common/Theme';
+import { COLORS, GROUP_FONT } from '../../../../Common/Theme';
+import { useTheme } from '../../../../Contexts/ThemeContext';
 
 interface CreateProfileProps {
   ProgressCount: number;
@@ -22,46 +14,36 @@ interface CreateProfileProps {
   hideBack?: boolean;
 }
 
-const CreateProfileHeader: FC<CreateProfileProps> = ({
-  ProgressCount,
-  Skip,
-  handleSkipPress,
-  hideBack,
-}) => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+const CreateProfileHeader: FC<CreateProfileProps> = ({ ProgressCount, Skip, handleSkipPress, hideBack }) => {
+  const { colors } = useTheme();
+  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
 
   return (
     <View style={styles.headerContainer}>
       <SafeAreaView />
-      <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.Secondary} />
       <View style={styles.buttonAndTitleContainer}>
-        <TouchableOpacity
-          activeOpacity={ActiveOpacity}
-          style={styles.backButtonView}
-          onPress={() => navigation.goBack()}>
+        <Pressable style={styles.backButtonView} onPress={() => navigation.goBack()}>
           {!hideBack && (
             <Image
               resizeMode="contain"
+              tintColor={colors.TextColor}
               source={CommonIcons.TinderBack}
               style={styles.cancelButton}
             />
           )}
-        </TouchableOpacity>
+        </Pressable>
 
-        <View style={styles.pageCountView}>
+        <View style={[styles.pageCountView]}>
           {ProgressCount !== 0 && (
-            <Text style={styles.pageCount}>{ProgressCount}/9</Text>
+            <Text style={[styles.pageCount, { color: colors.TextColor }]}>{ProgressCount}/9</Text>
           )}
         </View>
 
         <View style={styles.skipButton}>
           {Skip && (
-            <TouchableOpacity
-              activeOpacity={ActiveOpacity}
-              onPress={handleSkipPress}>
-              <Text style={styles.skipText}>Skip</Text>
-            </TouchableOpacity>
+            <Pressable onPress={handleSkipPress}>
+              <Text style={[styles.skipText, { color: colors.TextColor }]}>Skip</Text>
+            </Pressable>
           )}
         </View>
       </View>

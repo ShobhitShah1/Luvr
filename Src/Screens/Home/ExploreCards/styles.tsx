@@ -1,11 +1,7 @@
-import {StyleSheet} from 'react-native';
-import {COLORS, GROUP_FONT} from '../../../Common/Theme';
+import { StyleSheet } from 'react-native';
+import { COLORS, GROUP_FONT } from '../../../Common/Theme';
 
 const styles = StyleSheet.create({
-  Container: {
-    flex: 1,
-    backgroundColor: COLORS.Secondary,
-  },
   FlatListStyle: {
     width: '90%',
     alignSelf: 'center',
@@ -21,7 +17,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: COLORS.Secondary,
   },
   LoaderContainer: {
     justifyContent: 'center',

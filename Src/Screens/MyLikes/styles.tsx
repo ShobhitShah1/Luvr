@@ -1,13 +1,12 @@
-import {StyleSheet} from 'react-native';
-import {COLORS, FONTS} from '../../Common/Theme';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { StyleSheet } from 'react-native';
+import { COLORS, FONTS } from '../../Common/Theme';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 let NO_IMAGE_CONTAINER = 150;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.Secondary,
   },
   LoadingView: {
     flex: 1,

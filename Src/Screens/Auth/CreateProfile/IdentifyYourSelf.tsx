@@ -1,39 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useCallback, useRef, useState} from 'react';
-import {
-  Keyboard,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-import {useDispatch, useSelector} from 'react-redux';
-import {ActiveOpacity, COLORS, FONTS, SIZES} from '../../../Common/Theme';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { FC, memo, useCallback, useRef, useState } from 'react';
+import { Keyboard, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { useDispatch, useSelector } from 'react-redux';
+import { ActiveOpacity, COLORS, FONTS, SIZES } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
-import {MainGenders} from '../../../Components/Data';
+import { MainGenders } from '../../../Components/Data';
 import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
-import {updateField} from '../../../Redux/Action/actions';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useCustomToast} from '../../../Utils/toastUtils';
+import { updateField } from '../../../Redux/Action/actions';
+import { LocalStorageFields } from '../../../Types/LocalStorageFields';
+import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import {store} from '../../../Redux/Store/store';
+import { store } from '../../../Redux/Store/store';
 import TextString from '../../../Common/TextString';
+import GradientView from '../../../Common/GradientView';
+import { GradientBorderView } from '../../../Components/GradientBorder';
+import { useTheme } from '../../../Contexts/ThemeContext';
 
 const IdentifyYourSelf: FC = () => {
-  const KeyboardVisible = useKeyboardVisibility();
+  const { colors, isDark } = useTheme();
   const userData = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
-  const {showToast} = useCustomToast();
+  const { showToast } = useCustomToast();
 
   const ScrollViewRef = useRef<ScrollView>(null);
   const dayInputRef = useRef<TextInput>(null);
@@ -42,28 +34,28 @@ const IdentifyYourSelf: FC = () => {
 
   const [FirstName, setFirstName] = useState<string>(userData.full_name);
   const [BirthDateDD, setBirthDateDD] = useState<string>(
-    userData.birthdate ? String(userData.birthdate).split('/')[0] : '',
+    userData.birthdate ? String(userData.birthdate).split('/')[0] : ''
   );
   const [BirthDateMM, setBirthDateMM] = useState<string>(
-    userData.birthdate ? String(userData.birthdate).split('/')[1] : '',
+    userData.birthdate ? String(userData.birthdate).split('/')[1] : ''
   );
   const [BirthDateYYYY, setBirthDateYYYY] = useState<string>(
-    userData.birthdate ? String(userData.birthdate).split('/')[2] : '',
+    userData.birthdate ? String(userData.birthdate).split('/')[2] : ''
   );
   const [CityName, setCityName] = useState<string>(userData.city);
   const [selectedGender, setSelectedGender] = useState<string>(userData.gender);
 
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{LoginStack: {}}>>();
+  // Track focused input field
+  const [focusedInput, setFocusedInput] = useState<string | null>(null);
+
+  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
 
   const handleGenderSelection = (gender: string) => {
     setSelectedGender(gender);
   };
 
   const calculateAge = (inputDate: any) => {
-    const [day, month, year] = inputDate
-      .split(',')
-      .map((item: any) => parseInt(item.trim(), 10));
+    const [day, month, year] = inputDate.split(',').map((item: any) => parseInt(item.trim(), 10));
 
     if (month < 1 || month > 12) {
       throw new Error('Invalid month. Month must be between 1 and 12.');
@@ -73,10 +65,7 @@ const IdentifyYourSelf: FC = () => {
     const birthDate = new Date(year, month - 1, day);
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDate.getDate())
-    ) {
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
     return age;
@@ -90,43 +79,21 @@ const IdentifyYourSelf: FC = () => {
     try {
       Keyboard.dismiss();
 
-      if (
-        !FirstName ||
-        !BirthDateDD ||
-        !BirthDateMM ||
-        !BirthDateYYYY ||
-        !selectedGender ||
-        !CityName
-      ) {
-        showToast(
-          'Incomplete Information',
-          'Please fill in all required fields.',
-          'error',
-        );
+      if (!FirstName || !BirthDateDD || !BirthDateMM || !BirthDateYYYY || !selectedGender || !CityName) {
+        showToast('Incomplete Information', 'Please fill in all required fields.', 'error');
         return;
       }
 
-      const age = calculateAge(
-        `${BirthDateDD},${BirthDateMM},${BirthDateYYYY}`,
-      );
+      const age = calculateAge(`${BirthDateDD},${BirthDateMM},${BirthDateYYYY}`);
 
       if (!isEligible(age)) {
-        showToast(
-          TextString.error.toUpperCase(),
-          'Please enter a valid age.',
-          'Error',
-        );
+        showToast(TextString.error.toUpperCase(), 'Please enter a valid age.', 'Error');
         return;
       }
 
       await Promise.all([
         dispatch(updateField(LocalStorageFields.full_name, FirstName)),
-        dispatch(
-          updateField(
-            LocalStorageFields.birthdate,
-            `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`,
-          ),
-        ),
+        dispatch(updateField(LocalStorageFields.birthdate, `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`)),
         dispatch(updateField(LocalStorageFields.gender, selectedGender)),
         dispatch(updateField(LocalStorageFields.city, CityName)),
       ]);
@@ -137,185 +104,239 @@ const IdentifyYourSelf: FC = () => {
     } catch (error) {
       showToast(TextString.error.toUpperCase(), String(error), 'error');
     }
-  }, [
-    navigation,
-    FirstName,
-    BirthDateDD,
-    BirthDateMM,
-    BirthDateYYYY,
-    selectedGender,
-    CityName,
-  ]);
+  }, [navigation, FirstName, BirthDateDD, BirthDateMM, BirthDateYYYY, selectedGender, CityName]);
+
+  // Helper function to render text input with conditional gradient border
+  const renderInputField = (fieldName: string, props: any) => {
+    return (
+      <GradientBorderView style={[styles.TextInputViewStyle, props.containerStyle]}>
+        <CustomTextInput
+          {...props}
+          onFocus={() => setFocusedInput(fieldName)}
+          onBlur={() => setFocusedInput(null)}
+          style={[styles.textInputStyle, { color: colors.TextColor }]}
+          placeholderTextColor={COLORS.Gray}
+        />
+      </GradientBorderView>
+    );
+    // const isFocused = focusedInput === fieldName;
+
+    // if (isFocused) {
+    //   return (
+    //     <GradientBorderView style={[styles.TextInputViewStyle, props.containerStyle]}>
+    //       <CustomTextInput
+    //         {...props}
+    //         onFocus={() => setFocusedInput(fieldName)}
+    //         onBlur={() => setFocusedInput(null)}
+    //         style={styles.textInputStyle}
+    //         placeholderTextColor={COLORS.Gray}
+    //       />
+    //     </GradientBorderView>
+    //   );
+    // } else {
+    //   return (
+    //     <View style={[styles.TextInputViewStyle, styles.regularBorder, props.containerStyle]}>
+    //       <CustomTextInput
+    //         {...props}
+    //         onFocus={() => setFocusedInput(fieldName)}
+    //         onBlur={() => setFocusedInput(null)}
+    //         style={styles.textInputStyle}
+    //         placeholderTextColor={COLORS.Gray}
+    //       />
+    //     </View>
+    //   );
+    // }
+  };
 
   return (
-    <View style={CreateProfileStyles.Container}>
-      <CreateProfileHeader ProgressCount={1} Skip={false} hideBack={true} />
+    <GradientView>
+      <View style={CreateProfileStyles.Container}>
+        <CreateProfileHeader ProgressCount={1} Skip={false} hideBack={true} />
 
-      <ScrollView
-        ref={ScrollViewRef}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="interactive"
-        automaticallyAdjustKeyboardInsets
-        style={[styles.ContentView]}
-        showsVerticalScrollIndicator={false}>
-        <Text style={styles.TitleText}>Identify your{'\n'}real self</Text>
-        <Text style={styles.subTitleText}>
-          Introduce yourself fill out the details{'\n'}so people know about you.
-        </Text>
+        <ScrollView
+          ref={ScrollViewRef}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          automaticallyAdjustKeyboardInsets
+          style={[styles.ContentView]}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={[styles.TitleText, { color: colors.TitleText }]}>Identify your{'\n'}real self</Text>
+          <Text style={[styles.subTitleText, { color: colors.TextColor }]}>
+            Introduce yourself fill out the details{'\n'}so people know about you.
+          </Text>
 
-        <View style={styles.AllInputContainerView}>
-          <View style={styles.TextViewForSpace}>
-            <Text style={styles.NameText}>My name is</Text>
-            <CustomTextInput
-              value={FirstName}
-              editable={store.getState().user?.full_name?.length === 0}
-              onChangeText={value => {
-                setFirstName(value);
-              }}
-              textContentType="givenName"
-              placeholder="Enter your name"
-              style={styles.TextInputStyle}
-              placeholderTextColor={COLORS.Gray}
-            />
-          </View>
+          <View style={styles.AllInputContainerView}>
+            <View style={styles.TextViewForSpace}>
+              <Text style={[styles.NameText, { color: colors.TitleText }]}>My name is</Text>
+              {renderInputField('name', {
+                value: FirstName,
+                editable: store.getState().user?.full_name?.length === 0,
+                onChangeText: (value: string) => {
+                  setFirstName(value);
+                },
+                textContentType: 'givenName',
+                placeholder: 'Enter your name',
+              })}
+            </View>
 
-          <View style={styles.TextViewForSpace}>
-            <Text style={styles.NameText}>My birthday is</Text>
-            <View style={styles.BirthdayInputView}>
-              <CustomTextInput
-                ref={dayInputRef}
-                editable={true}
-                keyboardType={'number-pad'}
-                value={BirthDateDD}
-                onChangeText={value => {
-                  if (
-                    value === '' ||
-                    (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 31)
-                  ) {
-                    setBirthDateDD(value);
-                    if (value.length === 2) {
-                      monthInputRef?.current?.focus();
+            <View style={styles.TextViewForSpace}>
+              <Text style={[styles.NameText, { color: colors.TitleText }]}>My birthday is</Text>
+              <View style={styles.BirthdayInputView}>
+                {renderInputField('day', {
+                  ref: dayInputRef,
+                  containerStyle: { width: hp('11%') },
+                  editable: true,
+                  keyboardType: 'number-pad',
+                  value: BirthDateDD,
+                  onChangeText: (value: string) => {
+                    if (value === '' || (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 31)) {
+                      setBirthDateDD(value);
+                      if (value.length === 2) {
+                        monthInputRef?.current?.focus();
+                      }
                     }
-                  }
-                }}
-                maxLength={2}
-                placeholder="DD"
-                style={[styles.TextInputStyle, {width: hp('12%')}]}
-                placeholderTextColor={COLORS.Gray}
-              />
-              <CustomTextInput
-                ref={monthInputRef}
-                value={BirthDateMM}
-                keyboardType={'number-pad'}
-                onChangeText={value => {
-                  if (
-                    value === '' ||
-                    (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 12)
-                  ) {
-                    setBirthDateMM(value);
-                    if (value.length === 2) {
-                      yearInputRef?.current?.focus();
+                  },
+                  maxLength: 2,
+                  placeholder: 'DD',
+                })}
+
+                {renderInputField('month', {
+                  ref: monthInputRef,
+                  containerStyle: { width: hp('11%') },
+                  keyboardType: 'number-pad',
+                  value: BirthDateMM,
+                  onChangeText: (value: string) => {
+                    if (value === '' || (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 12)) {
+                      setBirthDateMM(value);
+                      if (value.length === 2) {
+                        yearInputRef?.current?.focus();
+                      }
                     }
-                  }
-                }}
-                maxLength={2}
-                placeholder="MM"
-                style={[styles.TextInputStyle, {width: hp('12%')}]}
-                placeholderTextColor={COLORS.Gray}
-              />
-              <CustomTextInput
-                ref={yearInputRef}
-                value={BirthDateYYYY}
-                keyboardType={'number-pad'}
-                onChangeText={value => {
-                  setBirthDateYYYY(value);
-                }}
-                maxLength={4}
-                placeholder="YYYY"
-                style={[styles.TextInputStyle, {width: hp('12%')}]}
-                placeholderTextColor={COLORS.Gray}
-              />
+                  },
+                  maxLength: 2,
+                  placeholder: 'MM',
+                })}
+
+                {renderInputField('year', {
+                  ref: yearInputRef,
+                  containerStyle: { width: hp('11%') },
+                  keyboardType: 'number-pad',
+                  value: BirthDateYYYY,
+                  onChangeText: (value: string) => {
+                    setBirthDateYYYY(value);
+                  },
+                  maxLength: 4,
+                  placeholder: 'YYYY',
+                })}
+              </View>
+            </View>
+
+            <View style={styles.TextViewForSpace}>
+              <Text style={[styles.NameText, { color: colors.TitleText }]}>I am a</Text>
+              <View style={styles.BirthdayInputView}>
+                {MainGenders.map((gender, index) => (
+                  <View key={index}>
+                    {selectedGender === gender ? (
+                      <GradientBorderView
+                        gradientProps={{ colors: isDark ? colors.Gradient : ['transparent', 'transparent'] }}
+                        style={[
+                          styles.GenderView,
+                          {
+                            width: hp('11%'),
+                            backgroundColor: !isDark && selectedGender === gender ? COLORS.Background : 'transparent',
+                          },
+                        ]}
+                      >
+                        <TouchableOpacity
+                          activeOpacity={ActiveOpacity}
+                          onPress={() => handleGenderSelection(gender)}
+                          style={{ flex: 1, justifyContent: 'center' }}
+                        >
+                          <Text
+                            style={[
+                              styles.GenderText,
+                              {
+                                color: selectedGender === gender ? COLORS.White : COLORS.Gray,
+                              },
+                            ]}
+                          >
+                            {gender}
+                          </Text>
+                        </TouchableOpacity>
+                      </GradientBorderView>
+                    ) : (
+                      <View
+                        style={[
+                          styles.GenderView,
+                          styles.regularBorder,
+                          {
+                            width: hp('11%'),
+                            borderColor: isDark ? colors.InputBackground : 'transparent',
+                            backgroundColor: 'transparent',
+                          },
+                        ]}
+                      >
+                        <TouchableOpacity
+                          activeOpacity={ActiveOpacity}
+                          onPress={() => handleGenderSelection(gender)}
+                          style={{ flex: 1, justifyContent: 'center' }}
+                        >
+                          <Text
+                            style={[
+                              styles.GenderText,
+                              {
+                                color: COLORS.Gray,
+                              },
+                            ]}
+                          >
+                            {gender}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.TextViewForSpace}>
+              <Text style={[styles.NameText, { color: colors.TitleText }]}>I am from</Text>
+              {renderInputField('city', {
+                value: CityName,
+                onChangeText: (value: string) => {
+                  setCityName(value);
+                },
+                onPressIn: () => {
+                  ScrollViewRef.current?.scrollToEnd({ animated: true });
+                },
+                textContentType: 'givenName',
+                placeholder: 'Enter your city name',
+              })}
             </View>
           </View>
+        </ScrollView>
 
-          <View style={styles.TextViewForSpace}>
-            <Text style={styles.NameText}>I am a</Text>
-            <View style={styles.BirthdayInputView}>
-              {MainGenders.map((gender, index) => (
-                <TouchableOpacity
-                  activeOpacity={ActiveOpacity}
-                  key={index}
-                  onPress={() => handleGenderSelection(gender)}
-                  style={[
-                    styles.GenderView,
-                    {
-                      width: hp('12%'),
-                      backgroundColor:
-                        selectedGender === gender
-                          ? COLORS.Primary
-                          : COLORS.White,
-                    },
-                  ]}>
-                  <Text
-                    style={[
-                      styles.GenderText,
-                      {
-                        color:
-                          selectedGender === gender
-                            ? COLORS.White
-                            : COLORS.Gray,
-                      },
-                    ]}>
-                    {gender}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          <View style={styles.TextViewForSpace}>
-            <Text style={styles.NameText}>I am from</Text>
-            <CustomTextInput
-              value={CityName}
-              onChangeText={value => {
-                setCityName(value);
-              }}
-              onPressIn={() => {
-                ScrollViewRef.current?.scrollToEnd({animated: true});
-              }}
-              textContentType="givenName"
-              placeholder="Enter your city name"
-              style={styles.TextInputStyle}
-              placeholderTextColor={COLORS.Gray}
-            />
-          </View>
-        </View>
-      </ScrollView>
-
-      {!KeyboardVisible && (
+        {/* {!KeyboardVisible && ( */}
         <View style={styles.BottomButton}>
           <GradientButton
             isLoading={false}
             Title={'Continue'}
             Disabled={
-              !FirstName ||
-              !BirthDateDD ||
-              !BirthDateMM ||
-              !BirthDateYYYY ||
-              !selectedGender ||
-              !CityName
+              !FirstName || !BirthDateDD || !BirthDateMM || !BirthDateYYYY || !selectedGender || !CityName
                 ? true
                 : false
             }
             Navigation={() => OnLetsGoButtonPress()}
           />
         </View>
-      )}
-    </View>
+        {/* )} */}
+      </View>
+    </GradientView>
   );
 };
 
-export default IdentifyYourSelf;
+export default memo(IdentifyYourSelf);
 
 const styles = StyleSheet.create({
   ContentView: {
@@ -329,20 +350,26 @@ const styles = StyleSheet.create({
     fontSize: hp('3.3%'),
     fontFamily: FONTS.Bold,
   },
-  TextInputStyle: {
+  TextInputViewStyle: {
     padding: 0,
+    borderWidth: 1,
+    justifyContent: 'center',
+    height: hp('6.8%'),
+    borderRadius: SIZES.radius,
+  },
+  regularBorder: {
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  textInputStyle: {
     color: COLORS.Black,
     fontSize: hp('1.7%'),
-    borderColor: COLORS.Black,
-    backgroundColor: COLORS.White,
-    height: hp('6.8%'),
     fontFamily: FONTS.SemiBold,
-    borderRadius: SIZES.radius,
     textAlign: 'center',
   },
   GenderView: {
     padding: 0,
-    backgroundColor: COLORS.White,
+    borderWidth: 2.5,
     height: hp('6.8%'),
     width: wp('85%'),
     borderRadius: SIZES.radius,

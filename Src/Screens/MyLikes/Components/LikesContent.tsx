@@ -1,11 +1,12 @@
-import React, {FC, useMemo, useState} from 'react';
-import {ActivityIndicator, Image, StyleSheet, Text, View} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import React, { FC, useMemo, useState } from 'react';
+import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
 import CommonImages from '../../../Common/CommonImages';
-import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
-import {LikeAndMatchData, LikeInterface} from '../../../Types/Interface';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import { LikeInterface } from '../../../Types/Interface';
 
 interface LikesProps {
   LikesData: LikeInterface;
@@ -13,18 +14,18 @@ interface LikesProps {
 
 let NO_IMAGE_CONTAINER = 150;
 
-const LikesContent: FC<LikesProps> = ({LikesData}) => {
-  const [isImageLoading, setIsImageLoading] = useState(false);
-  const {status, user_details} = LikesData;
+const LikesContent: FC<LikesProps> = ({ LikesData }) => {
+  const { colors, isDark } = useTheme();
 
-  const data: LikeAndMatchData | null = user_details?.[0] ?? null;
+  const [isImageLoading, setIsImageLoading] = useState(false);
+  const { status, user_details } = LikesData;
+
+  const data: any = user_details?.[0] ?? null;
 
   const imageSource = useMemo(
     () =>
-      data?.recent_pik?.[0]
-        ? {uri: ApiConfig.IMAGE_BASE_URL + data.recent_pik[0]}
-        : CommonImages.WelcomeBackground,
-    [data],
+      data?.recent_pik?.[0] ? { uri: ApiConfig.IMAGE_BASE_URL + data.recent_pik[0] } : CommonImages.WelcomeBackground,
+    [data]
   );
 
   if (status !== 'like') {
@@ -33,7 +34,9 @@ const LikesContent: FC<LikesProps> = ({LikesData}) => {
 
   return (
     <View style={styles.Container} key={user_details[0]._id}>
-      <View style={styles.DetailBoxContainerView}>
+      <View
+        style={[styles.DetailBoxContainerView, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White }]}
+      >
         <View style={styles.LikeImageView}>
           <Image
             source={imageSource}
@@ -44,27 +47,24 @@ const LikesContent: FC<LikesProps> = ({LikesData}) => {
           />
           {isImageLoading && (
             <View style={styles.ImageLoadingView}>
-              <ActivityIndicator size={30} color={COLORS.Primary} />
+              <ActivityIndicator size={30} color={colors.Primary} />
             </View>
           )}
         </View>
         <View style={styles.LikeTextView}>
-          <Text numberOfLines={1} style={styles.TitleMatchText}>
+          <Text numberOfLines={1} style={[styles.TitleMatchText, { color: colors.TitleText }]}>
             You Made a Move!
           </Text>
-          <Text numberOfLines={2} style={styles.DescriptionText}>
+          <Text numberOfLines={2} style={[styles.DescriptionText, { color: colors.TextColor }]}>
             You've taken the first step! You liked{' '}
-            <Text style={{fontFamily: FONTS.Bold, color: COLORS.Primary}}>
-              {user_details[0].full_name || 'User'}
+            <Text style={{ fontFamily: FONTS.Bold, color: colors.Primary }}>
+              {`${user_details[0].full_name}'s ` || 'User'}
             </Text>
-            's profile.
+            profile.
           </Text>
         </View>
         <View style={styles.LikeButtonView}>
-          <Image
-            style={styles.LikeButtonIcon}
-            source={CommonIcons.like_button}
-          />
+          <Image style={styles.LikeButtonIcon} source={CommonIcons.like_button} />
         </View>
       </View>
     </View>
@@ -122,7 +122,6 @@ const styles = StyleSheet.create({
     marginVertical: hp('1%'),
     paddingVertical: hp('1.8%'),
     paddingHorizontal: hp('1.5%'),
-    backgroundColor: COLORS.White,
     justifyContent: 'space-between',
   },
   TitleMatchText: {
@@ -163,8 +162,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   LikeButtonIcon: {
-    width: hp(6.5),
-    height: hp(6.5),
+    width: hp(5.5),
+    height: hp(5.5),
   },
 
   // Match Box

@@ -1,23 +1,14 @@
-import {BlurView} from '@react-native-community/blur';
-import React, {FC, memo} from 'react';
-import {
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { BlurView } from '@react-native-community/blur';
+import React, { FC, memo } from 'react';
+import { FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CommonIcons from '../Common/CommonIcons';
-import {
-  ActiveOpacity,
-  COLORS,
-  deviceHeightWithStatusbar,
-  FONTS,
-} from '../Common/Theme';
-import {reportReasons} from './Data';
+import { ActiveOpacity, COLORS, deviceHeightWithStatusbar, FONTS } from '../Common/Theme';
+import { reportReasons } from './Data';
+import LinearGradient from 'react-native-linear-gradient';
+import { useTheme } from '../Contexts/ThemeContext';
+import { GradientBorderView } from './GradientBorder';
 
 interface ReportUserProps {
   Visible: boolean;
@@ -29,12 +20,7 @@ interface ReportUserProps {
 
 export const BlurredBackdrop = () => (
   <View style={styles.blurContainer}>
-    <BlurView
-      blurAmount={5}
-      blurType="dark"
-      style={styles.blurView}
-      reducedTransparencyFallbackColor="transparent"
-    />
+    <BlurView blurAmount={5} blurType="dark" style={styles.blurView} reducedTransparencyFallbackColor="transparent" />
   </View>
 );
 
@@ -45,6 +31,8 @@ const ReportUserModalView: FC<ReportUserProps> = ({
   setSelectedReportReason,
   onReportPress,
 }) => {
+  const { colors, isDark } = useTheme();
+
   return (
     <Modal
       isVisible={Visible}
@@ -55,88 +43,106 @@ const ReportUserModalView: FC<ReportUserProps> = ({
       onBackdropPress={() => setVisibility(false)}
       hasBackdrop={true}
       onBackButtonPress={() => setVisibility(false)}
-      customBackdrop={<BlurredBackdrop />}>
-      <SafeAreaView style={styles.Container}>
-        <View>
-          <View style={styles.TitleView}>
-            <View />
-            <Text style={styles.TitleText}>Report Profile</Text>
-            <TouchableOpacity
-              onPress={() => setVisibility(false)}
-              activeOpacity={ActiveOpacity}
-              style={styles.CloseModalIconView}>
-              <Image
-                source={CommonIcons.CloseModal}
-                style={styles.CloseModalIcon}
-              />
-            </TouchableOpacity>
+      customBackdrop={<BlurredBackdrop />}
+    >
+      <View style={[styles.container, { backgroundColor: isDark ? 'rgba(18, 18, 19, 0.7)' : colors.White }]}>
+        <SafeAreaView style={{ flex: 1 }}>
+          <View>
+            <View style={styles.titleView}>
+              <View />
+              <Text style={[styles.titleText, { color: colors.TitleText }]}>Report Profile</Text>
+              <TouchableOpacity
+                onPress={() => setVisibility(false)}
+                activeOpacity={ActiveOpacity}
+                style={styles.closeModalIconView}
+              >
+                <Image source={CommonIcons.CloseModal} style={styles.closeModalIcon} />
+              </TouchableOpacity>
+            </View>
+            <Text style={[styles.titleSubText, { color: colors.TextColor }]}>
+              Don't Worry, your feedback is anonymous and they won't know that you've report them
+            </Text>
           </View>
-          <Text style={styles.TitleSubText}>
-            Don't Worry, your feedback is anonymous and they won't know that
-            you've report them
-          </Text>
-        </View>
 
-        <View style={styles.ReasonsViewContainer}>
-          <FlatList
-            data={reportReasons}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({item, index}) => {
-              return (
-                <TouchableOpacity
-                  style={styles.ReasonsTextView}
-                  onPress={() => setSelectedReportReason(item.name)}
-                  activeOpacity={ActiveOpacity}
-                  key={index}>
-                  <View style={styles.ReasonTextFlexView}>
-                    <Text
-                      style={[
-                        styles.ReasonText,
-                        {
-                          color:
-                            SelectedReportReason === item.name
-                              ? COLORS.Black
-                              : COLORS.DescriptionGray,
-                          fontFamily:
-                            SelectedReportReason === item.name
-                              ? FONTS.Bold
-                              : FONTS.Medium,
-                        },
-                      ]}>
-                      {item.name}
-                    </Text>
-                    {SelectedReportReason === item.name && (
-                      <Image
-                        source={CommonIcons.CheckMark}
-                        style={styles.TickMarkImage}
-                      />
-                    )}
-                  </View>
-                </TouchableOpacity>
-              );
-            }}
-          />
-        </View>
+          <View style={styles.reasonsViewContainer}>
+            <FlatList
+              data={reportReasons}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item, index }) => {
+                const selected = SelectedReportReason === item.name;
 
-        <View style={styles.ButtonView}>
-          <TouchableOpacity
-            activeOpacity={ActiveOpacity}
-            onPress={onReportPress}
-            disabled={
-              SelectedReportReason === '' || SelectedReportReason.length === 0
-                ? true
-                : false
-            }
-            style={styles.ReportButtonView}>
-            <Text style={styles.ReportButtonText}>Report</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setVisibility(false)}
-            style={styles.CancelButtonView}>
-            <Text style={styles.CancelButtonText}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+                return (
+                  <GradientBorderView
+                    key={index}
+                    style={[
+                      styles.reasonsTextView,
+                      {
+                        borderRadius: 16,
+                        overflow: 'hidden',
+                        backgroundColor: isDark ? 'transparent' : colors.lightFiledBackground,
+                      },
+                    ]}
+                    gradientProps={{
+                      colors: selected
+                        ? colors.ButtonGradient
+                        : isDark
+                          ? colors.UnselectedGradient
+                          : ['transparent', 'transparent'],
+                    }}
+                  >
+                    <Pressable
+                      style={{ flex: 1, justifyContent: 'center', paddingVertical: 10 }}
+                      onPress={() => setSelectedReportReason(item.name)}
+                    >
+                      <View style={styles.reasonTextFlexView}>
+                        <Text
+                          style={[
+                            styles.reasonText,
+                            {
+                              color: colors.TextColor,
+                              fontFamily: selected ? FONTS.Bold : FONTS.Medium,
+                            },
+                          ]}
+                        >
+                          {item.name}
+                        </Text>
+                        {selected && (
+                          <Image
+                            tintColor={colors.Primary}
+                            source={CommonIcons.CheckMark}
+                            style={styles.tickMarkImage}
+                          />
+                        )}
+                      </View>
+                    </Pressable>
+                  </GradientBorderView>
+                );
+              }}
+            />
+          </View>
+
+          <View style={styles.buttonView}>
+            <LinearGradient
+              start={{ x: 0, y: 1 }}
+              end={{ x: 1, y: 0 }}
+              colors={colors.ButtonGradient}
+              style={styles.reportButtonView}
+            >
+              <Pressable
+                onPress={onReportPress}
+                style={{ flex: 1, justifyContent: 'center' }}
+                disabled={SelectedReportReason === '' || SelectedReportReason.length === 0 ? true : false}
+              >
+                <Text style={[styles.reportButtonText, { color: colors.TextColor }]}>Report</Text>
+              </Pressable>
+            </LinearGradient>
+
+            <Pressable onPress={() => setVisibility(false)} style={styles.cancelButtonView}>
+              <Text style={[styles.cancelButtonText, { color: colors.TextColor }]}>Cancel</Text>
+            </Pressable>
+          </View>
+        </SafeAreaView>
+      </View>
     </Modal>
   );
 };
@@ -144,108 +150,103 @@ const ReportUserModalView: FC<ReportUserProps> = ({
 export default memo(ReportUserModalView);
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     width: '100%',
     height: '90%',
     overflow: 'hidden',
-    backgroundColor: COLORS.White,
     borderRadius: 20,
+    paddingVertical: 7,
   },
-  TitleView: {
+  titleView: {
     height: 50,
-    paddingHorizontal: 15,
     width: '100%',
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
+    paddingHorizontal: 15,
     justifyContent: 'space-between',
   },
-  TitleText: {
+  titleText: {
+    left: 15,
+    fontSize: 20,
     zIndex: 9999,
     textAlign: 'center',
-    color: COLORS.Black,
     fontFamily: FONTS.Bold,
-    fontSize: 20,
-    left: 15,
   },
-  TitleSubText: {
-    marginBottom: 13,
+  titleSubText: {
     marginTop: 3,
     zIndex: 9999,
-    textAlign: 'center',
     opacity: 0.8,
     width: '90%',
+    fontSize: 13.5,
+    marginBottom: 13,
+    textAlign: 'center',
     alignSelf: 'center',
     color: COLORS.DescriptionGray,
     fontFamily: FONTS.SemiBold,
-    fontSize: 13.5,
   },
-  CloseModalIconView: {
+  closeModalIconView: {
     zIndex: 9999,
   },
-  CloseModalIcon: {
+  closeModalIcon: {
     width: 28,
     height: 28,
     resizeMode: 'contain',
   },
-  ReasonsViewContainer: {
+  reasonsViewContainer: {
     height: '73%',
   },
-  ReasonsTextView: {
+  reasonsTextView: {
     width: '90%',
-    paddingVertical: 10,
-    paddingHorizontal: 5,
+    borderWidth: 1,
     borderRadius: 30,
-    marginVertical: 5,
+    marginVertical: 8,
     alignSelf: 'center',
+    paddingHorizontal: 5,
     justifyContent: 'center',
-    backgroundColor: COLORS.Secondary,
   },
-  ReasonTextFlexView: {
+  reasonTextFlexView: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 5,
     justifyContent: 'space-between',
   },
-  ReasonText: {
-    color: COLORS.DescriptionGray,
+  reasonText: {
     padding: 10,
-    fontFamily: FONTS.Medium,
-    fontSize: 14,
     width: '90%',
+    fontSize: 14,
+    fontFamily: FONTS.Medium,
   },
-  TickMarkImage: {
+  tickMarkImage: {
     width: 25,
     height: 25,
-    right: 5,
+    right: 10,
     justifyContent: 'center',
     alignItems: 'center',
     resizeMode: 'contain',
   },
-  ButtonView: {
+  buttonView: {
     height: '14%',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ReportButtonView: {
+  reportButtonView: {
     width: 200,
     height: 50,
     bottom: 5,
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.Primary,
   },
-  ReportButtonText: {
+  reportButtonText: {
     textAlign: 'center',
-    color: COLORS.White,
     fontFamily: FONTS.SemiBold,
     fontSize: 15,
   },
-  CancelButtonView: {
+  cancelButtonView: {
     justifyContent: 'center',
     alignItems: 'center',
   },
-  CancelButtonText: {
+  cancelButtonText: {
     textAlign: 'center',
     color: COLORS.Primary,
     fontFamily: FONTS.SemiBold,
@@ -253,7 +254,7 @@ const styles = StyleSheet.create({
   },
   blurContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,.5)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   blurView: {
     position: 'absolute',

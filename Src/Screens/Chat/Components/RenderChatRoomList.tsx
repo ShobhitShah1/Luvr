@@ -1,15 +1,17 @@
 /* eslint-disable react-native/no-inline-styles */
-import {useNavigation} from '@react-navigation/native';
-import React, {memo} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import React, { memo } from 'react';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import CommonIcons from '../../../Common/CommonIcons';
 import CommonImages from '../../../Common/CommonImages';
-import {ActiveOpacity, COLORS, GROUP_FONT} from '../../../Common/Theme';
+import { COLORS, GROUP_FONT } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
-import {ChatRoomProps} from '../../../Types/Interface';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import { ChatRoomProps } from '../../../Types/Interface';
 
-const RenderChatRoomList = ({item, index}: ChatRoomProps) => {
+const RenderChatRoomList = ({ item, index }: ChatRoomProps) => {
+  const { colors, isDark } = useTheme();
   const navigation = useNavigation() as any;
 
   if (!item || !item.chat || !Array.isArray(item.chat)) {
@@ -28,22 +30,16 @@ const RenderChatRoomList = ({item, index}: ChatRoomProps) => {
     });
 
   return (
-    <TouchableOpacity
+    <Pressable
       key={index}
-      activeOpacity={ActiveOpacity}
-      onPress={() => {
-        navigation.navigate('Chat', {id: item.to});
-      }}
-      style={styles.chatRoomContainerView}>
+      onPress={() => navigation.navigate('Chat', { id: item.to })}
+      style={[styles.chatRoomContainerView, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White }]}
+    >
       <View style={styles.profilePicView}>
         <FastImage
           resizeMode="cover"
           style={styles.profilePic}
-          source={
-            item?.profile
-              ? {uri: ApiConfig.IMAGE_BASE_URL + item?.profile}
-              : CommonImages.WelcomeBackground
-          }
+          source={item?.profile ? { uri: ApiConfig.IMAGE_BASE_URL + item?.profile } : CommonImages.WelcomeBackground}
         />
       </View>
       <View style={styles.nameAndMessageView}>
@@ -53,35 +49,30 @@ const RenderChatRoomList = ({item, index}: ChatRoomProps) => {
             style={[
               styles.nameText,
               {
-                color:
-                  latestMessage?.is_read === 1 ? COLORS.Black : COLORS.Primary,
+                color: latestMessage?.is_read === 1 ? COLORS.TextColor : colors.Primary,
               },
-            ]}>
-            {item.name}
+            ]}
+          >
+            {item.name || ''}
           </Text>
-          <Image
-            source={CommonIcons.Verification_Icon}
-            style={styles.verifyIcon}
-          />
+          <Image source={CommonIcons.Verification_Icon} style={styles.verifyIcon} />
         </View>
         <Text
           numberOfLines={2}
           style={[
             styles.lastMessageText,
             {
-              color:
-                latestMessage?.is_read === 1
-                  ? 'rgba(108, 108, 108, 1)'
-                  : COLORS.Primary,
+              color: latestMessage?.is_read !== 1 ? 'rgba(108, 108, 108, 1)' : colors.TextColor,
             },
-          ]}>
-          {latestMessage?.message}
+          ]}
+        >
+          {latestMessage?.message || ''}
         </Text>
       </View>
       <View style={styles.timeView}>
-        <Text style={styles.timeText}>{formattedTime}</Text>
+        <Text style={[styles.timeText, { color: colors.TextColor }]}>{formattedTime}</Text>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -97,7 +88,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'row',
     paddingHorizontal: 10,
-    backgroundColor: COLORS.White,
     justifyContent: 'space-between',
   },
   profilePicView: {
@@ -124,7 +114,6 @@ const styles = StyleSheet.create({
   },
   nameText: {
     ...GROUP_FONT.h3,
-    color: COLORS.Black,
   },
   verifyIcon: {
     width: 16,

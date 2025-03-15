@@ -30,7 +30,7 @@ const more_option = require('../../Assets/Icons/more_option_icon.png');
 const delete_chat = require('../../Assets/Icons/delete_chat_icon.png');
 const view_profile = require('../../Assets/Icons/view_profile.png');
 const RightArrow = require('../../Assets/Icons/RightArrow.png');
-const NoLikes = require('../../Assets/Icons/no_likes_icon.png');
+const NoLikes = require('../../Assets/Icons/ic_no_like.png');
 const communication_style_icon = require('../../Assets/Icons/communication_style_icon.png');
 const drink_icon = require('../../Assets/Icons/drink_icon.png');
 const exercise_icon = require('../../Assets/Icons/exercise_icon.png');
@@ -47,11 +47,17 @@ const thanks_for_your_support = require('../../Assets/Icons/thanks_for_your_supp
 const ic_donate = require('../../Assets/Icons/ic_donate.png');
 
 // Home
-const HomeTab = require('../../Assets/Icons/home_icon_select.png');
-const FindMatchTab = require('../../Assets/Icons/find_matches_icon_unselect.png');
-const MessageTab = require('../../Assets/Icons/message_icon_unselect.png');
-const ProfileTab = require('../../Assets/Icons/profile_icon_unselect.png');
-const bottom_likes_icon = require('../../Assets/Icons/bottom_likes_icon.png');
+const LightHomeTab = require('../../Assets/Icons/BottomTab/ic_light_home.png');
+const LightFindMatchTab = require('../../Assets/Icons/BottomTab/ic_light_like.png');
+const LightMessageTab = require('../../Assets/Icons/BottomTab/ic_light_chat.png');
+const LightProfileTab = require('../../Assets/Icons/BottomTab/ic_light_profile.png');
+const LightLikeTab = require('../../Assets/Icons/BottomTab/ic_light_match.png');
+
+const DarkHomeTab = require('../../Assets/Icons/BottomTab/ic_dark_home.png');
+const DarkFindMatchTab = require('../../Assets/Icons/BottomTab/ic_dark_like.png');
+const DarkMessageTab = require('../../Assets/Icons/BottomTab/ic_dark_chat.png');
+const DarkProfileTab = require('../../Assets/Icons/BottomTab/ic_dark_profile.png');
+const DarkLikeTab = require('../../Assets/Icons/BottomTab/ic_dark_match.png');
 
 // Bottom Tab Header
 const Setting = require('../../Assets/Icons/settings_icon.png');
@@ -107,11 +113,17 @@ export default {
   ic_donate,
 
   //* Home
-  HomeTab,
-  FindMatchTab,
-  MessageTab,
-  ProfileTab,
-  bottom_likes_icon,
+  LightHomeTab,
+  LightFindMatchTab,
+  LightMessageTab,
+  LightProfileTab,
+  LightLikeTab,
+
+  DarkHomeTab,
+  DarkFindMatchTab,
+  DarkMessageTab,
+  DarkProfileTab,
+  DarkLikeTab,
 
   //* Bottom Tab Header
   Setting,

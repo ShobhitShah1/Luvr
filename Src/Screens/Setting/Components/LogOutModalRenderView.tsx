@@ -1,15 +1,11 @@
-import {
-  Dimensions,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {FC, memo} from 'react';
-import {ActiveOpacity, COLORS, FONTS} from '../../../Common/Theme';
+import { Dimensions, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { FC, memo } from 'react';
+import { ActiveOpacity, COLORS, FONTS } from '../../../Common/Theme';
 import CommonIcons from '../../../Common/CommonIcons';
 import Button from '../../../Components/Button';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import LinearGradient from 'react-native-linear-gradient';
+import { GradientBorderView } from '../../../Components/GradientBorder';
 
 interface SettingModalProps {
   onPress: () => void;
@@ -28,36 +24,35 @@ const LogOutModalRenderView: FC<SettingModalProps> = ({
   ButtonCloseText,
   setState,
 }) => {
+  const { colors, isDark } = useTheme();
+
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        onPress={() => setState(false)}
-        activeOpacity={ActiveOpacity}
-        style={styles.CloseModalContainerView}>
+    <GradientBorderView
+      style={[
+        styles.container,
+        {
+          borderWidth: 2,
+          backgroundColor: isDark ? 'rgba(13, 1, 38, 0.5)' : colors.White,
+        },
+      ]}
+    >
+      <Pressable onPress={() => setState(false)} style={styles.CloseModalContainerView}>
         <Image source={CommonIcons.CloseModal} style={styles.CloseModalImage} />
-      </TouchableOpacity>
+      </Pressable>
       <View style={styles.ContentContainer}>
         <View style={styles.TextContainerView}>
-          <Text style={styles.TitleText}>{title}</Text>
-          {typeof description === 'string' ? (
-            <Text style={styles.DescriptionText}>{description}</Text>
-          ) : (
-            description
-          )}
+          <Text style={[styles.TitleText, { color: colors.TextColor }]}>{title}</Text>
+          {typeof description === 'string' ? <Text style={styles.DescriptionText}>{description}</Text> : description}
         </View>
 
         <View style={styles.ButtonContainer}>
-          <Button
-            isLoading={false}
-            onPress={onPress}
-            ButtonTitle={ButtonTitle}
-          />
-          <Text onPress={() => setState(false)} style={styles.NoButtonText}>
+          <Button isLoading={false} onPress={onPress} ButtonTitle={ButtonTitle} />
+          <Text onPress={() => setState(false)} style={[styles.NoButtonText, { color: colors.TextColor }]}>
             {ButtonCloseText}
           </Text>
         </View>
       </View>
-    </View>
+    </GradientBorderView>
   );
 };
 
@@ -71,7 +66,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.White,
     width: Dimensions.get('screen').width - 50,
   },
   CloseModalContainerView: {

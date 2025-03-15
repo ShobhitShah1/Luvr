@@ -1,8 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
 import PropTypes from 'prop-types';
-import React, {Component, memo} from 'react';
-import {StyleSheet, Text, TextInput, View} from 'react-native';
-import {COLORS} from '../Common/Theme';
+import React, { Component, memo } from 'react';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { COLORS } from '../Common/Theme';
+import GradientBorder from './GradientBorder/GradientBorder';
+import { GradientBorderView } from './GradientBorder';
+import { useTheme } from '../Contexts/ThemeContext';
 
 const styles = StyleSheet.create({
   containerDefault: {},
@@ -43,8 +46,8 @@ class SmoothPinCodeInput extends Component {
     return this.inputRef.current.clear();
   };
 
-  _inputCode = code => {
-    const {password, codeLength = 4, onTextChange, onFulfill} = this.props;
+  _inputCode = (code) => {
+    const { password, codeLength = 4, onTextChange, onFulfill } = this.props;
 
     if (this.props.restrictToNumbers) {
       code = (code.match(/[0-9]/g) || []).join('');
@@ -59,20 +62,20 @@ class SmoothPinCodeInput extends Component {
 
     // handle password mask
     const maskDelay = password && code.length > this.props.value.length;
-    this.setState({maskDelay});
+    this.setState({ maskDelay });
 
     if (maskDelay) {
       // mask password after delay
       clearTimeout(this.maskTimeout);
       this.maskTimeout = setTimeout(() => {
-        this.setState({maskDelay: false});
+        this.setState({ maskDelay: false });
       }, this.props.maskDelay);
     }
   };
 
-  _keyPress = event => {
+  _keyPress = (event) => {
     if (event.nativeEvent.key === 'Backspace') {
-      const {value, onBackspace} = this.props;
+      const { value, onBackspace } = this.props;
       if (value === '' && onBackspace) {
         onBackspace();
       }
@@ -80,14 +83,14 @@ class SmoothPinCodeInput extends Component {
   };
 
   _onFocused = () => {
-    this.setState({focused: true});
+    this.setState({ focused: true });
     if (typeof this.props.onFocus === 'function') {
       this.props.onFocus();
     }
   };
 
   _onBlurred = () => {
-    this.setState({focused: false});
+    this.setState({ focused: false });
     if (typeof this.props.onBlur === 'function') {
       this.props.onBlur();
     }
@@ -117,8 +120,9 @@ class SmoothPinCodeInput extends Component {
       editable,
       inputProps,
       disableFullscreenUI,
+      isDark,
     } = this.props;
-    const {maskDelay, focused} = this.state;
+    const { maskDelay, focused } = this.state;
     return (
       <View
         ref={this.ref}
@@ -132,7 +136,8 @@ class SmoothPinCodeInput extends Component {
             height: cellSize,
           },
           containerStyle,
-        ]}>
+        ]}
+      >
         <View
           style={{
             position: 'absolute',
@@ -140,7 +145,8 @@ class SmoothPinCodeInput extends Component {
             height: '100%',
             flexDirection: 'row',
             alignItems: 'center',
-          }}>
+          }}
+        >
           {Array.apply(null, Array(codeLength)).map((_, idx) => {
             const cellFocused = focused && idx === value.length;
             const filled = idx < value.length;
@@ -161,17 +167,17 @@ class SmoothPinCodeInput extends Component {
               }
             }
 
-            const placeholderComponent = !isPlaceholderText
-              ? placeholder
-              : null;
+            const placeholderComponent = !isPlaceholderText ? placeholder : null;
             const maskComponent = showMask && !isMaskText ? mask : null;
             const isCellText = typeof cellText === 'string';
 
             return (
-              <View
+              <GradientBorderView
                 key={idx}
                 style={[
                   {
+                    backgroundColor: 'transparent',
+                    borderWidth: 1,
                     width: cellSize,
                     height: cellSize,
                     marginLeft: cellSpacing / 2,
@@ -184,8 +190,12 @@ class SmoothPinCodeInput extends Component {
                   cellFocused ? cellStyleFocused : {},
                   filled ? cellStyleFilled : {},
                 ]}
-                iterationCount="infinite"
-                duration={500}>
+                gradientProps={{
+                  colors: isDark
+                    ? ['rgba(183, 34, 97, 1)', 'rgba(141, 71, 242, 1)']
+                    : ['rgba(157, 133, 240, 1)', 'rgba(157, 133, 240, 1)'],
+                }}
+              >
                 {isCellText && !maskComponent && (
                   <Text
                     style={[
@@ -193,18 +203,17 @@ class SmoothPinCodeInput extends Component {
                       cellFocused
                         ? textStyleFocused
                         : {
-                            color: !filled
-                              ? 'rgba(130,130,130,.6)'
-                              : COLORS.White,
+                            color: !filled ? 'rgba(130,130,130,1)' : isDark ? 'black' : COLORS.White,
                           },
-                    ]}>
+                    ]}
+                  >
                     {cellText}
                   </Text>
                 )}
 
                 {!isCellText && !maskComponent && placeholderComponent}
                 {isCellText && maskComponent}
-              </View>
+              </GradientBorderView>
             );
           })}
         </View>

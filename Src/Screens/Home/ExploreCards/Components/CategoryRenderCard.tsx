@@ -1,29 +1,23 @@
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {FC, useState} from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { FC, useState } from 'react';
+import { ActivityIndicator, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
 import CommonImages from '../../../../Common/CommonImages';
-import {ActiveOpacity, COLORS, FONTS} from '../../../../Common/Theme';
-import ApiConfig from '../../../../Config/ApiConfig';
-import useCalculateAge from '../../../../Hooks/useCalculateAge';
-import {onSwipeRight} from '../../../../Redux/Action/actions';
-import {store} from '../../../../Redux/Store/store';
-import UserService from '../../../../Services/AuthService';
-import {ProfileType} from '../../../../Types/ProfileType';
-import {useCustomToast} from '../../../../Utils/toastUtils';
-import NetInfo from '@react-native-community/netinfo';
 import TextString from '../../../../Common/TextString';
+import { COLORS, FONTS } from '../../../../Common/Theme';
+import ApiConfig from '../../../../Config/ApiConfig';
+import { useTheme } from '../../../../Contexts/ThemeContext';
+import useCalculateAge from '../../../../Hooks/useCalculateAge';
+import { onSwipeRight } from '../../../../Redux/Action/actions';
+import { store } from '../../../../Redux/Store/store';
+import UserService from '../../../../Services/AuthService';
+import { ProfileType } from '../../../../Types/ProfileType';
+import { useCustomToast } from '../../../../Utils/toastUtils';
 
 interface RenderLookingViewProps {
   item: ProfileType;
@@ -44,18 +38,20 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
   setCurrentCardIndex,
   setItsMatchModalView,
 }) => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{ExploreCardDetail: {}}>>();
-  const [IsImageLoading, setIsImageLoading] = useState(false);
-  const {showToast} = useCustomToast();
+  const { colors } = useTheme();
+  const { showToast } = useCustomToast();
 
-  const OnPressCard = () => {
-    navigation.navigate('ExploreCardDetail', {props: item});
+  const navigation = useNavigation<NativeStackNavigationProp<{ ExploreCardDetail: {} }>>();
+
+  const [IsImageLoading, setIsImageLoading] = useState(false);
+
+  const onPressCard = () => {
+    navigation.navigate('ExploreCardDetail', { props: item });
   };
 
-  const ImagePath =
+  const imagePath =
     item?.recent_pik && item?.recent_pik?.length !== 0
-      ? {uri: ApiConfig.IMAGE_BASE_URL + item?.recent_pik[0]}
+      ? { uri: ApiConfig.IMAGE_BASE_URL + item?.recent_pik[0] }
       : CommonImages.WelcomeBackground;
 
   const Age = useCalculateAge(item.birthdate);
@@ -64,24 +60,16 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
     setIsAPILoading(true);
     setCurrentCardIndex(index);
 
-    const InInternetConnected = (await NetInfo.fetch()).isConnected;
-
-    if (!InInternetConnected) {
-      showToast(
-        TextString.error.toUpperCase(),
-        TextString.PleaseCheckYourInternetConnection,
-        TextString.error,
-      );
+    if ((await NetInfo.fetch()).isConnected) {
+      showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
       return;
     }
 
     try {
-      const userDataForApi = {
-        eventName: 'like',
-        like_to: item._id,
-      };
+      const userDataForApi = { eventName: 'like', like_to: item._id };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
+
       if (APIResponse?.code === 200) {
         if (APIResponse.data?.status === 'match') {
           setItsMatchModalView(true);
@@ -89,49 +77,32 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
         store.dispatch(onSwipeRight(String(item._id)));
         FetchAPIData();
       } else {
-        showToast(
-          TextString.error.toUpperCase(),
-          APIResponse?.message || 'Please try again letter',
-          TextString.error,
-        );
+        showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Please try again letter', TextString.error);
         setItsMatchModalView(false);
         setIsAPILoading(false);
       }
     } catch (error: any) {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(error?.message || error),
-        TextString.error,
-      );
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), TextString.error);
       setItsMatchModalView(false);
       setIsAPILoading(false);
     }
   };
 
   return (
-    <TouchableOpacity
-      activeOpacity={1}
-      onPress={OnPressCard}
-      style={[styles.container, {}]}>
+    <Pressable onPress={onPressCard} style={styles.container}>
       {IsImageLoading && (
         <View style={styles.ImageLoaderView}>
-          <ActivityIndicator
-            size={30}
-            color={COLORS.Primary}
-            style={styles.Loader}
-          />
+          <ActivityIndicator size={30} color={colors.Primary} style={styles.Loader} />
         </View>
       )}
       <FastImage
-        source={ImagePath}
+        source={imagePath}
         onLoadStart={() => setIsImageLoading(true)}
         onLoad={() => setIsImageLoading(false)}
         resizeMode="cover"
-        style={styles.imageView}>
-        <LinearGradient
-          colors={COLORS.GradientViewForCards}
-          locations={[0, 1]}
-          style={styles.gradient}>
+        style={styles.imageView}
+      >
+        <LinearGradient colors={colors.GradientViewForCards} locations={[0, 1]} style={styles.gradient}>
           <View style={styles.DetailContainerView}>
             <View style={styles.UserInfoView}>
               <Text numberOfLines={2} style={styles.TitleText}>
@@ -147,10 +118,7 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
               ) : (
                 item?.city && (
                   <View style={styles.LocationView}>
-                    <Image
-                      style={styles.LocationIcon}
-                      source={CommonIcons.Location}
-                    />
+                    <Image style={styles.LocationIcon} source={CommonIcons.Location} />
                     <Text numberOfLines={1} style={styles.LocationText}>
                       {item?.city || 'Location'}
                     </Text>
@@ -159,18 +127,18 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
               )}
             </View>
 
-            <TouchableOpacity
-              activeOpacity={ActiveOpacity}
+            <Pressable
               style={styles.LikeCardView}
               onPress={() => {
                 onLikePress();
-              }}>
+              }}
+            >
               <Image source={CommonImages.LikeCard} style={styles.LikeCard} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </LinearGradient>
       </FastImage>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

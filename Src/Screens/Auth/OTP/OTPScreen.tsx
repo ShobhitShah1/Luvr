@@ -1,20 +1,25 @@
 /* eslint-disable react-native/no-inline-styles */
-import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
-import React, {FC, useEffect, useRef, useState} from 'react';
-import {Keyboard, Text, TextInput, View} from 'react-native';
-import {heightPercentageToDP} from 'react-native-responsive-screen';
-import {useDispatch, useSelector} from 'react-redux';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import React, { FC, memo, useEffect, useRef, useState } from 'react';
+import { Keyboard, Text, TextInput, View } from 'react-native';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
+import { useDispatch, useSelector } from 'react-redux';
 import TextString from '../../../Common/TextString';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import SmoothPinCodeInput from '../../../Components/SmoothPinCodeInput';
-import {useLocationPermission} from '../../../Hooks/useLocationPermission';
-import {updateField} from '../../../Redux/Action/actions';
+import { useLocationPermission } from '../../../Hooks/useLocationPermission';
+import { updateField } from '../../../Redux/Action/actions';
 import UserService from '../../../Services/AuthService';
-import {transformUserDataForApi} from '../../../Services/dataTransformService';
-import {LocalStorageFields} from '../../../Types/LocalStorageFields';
-import {useCustomToast} from '../../../Utils/toastUtils';
+import { transformUserDataForApi } from '../../../Services/dataTransformService';
+import { LocalStorageFields } from '../../../Types/LocalStorageFields';
+import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import styles from './styles';
+import GradientView from '../../../Common/GradientView';
+import { useThemedStyles } from '../../../Hooks/useThemedStyles';
+import { useTheme } from '../../../Contexts/ThemeContext';
+
+const OTPInputs = 4;
 
 interface RouteParams {
   number: string;
@@ -22,15 +27,19 @@ interface RouteParams {
 
 const OTPScreen: FC = () => {
   const route = useRoute();
-  const OTPInputs = 4;
   const focus = useIsFocused();
   const dispatch = useDispatch();
-  const {showToast} = useCustomToast();
   const navigation = useNavigation<any>();
-  const {number} = route.params as RouteParams;
   const OTPInputRef = useRef<TextInput>(null);
+  const { isDark } = useTheme();
+
+  const style = useThemedStyles(styles);
+  const { showToast } = useCustomToast();
+
+  const number = (route.params as RouteParams)?.number || '';
   const userData = useSelector((state: any) => state?.user);
-  const {checkLocationPermission} = useLocationPermission();
+
+  const { checkLocationPermission } = useLocationPermission();
 
   const [otp, setOtp] = useState<string>('');
   const [IsAPILoading, setIsAPILoading] = useState(false);
@@ -49,7 +58,7 @@ const OTPScreen: FC = () => {
     let interval: NodeJS.Timeout;
     if (ResendDisabled) {
       interval = setInterval(() => {
-        setResendTimer(prevTimer => {
+        setResendTimer((prevTimer) => {
           if (prevTimer === 0) {
             clearInterval(interval);
             setResendDisabled(false);
@@ -68,7 +77,7 @@ const OTPScreen: FC = () => {
     setDisableButton(otp.length !== OTPInputs);
   }, [otp, OTPInputs]);
 
-  const VerifyClick = async () => {
+  const onVerifyClick = async () => {
     Keyboard.dismiss();
 
     if (otp.length === 4) {
@@ -101,7 +110,7 @@ const OTPScreen: FC = () => {
         showToast(
           'OTP verified Successfully',
           'Your OTP has been successfully verified. You can now proceed.',
-          'success',
+          'success'
         );
         return;
       }
@@ -131,18 +140,14 @@ const OTPScreen: FC = () => {
         showToast(
           'OTP verified Successfully',
           'Your OTP has been successfully verified. You can now proceed.',
-          'success',
+          'success'
         );
       } else {
         setOtp('');
         throw new Error('The OTP entered is incorrect. Please try again.');
       }
     } catch (error: any) {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(error?.message || error),
-        TextString.error,
-      );
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), TextString.error);
     } finally {
       setIsAPILoading(false);
     }
@@ -162,24 +167,12 @@ const OTPScreen: FC = () => {
       if (response?.code === 200) {
         setResendDisabled(true);
         setResendTimer(10);
-        showToast(
-          'OTP Resend Successfully',
-          'Please check your device for OTP',
-          'success',
-        );
+        showToast('OTP Resend Successfully', 'Please check your device for OTP', 'success');
       } else {
-        throw new Error(
-          response?.error?.message ||
-            response?.message ||
-            'OTP resend failed. Please try again.',
-        );
+        throw new Error(response?.error?.message || response?.message || 'OTP resend failed. Please try again.');
       }
     } catch (error: any) {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(error?.message || error),
-        'error',
-      );
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
     } finally {
       setIsAPILoading(false);
     }
@@ -194,9 +187,7 @@ const OTPScreen: FC = () => {
         validation: true,
       };
 
-      const APIResponse = await UserService.UserRegister(
-        userDataWithValidation,
-      );
+      const APIResponse = await UserService.UserRegister(userDataWithValidation);
 
       const token = APIResponse.data?.token || '';
 
@@ -207,11 +198,7 @@ const OTPScreen: FC = () => {
         navigation.replace('LoginStack');
       }
     } catch (error: any) {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(error?.message || error),
-        'error',
-      );
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
     }
   };
 
@@ -252,71 +239,68 @@ const OTPScreen: FC = () => {
   };
 
   return (
-    <View style={styles.Container}>
-      <CreateProfileHeader ProgressCount={0} Skip={false} />
+    <GradientView>
+      <View style={style.Container}>
+        <CreateProfileHeader ProgressCount={0} Skip={false} />
 
-      <View style={{paddingHorizontal: heightPercentageToDP('1.7%')}}>
-        <View style={styles.CodeAndNumberView}>
-          <Text style={styles.MyCodeText}>Enter your{'\n'}code</Text>
-          <Text style={styles.DescText}>
-            Enter 4-digit code. We have sent to{'\n'}you at{' '}
-            <Text style={styles.NumberText}>{number}</Text>
-          </Text>
+        <View style={{ paddingHorizontal: heightPercentageToDP('1.7%') }}>
+          <View style={style.CodeAndNumberView}>
+            <Text style={style.MyCodeText}>Enter your{'\n'}code</Text>
+            <Text style={style.DescText}>
+              Enter 4-digit code. We have sent to{'\n'}you at{' '}
+              <Text style={style.NumberText}>{number?.toString() || ''}</Text>
+            </Text>
+          </View>
+
+          <View style={{ width: '90%', zIndex: 9999, alignSelf: 'center' }}>
+            <SmoothPinCodeInput
+              value={otp}
+              isDark={isDark}
+              ref={OTPInputRef}
+              codeLength={OTPInputs}
+              disableFullscreenUI={false}
+              cellStyle={style.OTPCellStyle}
+              placeholder={'0'}
+              textStyle={style.OTPTextStyle}
+              containerStyle={style.OTPContainerStyle}
+              cellStyleFocused={style.OTPCellStyleFocused}
+              cellStyleFilled={style.OTPCellStyleFilled}
+              textStyleFocused={style.OTPTextStyleFocused}
+              onTextChange={(code: string) => setOtp(code.trim())}
+            />
+          </View>
+
+          <View style={style.ResendView}>
+            <Text style={style.NoCodeText}>Didn't you received any code?</Text>
+            {ResendTimer > 0 ? (
+              <Text style={style.ResendText}>Resend in {ResendTimer} seconds</Text>
+            ) : (
+              <Text
+                onPress={() => {
+                  if (!ResendDisabled) {
+                    setOtp('');
+                    handleSendOtp();
+                  }
+                }}
+                style={[style.ResendText, ResendDisabled && { opacity: 0.5 }]}
+              >
+                Resend a new code
+              </Text>
+            )}
+          </View>
         </View>
 
-        <View
-          style={{
-            width: '90%',
-            zIndex: 9999,
-            alignSelf: 'center',
-          }}>
-          <SmoothPinCodeInput
-            value={otp}
-            ref={OTPInputRef}
-            codeLength={OTPInputs}
-            disableFullscreenUI={false}
-            cellStyle={styles.OTPCellStyle}
-            placeholder={'0'}
-            textStyle={styles.OTPTextStyle}
-            containerStyle={styles.OTPContainerStyle}
-            cellStyleFocused={styles.OTPCellStyleFocused}
-            cellStyleFilled={styles.OTPCellStyleFilled}
-            textStyleFocused={styles.OTPTextStyleFocused}
-            onTextChange={(code: string) => setOtp(code.trim())}
+        <View style={[style.VerifyOTPButtonView]}>
+          <GradientButton
+            Title={'Continue'}
+            isLoading={IsAPILoading}
+            Disabled={DisableButton}
+            Navigation={onVerifyClick}
           />
         </View>
-
-        <View style={styles.ResendView}>
-          <Text style={styles.NoCodeText}>Didn't you received any code?</Text>
-          {ResendTimer > 0 ? (
-            <Text style={styles.ResendText}>
-              Resend in {ResendTimer} seconds
-            </Text>
-          ) : (
-            <Text
-              onPress={() => {
-                if (!ResendDisabled) {
-                  setOtp('');
-                  handleSendOtp();
-                }
-              }}
-              style={[styles.ResendText, ResendDisabled && {opacity: 0.5}]}>
-              Resend a new code
-            </Text>
-          )}
-        </View>
       </View>
-
-      <View style={[styles.VerifyOTPButtonView]}>
-        <GradientButton
-          Title={'Continue'}
-          isLoading={IsAPILoading}
-          Disabled={DisableButton}
-          Navigation={VerifyClick}
-        />
-      </View>
-    </View>
+    </GradientView>
   );
 };
 
-export default OTPScreen;
+export default memo(OTPScreen);

@@ -1,6 +1,6 @@
-import {StyleSheet} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
+import { StyleSheet } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
 
 const styles = StyleSheet.create({
   card: {
@@ -11,7 +11,6 @@ const styles = StyleSheet.create({
   imageContainer: {
     flex: 1,
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: COLORS.Primary,
   },
   ImageStyle: {
     width: '100%',
@@ -71,10 +70,8 @@ const styles = StyleSheet.create({
   MultipleBoxView: {
     marginTop: hp('1%'),
     borderRadius: hp('2%'),
-    borderWidth: hp('0.2%'),
     marginRight: hp('0.5%'),
     paddingHorizontal: hp('0.9%'),
-    borderColor: 'rgba(198, 198, 198, 1)',
   },
   MultipleDetailText: {
     fontSize: hp('1.5%'),

@@ -1,46 +1,32 @@
 /* eslint-disable react-native/no-inline-styles */
-import {useNavigation} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
-import {
-  Image,
-  Platform,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {
-  flushFailedPurchasesCachedAsPendingAndroid,
-  initConnection,
-  requestPurchase,
-} from 'react-native-iap';
-import {useSelector} from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import React, { memo, useEffect, useState } from 'react';
+import { Image, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { flushFailedPurchasesCachedAsPendingAndroid, initConnection, requestPurchase } from 'react-native-iap';
+import { useSelector } from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
+import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
-import {ActiveOpacity, COLORS, FONTS, GROUP_FONT} from '../../Common/Theme';
+import { ActiveOpacity, COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
 import Button from '../../Components/Button';
-import {skus} from '../../Config/ApiConfig';
+import { skus } from '../../Config/ApiConfig';
 import UserService from '../../Services/AuthService';
-import {MembershipProductsType} from '../../Types/Interface';
-import {useCustomToast} from '../../Utils/toastUtils';
+import { MembershipProductsType } from '../../Types/Interface';
+import { useCustomToast } from '../../Utils/toastUtils';
 
 const BackgroundImageSize = 150;
 
 const DonationScreen = () => {
   const navigation = useNavigation();
-  const {showToast} = useCustomToast();
+  const { showToast } = useCustomToast();
   const membershipStore = useSelector((state: any) => state.membership);
 
   const [PaymentSuccess, setPaymentSuccess] = useState(false);
   const [PaymentLoader, setPaymentLoader] = useState(false);
-  const [membershipProductsList, setMembershipProductsList] = useState<
-    MembershipProductsType[]
-  >(membershipStore?.membershipProducts);
-  const [DonationAmount, setDonationAmount] = useState<string | number>(
-    membershipProductsList[0]?.price,
+  const [membershipProductsList, setMembershipProductsList] = useState<MembershipProductsType[]>(
+    membershipStore?.membershipProducts
   );
+  const [DonationAmount, setDonationAmount] = useState<string | number>(membershipProductsList[0]?.price);
 
   useEffect(() => {
     initializedConnection();
@@ -59,11 +45,7 @@ const DonationScreen = () => {
         return;
       }
 
-      showToast(
-        TextString.error.toUpperCase(),
-        'Failed to connect to the store.',
-        TextString.error,
-      );
+      showToast(TextString.error.toUpperCase(), 'Failed to connect to the store.', TextString.error);
     } catch (error) {
       setPaymentLoader(false);
     } finally {
@@ -71,12 +53,12 @@ const DonationScreen = () => {
     }
   };
 
-  const requestDonationPurchase = async ({id}: {id: string[]}) => {
+  const requestDonationPurchase = async ({ id }: { id: string[] }) => {
     const skuID = id || skus;
     if (skuID) {
       setPaymentLoader(true);
       try {
-        await requestPurchase({skus: skuID});
+        await requestPurchase({ skus: skuID });
         donationAPICall();
       } catch (error: any) {
         showToast('Error', String(error?.message || error), 'error');
@@ -97,11 +79,7 @@ const DonationScreen = () => {
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
         setPaymentSuccess(!PaymentSuccess);
-        showToast(
-          'Success',
-          APIResponse?.message || 'Thanks for your donation',
-          'success',
-        );
+        showToast('Success', APIResponse?.message || 'Thanks for your donation', 'success');
       }
     } catch (error) {
     } finally {
@@ -110,92 +88,77 @@ const DonationScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView />
-      <StatusBar barStyle={'dark-content'} backgroundColor={COLORS.Secondary} />
-      <TouchableOpacity
-        style={{
-          zIndex: 9999,
-          left: 20,
-          position: 'absolute',
-          top: Platform.OS === 'ios' ? 60 : 20,
-        }}
-        activeOpacity={ActiveOpacity}
-        onPress={() => navigation.goBack()}>
-        <Image
-          source={CommonIcons.Back}
-          resizeMode="contain"
-          style={{width: 28, height: 28}}
-        />
-      </TouchableOpacity>
-      <View style={styles.ItemContainerView}>
-        <View style={styles.TitleAndImageView}>
-          <View style={styles.DonateIconView}>
-            <Image
-              source={
-                PaymentSuccess
-                  ? CommonIcons.thanks_for_your_support
-                  : CommonIcons.ic_donate
-              }
-              style={styles.DonateIcon}
+    <GradientView>
+      <View style={styles.container}>
+        <SafeAreaView />
+        <TouchableOpacity
+          style={{
+            zIndex: 9999,
+            left: 20,
+            position: 'absolute',
+            top: Platform.OS === 'ios' ? 60 : 20,
+          }}
+          activeOpacity={ActiveOpacity}
+          onPress={() => navigation.goBack()}
+        >
+          <Image source={CommonIcons.Back} resizeMode="contain" style={{ width: 28, height: 28 }} />
+        </TouchableOpacity>
+        <View style={styles.ItemContainerView}>
+          <View style={styles.TitleAndImageView}>
+            <View style={styles.DonateIconView}>
+              <Image
+                source={PaymentSuccess ? CommonIcons.thanks_for_your_support : CommonIcons.ic_donate}
+                style={styles.DonateIcon}
+              />
+            </View>
+
+            <View style={styles.DonationTextView}>
+              <Text style={styles.DonateTitle}>{PaymentSuccess ? 'Thanks for yo support' : 'Help us'}</Text>
+
+              <Text style={styles.DonateDescription}>
+                {PaymentSuccess
+                  ? `Your donation of ${DonationAmount} will help us a lot, It will make a big difference.`
+                  : 'Donate us something to make this app more better!'}
+              </Text>
+            </View>
+          </View>
+
+          {membershipProductsList
+            ?.filter((item) => item.productId !== skus[0])
+            ?.map((res, i) => {
+              return (
+                <TouchableOpacity
+                  key={i}
+                  onPress={() => requestDonationPurchase({ id: [res.productId] })}
+                  style={{ width: '100%', paddingHorizontal: 20 }}
+                >
+                  <Text style={{ color: COLORS.Black }}>{res.name}</Text>
+                  <Text style={{ color: COLORS.Black }}>{res.price}</Text>
+                  <Text style={{ color: COLORS.Black }}>{res.productId}</Text>
+                  <Text style={{ color: COLORS.Black }}>{'-------------------------------------------'}</Text>
+                </TouchableOpacity>
+              );
+            })}
+
+          <View style={styles.DonateButtonContainer}>
+            <Button
+              isLoading={PaymentLoader}
+              onPress={() => {}}
+              ButtonTitle={PaymentSuccess ? 'Make another donation' : `Donate now ${DonationAmount}`}
             />
+            {!PaymentSuccess && (
+              <Text onPress={() => navigation.goBack()} style={styles.MayBeLaterButton}>
+                Maybe later
+              </Text>
+            )}
           </View>
-
-          <View style={styles.DonationTextView}>
-            <Text style={styles.DonateTitle}>
-              {PaymentSuccess ? 'Thanks for yo support' : 'Help us'}
-            </Text>
-
-            <Text style={styles.DonateDescription}>
-              {PaymentSuccess
-                ? `Your donation of ${DonationAmount} will help us a lot, It will make a big difference.`
-                : 'Donate us something to make this app more better!'}
-            </Text>
-          </View>
-        </View>
-
-        {membershipProductsList
-          ?.filter(item => item.productId !== skus[0])
-          ?.map((res, i) => {
-            return (
-              <TouchableOpacity
-                key={i}
-                onPress={() => requestDonationPurchase({id: [res.productId]})}
-                style={{width: '100%', paddingHorizontal: 20}}>
-                <Text style={{color: COLORS.Black}}>{res.name}</Text>
-                <Text style={{color: COLORS.Black}}>{res.price}</Text>
-                <Text style={{color: COLORS.Black}}>{res.productId}</Text>
-                <Text style={{color: COLORS.Black}}>
-                  {'-------------------------------------------'}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-
-        <View style={styles.DonateButtonContainer}>
-          <Button
-            isLoading={PaymentLoader}
-            onPress={() => {}}
-            ButtonTitle={
-              PaymentSuccess
-                ? 'Make another donation'
-                : `Donate now ${DonationAmount}`
-            }
-          />
-          {!PaymentSuccess && (
-            <Text
-              onPress={() => navigation.goBack()}
-              style={styles.MayBeLaterButton}>
-              Maybe later
-            </Text>
-          )}
         </View>
       </View>
-    </View>
+    </GradientView>
   );
 };
 
-export default DonationScreen;
+export default memo(DonationScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -203,7 +166,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     justifyContent: 'center',
-    backgroundColor: COLORS.Secondary,
   },
   ItemContainerView: {
     flex: 1,

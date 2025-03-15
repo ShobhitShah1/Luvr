@@ -1,14 +1,10 @@
-import React, {FC} from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {CommonSize} from '../../Common/CommonSize';
-import {ActiveOpacity, COLORS, FONTS} from '../../Common/Theme';
+import React, { FC } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { CommonSize } from '../../Common/CommonSize';
+import { COLORS, FONTS } from '../../Common/Theme';
+import { useTheme } from '../../Contexts/ThemeContext';
 
 interface ButtonProps {
   Title: string;
@@ -17,44 +13,26 @@ interface ButtonProps {
   isLoading: boolean;
 }
 
-const GradientButton: FC<ButtonProps> = ({
-  Title,
-  Navigation,
-  Disabled,
-  isLoading,
-}) => {
+const GradientButton: FC<ButtonProps> = ({ Title, Navigation, Disabled, isLoading }) => {
+  const { colors } = useTheme();
+
   return (
-    <TouchableOpacity
-      disabled={isLoading || Disabled}
-      activeOpacity={ActiveOpacity}
-      onPress={Navigation}
-      style={styles.CreateAccountButton}>
-      <View
-        style={[
-          styles.GradientViewStyle,
-          {
-            backgroundColor: Disabled
-              ? COLORS.DisableButtonBackground
-              : COLORS.Primary,
-          },
-        ]}>
-        {isLoading ? (
-          <ActivityIndicator
-            color={COLORS.White}
-            style={styles.LoaderView}
-            size={25}
-          />
-        ) : (
-          <Text
-            style={[
-              styles.NewAccountText,
-              {color: Disabled ? COLORS.Black : COLORS.White},
-            ]}>
-            {Title}
-          </Text>
-        )}
-      </View>
-    </TouchableOpacity>
+    <LinearGradient
+      start={{ x: 1, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      colors={colors.ButtonGradient}
+      style={styles.CreateAccountButton}
+    >
+      <Pressable disabled={isLoading || Disabled} onPress={Navigation} style={{ flex: 1, zIndex: 99 }}>
+        <View style={[styles.GradientViewStyle]}>
+          {isLoading ? (
+            <ActivityIndicator color={colors.Primary} style={styles.LoaderView} size={25} />
+          ) : (
+            <Text style={[styles.NewAccountText, { color: colors.ButtonText }]}>{Title}</Text>
+          )}
+        </View>
+      </Pressable>
+    </LinearGradient>
   );
 };
 

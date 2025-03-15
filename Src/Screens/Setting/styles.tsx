@@ -1,14 +1,10 @@
-import {StyleSheet} from 'react-native';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-import {COLORS, FONTS, GROUP_FONT, SIZES} from '../../Common/Theme';
+import { StyleSheet } from 'react-native';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { COLORS, FONTS, GROUP_FONT, SIZES } from '../../Common/Theme';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.Secondary,
   },
   ContentView: {
     flex: 1,
@@ -68,14 +64,13 @@ const styles = StyleSheet.create({
   },
   GenderView: {
     padding: 0,
-    backgroundColor: COLORS.White,
     height: hp('6.8%'),
     width: wp('85%'),
-    borderColor: COLORS.White,
     borderRadius: SIZES.radius,
     alignItems: 'center',
     textAlign: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
     // borderWidth: 1.5
   },
   GenderText: {
@@ -84,7 +79,7 @@ const styles = StyleSheet.create({
     fontSize: hp('1.7%'),
   },
   DeleteAndLogoutContainerView: {
-    marginVertical: 10,
+    marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -94,7 +89,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignSelf: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.White,
   },
   DeleteAndLogoutButtonText: {
     ...GROUP_FONT.h4,

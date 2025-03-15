@@ -1,26 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {forwardRef, memo, useEffect} from 'react';
-import {
-  Image,
-  Keyboard,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import React, { forwardRef, memo, useEffect } from 'react';
+import { Image, Keyboard, Pressable, Text, TextInput, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../Common/CommonIcons';
-import {
-  ActiveOpacity,
-  COLORS,
-  FONTS,
-  GROUP_FONT,
-  SIZES,
-} from '../../Common/Theme';
-import {fetchCountryCode} from '../../Services/AuthService';
+import { FONTS, GROUP_FONT, SIZES } from '../../Common/Theme';
+import { useTheme } from '../../Contexts/ThemeContext';
+import createThemedStyles from '../../Hooks/createThemedStyles';
+import { useThemedStyles } from '../../Hooks/useThemedStyles';
+import { fetchCountryCode } from '../../Services/AuthService';
 import CustomTextInput from '../CustomTextInput';
-import {CountryWithCode} from '../Data';
+import { CountryWithCode } from '../Data';
 
 interface CountryPickerProps {
   ref: any;
@@ -35,23 +24,15 @@ interface CountryPickerProps {
 }
 
 const CountryPickerView = forwardRef<TextInput, CountryPickerProps>(
-  (
-    {
-      value,
-      setValue,
-      diallingCode,
-      visible,
-      setVisible,
-      setDiallingCode,
-      setDefaultDiallingCode,
-    },
-    ref,
-  ) => {
+  ({ value, setValue, diallingCode, visible, setVisible, setDiallingCode, setDefaultDiallingCode }, ref) => {
+    const { colors } = useTheme();
+    const style = useThemedStyles(styles);
+
     useEffect(() => {
       const fetchData = async () => {
         try {
           const countryCode = await fetchCountryCode();
-          const country = CountryWithCode.find(c => c.code === countryCode);
+          const country = CountryWithCode.find((c) => c.code === countryCode);
           if (country && !diallingCode) {
             setDiallingCode(country.dialling_code);
             setDefaultDiallingCode(country.dialling_code);
@@ -67,70 +48,66 @@ const CountryPickerView = forwardRef<TextInput, CountryPickerProps>(
       fetchData();
     }, []);
 
-    const OnRequestOpenCodeModal = () => {
+    const onRequestOpenCodeModal = () => {
       setVisible(!visible);
       if (Keyboard.isVisible()) {
         Keyboard.dismiss();
       }
     };
 
-    const OnCancelNumberPress = () => {
+    const onCancelNumberPress = () => {
       setValue('');
     };
 
     return (
-      <View style={styles.Container}>
-        <View style={styles.CountyCodeAndNameContainer}>
-          <TouchableOpacity
-            onPress={OnRequestOpenCodeModal}
-            style={styles.CountryCodeAndIconView}>
-            <Text style={styles.CountryNameText}>{diallingCode || '+00'}</Text>
+      <View style={style.Container}>
+        <View style={style.CountyCodeAndNameContainer}>
+          <Pressable
+            hitSlop={{ top: 10, bottom: 10 }}
+            onPress={onRequestOpenCodeModal}
+            style={style.CountryCodeAndIconView}
+          >
+            <Text style={[style.CountryNameText, { color: colors.TextColor }]}>{diallingCode || '+00'}</Text>
             <Image
               resizeMethod="auto"
               resizeMode="contain"
               source={CommonIcons.Down}
-              style={styles.downIcon}
+              tintColor={colors.TextColor}
+              style={style.downIcon}
             />
-          </TouchableOpacity>
+          </Pressable>
 
-          <View style={styles.SapLine} />
+          <View style={style.SapLine} />
 
-          <View style={styles.PhoneNumberTextInput}>
-            <View style={styles.TextInputView}>
+          <View style={style.PhoneNumberTextInput}>
+            <View style={style.TextInputView}>
               <CustomTextInput
                 ref={ref}
                 value={value}
-                onChangeText={number => {
+                onChangeText={(number) => {
                   const numericText = number.replace(/[^0-9]/g, '');
                   setValue(numericText);
                 }}
                 autoFocus={false}
                 keyboardType="number-pad"
-                style={styles.TextInput}
-                placeholderTextColor={COLORS.Gray}
+                style={style.TextInput}
                 placeholder={'Enter phone number'}
               />
             </View>
 
-            <TouchableOpacity
-              activeOpacity={ActiveOpacity}
-              onPress={OnCancelNumberPress}
-              style={styles.CancelIconView}>
-              <Image
-                source={CommonIcons.CancelPhoneNumber}
-                style={styles.CancelIcon}
-              />
-            </TouchableOpacity>
+            <Pressable onPress={onCancelNumberPress} style={style.CancelIconView}>
+              <Image source={CommonIcons.CancelPhoneNumber} tintColor={colors.White} style={style.CancelIcon} />
+            </Pressable>
           </View>
         </View>
       </View>
     );
-  },
+  }
 );
 
 export default memo(CountryPickerView);
 
-const styles = StyleSheet.create({
+const styles = createThemedStyles((colors) => ({
   Container: {
     width: '100%',
     flex: 1,
@@ -143,6 +120,7 @@ const styles = StyleSheet.create({
   CountryCodeAndIconView: {
     maxWidth: '25%',
     overflow: 'hidden',
+    zIndex: 99999999,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -176,7 +154,6 @@ const styles = StyleSheet.create({
   CountryNameText: {
     width: '60%',
     ...GROUP_FONT.h3,
-    color: COLORS.Black,
   },
   SapLine: {
     height: '100%',
@@ -201,6 +178,7 @@ const styles = StyleSheet.create({
     padding: 0,
     margin: 0,
     ...GROUP_FONT.h3,
+    color: colors.White,
     fontFamily: FONTS.SemiBold,
   },
   CancelIconView: {
@@ -213,4 +191,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'flex-end',
   },
-});
+}));

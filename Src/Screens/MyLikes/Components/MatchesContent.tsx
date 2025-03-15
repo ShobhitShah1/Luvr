@@ -1,13 +1,14 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {FC, memo} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {useSelector} from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import React, { FC, memo } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useSelector } from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
 import CommonImages from '../../../Common/CommonImages';
-import {COLORS, FONTS, GROUP_FONT} from '../../../Common/Theme';
+import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
-import {LikeInterface} from '../../../Types/Interface';
+import { LikeInterface } from '../../../Types/Interface';
+import { useTheme } from '../../../Contexts/ThemeContext';
 
 interface LikesProps {
   LikesData: LikeInterface;
@@ -15,61 +16,54 @@ interface LikesProps {
 
 let NO_IMAGE_CONTAINER = 150;
 
-const MatchesContent: FC<LikesProps> = ({LikesData}) => {
+const MatchesContent: FC<LikesProps> = ({ LikesData }) => {
+  const { colors, isDark } = useTheme();
   const navigation = useNavigation<any>();
+
   const userData = useSelector((state: any) => state?.user?.userData || {});
   const matchData = LikesData?.user_details?.[0];
 
   const handleChatClick = () => {
     if (userData._id !== matchData?._id) {
-      navigation.navigate('Chat', {id: matchData?._id});
+      navigation.navigate('Chat', { id: matchData?._id });
     }
   };
-  if (
-    LikesData?.status === 'match' &&
-    matchData &&
-    userData._id !== matchData._id
-  ) {
+  if (LikesData?.status === 'match' && matchData && userData._id !== matchData._id) {
     return (
       <View style={styles.Container} key={matchData._id}>
-        <View style={styles.DetailBoxContainerView}>
+        <View
+          style={[
+            styles.DetailBoxContainerView,
+            { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White },
+          ]}
+        >
           <View style={styles.MatchImageView}>
             <Image
               style={styles.MatchCardMyProfilePic}
               source={{
-                uri:
-                  ApiConfig.IMAGE_BASE_URL + userData.recent_pik[0] ||
-                  userData?.userData?.recent_pik[0],
+                uri: ApiConfig.IMAGE_BASE_URL + userData.recent_pik[0] || userData?.userData?.recent_pik[0],
               }}
             />
-            <Image
-              style={styles.LikeButtonInMiddleIcon}
-              source={CommonIcons.like_button}
-            />
+            <Image style={styles.LikeButtonInMiddleIcon} source={CommonIcons.like_button} />
             <Image
               style={styles.MatchCardOpponentProfilePic}
               source={
                 matchData?.recent_pik?.[0]
-                  ? {uri: ApiConfig.IMAGE_BASE_URL + matchData?.recent_pik[0]}
+                  ? { uri: ApiConfig.IMAGE_BASE_URL + matchData?.recent_pik[0] }
                   : CommonImages.WelcomeBackground
               }
             />
           </View>
           <View style={styles.MatchTextView}>
-            <Text numberOfLines={1} style={styles.TitleMatchText}>
+            <Text numberOfLines={1} style={[styles.TitleMatchText, { color: colors.TitleText }]}>
               It's a match!
             </Text>
-            <Text numberOfLines={2} style={styles.DescriptionText}>
+            <Text numberOfLines={2} style={[styles.DescriptionText, { color: colors.TextColor }]}>
               You and {matchData.full_name || 'User'} liked each other.
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={handleChatClick}
-            style={styles.LikeButtonView}>
-            <Image
-              style={styles.LikeButtonIcon}
-              source={CommonIcons.message_button}
-            />
+          <TouchableOpacity onPress={handleChatClick} style={styles.LikeButtonView}>
+            <Image style={styles.LikeButtonIcon} source={CommonIcons.message_button} />
           </TouchableOpacity>
         </View>
       </View>
@@ -130,7 +124,6 @@ const styles = StyleSheet.create({
     marginVertical: hp('1%'),
     paddingVertical: hp('1.8%'),
     paddingHorizontal: hp('1.5%'),
-    backgroundColor: COLORS.White,
     justifyContent: 'space-between',
   },
   TitleMatchText: {
