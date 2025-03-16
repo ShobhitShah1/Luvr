@@ -12,7 +12,7 @@ interface CategoriesListProps {
 }
 
 const EditProfileCategoriesList: FC<CategoriesListProps> = ({ Item, onPress, EmptyTitleText }) => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   return (
     <View style={styles.categoryContainerView}>
@@ -31,8 +31,19 @@ const EditProfileCategoriesList: FC<CategoriesListProps> = ({ Item, onPress, Emp
           </View>
         )}
       </View>
-      <Pressable onPress={onPress} style={styles.rightIconView}>
-        <Image resizeMode="contain" source={CommonIcons.RightArrow} style={styles.rightIcon} />
+      <Pressable
+        onPress={onPress}
+        style={[
+          styles.rightIconView,
+          { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(234, 234, 234, 1)' },
+        ]}
+      >
+        <Image
+          tintColor={colors.TextColor}
+          resizeMode="contain"
+          source={CommonIcons.RightArrow}
+          style={styles.rightIcon}
+        />
       </Pressable>
     </View>
   );
@@ -69,17 +80,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 13,
   },
   rightIconView: {
-    width: 35,
-    height: 35,
+    width: 30,
+    height: 30,
     borderRadius: 100,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    backgroundColor: 'rgba(234, 234, 234, 1)',
   },
   rightIcon: {
-    width: 15,
-    height: 15,
+    width: 13,
+    height: 13,
     alignSelf: 'center',
     justifyContent: 'center',
   },

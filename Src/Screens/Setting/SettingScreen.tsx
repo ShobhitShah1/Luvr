@@ -401,7 +401,7 @@ Let's make every moment count together! #LoveConnects`,
               <EditProfileTitleView
                 style={styles.TitleViewStyle}
                 isIcon={false}
-                Icon={CommonIcons.ProfileTab}
+                Icon={CommonIcons.LightProfileTab}
                 Title="Phone Number"
               />
               <GradientBorderView
@@ -429,7 +429,7 @@ Let's make every moment count together! #LoveConnects`,
               <EditProfileTitleView
                 style={styles.TitleViewStyle}
                 isIcon={false}
-                Icon={CommonIcons.ProfileTab}
+                Icon={CommonIcons.LightProfileTab}
                 Title="Maximum Distance"
               />
               <GradientBorderView
@@ -495,7 +495,7 @@ Let's make every moment count together! #LoveConnects`,
               <EditProfileTitleView
                 style={styles.TitleViewStyle}
                 isIcon={false}
-                Icon={CommonIcons.ProfileTab}
+                Icon={CommonIcons.LightProfileTab}
                 Title="Show me"
               />
               <View style={styles.GenderContainer}>
@@ -531,7 +531,7 @@ Let's make every moment count together! #LoveConnects`,
               <EditProfileTitleView
                 style={styles.TitleViewStyle}
                 isIcon={false}
-                Icon={CommonIcons.ProfileTab}
+                Icon={CommonIcons.LightProfileTab}
                 Title="Age range"
               />
               <GradientBorderView
@@ -585,7 +585,7 @@ Let's make every moment count together! #LoveConnects`,
               <EditProfileTitleView
                 style={styles.TitleViewStyle}
                 isIcon={false}
-                Icon={CommonIcons.ProfileTab}
+                Icon={CommonIcons.LightProfileTab}
                 Title="Active status"
               />
               <GradientBorderView
@@ -619,7 +619,7 @@ Let's make every moment count together! #LoveConnects`,
               <EditProfileTitleView
                 style={styles.TitleViewStyle}
                 isIcon={false}
-                Icon={CommonIcons.ProfileTab}
+                Icon={CommonIcons.LightProfileTab}
                 Title="Notifications"
               />
               <GradientBorderView
@@ -666,7 +666,7 @@ Let's make every moment count together! #LoveConnects`,
               <EditProfileTitleView
                 style={styles.TitleViewStyle}
                 isIcon={false}
-                Icon={CommonIcons.ProfileTab}
+                Icon={CommonIcons.LightProfileTab}
                 Title="Privacy"
               />
               <GradientBorderView
@@ -739,7 +739,7 @@ Let's make every moment count together! #LoveConnects`,
               <EditProfileTitleView
                 style={styles.TitleViewStyle}
                 isIcon={false}
-                Icon={CommonIcons.ProfileTab}
+                Icon={CommonIcons.LightProfileTab}
                 Title="Other"
               />
               <GradientBorderView

@@ -81,33 +81,24 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({ p
         <View
           style={[
             styles.BlurViewContainer,
-            {
-              borderColor: hasPicture ? COLORS.White : COLORS.Black,
-            },
+            { borderColor: hasPicture ? colors.White : isDark ? colors.White : colors.Black },
           ]}
         >
-          <View style={[styles.AddAndDeleteContainerView]}>
-            <View style={styles.FlexView}>
+          <View style={[styles.addAndDeleteContainerView]}>
+            <View style={styles.flexView}>
               <Image
                 resizeMode="cover"
                 style={[
-                  styles.ImageView,
+                  styles.imageView,
                   {
-                    tintColor: hasPicture ? COLORS.White : colors.TextColor,
+                    tintColor: hasPicture ? colors.White : colors.TextColor,
                     width: hasPicture ? hp('1.4%') : hp('1.4%'),
                     height: hasPicture ? hp('1.4%') : hp('1.4%'),
                   },
                 ]}
                 source={hasPicture ? CommonIcons.DeleteImage : CommonIcons.AddImage}
               />
-              <Text
-                style={[
-                  styles.AddAndRemoveText,
-                  {
-                    color: hasPicture ? COLORS.White : colors.TextColor,
-                  },
-                ]}
-              >
+              <Text style={[styles.addAndRemoveText, { color: hasPicture ? colors.White : colors.TextColor }]}>
                 {hasPicture ? 'Delete Photo' : 'Add Photo'}
               </Text>
             </View>
@@ -180,19 +171,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
   },
-  AddAndDeleteContainerView: {},
-  FlexView: {
+  addAndDeleteContainerView: {},
+  flexView: {
     flex: 1,
     flexDirection: 'row',
   },
-  ImageView: {
+  imageView: {
     width: hp('1.5%'),
     height: hp('1.5%'),
     alignSelf: 'center',
     justifyContent: 'center',
     marginRight: hp('0.5%'),
   },
-  AddAndRemoveText: {
+  addAndRemoveText: {
     alignSelf: 'center',
     textAlign: 'center',
     ...GROUP_FONT.h3,

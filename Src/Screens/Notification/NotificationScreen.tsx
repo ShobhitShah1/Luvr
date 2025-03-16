@@ -12,7 +12,8 @@ import styles from './styles';
 const NotificationScreen = () => {
   const { colors } = useTheme();
   const notifications = useSelector((state: any) => state.user.notifications);
-  const reversedNotifications = notifications?.length !== 0 ? notifications?.slice()?.reverse() : [];
+  const reversedNotifications = [1, 2, 3, 4, 5, 6];
+  // const reversedNotifications = notifications?.length !== 0 ? notifications?.slice()?.reverse() : [];
 
   return (
     <GradientView>

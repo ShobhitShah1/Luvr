@@ -564,7 +564,7 @@ const EditProfileScreen = () => {
         >
           <View style={styles.ListSubView}>
             <View style={styles.detailContainerView}>
-              <EditProfileTitleView isIcon={true} Icon={CommonIcons.ProfileTab} Title="Name" />
+              <EditProfileTitleView isIcon={true} Icon={CommonIcons.LightProfileTab} Title="Name" />
               <GradientBorderView
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
