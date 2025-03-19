@@ -8,20 +8,23 @@ import {
   Animated,
   Image,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   useWindowDimensions,
   View,
 } from 'react-native';
-import Swiper from 'rn-swipe-deck';
 import { Easing } from 'react-native-reanimated';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useSelector } from 'react-redux';
+import Swiper from 'rn-swipe-deck';
 import CommonIcons from '../../Common/CommonIcons';
+import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
-import { ActiveOpacity, COLORS, GROUP_FONT } from '../../Common/Theme';
+import { BOTTOM_TAB_HEIGHT, COLORS, GROUP_FONT } from '../../Common/Theme';
+import GradientButton from '../../Components/AuthComponents/GradientButton';
 import { CardDelay, CardLimit } from '../../Config/Setting';
+import { useTheme } from '../../Contexts/ThemeContext';
 import useInterval from '../../Hooks/useInterval';
 import { onSwipeLeft, onSwipeRight } from '../../Redux/Action/actions';
 import { store } from '../../Redux/Store/store';
@@ -32,9 +35,6 @@ import { useCustomToast } from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
-import { useTheme } from '../../Contexts/ThemeContext';
-import GradientView from '../../Common/GradientView';
-import GradientButton from '../../Components/AuthComponents/GradientButton';
 
 const ExploreCardScreen: FC = () => {
   const { colors } = useTheme();
@@ -271,7 +271,7 @@ const ExploreCardScreen: FC = () => {
 
   return (
     <GradientView>
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingBottom: BOTTOM_TAB_HEIGHT }]}>
         <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
 
         <View style={[styles.SwiperContainer, { flex: cards?.length !== 0 ? 0.9 : 1 }]}>
@@ -352,13 +352,13 @@ const ExploreCardScreen: FC = () => {
 
         {cards?.length !== 0 && (
           <View style={styles.LikeAndRejectView}>
-            <TouchableOpacity onPress={SwipeLeft} activeOpacity={ActiveOpacity} style={styles.LikeAndRejectButtonView}>
+            <Pressable onPress={SwipeLeft} style={styles.LikeAndRejectButtonView}>
               <Image resizeMode="contain" style={styles.DislikeButton} source={CommonIcons.dislike_button} />
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity onPress={SwipeRight} activeOpacity={ActiveOpacity} style={styles.LikeAndRejectButtonView}>
+            <Pressable onPress={SwipeRight} style={styles.LikeAndRejectButtonView}>
               <Image resizeMode="contain" style={styles.LikeButton} source={CommonIcons.like_button} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         )}
 

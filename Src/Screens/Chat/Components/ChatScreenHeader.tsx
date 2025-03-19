@@ -1,11 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { FC, memo } from 'react';
-import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
 import CommonImages from '../../../Common/CommonImages';
-import { ActiveOpacity, COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
+import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { ProfileType } from '../../../Types/ProfileType';

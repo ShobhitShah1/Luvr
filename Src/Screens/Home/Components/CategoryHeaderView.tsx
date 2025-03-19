@@ -24,7 +24,8 @@ export default CategoryHeaderView;
 const styles = StyleSheet.create({
   Container: {
     justifyContent: 'center',
-    marginVertical: hp('2.7%'),
+    marginBottom: hp('2%'),
+    marginTop: hp('0.5%'),
   },
   TitleText: {
     color: COLORS.Black,

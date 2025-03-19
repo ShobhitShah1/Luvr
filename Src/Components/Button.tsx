@@ -1,8 +1,8 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { FC } from 'react';
-import { ActiveOpacity, COLORS, FONTS } from '../Common/Theme';
-import { useTheme } from '../Contexts/ThemeContext';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { COLORS, FONTS } from '../Common/Theme';
+import { useTheme } from '../Contexts/ThemeContext';
 
 interface ButtonProps {
   onPress: () => void;

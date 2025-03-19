@@ -1,19 +1,17 @@
 import { Image } from 'moti';
 import React, { FC, useMemo } from 'react';
-import { ImageBackground, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import ReactNativeModal from 'react-native-modal';
 import { useSelector } from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
-import CommonImages from '../../../Common/CommonImages';
-import { ActiveOpacity, COLORS, deviceHeightWithStatusbar, FONTS } from '../../../Common/Theme';
+import { COLORS, deviceHeightWithStatusbar, FONTS } from '../../../Common/Theme';
+import { GradientBorderView } from '../../../Components/GradientBorder';
 import { BlurredBackdrop } from '../../../Components/ReportUserModalView';
 import ApiConfig from '../../../Config/ApiConfig';
 import { APP_NAME, DummyImage } from '../../../Config/Setting';
-import { ProfileType } from '../../../Types/ProfileType';
-import { GradientBorderView } from '../../../Components/GradientBorder';
 import { useTheme } from '../../../Contexts/ThemeContext';
-import LinearGradient from 'react-native-linear-gradient';
+import { ProfileType } from '../../../Types/ProfileType';
 
 interface ItsAMatchProps {
   user: ProfileType | null;

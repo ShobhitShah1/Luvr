@@ -3,21 +3,11 @@
 /* eslint-disable react-native/no-inline-styles */
 import NetInfo from '@react-native-community/netinfo';
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Pressable,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
-import { ActiveOpacity } from '../../Common/Theme';
 import { useTheme } from '../../Contexts/ThemeContext';
 import UserService from '../../Services/AuthService';
 import { LikeInterface } from '../../Types/Interface';
@@ -26,6 +16,7 @@ import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import LikesContent from './Components/LikesContent';
 import MatchesContent from './Components/MatchesContent';
 import styles from './styles';
+import { BOTTOM_TAB_HEIGHT } from '../../Common/Theme';
 
 type TabData = { title: string; index?: number };
 
@@ -106,17 +97,17 @@ const MyLikesScreen = () => {
             You have no {selectedTabIndex.index === 0 ? 'Likes' : 'Matches'} right now, when someone{' '}
             {selectedTabIndex.index === 0 ? 'Likes' : 'Matches'} you they will appear here.
           </Text>
-          <TouchableOpacity activeOpacity={ActiveOpacity} onPress={onRefresh} style={styles.RefreshButtonContainer}>
+          <Pressable onPress={onRefresh} style={styles.RefreshButtonContainer}>
             <Image source={CommonIcons.sync} tintColor={colors.TextColor} style={styles.RefreshButtonIcon} />
             <Text style={[styles.RefreshButtonText, { color: colors.TextColor }]}>Refresh Page</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     );
   };
 
   useEffect(() => {
-    setIsAPILoading(true);
+    setIsAPILoading(matchAndLikeData?.length === 0);
     fetchLikesAndMatchAPI();
   }, []);
 
@@ -206,6 +197,7 @@ const MyLikesScreen = () => {
                   nestedScrollEnabled
                   style={{ zIndex: 9999 }}
                   scrollEnabled
+                  contentContainerStyle={{ paddingBottom: BOTTOM_TAB_HEIGHT }}
                   refreshControl={
                     <RefreshControl
                       refreshing={refreshing}

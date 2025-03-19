@@ -1,22 +1,22 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { FC, memo, useCallback, useState } from 'react';
-import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
+import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
-import { ActiveOpacity, COLORS, FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
+import { COLORS, FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import { LookingFor } from '../../../Components/Data';
+import { GradientBorderView } from '../../../Components/GradientBorder';
+import { useTheme } from '../../../Contexts/ThemeContext';
 import { updateField } from '../../../Redux/Action/actions';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import GradientView from '../../../Common/GradientView';
-import { useTheme } from '../../../Contexts/ThemeContext';
-import { GradientBorderView } from '../../../Components/GradientBorder';
 
 const { width } = Dimensions.get('window');
 
@@ -63,7 +63,7 @@ const HopingToFind: FC = () => {
               : ['transparent', 'transparent'],
         }}
       >
-        <TouchableOpacity activeOpacity={ActiveOpacity} onPress={() => onPressLookingFor(item)} key={index}>
+        <Pressable onPress={() => onPressLookingFor(item)} key={index}>
           <View style={styles.TextView}>
             <Text
               numberOfLines={2}
@@ -87,7 +87,7 @@ const HopingToFind: FC = () => {
               />
             )}
           </View>
-        </TouchableOpacity>
+        </Pressable>
       </GradientBorderView>
     );
   };

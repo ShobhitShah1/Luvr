@@ -9,7 +9,7 @@ import { Socket, io } from 'socket.io-client';
 import CommonImages from '../../Common/CommonImages';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
-import { COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
+import { BOTTOM_TAB_HEIGHT, COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
 import ApiConfig from '../../Config/ApiConfig';
 import { JOIN_EVENT, LIST_EVENT, UPDATE_LIST } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
@@ -181,6 +181,7 @@ const ChatRoomScreen = () => {
               data={messages}
               contentContainerStyle={{
                 flex: 1,
+                paddingBottom: BOTTOM_TAB_HEIGHT,
                 justifyContent: messages.length === 0 ? 'center' : undefined,
               }}
               maxToRenderPerBatch={10}

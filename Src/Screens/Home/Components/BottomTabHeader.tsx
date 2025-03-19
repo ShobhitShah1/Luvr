@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useNavigation } from '@react-navigation/native';
 import React, { FC, memo, useCallback, useEffect } from 'react';
-import { Image, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
-import { ActiveOpacity, COLORS, FONTS } from '../../../Common/Theme';
+import { COLORS, FONTS } from '../../../Common/Theme';
 import { APP_NAME, DonationIconAnimationTime } from '../../../Config/Setting';
 import { useTheme } from '../../../Contexts/ThemeContext';
 
@@ -59,8 +59,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({ hideSettingAndNotification,
 
         <View style={styles.IconsView}>
           {Platform.OS === 'android' && (
-            <TouchableOpacity
-              activeOpacity={ActiveOpacity}
+            <Pressable
               onPress={() => {
                 navigation.navigate('Donation');
               }}
@@ -69,11 +68,10 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({ hideSettingAndNotification,
               <Animated.View style={[styles.IconWrapper, animatedStyle]}>
                 <Image style={styles.DonateIcon} resizeMode="contain" source={CommonIcons.donate_icon} />
               </Animated.View>
-            </TouchableOpacity>
+            </Pressable>
           )}
           {!hideSettingAndNotification && (
-            <TouchableOpacity
-              activeOpacity={ActiveOpacity}
+            <Pressable
               onPress={() => {
                 navigation.navigate('Notification');
               }}
@@ -85,11 +83,10 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({ hideSettingAndNotification,
                 resizeMode="contain"
                 source={CommonIcons.Notification}
               />
-            </TouchableOpacity>
+            </Pressable>
           )}
           {(!hideSettingAndNotification || showSetting) && (
-            <TouchableOpacity
-              activeOpacity={ActiveOpacity}
+            <Pressable
               onPress={() => {
                 navigation.navigate('Setting');
               }}
@@ -101,7 +98,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({ hideSettingAndNotification,
                 resizeMode="contain"
                 source={CommonIcons.Setting}
               />
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       </View>

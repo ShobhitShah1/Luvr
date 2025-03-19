@@ -3,13 +3,13 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
 import React, { memo, useState } from 'react';
-import { FlatList, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
-import { ActiveOpacity, FONTS, GROUP_FONT } from '../../../Common/Theme';
+import { FONTS, GROUP_FONT } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import ApiConfig from '../../../Config/ApiConfig';
 import { TotalProfilePicCanUpload } from '../../../Config/Setting';
@@ -131,8 +131,7 @@ const AddRecentPics = () => {
 
   const renderImageView = ({ item }: any) => {
     return (
-      <TouchableOpacity
-        activeOpacity={ActiveOpacity}
+      <Pressable
         onPress={() => {
           handleOnImagePress(item);
         }}
@@ -148,7 +147,7 @@ const AddRecentPics = () => {
           }}
           picture={item}
         />
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 

@@ -2,24 +2,23 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { FC, memo, useCallback, useRef, useState } from 'react';
-import { Keyboard, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
-import { ActiveOpacity, COLORS, FONTS, SIZES } from '../../../Common/Theme';
+import GradientView from '../../../Common/GradientView';
+import TextString from '../../../Common/TextString';
+import { COLORS, FONTS, SIZES } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
 import { MainGenders } from '../../../Components/Data';
-import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
+import { GradientBorderView } from '../../../Components/GradientBorder';
+import { useTheme } from '../../../Contexts/ThemeContext';
 import { updateField } from '../../../Redux/Action/actions';
+import { store } from '../../../Redux/Store/store';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import { store } from '../../../Redux/Store/store';
-import TextString from '../../../Common/TextString';
-import GradientView from '../../../Common/GradientView';
-import { GradientBorderView } from '../../../Components/GradientBorder';
-import { useTheme } from '../../../Contexts/ThemeContext';
 
 const IdentifyYourSelf: FC = () => {
   const { colors, isDark } = useTheme();
@@ -248,8 +247,7 @@ const IdentifyYourSelf: FC = () => {
                           },
                         ]}
                       >
-                        <TouchableOpacity
-                          activeOpacity={ActiveOpacity}
+                        <Pressable
                           onPress={() => handleGenderSelection(gender)}
                           style={{ flex: 1, justifyContent: 'center' }}
                         >
@@ -263,7 +261,7 @@ const IdentifyYourSelf: FC = () => {
                           >
                             {gender}
                           </Text>
-                        </TouchableOpacity>
+                        </Pressable>
                       </GradientBorderView>
                     ) : (
                       <View
@@ -277,8 +275,7 @@ const IdentifyYourSelf: FC = () => {
                           },
                         ]}
                       >
-                        <TouchableOpacity
-                          activeOpacity={ActiveOpacity}
+                        <Pressable
                           onPress={() => handleGenderSelection(gender)}
                           style={{ flex: 1, justifyContent: 'center' }}
                         >
@@ -292,7 +289,7 @@ const IdentifyYourSelf: FC = () => {
                           >
                             {gender}
                           </Text>
-                        </TouchableOpacity>
+                        </Pressable>
                       </View>
                     )}
                   </View>

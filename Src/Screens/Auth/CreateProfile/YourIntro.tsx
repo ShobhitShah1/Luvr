@@ -3,12 +3,12 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
-import { ActiveOpacity, COLORS, FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
+import { COLORS, FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import { YourIntoData } from '../../../Components/Data';
 import { GradientBorderView } from '../../../Components/GradientBorder';
@@ -69,8 +69,7 @@ const YourIntro = () => {
               },
             ]}
           >
-            <TouchableOpacity
-              activeOpacity={ActiveOpacity}
+            <Pressable
               style={{ flex: 1, justifyContent: 'center' }}
               onPress={() => handleOptionPress(item.id, item.name)}
             >
@@ -80,7 +79,7 @@ const YourIntro = () => {
               >
                 {item.name}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </GradientBorderView>
         );
       },

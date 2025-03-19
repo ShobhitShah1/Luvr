@@ -1,13 +1,13 @@
 import { BlurView } from '@react-native-community/blur';
 import React, { FC, memo } from 'react';
-import { FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CommonIcons from '../Common/CommonIcons';
-import { ActiveOpacity, COLORS, deviceHeightWithStatusbar, FONTS } from '../Common/Theme';
-import { reportReasons } from './Data';
-import LinearGradient from 'react-native-linear-gradient';
+import { COLORS, deviceHeightWithStatusbar, FONTS } from '../Common/Theme';
 import { useTheme } from '../Contexts/ThemeContext';
+import { reportReasons } from './Data';
 import { GradientBorderView } from './GradientBorder';
 
 interface ReportUserProps {
@@ -51,13 +51,9 @@ const ReportUserModalView: FC<ReportUserProps> = ({
             <View style={styles.titleView}>
               <View />
               <Text style={[styles.titleText, { color: colors.TitleText }]}>Report Profile</Text>
-              <TouchableOpacity
-                onPress={() => setVisibility(false)}
-                activeOpacity={ActiveOpacity}
-                style={styles.closeModalIconView}
-              >
+              <Pressable onPress={() => setVisibility(false)} style={styles.closeModalIconView}>
                 <Image source={CommonIcons.CloseModal} style={styles.closeModalIcon} />
-              </TouchableOpacity>
+              </Pressable>
             </View>
             <Text style={[styles.titleSubText, { color: colors.TextColor }]}>
               Don't Worry, your feedback is anonymous and they won't know that you've report them

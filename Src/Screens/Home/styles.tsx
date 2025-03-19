@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet } from 'react-native';
-import { COLORS, GROUP_FONT } from '../../Common/Theme';
+import { BOTTOM_TAB_HEIGHT, COLORS, GROUP_FONT } from '../../Common/Theme';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const { width } = Dimensions.get('screen');
@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
   FlatListStyle: {
     width: '90%',
     alignSelf: 'center',
+    paddingBottom: BOTTOM_TAB_HEIGHT,
   },
 
   container: {

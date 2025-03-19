@@ -1,8 +1,8 @@
 import React, { memo, useEffect, useRef } from 'react';
-import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { ActiveOpacity, COLORS, FONTS, GROUP_FONT } from '../Common/Theme';
 import CommonIcons from '../Common/CommonIcons';
+import { COLORS, FONTS, GROUP_FONT } from '../Common/Theme';
 import { useTheme } from '../Contexts/ThemeContext';
 
 interface CustomCheckBoxProps {
@@ -28,7 +28,7 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({ isChecked, onToggle, Bo
   };
 
   return (
-    <TouchableOpacity onPress={onToggle} activeOpacity={ActiveOpacity}>
+    <Pressable onPress={onToggle}>
       <View style={styles.BoxContainer}>
         <View
           style={[
@@ -44,7 +44,7 @@ const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({ isChecked, onToggle, Bo
 
         {BoxText && <Text style={[styles.CheckboxText, { color: colors.TextColor }]}>{BoxText}</Text>}
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

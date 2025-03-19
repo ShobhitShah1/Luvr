@@ -1,13 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useEffect, useState } from 'react';
-import { Image, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { flushFailedPurchasesCachedAsPendingAndroid, initConnection, requestPurchase } from 'react-native-iap';
 import { useSelector } from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
-import { ActiveOpacity, COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
+import { COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
 import Button from '../../Components/Button';
 import { skus } from '../../Config/ApiConfig';
 import UserService from '../../Services/AuthService';
@@ -91,18 +91,17 @@ const DonationScreen = () => {
     <GradientView>
       <View style={styles.container}>
         <SafeAreaView />
-        <TouchableOpacity
+        <Pressable
           style={{
             zIndex: 9999,
             left: 20,
             position: 'absolute',
             top: Platform.OS === 'ios' ? 60 : 20,
           }}
-          activeOpacity={ActiveOpacity}
           onPress={() => navigation.goBack()}
         >
           <Image source={CommonIcons.Back} resizeMode="contain" style={{ width: 28, height: 28 }} />
-        </TouchableOpacity>
+        </Pressable>
         <View style={styles.ItemContainerView}>
           <View style={styles.TitleAndImageView}>
             <View style={styles.DonateIconView}>

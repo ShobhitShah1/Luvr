@@ -23,18 +23,20 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import * as ImagePicker from 'react-native-image-picker';
 import { useDispatch, useSelector } from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
+import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
-import { ActiveOpacity, COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
+import { FONTS, GROUP_FONT } from '../../Common/Theme';
 import CustomTextInput from '../../Components/CustomTextInput';
+import { GradientBorderView } from '../../Components/GradientBorder';
 import ApiConfig from '../../Config/ApiConfig';
 import { TotalProfilePicCanUploadEditProfile } from '../../Config/Setting';
+import { useTheme } from '../../Contexts/ThemeContext';
 import { useCameraPermission } from '../../Hooks/useCameraPermission';
 import { useGalleryPermission } from '../../Hooks/useGalleryPermission';
 import { useLocationPermission } from '../../Hooks/useLocationPermission';
@@ -50,10 +52,6 @@ import EditProfileCategoriesList from './Components/EditProfileComponents/EditPr
 import EditProfileSheetView from './Components/EditProfileComponents/EditProfileSheetView';
 import EditProfileTitleView from './Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from './Components/ProfileAndSettingHeader';
-import GradientView from '../../Common/GradientView';
-import { GradientBorderView } from '../../Components/GradientBorder';
-import { useTheme } from '../../Contexts/ThemeContext';
-import LinearGradient from 'react-native-linear-gradient';
 
 export interface ViewPositionsProps {
   Gender: number;

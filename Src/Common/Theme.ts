@@ -171,14 +171,14 @@ export const GROUP_FONT = {
 
 export const deviceHeightWithStatusbar = Dimensions.get('window').height + (StatusBar?.currentHeight || 10);
 
-export const ActiveOpacity = 0.8;
+export const BOTTOM_TAB_HEIGHT = hp('10%');
 
 export default {
   COLORS,
   FONTS,
   SIZES,
   GROUP_FONT,
-  ActiveOpacity,
   LIGHT_COLORS,
+  BOTTOM_TAB_HEIGHT,
   DARK_COLORS,
 };

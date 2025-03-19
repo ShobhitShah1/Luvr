@@ -1,11 +1,10 @@
-import { Dimensions, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { FC, memo } from 'react';
-import { ActiveOpacity, COLORS, FONTS } from '../../../Common/Theme';
+import { Dimensions, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import CommonIcons from '../../../Common/CommonIcons';
+import { COLORS, FONTS } from '../../../Common/Theme';
 import Button from '../../../Components/Button';
-import { useTheme } from '../../../Contexts/ThemeContext';
-import LinearGradient from 'react-native-linear-gradient';
 import { GradientBorderView } from '../../../Components/GradientBorder';
+import { useTheme } from '../../../Contexts/ThemeContext';
 
 interface SettingModalProps {
   onPress: () => void;
