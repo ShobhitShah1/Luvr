@@ -14,7 +14,7 @@ type DetailCardRouteParams = {
 
 const DetailCardHeader: FC<DetailCardRouteParams> = ({ props }) => {
   const { goBack } = useNavigation();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   const cardDetail = useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
   const item = props || cardDetail?.params?.props || { full_name: '', age: 0, profile_image: '', birthdate: '' };
@@ -22,7 +22,18 @@ const DetailCardHeader: FC<DetailCardRouteParams> = ({ props }) => {
   const Age = useCalculateAge(item?.birthdate || '00/00/0000');
 
   return (
-    <View style={styles.Container}>
+    <View
+      style={[
+        styles.container,
+        !isDark && {
+          backgroundColor: colors.White,
+          shadowColor: colors.Black,
+          elevation: 5,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.5,
+        },
+      ]}
+    >
       <SafeAreaView />
       <View style={styles.ContentView}>
         <Pressable onPress={() => goBack()} style={styles.BackIconView}>
@@ -34,10 +45,14 @@ const DetailCardHeader: FC<DetailCardRouteParams> = ({ props }) => {
           />
         </Pressable>
         <View style={styles.NameAndBadgeView}>
-          <Text numberOfLines={1} style={[styles.HeaderText, { color: colors.TextColor }]}>
+          <Text numberOfLines={1} style={[styles.HeaderText, { color: isDark ? colors.TextColor : colors.TitleText }]}>
             {item?.full_name || 'User'}, {Age || 0}
           </Text>
-          <Image resizeMode="contain" style={styles.VerifyIcon} source={CommonIcons.Verification_Icon} />
+          <Image
+            resizeMode="contain"
+            style={styles.VerifyIcon}
+            source={isDark ? CommonIcons.Verification_Icon_Dark : CommonIcons.Verification_Icon}
+          />
         </View>
       </View>
     </View>
@@ -47,7 +62,7 @@ const DetailCardHeader: FC<DetailCardRouteParams> = ({ props }) => {
 export default DetailCardHeader;
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     width: '100%',
     justifyContent: 'center',
     height: Platform.OS === 'ios' ? hp('12.5%') : hp('7%'),
@@ -70,10 +85,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 15,
     width: '90%',
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
   HeaderText: {
-    fontFamily: FONTS.SemiBold,
-    fontSize: hp('2.1%'),
+    fontFamily: FONTS.Bold,
+    fontSize: hp('2%'),
     color: COLORS.Primary,
   },
   VerifyIcon: {

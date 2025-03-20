@@ -1016,7 +1016,7 @@ const EditProfileScreen = () => {
           <BottomSheetModal
             ref={bottomSheetModalRef}
             enableDynamicSizing
-            backgroundStyle={{ backgroundColor: colors.sheetBackground[0] }}
+            backgroundStyle={{ backgroundColor: !isDark ? 'rgba(240, 236, 255, 1)' : colors.sheetBackground[0] }}
             onDismiss={onSheetClose}
             handleComponent={null}
             backdropComponent={(props) => (

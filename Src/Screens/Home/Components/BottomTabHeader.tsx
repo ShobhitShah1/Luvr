@@ -19,16 +19,23 @@ import { useTheme } from '../../../Contexts/ThemeContext';
 interface BottomTabHeaderProps {
   hideSettingAndNotification?: boolean;
   showSetting?: boolean;
+  hideDonation?: boolean;
+  showTitle?: boolean;
 }
 
 const ANGLE = 10;
 const TIME = 100;
 const EASING = Easing.elastic(1.5);
 
-const BottomTabHeader: FC<BottomTabHeaderProps> = ({ hideSettingAndNotification, showSetting }) => {
+const BottomTabHeader: FC<BottomTabHeaderProps> = ({
+  hideSettingAndNotification,
+  showSetting,
+  hideDonation = false,
+  showTitle = false,
+}) => {
   const navigation = useNavigation<any>();
   const rotation = useSharedValue(0);
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ rotateZ: `${rotation.value}deg` }],
@@ -50,24 +57,54 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({ hideSettingAndNotification,
   }, [playAnimation]);
 
   return (
-    <View style={styles.Container}>
+    <View
+      style={[
+        styles.Container,
+        { backgroundColor: !isDark ? colors.White : 'transparent' },
+        !isDark && {
+          shadowColor: colors.Black,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.2,
+          shadowRadius: 10,
+          elevation: 10,
+        },
+      ]}
+    >
       <SafeAreaView />
       <View style={styles.ContentView}>
-        <View style={styles.TitleTextView}>
-          <Text style={[styles.TitleText, { color: colors.TextColor }]}>{APP_NAME}</Text>
-        </View>
+        {Platform.OS === 'android' && !hideDonation && (
+          <Pressable
+            onPress={() => {
+              navigation.navigate('Donation');
+            }}
+            style={[styles.DonationContainer]}
+          >
+            <Animated.View style={[styles.IconWrapper, animatedStyle]}>
+              <Image style={styles.DonateIcon} resizeMode="contain" source={CommonIcons.donate_icon} />
+            </Animated.View>
+          </Pressable>
+        )}
+
+        {showTitle && (
+          <View style={styles.TitleTextView}>
+            <Text style={[styles.TitleText, { color: colors.TitleText }]}>{APP_NAME?.toUpperCase()}</Text>
+          </View>
+        )}
 
         <View style={styles.IconsView}>
-          {Platform.OS === 'android' && (
+          {(!hideSettingAndNotification || showSetting) && (
             <Pressable
               onPress={() => {
-                navigation.navigate('Donation');
+                navigation.navigate('Setting');
               }}
-              style={[styles.DonationContainer]}
+              style={styles.IconWrapper}
             >
-              <Animated.View style={[styles.IconWrapper, animatedStyle]}>
-                <Image style={styles.DonateIcon} resizeMode="contain" source={CommonIcons.donate_icon} />
-              </Animated.View>
+              <Image
+                style={styles.Icons}
+                tintColor={colors.TextColor}
+                resizeMode="contain"
+                source={CommonIcons.Setting}
+              />
             </Pressable>
           )}
           {!hideSettingAndNotification && (
@@ -85,21 +122,6 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({ hideSettingAndNotification,
               />
             </Pressable>
           )}
-          {(!hideSettingAndNotification || showSetting) && (
-            <Pressable
-              onPress={() => {
-                navigation.navigate('Setting');
-              }}
-              style={styles.IconWrapper}
-            >
-              <Image
-                style={styles.Icons}
-                tintColor={colors.TextColor}
-                resizeMode="contain"
-                source={CommonIcons.Setting}
-              />
-            </Pressable>
-          )}
         </View>
       </View>
     </View>
@@ -112,38 +134,46 @@ const styles = StyleSheet.create({
   Container: {
     width: '100%',
     justifyContent: 'center',
-    height: Platform.OS === 'ios' ? hp('12.5%') : hp('8%'),
+    height: Platform.OS === 'ios' ? hp('12.5%') : hp('7%'),
   },
   DonationContainer: {},
   ContentView: {
-    width: '90%',
+    width: '93%',
     alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   TitleTextView: {
+    position: 'absolute',
+    flex: 1,
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
   },
   TitleText: {
     fontFamily: FONTS.Bold,
-    fontSize: hp('2%'),
+    fontSize: hp('2.2%'),
     color: COLORS.Primary,
   },
   IconsView: {
+    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
   },
   IconWrapper: {
-    marginHorizontal: hp('1%'),
+    marginHorizontal: 7,
     justifyContent: 'center',
   },
   Icons: {
-    width: hp('3.5%'),
-    height: hp('3%'),
+    width: 22,
+    height: 22,
   },
   DonateIcon: {
-    width: 32,
-    height: 32,
+    width: 30,
+    height: 30,
   },
 });

@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useNavigation } from '@react-navigation/native';
-import React, { FC, memo, useEffect, useRef, useState } from 'react';
+import React, { FC, memo, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Image, LayoutChangeEvent, Pressable, Text, TouchableWithoutFeedback, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
@@ -24,6 +24,29 @@ interface RenderCardProps {
   startInterval: any;
   stopInterval: any;
 }
+
+const hobbyColors = [
+  '#FF6B6B', // coral red
+  '#4ECDC4', // teal
+  '#FF8C42', // orange
+  '#6A0572', // purple
+  '#6A82FB', // periwinkle
+  '#FC5C7D', // pink
+  '#45B649', // green
+  '#3F2B96', // deep blue
+  '#FF5E62', // salmon
+  '#11998E', // emerald
+  '#8E2DE2', // violet
+  '#F86624', // tangerine
+  '#107896', // blue sapphire
+  '#FF9966', // peach
+  '#FF7EB3', // rose pink
+  '#7F00FF', // violet
+  '#00B4DB', // sky blue
+  '#FFA69E', // melon
+  '#43C6AC', // turquoise
+  '#536976', // slate
+];
 
 const RenderSwiperCard: FC<RenderCardProps> = ({
   CurrentCardIndex,
@@ -86,6 +109,17 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
       width: item.nativeEvent.layout.width,
     });
   };
+
+  const shuffleArray = (array: string[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  const shuffledHobbyColors = useMemo(() => shuffleArray(hobbyColors), [cardData?.likes_into]);
 
   return (
     <TouchableWithoutFeedback
@@ -170,18 +204,31 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
             <View style={styles.MultipleBoxFlexView}>
               {Array.isArray(cardData?.likes_into) &&
                 cardData.likes_into.length > 0 &&
-                cardData.likes_into[0] !== '' &&
-                cardData.likes_into.map((interestedInItem, index) => (
-                  <LinearGradient
-                    start={{ x: 1, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    colors={colors.ButtonGradient}
-                    key={index}
-                    style={styles.MultipleBoxView}
-                  >
-                    <Text style={styles.MultipleDetailText}>{interestedInItem || ''}</Text>
-                  </LinearGradient>
-                ))}
+                cardData.likes_into[0] !== '' && (
+                  <>
+                    {cardData.likes_into.map((interestedInItem, index) => {
+                      const backgroundColor = isDark
+                        ? undefined
+                        : shuffledHobbyColors[index % shuffledHobbyColors.length];
+
+                      return isDark ? (
+                        <LinearGradient
+                          start={{ x: 1, y: 0 }}
+                          end={{ x: 0, y: 1 }}
+                          colors={colors.ButtonGradient}
+                          key={index}
+                          style={styles.MultipleBoxView}
+                        >
+                          <Text style={styles.MultipleDetailText}>{interestedInItem || ''}</Text>
+                        </LinearGradient>
+                      ) : (
+                        <View key={index} style={[styles.MultipleBoxView, { backgroundColor }]}>
+                          <Text style={styles.MultipleDetailText}>{interestedInItem || ''}</Text>
+                        </View>
+                      );
+                    })}
+                  </>
+                )}
             </View>
           </View>
 

@@ -28,6 +28,7 @@ const MatchesContent: FC<LikesProps> = ({ LikesData }) => {
       navigation.navigate('Chat', { id: matchData?._id });
     }
   };
+
   if (LikesData?.status === 'match' && matchData && userData._id !== matchData._id) {
     return (
       <View style={styles.Container} key={matchData._id}>
@@ -44,7 +45,7 @@ const MatchesContent: FC<LikesProps> = ({ LikesData }) => {
                 uri: ApiConfig.IMAGE_BASE_URL + userData.recent_pik[0] || userData?.userData?.recent_pik[0],
               }}
             />
-            <Image style={styles.LikeButtonInMiddleIcon} source={CommonIcons.like_button} />
+            <Image style={styles.LikeButtonInMiddleIcon} source={CommonIcons.ic_red_like_button} />
             <Image
               style={styles.MatchCardOpponentProfilePic}
               source={

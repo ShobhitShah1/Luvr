@@ -7,7 +7,6 @@ const Avoid_Contact = require('../../Assets/Images/avoid_contact.webp');
 const LikeCard = require('../../Assets/Images/LikeCard.webp');
 const NoChat = require('../../Assets/Images/no_chats_icon.png');
 const ItsAMatch = require('../../Assets/Images/ItsAMatch.webp');
-const NoNotification = require('../../Assets/Images/no_notification_icon.png');
 const HomeHelp = require('../../Assets/Images/HomeHelp.webp');
 const HomeHoping = require('../../Assets/Images/HomeHoping.webp');
 const HomeNewFriends = require('../../Assets/Images/HomeNewFriends.webp');
@@ -25,7 +24,6 @@ export default {
   LikeCard,
   NoChat,
   ItsAMatch,
-  NoNotification,
   HomeHelp,
   HomeHoping,
   HomeNewFriends,

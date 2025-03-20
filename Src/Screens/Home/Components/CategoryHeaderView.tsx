@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   Container: {
     justifyContent: 'center',
     marginBottom: hp('2%'),
-    marginTop: hp('0.5%'),
+    marginTop: hp('1%'),
   },
   TitleText: {
     color: COLORS.Black,

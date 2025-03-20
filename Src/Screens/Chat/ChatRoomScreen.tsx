@@ -173,7 +173,7 @@ const ChatRoomScreen = () => {
   return (
     <GradientView>
       <View style={styles.container}>
-        <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
+        <BottomTabHeader showSetting={false} hideDonation={true} showTitle={true} hideSettingAndNotification={true} />
 
         <View style={styles.ListChatView}>
           {!isSocketLoading && (

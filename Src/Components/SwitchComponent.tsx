@@ -20,13 +20,13 @@ const transition: MotiTransitionProp = {
 };
 
 const SwitchComponent: FC<SwitchComponentProps> = ({ isActive, size, onPress }) => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   const _colors = {
     Active: colors.Primary,
-    ActiveBackground: 'rgba(255, 229, 234, 1)',
+    ActiveBackground: isDark ? 'rgba(157, 133, 240, 0.25)' : 'rgba(240, 236, 255, 1)',
     InActive: 'rgba(108, 108, 108, 1)',
-    InActiveBackground: 'rgba(234, 234, 234, 1)',
+    InActiveBackground: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(234, 234, 234, 1)',
   };
 
   const trackWidth = useMemo(() => {

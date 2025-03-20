@@ -77,7 +77,16 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
         style={[styles.LookingForListView]}
         key={index}
       >
-        <Pressable onPress={() => onPressLookingFor(item)} style={{ flex: 1, justifyContent: 'center' }}>
+        <Pressable
+          onPress={() => onPressLookingFor(item)}
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            backgroundColor: isDark ? 'transparent' : colors.White,
+            borderRadius: SIZES.radius,
+            overflow: 'hidden',
+          }}
+        >
           <View style={styles.TextView}>
             <Text
               numberOfLines={2}
@@ -137,7 +146,16 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
         style={[styles.LookingForListView]}
         key={index}
       >
-        <Pressable onPress={() => onPressIntrusted(item?.name)} style={{ flex: 1, justifyContent: 'center' }}>
+        <Pressable
+          onPress={() => onPressIntrusted(item?.name)}
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            backgroundColor: isDark ? 'transparent' : colors.White,
+            borderRadius: SIZES.radius,
+            overflow: 'hidden',
+          }}
+        >
           <View style={styles.TextView}>
             <Text
               numberOfLines={2}
@@ -203,7 +221,13 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
             style={[styles.MultiSelectButtonView, selectedOption && styles.selectedOption]}
           >
             <Pressable
-              style={{ flex: 1, justifyContent: 'center' }}
+              style={{
+                flex: 1,
+                backgroundColor: isDark ? 'transparent' : colors.White,
+                justifyContent: 'center',
+                borderRadius: SIZES.radius,
+                overflow: 'hidden',
+              }}
               onPress={() => handleOptionPress(item.id, item.name)}
             >
               <Text
@@ -301,7 +325,11 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
         return (
           <GradientBorderView
             gradientProps={{ colors: selectedOption ? colors.ButtonGradient : colors.UnselectedGradient }}
-            style={[styles.MultiSelectButtonView, selectedOption && styles.selectedOption]}
+            style={[
+              styles.MultiSelectButtonView,
+              { backgroundColor: isDark ? 'transparent' : colors.White },
+              selectedOption && styles.selectedOption,
+            ]}
           >
             <Pressable style={{ flex: 1, justifyContent: 'center' }} onPress={() => onClickChange(item, value)}>
               <Text
@@ -322,7 +350,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
   );
 
   return (
-    <ScrollView style={styles.BottomSheetContainerView}>
+    <ScrollView style={styles.bottomSheetContainerView}>
       <View
         onLayout={(event) => {
           StoreViewPosition('Gender', event.nativeEvent.layout.y);
@@ -348,6 +376,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
                 {
                   width: hp('12%'),
                   borderWidth: profile?.gender === gender ? 2 : 1,
+                  backgroundColor: isDark ? 'transparent' : colors.White,
                 },
               ]}
             >
@@ -361,7 +390,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
                   style={[
                     styles.GenderText,
                     {
-                      color: profile?.gender === gender ? COLORS.White : colors.TextColor,
+                      color: profile?.gender === gender ? (isDark ? colors.White : colors.TextColor) : colors.TextColor,
                     },
                   ]}
                 >
@@ -436,15 +465,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
         }}
       >
         <View style={styles.ImIntoTitleFlexView}>
-          <View
-            style={[
-              styles.TitleFlexView,
-              {
-                marginTop: 0,
-                marginBottom: 0,
-              },
-            ]}
-          >
+          <View style={[styles.TitleFlexView, { marginTop: 0, marginBottom: 0 }]}>
             <Image
               resizeMode="contain"
               tintColor={colors.TextColor}
@@ -670,7 +691,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
 export default memo(EditProfileSheetView);
 
 const styles = StyleSheet.create({
-  BottomSheetContainerView: {
+  bottomSheetContainerView: {
     width: '90%',
     marginVertical: 10,
     alignSelf: 'center',
@@ -741,6 +762,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radius,
     marginVertical: hp('0.7%'),
     borderWidth: 1,
+    overflow: 'hidden',
 
     // backgroundColor: COLORS.White,
   },

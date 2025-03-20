@@ -121,7 +121,7 @@ const TabItem: React.FC<TabItemProps> = ({ label, icon, isFocused, onPress }) =>
       <Animated.View style={[styles.iconContainer, iconStyle]}>
         <Image
           source={icon}
-          style={[styles.tabIcon]}
+          style={[styles.tabIcon, { width: isFocused ? 23 : 25, height: isFocused ? 23 : 25 }]}
           tintColor={isDark ? (isFocused ? colors.White : undefined) : isFocused ? colors.Background : colors.White}
         />
       </Animated.View>
@@ -252,10 +252,11 @@ const styles = StyleSheet.create({
   floatingBar: {
     flexDirection: 'row',
     borderRadius: 30,
-    height: hp(7),
+    height: 60,
     width: SCREEN_WIDTH * 0.85,
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
+    gap: 0,
 
     elevation: 5,
     shadowColor: '#000',
@@ -280,9 +281,15 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     top: -15,
     zIndex: 0,
+
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   iconContainer: {
-    zIndex: 1,
+    zIndex: 999999,
     alignItems: 'center',
     justifyContent: 'center',
   },

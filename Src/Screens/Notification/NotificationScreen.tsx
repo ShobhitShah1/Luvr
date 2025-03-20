@@ -8,12 +8,13 @@ import { useTheme } from '../../Contexts/ThemeContext';
 import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
 import RenderNotificationView from './Components/RenderNotificationView';
 import styles from './styles';
+import CommonIcons from '../../Common/CommonIcons';
+import LinearGradient from 'react-native-linear-gradient';
 
 const NotificationScreen = () => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const notifications = useSelector((state: any) => state.user.notifications);
-  const reversedNotifications = [1, 2, 3, 4, 5, 6];
-  // const reversedNotifications = notifications?.length !== 0 ? notifications?.slice()?.reverse() : [];
+  const reversedNotifications = notifications?.length !== 0 ? notifications?.slice()?.reverse() : [];
 
   return (
     <GradientView>
@@ -34,9 +35,18 @@ const NotificationScreen = () => {
             )}
             ListEmptyComponent={
               <View style={styles.EmptyListView}>
-                <View style={styles.NoChatIconBackground}>
-                  <Image source={CommonImages.NoNotification} style={styles.NoChatIcon} />
-                </View>
+                <LinearGradient
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  colors={isDark ? colors.ButtonGradient : [colors.White, colors.White]}
+                  style={styles.NoChatIconBackground}
+                >
+                  <Image
+                    tintColor={isDark ? colors.White : undefined}
+                    source={CommonIcons.ic_noNotification}
+                    style={styles.NoChatIcon}
+                  />
+                </LinearGradient>
                 <Text style={[styles.NoChatText, { color: colors.TitleText }]}>No notification</Text>
                 <Text style={[styles.NoChatDescription, { color: colors.TextColor }]}>
                   There are no notification yet. Please come back here to get notification about likes, matches,

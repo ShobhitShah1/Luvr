@@ -52,7 +52,7 @@ const MyLikesScreen = () => {
             style={[
               styles.TabBarButtonText,
               {
-                color: isSelected ? colors.TextColor : 'rgba(130, 130, 130, 1)',
+                color: isSelected ? (isDark ? colors.TextColor : colors.White) : 'rgba(130, 130, 130, 1)',
               },
             ]}
           >

@@ -13,6 +13,7 @@ const Search = require('../../Assets/Icons/Search.png');
 const CloseModal = require('../../Assets/Icons/CloseModal.png');
 const Location = require('../../Assets/Icons/Location.png');
 const Verification_Icon = require('../../Assets/Icons/verified_icon.png');
+const Verification_Icon_Dark = require('../../Assets/Icons/verified_icon_dark.png');
 const about_me_icon = require('../../Assets/Icons/about_me_icon.png');
 const birthday_icon = require('../../Assets/Icons/birthday_icon.png');
 const education_icon = require('../../Assets/Icons/education_icon.png');
@@ -45,6 +46,9 @@ const rating_star_icon_unselect = require('../../Assets/Icons/rating_star_icon_u
 const donate_icon = require('../../Assets/Icons/donate_icon.png');
 const thanks_for_your_support = require('../../Assets/Icons/thanks_for_your_support!_icon.png');
 const ic_donate = require('../../Assets/Icons/ic_donate.png');
+const ic_message = require('../../Assets/Icons/ic_message.png');
+const ic_noNotification = require('../../Assets/Icons/ic_no-notification.png');
+const ic_red_like_button = require('../../Assets/Icons/ic_red_like_button.png');
 
 // Home
 const LightHomeTab = require('../../Assets/Icons/BottomTab/ic_light_home.png');
@@ -79,6 +83,7 @@ export default {
   CloseModal,
   Location,
   Verification_Icon,
+  Verification_Icon_Dark,
   about_me_icon,
   birthday_icon,
   education_icon,
@@ -111,6 +116,9 @@ export default {
   donate_icon,
   thanks_for_your_support,
   ic_donate,
+  ic_message,
+  ic_noNotification,
+  ic_red_like_button,
 
   //* Home
   LightHomeTab,

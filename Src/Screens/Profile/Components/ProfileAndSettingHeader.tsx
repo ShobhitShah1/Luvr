@@ -15,11 +15,22 @@ interface HeaderProps {
 }
 
 const ProfileAndSettingHeader: FC<HeaderProps> = ({ Title, onUpdatePress, isLoading }) => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
 
   return (
-    <View style={styles.Container}>
+    <View
+      style={[
+        styles.container,
+        !isDark && {
+          backgroundColor: colors.White,
+          shadowColor: colors.Black,
+          elevation: 5,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.5,
+        },
+      ]}
+    >
       <SafeAreaView />
       <View style={styles.ContentView}>
         <Pressable disabled={isLoading} onPress={() => navigation.goBack()} style={styles.ViewStyle}>
@@ -35,7 +46,11 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({ Title, onUpdatePress, isLoad
         </View>
         {Title !== 'Notification' ? (
           <Pressable disabled={isLoading} style={styles.ModalSubmitButton} onPress={onUpdatePress}>
-            <Image source={CommonIcons.Check} tintColor={colors.TextColor} style={styles.ModalSubmitIcon} />
+            <Image
+              source={CommonIcons.Check}
+              tintColor={isDark ? colors.TextColor : colors.White}
+              style={styles.ModalSubmitIcon}
+            />
           </Pressable>
         ) : (
           <View />
@@ -48,15 +63,15 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({ Title, onUpdatePress, isLoad
 export default ProfileAndSettingHeader;
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     width: '100%',
-    height: Platform.OS === 'ios' ? hp('12%') : hp('6.8%'),
+    height: Platform.OS === 'ios' ? hp('12%') : hp('6.5%'),
     alignItems: 'center',
     justifyContent: 'center',
   },
   ContentView: {
     width: '90%',
-    top: Platform.OS === 'ios' ? 5 : 0,
+    top: Platform.OS === 'ios' ? 5 : 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -66,8 +81,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   BackIcon: {
-    width: 25,
-    height: 25,
+    width: 28,
+    height: 28,
   },
   TitleView: {
     width: '75%',
@@ -76,9 +91,8 @@ const styles = StyleSheet.create({
   },
   Title: {
     ...GROUP_FONT.h3,
-    fontSize: 16,
+    fontSize: 16.5,
     lineHeight: 25,
-    color: COLORS.Black,
   },
   AddIconAndOption: {
     width: '10%',
@@ -113,8 +127,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.Primary,
   },
   ModalSubmitIcon: {
-    width: 15,
-    height: 15,
+    width: 13,
+    height: 13,
     alignSelf: 'center',
   },
 });

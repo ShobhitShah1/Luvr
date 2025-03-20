@@ -38,7 +38,7 @@ type DetailCardRouteParams = {
 
 const ExploreCardDetailScreen = () => {
   const { colors, isDark } = useTheme();
-  const IsFocused = useIsFocused();
+  const isFocused = useIsFocused();
   const navigation = useNavigation();
   const { showToast } = useCustomToast();
 
@@ -49,18 +49,18 @@ const ExploreCardDetailScreen = () => {
 
   const [cardData, setCardData] = useState<ProfileType>();
   const [isLoading, setIsAPILoading] = useState(true);
-  const [CurrentIndex, setCurrentIndex] = useState<number>(0);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [SelectedReportReason, setSelectedReportReason] = useState<string>('');
-  const [ShowReportModalView, setShowReportModalView] = useState<boolean>(false);
+  const [showReportModalView, setShowReportModalView] = useState<boolean>(false);
 
   useEffect(() => {
-    if (IsFocused) {
-      GetUserData();
+    if (isFocused) {
+      setIsAPILoading(!cardData);
+      getUserData();
     }
-  }, [IsFocused]);
+  }, [isFocused]);
 
-  const GetUserData = async () => {
-    setIsAPILoading(true);
+  const getUserData = async () => {
     try {
       const userDataForApi = {
         eventName: 'get_other_profile',
@@ -227,11 +227,14 @@ const ExploreCardDetailScreen = () => {
                   <View style={styles.TitleAndIconView}>
                     <Image
                       style={styles.DetailIconsView}
-                      tintColor={colors.TextColor}
+                      tintColor={isDark ? colors.TextColor : colors.TitleText}
                       resizeMode="contain"
                       source={CommonIcons.about_me_icon}
                     />
-                    <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={1}>
+                    <Text
+                      style={[styles.TitleText, { color: isDark ? colors.TextColor : colors.TitleText }]}
+                      numberOfLines={1}
+                    >
                       About me
                     </Text>
                   </View>
@@ -244,11 +247,14 @@ const ExploreCardDetailScreen = () => {
                   <View style={styles.TitleAndIconView}>
                     <Image
                       style={styles.DetailIconsView}
-                      tintColor={colors.TextColor}
+                      tintColor={isDark ? colors.TextColor : colors.TitleText}
                       resizeMode="contain"
                       source={CommonIcons.birthday_icon}
                     />
-                    <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={1}>
+                    <Text
+                      style={[styles.TitleText, { color: isDark ? colors.TextColor : colors.TitleText }]}
+                      numberOfLines={1}
+                    >
                       Birthday
                     </Text>
                   </View>
@@ -261,11 +267,14 @@ const ExploreCardDetailScreen = () => {
                   <View style={styles.TitleAndIconView}>
                     <Image
                       style={styles.DetailIconsView}
-                      tintColor={colors.TextColor}
+                      tintColor={isDark ? colors.TextColor : colors.TitleText}
                       resizeMode="contain"
                       source={CommonIcons.looking_for_icon}
                     />
-                    <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={1}>
+                    <Text
+                      style={[styles.TitleText, { color: isDark ? colors.TextColor : colors.TitleText }]}
+                      numberOfLines={1}
+                    >
                       Looking for
                     </Text>
                   </View>
@@ -278,11 +287,14 @@ const ExploreCardDetailScreen = () => {
                   <View style={styles.TitleAndIconView}>
                     <Image
                       style={styles.DetailIconsView}
-                      tintColor={colors.TextColor}
+                      tintColor={isDark ? colors.TextColor : colors.TitleText}
                       resizeMode="contain"
                       source={CommonIcons.interested_in_icon}
                     />
-                    <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={1}>
+                    <Text
+                      style={[styles.TitleText, { color: isDark ? colors.TextColor : colors.TitleText }]}
+                      numberOfLines={1}
+                    >
                       Interested in
                     </Text>
                   </View>
@@ -314,11 +326,14 @@ const ExploreCardDetailScreen = () => {
                   <View style={styles.TitleAndIconView}>
                     <Image
                       style={styles.DetailIconsView}
-                      tintColor={colors.TextColor}
+                      tintColor={isDark ? colors.TextColor : colors.TitleText}
                       resizeMode="contain"
                       source={CommonIcons.location_icon}
                     />
-                    <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={1}>
+                    <Text
+                      style={[styles.TitleText, { color: isDark ? colors.TextColor : colors.TitleText }]}
+                      numberOfLines={1}
+                    >
                       Location
                     </Text>
                   </View>
@@ -331,11 +346,14 @@ const ExploreCardDetailScreen = () => {
                   <View style={styles.TitleAndIconView}>
                     <Image
                       style={styles.DetailIconsView}
-                      tintColor={colors.TextColor}
+                      tintColor={isDark ? colors.TextColor : colors.TitleText}
                       resizeMode="contain"
                       source={CommonIcons.education_icon}
                     />
-                    <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={1}>
+                    <Text
+                      style={[styles.TitleText, { color: isDark ? colors.TextColor : colors.TitleText }]}
+                      numberOfLines={1}
+                    >
                       Education
                     </Text>
                   </View>
@@ -353,11 +371,14 @@ const ExploreCardDetailScreen = () => {
                     <View style={styles.TitleAndIconView}>
                       <Image
                         style={styles.DetailIconsView}
-                        tintColor={colors.TextColor}
+                        tintColor={isDark ? colors.TextColor : colors.TitleText}
                         resizeMode="contain"
                         source={CommonIcons.i_like_icon}
                       />
-                      <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={1}>
+                      <Text
+                        style={[styles.TitleText, { color: isDark ? colors.TextColor : colors.TitleText }]}
+                        numberOfLines={1}
+                      >
                         I like
                       </Text>
                     </View>
@@ -386,7 +407,10 @@ const ExploreCardDetailScreen = () => {
                   onPress={onBlockProfileClick}
                   style={[
                     styles.BlockAndReportButtonView,
-                    { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White },
+                    {
+                      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White,
+                      borderColor: isDark ? 'transparent' : colors.Black,
+                    },
                   ]}
                 >
                   <Image
@@ -399,10 +423,13 @@ const ExploreCardDetailScreen = () => {
                 </Pressable>
 
                 <Pressable
-                  onPress={() => setShowReportModalView(!ShowReportModalView)}
+                  onPress={() => setShowReportModalView(!showReportModalView)}
                   style={[
                     styles.BlockAndReportButtonView,
-                    { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White },
+                    {
+                      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White,
+                      borderColor: isDark ? 'transparent' : colors.Black,
+                    },
                   ]}
                 >
                   <Image
@@ -423,11 +450,15 @@ const ExploreCardDetailScreen = () => {
                 <Pressable onPress={onLikePress} style={styles.LikeAndRejectButtonView}>
                   <Image resizeMode="contain" style={styles.LikeButton} source={CommonIcons.like_button} />
                 </Pressable>
+
+                <Pressable onPress={onRejectPress} style={styles.LikeAndRejectButtonView}>
+                  <Image resizeMode="contain" style={styles.DislikeButton} source={CommonIcons.ic_message} />
+                </Pressable>
               </View>
             </View>
 
             <ReportUserModalView
-              Visible={ShowReportModalView}
+              Visible={showReportModalView}
               setVisibility={setShowReportModalView}
               onReportPress={onReportProfileClick}
               SelectedReportReason={SelectedReportReason}
@@ -538,7 +569,7 @@ const styles = StyleSheet.create({
   BlockAndReportButtonView: {
     width: '47%',
     overflow: 'hidden',
-    height: hp('7.5%'),
+    height: hp('6.8%'),
     marginVertical: hp('2%'),
     borderRadius: hp('5%'),
     flexDirection: 'row',
@@ -546,6 +577,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: hp('1%'),
     marginHorizontal: hp('0.5%'),
+    borderWidth: 1,
   },
   BlockAndReportIcon: {
     width: hp('2.4%'),
@@ -566,19 +598,20 @@ const styles = StyleSheet.create({
   LikeAndRejectButtonView: {
     justifyContent: 'center',
     alignSelf: 'center',
+    marginHorizontal: hp('0.4%'),
     paddingBottom: Platform.OS === 'ios' ? 30 : 0,
   },
   DislikeButton: {
     padding: 0,
-    width: hp('10%'),
-    height: hp('10%'),
+    width: hp('7.2%'),
+    height: hp('7.2%'),
     justifyContent: 'center',
     alignSelf: 'center',
   },
   LikeButton: {
     padding: 0,
-    width: hp('13%'),
-    height: hp('13%'),
+    width: hp('9%'),
+    height: hp('9%'),
     justifyContent: 'center',
     alignSelf: 'center',
   },

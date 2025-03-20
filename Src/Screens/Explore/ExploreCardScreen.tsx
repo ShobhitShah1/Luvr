@@ -359,6 +359,10 @@ const ExploreCardScreen: FC = () => {
             <Pressable onPress={SwipeRight} style={styles.LikeAndRejectButtonView}>
               <Image resizeMode="contain" style={styles.LikeButton} source={CommonIcons.like_button} />
             </Pressable>
+
+            <Pressable onPress={SwipeLeft} style={styles.LikeAndRejectButtonView}>
+              <Image resizeMode="contain" style={styles.DislikeButton} source={CommonIcons.ic_message} />
+            </Pressable>
           </View>
         )}
 
@@ -454,18 +458,19 @@ const styles = StyleSheet.create({
   LikeAndRejectButtonView: {
     alignItems: 'center',
     justifyContent: 'center',
+    marginHorizontal: hp('0.4%'),
   },
   DislikeButton: {
     padding: 0,
-    width: hp('9%'),
-    height: hp('9%'),
+    width: hp('7.2%'),
+    height: hp('7.2%'),
     justifyContent: 'center',
     alignSelf: 'center',
   },
   LikeButton: {
     padding: 0,
-    width: hp('12%'),
-    height: hp('12%'),
+    width: hp('9%'),
+    height: hp('9%'),
     justifyContent: 'center',
     alignSelf: 'center',
   },

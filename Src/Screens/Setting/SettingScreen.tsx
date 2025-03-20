@@ -499,31 +499,42 @@ Let's make every moment count together! #LoveConnects`,
                 Title="Show me"
               />
               <View style={styles.GenderContainer}>
-                {ShowMeArray.map((gender, index) => (
-                  <LinearGradient
-                    key={index}
-                    start={{ x: 0, y: 1 }}
-                    end={{ x: 1, y: 0 }}
-                    colors={
-                      (UserSetting?.setting_show_me?.toLowerCase() || 'everyone') === gender.toLowerCase()
-                        ? colors.ButtonGradient
-                        : isDark
-                          ? ['transparent', 'transparent']
-                          : [colors.White, colors.White]
-                    }
-                    style={[
-                      styles.GenderView,
-                      {
-                        width: hp('12%'),
-                        borderColor: 'rgba(255,255,255,0.3)',
-                      },
-                    ]}
-                  >
-                    <Pressable onPress={() => handleShowMeSelect(gender)}>
-                      <Text style={[styles.GenderText, { color: colors.TextColor }]}>{gender}</Text>
-                    </Pressable>
-                  </LinearGradient>
-                ))}
+                {ShowMeArray.map((gender, index) => {
+                  const isSelected =
+                    (UserSetting?.setting_show_me?.toLowerCase() || 'everyone') === gender.toLowerCase();
+                  return (
+                    <LinearGradient
+                      key={index}
+                      start={{ x: 0, y: 1 }}
+                      end={{ x: 1, y: 0 }}
+                      colors={
+                        isSelected
+                          ? colors.ButtonGradient
+                          : isDark
+                            ? ['transparent', 'transparent']
+                            : [colors.White, colors.White]
+                      }
+                      style={[
+                        styles.GenderView,
+                        {
+                          width: hp('12%'),
+                          borderColor: 'rgba(255,255,255,0.3)',
+                        },
+                      ]}
+                    >
+                      <Pressable onPress={() => handleShowMeSelect(gender)}>
+                        <Text
+                          style={[
+                            styles.GenderText,
+                            { color: isDark ? colors.TextColor : isSelected ? colors.White : colors.TextColor },
+                          ]}
+                        >
+                          {gender}
+                        </Text>
+                      </Pressable>
+                    </LinearGradient>
+                  );
+                })}
               </View>
             </View>
 

@@ -64,7 +64,7 @@ const LikesContent: FC<LikesProps> = ({ LikesData }) => {
           </Text>
         </View>
         <View style={styles.LikeButtonView}>
-          <Image style={styles.LikeButtonIcon} source={CommonIcons.like_button} />
+          <Image style={styles.LikeButtonIcon} source={CommonIcons.ic_red_like_button} />
         </View>
       </View>
     </View>
@@ -162,8 +162,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   LikeButtonIcon: {
-    width: hp(5.5),
-    height: hp(5.5),
+    width: 40,
+    height: 40,
   },
 
   // Match Box
