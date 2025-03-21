@@ -33,7 +33,14 @@ const RenderChatRoomList = ({ item, index }: ChatRoomProps) => {
     <Pressable
       key={index}
       onPress={() => navigation.navigate('Chat', { id: item.to })}
-      style={[styles.chatRoomContainerView, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White }]}
+      style={[
+        styles.chatRoomContainerView,
+        {
+          borderWidth: 1,
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+          backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White,
+        },
+      ]}
     >
       <View style={styles.profilePicView}>
         <FastImage
@@ -44,15 +51,7 @@ const RenderChatRoomList = ({ item, index }: ChatRoomProps) => {
       </View>
       <View style={styles.nameAndMessageView}>
         <View style={styles.nameAndIconView}>
-          <Text
-            numberOfLines={1}
-            style={[
-              styles.nameText,
-              {
-                color: latestMessage?.is_read === 1 ? COLORS.TextColor : colors.Primary,
-              },
-            ]}
-          >
+          <Text numberOfLines={1} style={[styles.nameText, { color: colors.TextColor }]}>
             {item.name || ''}
           </Text>
           <Image source={CommonIcons.Verification_Icon} style={styles.verifyIcon} />
@@ -62,11 +61,11 @@ const RenderChatRoomList = ({ item, index }: ChatRoomProps) => {
           style={[
             styles.lastMessageText,
             {
-              color: latestMessage?.is_read !== 1 ? 'rgba(108, 108, 108, 1)' : colors.TextColor,
+              color: isDark ? 'rgba(198, 198, 198, 1)' : 'rgba(18, 18, 19, 1))',
             },
           ]}
         >
-          {latestMessage?.message || ''}
+          {latestMessage?.message || 'cdscds'}
         </Text>
       </View>
       <View style={styles.timeView}>

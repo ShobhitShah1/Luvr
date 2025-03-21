@@ -52,6 +52,7 @@ import EditProfileCategoriesList from './Components/EditProfileComponents/EditPr
 import EditProfileSheetView from './Components/EditProfileComponents/EditProfileSheetView';
 import EditProfileTitleView from './Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from './Components/ProfileAndSettingHeader';
+import LinearGradient from 'react-native-linear-gradient';
 
 export interface ViewPositionsProps {
   Gender: number;
@@ -1032,25 +1033,39 @@ const EditProfileScreen = () => {
             )}
             maxDynamicContentSize={Dimensions.get('screen').height - 150}
             onChange={handleSheetChanges}
-            style={{ borderRadius: 0 }}
+            style={{ borderRadius: 20, borderWidth: 0.5, width: '101%', borderColor: colors.Primary }}
             containerStyle={{ borderRadius: 0 }}
           >
             <View style={styles.CloseViewContainer}>
-              <Pressable style={styles.ModalCloseIconBTN} onPress={() => bottomSheetModalRef?.current?.close()}>
-                <Image source={CommonIcons.CloseModal} style={styles.ModalCloseIcon} />
-              </Pressable>
+              <LinearGradient style={styles.ModalCloseIconBTN} colors={colors.ButtonGradient}>
+                <Pressable onPress={() => bottomSheetModalRef?.current?.close()}>
+                  <Image source={CommonIcons.ic_cross} style={styles.ModalCloseIcon} />
+                </Pressable>
+              </LinearGradient>
+
               {isFetchDataAPILoading ? (
                 <View style={styles.ModalSubmitButton}>
                   <ActivityIndicator size={17} color={colors.Primary} />
                 </View>
               ) : (
-                <Pressable
-                  disabled={isFetchDataAPILoading}
-                  onPress={() => onUpdateProfile()}
+                <LinearGradient
                   style={styles.ModalSubmitButton}
+                  colors={
+                    isDark ? ['rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.3)'] : [colors.White, colors.White]
+                  }
                 >
-                  <Image source={CommonIcons.Check} tintColor={colors.Primary} style={styles.ModalSubmitIcon} />
-                </Pressable>
+                  <Pressable
+                    style={{ flex: 1, justifyContent: 'center' }}
+                    disabled={isFetchDataAPILoading}
+                    onPress={() => onUpdateProfile()}
+                  >
+                    <Image
+                      source={CommonIcons.Check}
+                      tintColor={isDark ? 'rgba(255, 255, 255, 0.3)' : colors.Primary}
+                      style={styles.ModalSubmitIcon}
+                    />
+                  </Pressable>
+                </LinearGradient>
               )}
             </View>
             <BottomSheetScrollView ref={scrollViewRef}>
@@ -1158,11 +1173,15 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   ModalCloseIconBTN: {
-    flex: 1,
-  },
-  ModalCloseIcon: {
     width: 29,
     height: 29,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 500,
+  },
+  ModalCloseIcon: {
+    width: 13,
+    height: 13,
   },
   ModalSubmitButton: {
     width: 29,

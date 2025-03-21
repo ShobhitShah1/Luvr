@@ -24,7 +24,12 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({ data, onRightIconPress }) => {
       <View style={styles.ContentView}>
         <View style={styles.BackAndProfileInfoView}>
           <Pressable onPress={() => navigation.goBack()}>
-            <Image resizeMode="contain" source={CommonIcons.TinderBack} style={styles.TinderBackIcon} />
+            <Image
+              resizeMode="contain"
+              tintColor={colors.TextColor}
+              source={CommonIcons.TinderBack}
+              style={styles.TinderBackIcon}
+            />
           </Pressable>
           <View style={styles.UserInfoView}>
             <View style={styles.ProfileImageView}>
@@ -51,7 +56,7 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({ data, onRightIconPress }) => {
           </View>
         </View>
         <Pressable onPress={onRightIconPress} style={styles.RemoveChatView}>
-          <Image style={styles.RemoveChatIcon} source={CommonIcons.more_option} />
+          <Image tintColor={colors.TextColor} style={styles.RemoveChatIcon} source={CommonIcons.more_option} />
         </Pressable>
       </View>
     </SafeAreaView>

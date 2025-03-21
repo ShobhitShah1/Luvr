@@ -3,6 +3,7 @@ import messaging from '@react-native-firebase/messaging';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, ScrollView, View } from 'react-native';
 import { requestNotifications } from 'react-native-permissions';
+import GradientView from '../../Common/GradientView';
 import { COLORS } from '../../Common/Theme';
 import { HomeLookingForData } from '../../Components/Data';
 import { useLocationPermission } from '../../Hooks/useLocationPermission';
@@ -13,12 +14,32 @@ import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
 import RenderLookingView from './Components/RenderlookingView';
 import styles from './styles';
-import GradientView from '../../Common/GradientView';
-import { useTheme } from '../../Contexts/ThemeContext';
+import RenderHomeNearby from './Components/RenderHomeNearby';
+import CommonImages from '../../Common/CommonImages';
+import RenderRecommendation from './Components/RenderRecommendation';
+
+const profiles = [
+  {
+    id: 1,
+    name: 'Adan Smith',
+    job: 'Engineer',
+    location: 'USA',
+    likes: 10,
+    image: CommonImages.HomeHoping,
+  },
+  {
+    id: 2,
+    name: 'Jane Doe',
+    job: 'Designer',
+    location: 'CAN',
+    likes: 15,
+    image: CommonImages.HomeHoping,
+  },
+  // More profiles...
+];
 
 const HomeScreen = () => {
-  const { colors } = useTheme();
-  const [IsAPIDataLoading, setIsAPIDataLoading] = useState(false);
+  const [isAPIDataLoading, setIsAPIDataLoading] = useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
   const { requestLocationPermission } = useLocationPermission();
 
@@ -61,6 +82,7 @@ const HomeScreen = () => {
         <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
 
         <ScrollView
+          nestedScrollEnabled
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -70,21 +92,46 @@ const HomeScreen = () => {
             />
           }
           showsVerticalScrollIndicator={false}
-          bounces={false}
         >
-          <FlatList
-            numColumns={2}
-            bounces={false}
-            data={HomeLookingForData}
-            style={styles.FlatListStyle}
-            columnWrapperStyle={styles.columWrapper}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => {
-              return <RenderLookingView item={item} IsLoading={IsAPIDataLoading} />;
-            }}
-            ListHeaderComponent={<CategoryHeaderView Title="Welcome to explore" Description="I’m looking for..." />}
-          />
+          <View style={{ paddingHorizontal: 20, alignSelf: 'center' }}>
+            <CategoryHeaderView Title="Welcome to explore" Description="I’m looking for..." />
+            <FlatList
+              horizontal
+              nestedScrollEnabled
+              data={HomeLookingForData}
+              contentContainerStyle={{ gap: 10 }}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => {
+                return <RenderLookingView item={item} IsLoading={isAPIDataLoading} />;
+              }}
+            />
+
+            <FlatList
+              horizontal
+              nestedScrollEnabled
+              data={profiles}
+              contentContainerStyle={{ gap: 10 }}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => {
+                return <RenderHomeNearby item={item} IsLoading={isAPIDataLoading} />;
+              }}
+            />
+
+            <CategoryHeaderView Title="Near by" Description="Base on your profile" />
+            <FlatList
+              horizontal
+              nestedScrollEnabled
+              data={HomeLookingForData}
+              contentContainerStyle={{ gap: 10 }}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => {
+                return <RenderRecommendation item={item} IsLoading={isAPIDataLoading} />;
+              }}
+            />
+          </View>
         </ScrollView>
       </View>
     </GradientView>

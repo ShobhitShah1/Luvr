@@ -21,6 +21,7 @@ import { GradientBorderView } from '../../../../Components/GradientBorder';
 import { useTheme } from '../../../../Contexts/ThemeContext';
 import { EducationType, HabitsType, LocationType, MagicalPersonType, ProfileType } from '../../../../Types/ProfileType';
 import { ViewPositionsProps } from '../../EditProfileScreen';
+import LinearGradient from 'react-native-linear-gradient';
 
 interface EditProfileDataProps {
   profile: ProfileType;
@@ -70,11 +71,26 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
   );
 
   const renderHopingView = ({ item, index }: { item: any; index: number }) => {
-    const Selected = profile?.hoping === item;
+    const selectedOption = profile?.hoping === item;
+
     return (
-      <GradientBorderView
-        gradientProps={{ colors: Selected ? colors.ButtonGradient : colors.UnselectedGradient }}
-        style={[styles.LookingForListView]}
+      <LinearGradient
+        start={{ x: 1, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        colors={
+          selectedOption
+            ? colors.ButtonGradient
+            : isDark
+              ? ['transparent', 'transparent']
+              : [colors.White, colors.White]
+        }
+        style={[
+          styles.LookingForListView,
+          {
+            borderWidth: 1,
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White,
+          },
+        ]}
         key={index}
       >
         <Pressable
@@ -82,7 +98,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
           style={{
             flex: 1,
             justifyContent: 'center',
-            backgroundColor: isDark ? 'transparent' : colors.White,
             borderRadius: SIZES.radius,
             overflow: 'hidden',
           }}
@@ -92,23 +107,26 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
               numberOfLines={2}
               style={[
                 styles.LookingForText,
-                { color: colors.TextColor, fontFamily: Selected ? FONTS.Bold : FONTS.Medium },
+                {
+                  color: selectedOption && !isDark ? colors.White : colors.TextColor,
+                  fontFamily: selectedOption ? FONTS.Bold : FONTS.Medium,
+                },
               ]}
             >
               {item}
             </Text>
-            {Selected && (
+            {selectedOption && (
               <Image
                 resizeMethod="auto"
                 resizeMode="contain"
                 source={CommonIcons.CheckMark}
-                tintColor={COLORS.Primary}
+                tintColor={selectedOption && !isDark ? colors.White : colors.TextColor}
                 style={{ width: hp('2.5%'), height: hp('2.5%') }}
               />
             )}
           </View>
         </Pressable>
-      </GradientBorderView>
+      </LinearGradient>
     );
   };
   //* ================= Intrusted In Functions =================
@@ -138,12 +156,27 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
   );
 
   const renderIntrustedView = ({ item, index }: { item: any; index: number }) => {
-    const Selected =
+    const selectedOption =
       profile?.orientation && profile?.orientation?.length !== 0 ? profile?.orientation?.includes(item.name) : false;
+
     return (
-      <GradientBorderView
-        gradientProps={{ colors: Selected ? colors.ButtonGradient : colors.UnselectedGradient }}
-        style={[styles.LookingForListView]}
+      <LinearGradient
+        start={{ x: 1, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        colors={
+          selectedOption
+            ? colors.ButtonGradient
+            : isDark
+              ? ['transparent', 'transparent']
+              : [colors.White, colors.White]
+        }
+        style={[
+          styles.LookingForListView,
+          {
+            borderWidth: 1,
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White,
+          },
+        ]}
         key={index}
       >
         <Pressable
@@ -151,7 +184,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
           style={{
             flex: 1,
             justifyContent: 'center',
-            backgroundColor: isDark ? 'transparent' : colors.White,
             borderRadius: SIZES.radius,
             overflow: 'hidden',
           }}
@@ -162,25 +194,25 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
               style={[
                 styles.LookingForText,
                 {
-                  color: colors.TextColor,
-                  fontFamily: Selected ? FONTS.Bold : FONTS.Medium,
+                  color: selectedOption && !isDark ? colors.White : colors.TextColor,
+                  fontFamily: selectedOption ? FONTS.Bold : FONTS.Medium,
                 },
               ]}
             >
               {item.name}
             </Text>
-            {Selected && (
+            {selectedOption && (
               <Image
                 resizeMethod="auto"
                 resizeMode="contain"
                 source={CommonIcons.CheckMark}
-                tintColor={COLORS.Primary}
+                tintColor={selectedOption && !isDark ? colors.White : colors.TextColor}
                 style={{ width: hp('2.5%'), height: hp('2.5%') }}
               />
             )}
           </View>
         </Pressable>
-      </GradientBorderView>
+      </LinearGradient>
     );
   };
 
@@ -216,14 +248,27 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
         const selectedOption =
           profile?.likes_into && profile?.likes_into?.length !== 0 ? profile?.likes_into?.includes(item.name) : false;
         return (
-          <GradientBorderView
-            gradientProps={{ colors: selectedOption ? colors.ButtonGradient : colors.UnselectedGradient }}
-            style={[styles.MultiSelectButtonView, selectedOption && styles.selectedOption]}
+          <LinearGradient
+            start={{ x: 1, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            colors={
+              selectedOption
+                ? colors.ButtonGradient
+                : isDark
+                  ? ['transparent', 'transparent']
+                  : [colors.White, colors.White]
+            }
+            style={[
+              styles.MultiSelectButtonView,
+              {
+                borderWidth: 1,
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White,
+              },
+            ]}
           >
             <Pressable
               style={{
                 flex: 1,
-                backgroundColor: isDark ? 'transparent' : colors.White,
                 justifyContent: 'center',
                 borderRadius: SIZES.radius,
                 overflow: 'hidden',
@@ -235,13 +280,13 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
                 style={[
                   styles.MultiSelectCategoryText,
                   selectedOption && styles.SelectedCategoriesText,
-                  { color: colors.TextColor },
+                  { color: selectedOption && !isDark ? colors.White : colors.TextColor },
                 ]}
               >
                 {item.name}
               </Text>
             </Pressable>
-          </GradientBorderView>
+          </LinearGradient>
         );
       },
     [profile?.likes_into, handleOptionPress]
@@ -323,12 +368,22 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
         }
 
         return (
-          <GradientBorderView
-            gradientProps={{ colors: selectedOption ? colors.ButtonGradient : colors.UnselectedGradient }}
+          <LinearGradient
+            start={{ x: 1, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            colors={
+              selectedOption
+                ? colors.ButtonGradient
+                : isDark
+                  ? ['transparent', 'transparent']
+                  : [colors.White, colors.White]
+            }
             style={[
               styles.MultiSelectButtonView,
-              { backgroundColor: isDark ? 'transparent' : colors.White },
-              selectedOption && styles.selectedOption,
+              {
+                borderWidth: 1,
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White,
+              },
             ]}
           >
             <Pressable style={{ flex: 1, justifyContent: 'center' }} onPress={() => onClickChange(item, value)}>
@@ -337,13 +392,13 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
                 style={[
                   styles.MultiSelectCategoryText,
                   selectedOption && styles.SelectedCategoriesText,
-                  { color: colors.TextColor },
+                  { color: selectedOption && !isDark ? colors.White : colors.TextColor },
                 ]}
               >
                 {item}
               </Text>
             </Pressable>
-          </GradientBorderView>
+          </LinearGradient>
         );
       },
     [profile, onClickChange]
@@ -368,15 +423,23 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
         </View>
         <View style={styles.BirthdayInputView}>
           {MainGenders.map((gender, index) => (
-            <GradientBorderView
+            <LinearGradient
+              start={{ x: 1, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              colors={
+                profile?.gender === gender
+                  ? colors.ButtonGradient
+                  : isDark
+                    ? ['transparent', 'transparent']
+                    : [colors.White, colors.White]
+              }
               key={index}
-              gradientProps={{ colors: profile?.gender === gender ? colors.ButtonGradient : colors.UnselectedGradient }}
               style={[
                 styles.GenderView,
                 {
                   width: hp('12%'),
-                  borderWidth: profile?.gender === gender ? 2 : 1,
-                  backgroundColor: isDark ? 'transparent' : colors.White,
+                  borderWidth: 1,
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White,
                 },
               ]}
             >
@@ -390,14 +453,14 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
                   style={[
                     styles.GenderText,
                     {
-                      color: profile?.gender === gender ? (isDark ? colors.White : colors.TextColor) : colors.TextColor,
+                      color: profile?.gender === gender ? colors.White : colors.TextColor,
                     },
                   ]}
                 >
                   {gender}
                 </Text>
               </Pressable>
-            </GradientBorderView>
+            </LinearGradient>
           ))}
         </View>
       </View>
@@ -763,11 +826,8 @@ const styles = StyleSheet.create({
     marginVertical: hp('0.7%'),
     borderWidth: 1,
     overflow: 'hidden',
-
-    // backgroundColor: COLORS.White,
   },
   selectedOption: {
-    // backgroundColor: COLORS.Primary,
     borderWidth: 2,
   },
   MultiSelectCategoryText: {
@@ -795,7 +855,6 @@ const styles = StyleSheet.create({
     marginVertical: hp('0.7%'),
     alignSelf: 'center',
 
-    // backgroundColor: COLORS.White,
     borderRadius: SIZES.radius,
     justifyContent: 'center',
     alignContent: 'center',

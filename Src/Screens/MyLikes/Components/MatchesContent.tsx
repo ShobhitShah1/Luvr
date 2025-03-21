@@ -35,7 +35,11 @@ const MatchesContent: FC<LikesProps> = ({ LikesData }) => {
         <View
           style={[
             styles.DetailBoxContainerView,
-            { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White },
+            {
+              borderWidth: 1,
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White,
+            },
           ]}
         >
           <View style={styles.MatchImageView}>

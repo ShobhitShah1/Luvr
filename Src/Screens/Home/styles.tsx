@@ -10,11 +10,6 @@ const styles = StyleSheet.create({
   Container: {
     flex: 1,
   },
-  FlatListStyle: {
-    width: '90%',
-    alignSelf: 'center',
-    paddingBottom: BOTTOM_TAB_HEIGHT,
-  },
 
   container: {
     width: '47%',

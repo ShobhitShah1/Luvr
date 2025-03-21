@@ -1,9 +1,6 @@
-import {
-  GoogleSignin,
-  statusCodes,
-} from '@react-native-google-signin/google-signin';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import ApiConfig from '../Config/ApiConfig';
-import {fetchWrapper} from './fetch.service';
+import { fetchWrapper } from './fetch.service';
 import axios from 'axios';
 
 const baseUrl = ApiConfig.BASE_URL;
@@ -19,10 +16,7 @@ async function UserRegister(params: object) {
 }
 
 async function UploadImages(params: object) {
-  const postDataResponse = await fetchWrapper.uploadHandler(
-    baseUrl + 'upload',
-    params,
-  );
+  const postDataResponse = await fetchWrapper.uploadHandler(baseUrl + 'upload', params);
   return postDataResponse;
 }
 

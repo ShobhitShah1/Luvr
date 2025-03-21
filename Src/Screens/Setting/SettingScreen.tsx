@@ -787,7 +787,10 @@ Let's make every moment count together! #LoveConnects`,
                 onPress={() => {
                   setDeleteAccountModalView(!DeleteAccountModalView);
                 }}
-                style={[styles.DeleteAndLogoutButtonView, { backgroundColor: 'rgba(255,255,255,.3)' }]}
+                style={[
+                  styles.DeleteAndLogoutButtonView,
+                  { backgroundColor: isDark ? 'rgba(255,255,255,.3)' : colors.White },
+                ]}
               >
                 <Text style={[styles.DeleteAndLogoutButtonText, { color: colors.TextColor }]}>Delete Account</Text>
               </Pressable>
@@ -795,7 +798,10 @@ Let's make every moment count together! #LoveConnects`,
                 onPress={() => {
                   setLogOutModalView(!LogOutModalView);
                 }}
-                style={[styles.DeleteAndLogoutButtonView, { backgroundColor: 'rgba(255,255,255,.3)' }]}
+                style={[
+                  styles.DeleteAndLogoutButtonView,
+                  { backgroundColor: isDark ? 'rgba(255,255,255,.3)' : colors.White },
+                ]}
               >
                 <Text style={[styles.DeleteAndLogoutButtonText, { color: colors.TextColor }]}>Logout</Text>
               </Pressable>

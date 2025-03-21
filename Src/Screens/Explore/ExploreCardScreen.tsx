@@ -37,7 +37,7 @@ import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
 
 const ExploreCardScreen: FC = () => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const { width } = useWindowDimensions();
 
   const swipeRef = useRef<Swiper<SwiperCard>>(null);
@@ -353,7 +353,11 @@ const ExploreCardScreen: FC = () => {
         {cards?.length !== 0 && (
           <View style={styles.LikeAndRejectView}>
             <Pressable onPress={SwipeLeft} style={styles.LikeAndRejectButtonView}>
-              <Image resizeMode="contain" style={styles.DislikeButton} source={CommonIcons.dislike_button} />
+              <Image
+                resizeMode="contain"
+                style={styles.DislikeButton}
+                source={isDark ? CommonIcons.dark_dislike_button : CommonIcons.dislike_button}
+              />
             </Pressable>
 
             <Pressable onPress={SwipeRight} style={styles.LikeAndRejectButtonView}>

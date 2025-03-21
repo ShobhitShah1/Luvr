@@ -4,8 +4,8 @@ import { Skeleton } from 'moti/skeleton';
 import React, { FC, memo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { COLORS, GROUP_FONT } from '../../../Common/Theme';
+import { useTheme } from '../../../Contexts/ThemeContext';
 
 interface RenderLookingViewProps {
   item: {
@@ -17,6 +17,7 @@ interface RenderLookingViewProps {
 }
 
 const RenderLookingView: FC<RenderLookingViewProps> = ({ item, IsLoading }) => {
+  const { isDark, colors } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<{ CategoryDetailCards: {} }>>();
 
   return (
@@ -25,7 +26,7 @@ const RenderLookingView: FC<RenderLookingViewProps> = ({ item, IsLoading }) => {
       onPress={() => {
         navigation.navigate('CategoryDetailCards', { item });
       }}
-      style={styles.container}
+      style={[styles.container, { borderColor: isDark ? colors.White : 'transparent' }]}
     >
       <Skeleton colorMode="light" show={IsLoading} colors={COLORS.LoaderGradient}>
         <View>
@@ -47,12 +48,12 @@ export default memo(RenderLookingView);
 
 const styles = StyleSheet.create({
   container: {
-    width: '48.5%',
-    zIndex: 9999,
-    height: 210,
+    width: 125,
+    height: 125,
     overflow: 'hidden',
     marginVertical: 5,
-    borderRadius: hp('3%'),
+    borderRadius: 20,
+    borderWidth: 1,
   },
   imageView: {
     width: '100%',
@@ -67,17 +68,22 @@ const styles = StyleSheet.create({
   },
   gradient: {
     bottom: 0,
+    left: 0,
+    right: 0,
     width: '100%',
     paddingVertical: 5,
     overflow: 'hidden',
     position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   TitleText: {
-    width: '85%',
+    width: '88%',
     ...GROUP_FONT.h2,
-    fontSize: 19,
-    lineHeight: 21,
+    fontSize: 16,
+    lineHeight: 20,
+    textAlign: 'center',
     color: COLORS.White,
-    marginHorizontal: hp('1.5%'),
+    alignSelf: 'center',
   },
 });

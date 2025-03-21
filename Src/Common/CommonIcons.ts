@@ -23,6 +23,7 @@ const location_icon = require('../../Assets/Icons/location_icon.png');
 const looking_for_icon = require('../../Assets/Icons/looking_for_icon.png');
 const block_profile_icon = require('../../Assets/Icons/block_profile_icon.png');
 const dislike_button = require('../../Assets/Icons/dislike_button.png');
+const dark_dislike_button = require('../../Assets/Icons/dark_dislike_button.png');
 const like_button = require('../../Assets/Icons/like_button.png');
 const message_button = require('../../Assets/Icons/message_button.png');
 const report_profile_icon = require('../../Assets/Icons/report_profile_icon.png');
@@ -49,6 +50,7 @@ const ic_donate = require('../../Assets/Icons/ic_donate.png');
 const ic_message = require('../../Assets/Icons/ic_message.png');
 const ic_noNotification = require('../../Assets/Icons/ic_no-notification.png');
 const ic_red_like_button = require('../../Assets/Icons/ic_red_like_button.png');
+const ic_cross = require('../../Assets/Icons/ic_cross.png');
 
 // Home
 const LightHomeTab = require('../../Assets/Icons/BottomTab/ic_light_home.png');
@@ -93,6 +95,7 @@ export default {
   looking_for_icon,
   block_profile_icon,
   dislike_button,
+  dark_dislike_button,
   like_button,
   message_button,
   report_profile_icon,
@@ -119,6 +122,7 @@ export default {
   ic_message,
   ic_noNotification,
   ic_red_like_button,
+  ic_cross,
 
   //* Home
   LightHomeTab,

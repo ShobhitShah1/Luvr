@@ -23,7 +23,7 @@ export const LIGHT_COLORS: ThemeColors = {
   Placeholder: 'rgba(97, 106, 118, 1)',
   LightGray: 'rgb(218, 218, 218)',
   TabBarUnFocused: 'rgba(198, 198, 198, 1)',
-  GradientViewForCards: ['rgba(217, 217, 217, 0)', 'rgba(0, 0, 0, 0.4)'],
+  GradientViewForCards: ['rgba(217, 217, 217, 0)', 'rgba(0, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.8)'],
   LoaderGradient: [
     'rgba(161, 80, 255, 0.7)',
     'rgba(80, 80, 100, 0.3)',
@@ -67,7 +67,7 @@ export const DARK_COLORS: ThemeColors = {
   Placeholder: 'rgba(150, 159, 171, 1)',
   LightGray: 'rgb(80, 80, 90)',
   TabBarUnFocused: 'rgba(120, 120, 120, 1)',
-  GradientViewForCards: ['rgba(20, 20, 30, 0)', 'rgba(0, 0, 0, 0.7)'],
+  GradientViewForCards: ['rgba(20, 20, 30, 0)', 'rgba(0, 0, 0, 0.5)', 'rgba(0, 0, 0, 0.8)'],
   LoaderGradient: [
     'rgba(161, 80, 255, 0.7)',
     'rgba(80, 80, 100, 0.3)',
@@ -85,7 +85,7 @@ export const DARK_COLORS: ThemeColors = {
   ButtonText: 'rgba(255,255,255,1)',
   SecondaryTextColor: 'rgba(180, 180, 180, 1)',
   ShadowColor: 'rgba(0, 0, 0, 0.3)',
-  sheetBackground: ['rgba(18, 18, 19, 0.6)', 'rgba(18, 18, 19, 0.6)'],
+  sheetBackground: ['rgba(18, 18, 19, 0.5)', 'rgba(18, 18, 19, 0.5)'],
   lightBackground: 'rgba(255, 255, 255, 0.1)',
   editFiledBackground: ['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.1)'],
   lightFiledBackground: 'rgba(240, 236, 255, 1)',

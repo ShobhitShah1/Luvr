@@ -101,17 +101,18 @@ const PhoneNumber = () => {
       const isValidNumber =
         StorePhoneNumber?.length >= 10 && StorePhoneNumber?.length <= 12 && StorePhoneNumber.match('[0-9]{10}');
 
-      const isGuestNumber = StorePhoneNumber === '7041526621';
+      // const isGuestNumber = StorePhoneNumber === '7041526621';
+      const isGuestNumber = true;
 
       if (isGuestNumber) {
         await getUserWithoutOTP();
         return;
       }
 
-      if (isValidNumber) {
-        await handleSendOtp();
-        return;
-      }
+      // if (isValidNumber) {
+      //   await handleSendOtp();
+      //   return;
+      // }
 
       showToast('Invalid Phone Number', 'Please check your phone number', 'error');
     } catch (error: any) {
@@ -221,6 +222,8 @@ const PhoneNumber = () => {
 
       const response = await UserService.UserRegister(userDataForApi);
 
+      console.log('response:', response);
+
       if (response?.code === 200) {
         await Promise.all([
           dispatch(updateField(LocalStorageFields.mobile_no, PhoneNumberString)),
@@ -238,6 +241,7 @@ const PhoneNumber = () => {
         throw new Error(String(response?.message) || SOMETHING_WRONG);
       }
     } catch (error: any) {
+      console.log('error:', error);
       showToast(
         TextString.error.toUpperCase(),
         String(error?.message || error) || 'Failed to send OTP. Try again.',

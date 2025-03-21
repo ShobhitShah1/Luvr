@@ -57,9 +57,9 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
   }, [playAnimation]);
 
   return (
-    <View
+    <SafeAreaView
       style={[
-        styles.Container,
+        styles.container,
         { backgroundColor: !isDark ? colors.White : 'transparent' },
         !isDark && {
           shadowColor: colors.Black,
@@ -70,37 +70,35 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
         },
       ]}
     >
-      <SafeAreaView />
-      <View style={styles.ContentView}>
+      <View style={styles.contentView}>
         {Platform.OS === 'android' && !hideDonation && (
           <Pressable
             onPress={() => {
               navigation.navigate('Donation');
             }}
-            style={[styles.DonationContainer]}
           >
-            <Animated.View style={[styles.IconWrapper, animatedStyle]}>
-              <Image style={styles.DonateIcon} resizeMode="contain" source={CommonIcons.donate_icon} />
+            <Animated.View style={[styles.iconWrapper, animatedStyle]}>
+              <Image style={styles.donateIcon} resizeMode="contain" source={CommonIcons.donate_icon} />
             </Animated.View>
           </Pressable>
         )}
 
         {showTitle && (
-          <View style={styles.TitleTextView}>
-            <Text style={[styles.TitleText, { color: colors.TitleText }]}>{APP_NAME?.toUpperCase()}</Text>
+          <View style={styles.titleTextView}>
+            <Text style={[styles.titleText, { color: colors.TitleText }]}>{APP_NAME?.toUpperCase()}</Text>
           </View>
         )}
 
-        <View style={styles.IconsView}>
+        <View style={styles.iconsView}>
           {(!hideSettingAndNotification || showSetting) && (
             <Pressable
               onPress={() => {
                 navigation.navigate('Setting');
               }}
-              style={styles.IconWrapper}
+              style={styles.iconWrapper}
             >
               <Image
-                style={styles.Icons}
+                style={styles.icons}
                 tintColor={colors.TextColor}
                 resizeMode="contain"
                 source={CommonIcons.Setting}
@@ -112,10 +110,10 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
               onPress={() => {
                 navigation.navigate('Notification');
               }}
-              style={styles.IconWrapper}
+              style={styles.iconWrapper}
             >
               <Image
-                style={styles.Icons}
+                style={styles.icons}
                 tintColor={colors.TextColor}
                 resizeMode="contain"
                 source={CommonIcons.Notification}
@@ -124,55 +122,52 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
           )}
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 export default memo(BottomTabHeader);
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     width: '100%',
     justifyContent: 'center',
     height: Platform.OS === 'ios' ? hp('12.5%') : hp('7%'),
   },
-  DonationContainer: {},
-  ContentView: {
+  contentView: {
     width: '93%',
     alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  TitleTextView: {
+  titleTextView: {
     position: 'absolute',
-    flex: 1,
     left: 0,
     right: 0,
-    top: 0,
-    bottom: 0,
     alignItems: 'center',
-    alignSelf: 'center',
     justifyContent: 'center',
+    height: '100%', // Use height instead of flex with absolute positioning
+    zIndex: 10, // Even a smaller z-index should work
   },
-  TitleText: {
+  titleText: {
     fontFamily: FONTS.Bold,
     fontSize: hp('2.2%'),
     color: COLORS.Primary,
   },
-  IconsView: {
+  iconsView: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
-  IconWrapper: {
+  iconWrapper: {
     marginHorizontal: 7,
     justifyContent: 'center',
   },
-  Icons: {
+  icons: {
     width: 22,
     height: 22,
   },
-  DonateIcon: {
+  donateIcon: {
     width: 30,
     height: 30,
   },

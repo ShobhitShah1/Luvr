@@ -188,15 +188,15 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
         <View style={styles.CardBottomDetailView}>
           <View style={{ width: '90%' }}>
             <View style={styles.TitleView}>
-              <Text style={[styles.TitleText, { color: colors.TextColor }]} numberOfLines={2}>
+              <Text style={[styles.TitleText, { color: colors.White }]} numberOfLines={2}>
                 {`${cardData?.full_name ? cardData?.full_name : 'User'}, ${age ? age : 0}`}
               </Text>
               <Image source={CommonIcons.Verification_Icon} style={styles.VerifyIconImage} />
             </View>
 
             <View style={styles.LocationView}>
-              <Image tintColor={colors.TextColor} style={styles.LocationIcon} source={CommonIcons.Location} />
-              <Text numberOfLines={1} style={[styles.LocationText, { color: colors.TextColor }]}>
+              <Image tintColor={colors.White} style={styles.LocationIcon} source={CommonIcons.Location} />
+              <Text numberOfLines={1} style={[styles.LocationText, { color: colors.White }]}>
                 {cardData?.city || 'Somewhere in earth'}
               </Text>
             </View>

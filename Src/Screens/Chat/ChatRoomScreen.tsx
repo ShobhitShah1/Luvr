@@ -4,23 +4,25 @@
 import NetInfo from '@react-native-community/netinfo';
 import { useIsFocused } from '@react-navigation/native';
 import React, { memo, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Platform, StyleSheet, Text, View } from 'react-native';
 import { Socket, io } from 'socket.io-client';
 import CommonImages from '../../Common/CommonImages';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
 import { BOTTOM_TAB_HEIGHT, COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
 import ApiConfig from '../../Config/ApiConfig';
-import { JOIN_EVENT, LIST_EVENT, UPDATE_LIST } from '../../Config/Setting';
+import { APP_NAME, JOIN_EVENT, LIST_EVENT, UPDATE_LIST } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { store } from '../../Redux/Store/store';
 import { MessageItem, SocketEventHandlers } from '../../Types/Interface';
 import { useCustomToast } from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderChatRoomList from './Components/RenderChatRoomList';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const ChatRoomScreen = () => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const isFocused = useIsFocused();
   const { showToast } = useCustomToast();
   const currentLoginUserId = store.getState().user?.userData?._id || '';
@@ -162,7 +164,7 @@ const ChatRoomScreen = () => {
   if (isSocketLoading) {
     return (
       <GradientView>
-        <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
+        <BottomTabHeader showSetting={false} hideDonation={true} showTitle={true} hideSettingAndNotification={true} />
         <View style={[styles.container, styles.LoaderContainer]}>
           <ActivityIndicator size={'large'} color={colors.Primary} />
         </View>
@@ -173,7 +175,20 @@ const ChatRoomScreen = () => {
   return (
     <GradientView>
       <View style={styles.container}>
-        <BottomTabHeader showSetting={false} hideDonation={true} showTitle={true} hideSettingAndNotification={true} />
+        <SafeAreaView
+          style={{
+            alignSelf: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: Platform.OS === 'ios' ? hp('12.5%') : hp('7%'),
+          }}
+        >
+          <View style={styles.contentView}>
+            <View style={styles.titleTextView}>
+              <Text style={[styles.titleText, { color: colors.TitleText }]}>{APP_NAME?.toUpperCase()}</Text>
+            </View>
+          </View>
+        </SafeAreaView>
 
         <View style={styles.ListChatView}>
           {!isSocketLoading && (
@@ -243,5 +258,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 15,
     fontFamily: FONTS.SemiBold,
+  },
+
+  contentView: {
+    width: '93%',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  titleTextView: {
+    top: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  titleText: {
+    fontFamily: FONTS.Bold,
+    fontSize: hp('2.2%'),
+    color: COLORS.Primary,
   },
 });

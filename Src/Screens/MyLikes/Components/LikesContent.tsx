@@ -33,9 +33,16 @@ const LikesContent: FC<LikesProps> = ({ LikesData }) => {
   }
 
   return (
-    <View style={styles.Container} key={user_details[0]._id}>
+    <View style={[styles.container]} key={user_details[0]._id}>
       <View
-        style={[styles.DetailBoxContainerView, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White }]}
+        style={[
+          styles.DetailBoxContainerView,
+          {
+            borderWidth: 1,
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White,
+          },
+        ]}
       >
         <View style={styles.LikeImageView}>
           <Image
@@ -111,7 +118,7 @@ const styles = StyleSheet.create({
     color: COLORS.Black,
   },
 
-  Container: {
+  container: {
     width: '90%',
     alignSelf: 'center',
   },
