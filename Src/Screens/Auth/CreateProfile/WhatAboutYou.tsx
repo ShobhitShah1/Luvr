@@ -112,9 +112,11 @@ const WhatAboutYou = () => {
           dispatch(updateField(LocalStorageFields.star_sign, selectedItems.star_sign)),
         ]);
 
-        navigation.navigate('LoginStack', {
-          screen: 'YourIntro',
-        });
+        setTimeout(() => {
+          navigation.navigate('LoginStack', {
+            screen: 'YourIntro',
+          });
+        }, 200);
       } else {
         showToast('Validation Error', 'Please select all required options', 'error');
       }

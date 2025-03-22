@@ -1,15 +1,17 @@
 /* eslint-disable react-native/no-inline-styles */
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useEffect, useState } from 'react';
-import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { flushFailedPurchasesCachedAsPendingAndroid, initConnection, requestPurchase } from 'react-native-iap';
+import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
 import { COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
-import Button from '../../Components/Button';
+import GradientButton from '../../Components/AuthComponents/GradientButton';
 import { skus } from '../../Config/ApiConfig';
+import { useTheme } from '../../Contexts/ThemeContext';
 import UserService from '../../Services/AuthService';
 import { MembershipProductsType } from '../../Types/Interface';
 import { useCustomToast } from '../../Utils/toastUtils';
@@ -18,23 +20,26 @@ const BackgroundImageSize = 150;
 
 const DonationScreen = () => {
   const navigation = useNavigation();
+
+  const { isDark, colors } = useTheme();
   const { showToast } = useCustomToast();
+
   const membershipStore = useSelector((state: any) => state.membership);
 
-  const [PaymentSuccess, setPaymentSuccess] = useState(false);
-  const [PaymentLoader, setPaymentLoader] = useState(false);
+  const [isPaymentSuccess, setPaymentSuccess] = useState(false);
+  const [isPaymentLoading, setPaymentLoader] = useState(false);
   const [membershipProductsList, setMembershipProductsList] = useState<MembershipProductsType[]>(
     membershipStore?.membershipProducts
   );
-  const [DonationAmount, setDonationAmount] = useState<string | number>(membershipProductsList[0]?.price);
+  const [donationAmount, setDonationAmount] = useState<string | number>(
+    membershipProductsList?.[1]?.price || membershipProductsList?.[0]?.price
+  );
 
   useEffect(() => {
     initializedConnection();
   }, []);
 
   const initializedConnection = async () => {
-    setPaymentLoader(true);
-
     try {
       const connected = await initConnection();
 
@@ -54,17 +59,20 @@ const DonationScreen = () => {
   };
 
   const requestDonationPurchase = async ({ id }: { id: string[] }) => {
-    const skuID = id || skus;
-    if (skuID) {
+    try {
+      const skuID = id || skus;
       setPaymentLoader(true);
-      try {
+
+      if (skuID) {
         await requestPurchase({ skus: skuID });
         donationAPICall();
-      } catch (error: any) {
-        showToast('Error', String(error?.message || error), 'error');
-        setPaymentLoader(false);
       }
-    } else {
+    } catch (error: any) {
+      if (error?.message?.incudes('Cancelled')) {
+        return;
+      }
+      showToast('Error', String(error?.message || error), 'error');
+    } finally {
       setPaymentLoader(false);
     }
   };
@@ -73,12 +81,12 @@ const DonationScreen = () => {
     try {
       const userDataForApi = {
         eventName: 'donation',
-        donation_amount: DonationAmount,
+        donation_amount: donationAmount,
       };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
-        setPaymentSuccess(!PaymentSuccess);
+        setPaymentSuccess(!isPaymentSuccess);
         showToast('Success', APIResponse?.message || 'Thanks for your donation', 'success');
       }
     } catch (error) {
@@ -100,53 +108,50 @@ const DonationScreen = () => {
           }}
           onPress={() => navigation.goBack()}
         >
-          <Image source={CommonIcons.Back} resizeMode="contain" style={{ width: 28, height: 28 }} />
+          <Image
+            tintColor={colors.TextColor}
+            source={CommonIcons.TinderBack}
+            resizeMode="contain"
+            style={{ width: 28, height: 28 }}
+          />
         </Pressable>
         <View style={styles.ItemContainerView}>
           <View style={styles.TitleAndImageView}>
-            <View style={styles.DonateIconView}>
+            <LinearGradient
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              colors={isDark ? colors.ButtonGradient : [colors.White, colors.White]}
+              style={styles.DonateIconView}
+            >
               <Image
-                source={PaymentSuccess ? CommonIcons.thanks_for_your_support : CommonIcons.ic_donate}
+                tintColor={isDark ? colors.White : colors.Primary}
+                source={CommonIcons.ic_donation_new}
                 style={styles.DonateIcon}
               />
-            </View>
+            </LinearGradient>
 
             <View style={styles.DonationTextView}>
-              <Text style={styles.DonateTitle}>{PaymentSuccess ? 'Thanks for yo support' : 'Help us'}</Text>
+              <Text style={[styles.DonateTitle, { color: colors.TitleText }]}>
+                {isPaymentSuccess ? 'Thanks for yo support' : 'Help us'}
+              </Text>
 
-              <Text style={styles.DonateDescription}>
-                {PaymentSuccess
-                  ? `Your donation of ${DonationAmount} will help us a lot, It will make a big difference.`
+              <Text style={[styles.DonateDescription, { color: isDark ? 'rgba(198, 198, 198, 1)' : colors.TextColor }]}>
+                {isPaymentSuccess
+                  ? `Your donation of ${donationAmount} will help us a lot, It will make a big difference.`
                   : 'Donate us something to make this app more better!'}
               </Text>
             </View>
           </View>
 
-          {membershipProductsList
-            ?.filter((item) => item.productId !== skus[0])
-            ?.map((res, i) => {
-              return (
-                <TouchableOpacity
-                  key={i}
-                  onPress={() => requestDonationPurchase({ id: [res.productId] })}
-                  style={{ width: '100%', paddingHorizontal: 20 }}
-                >
-                  <Text style={{ color: COLORS.Black }}>{res.name}</Text>
-                  <Text style={{ color: COLORS.Black }}>{res.price}</Text>
-                  <Text style={{ color: COLORS.Black }}>{res.productId}</Text>
-                  <Text style={{ color: COLORS.Black }}>{'-------------------------------------------'}</Text>
-                </TouchableOpacity>
-              );
-            })}
-
           <View style={styles.DonateButtonContainer}>
-            <Button
-              isLoading={PaymentLoader}
-              onPress={() => {}}
-              ButtonTitle={PaymentSuccess ? 'Make another donation' : `Donate now ${DonationAmount}`}
+            <GradientButton
+              Title={isPaymentSuccess ? 'Make another donation' : `Donate now ${donationAmount}`}
+              isLoading={isPaymentLoading}
+              Navigation={() => requestDonationPurchase({ id: [membershipProductsList?.[1]?.productId] })}
+              Disabled={false}
             />
-            {!PaymentSuccess && (
-              <Text onPress={() => navigation.goBack()} style={styles.MayBeLaterButton}>
+            {!isPaymentSuccess && (
+              <Text onPress={() => navigation.goBack()} style={[styles.MayBeLaterButton, { color: colors.TextColor }]}>
                 Maybe later
               </Text>
             )}
@@ -183,7 +188,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 500,
-    backgroundColor: COLORS.White,
   },
   DonateIcon: {
     width: BackgroundImageSize / 1.8,
@@ -201,26 +205,23 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     fontSize: 25,
     textAlign: 'center',
-    color: COLORS.Primary,
   },
   DonateDescription: {
     width: '75%',
     marginTop: 8,
     ...GROUP_FONT.body3,
     textAlign: 'center',
-    color: COLORS.Black,
   },
   DonateButtonContainer: {
-    flex: 0.4,
-    marginTop: 80,
+    position: 'absolute',
+    bottom: 15,
     alignItems: 'center',
     justifyContent: 'center',
   },
   MayBeLaterButton: {
-    marginVertical: 5,
+    marginVertical: 8,
     fontSize: 15.5,
     fontFamily: FONTS.SemiBold,
     textAlign: 'center',
-    color: COLORS.Primary,
   },
 });

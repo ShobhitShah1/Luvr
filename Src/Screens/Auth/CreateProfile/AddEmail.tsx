@@ -21,7 +21,7 @@ import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader
 const AddEmail = () => {
   const dispatch = useDispatch();
 
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const style = useThemedStyles(styles);
 
   const { showToast } = useCustomToast();
@@ -70,7 +70,10 @@ const AddEmail = () => {
           <View style={style.PhoneNumberView}>
             <View style={style.TextViewForSpace}>
               <Text style={style.NameText}>My email is</Text>
-              <GradientBorderView style={style.TextInputViewStyle} gradientProps={{ colors: colors.Gradient }}>
+              <GradientBorderView
+                style={[style.TextInputViewStyle, { backgroundColor: isDark ? 'transparent' : colors.White }]}
+                gradientProps={{ colors: isDark ? colors.Gradient : ['transparent', 'transparent'] }}
+              >
                 <CustomTextInput
                   value={Email}
                   onChangeText={(value) => {

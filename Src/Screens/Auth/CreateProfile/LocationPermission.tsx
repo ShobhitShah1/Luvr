@@ -19,9 +19,10 @@ import { transformUserDataForApi } from '../../../Services/dataTransformService'
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileStyles from './styles';
+import CommonIcons from '../../../Common/CommonIcons';
 
 const LocationPermission: FC = () => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const dispatch = useDispatch();
   const style = useThemedStyles(styles);
 
@@ -100,12 +101,15 @@ const LocationPermission: FC = () => {
     <GradientView>
       <View style={style.container}>
         <View style={style.MiddleImageView}>
-          <Image source={CommonImages.Location} style={style.LocationImage} />
+          <Image
+            source={isDark ? CommonIcons.ic_dark_location : CommonIcons.ic_light_location}
+            style={style.LocationImage}
+          />
         </View>
 
         <View style={style.MiddleTextView}>
-          <Text style={style.TitleText}>Allow your location</Text>
-          <Text style={style.DescriptionText}>
+          <Text style={[style.TitleText, { color: colors.TitleText }]}>Allow your location</Text>
+          <Text style={[style.DescriptionText, { color: colors.TextColor }]}>
             Set your location to see nearby people. You won’t be able to match with people otherwise.
           </Text>
         </View>
@@ -152,7 +156,7 @@ const styles = createThemedStyles((colors) => ({
   },
   DescriptionText: {
     width: '85%',
-    top: hp('0.5%'),
+    top: hp('1%'),
     fontFamily: FONTS.Regular,
     color: colors.Black,
     fontSize: hp('1.5%'),

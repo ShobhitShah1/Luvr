@@ -221,7 +221,7 @@ const AddRecentPics = () => {
   return (
     <GradientView>
       <View style={CreateProfileStyles.Container}>
-        <CreateProfileHeader ProgressCount={9} Skip={false} />
+        <CreateProfileHeader ProgressCount={9} Skip={false} hideBack={true} />
 
         <View style={styles.DataViewContainer}>
           <View style={{ width: '84%', alignSelf: 'center' }}>

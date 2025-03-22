@@ -37,8 +37,8 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({ p
         <Skeleton
           width={'100%'}
           height={'100%'}
+          colors={colors.LoaderGradient}
           show={(IsImageLoading || isLoading) && hasPicture ? true : false}
-          colors={colors.Gradient}
         >
           <View
             style={{

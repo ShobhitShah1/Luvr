@@ -129,12 +129,14 @@ const ReportUserModalView: FC<ReportUserProps> = ({
                 style={{ flex: 1, justifyContent: 'center' }}
                 disabled={SelectedReportReason === '' || SelectedReportReason.length === 0 ? true : false}
               >
-                <Text style={[styles.reportButtonText, { color: colors.TextColor }]}>Report</Text>
+                <Text style={[styles.reportButtonText, { color: isDark ? colors.TextColor : colors.White }]}>
+                  Report
+                </Text>
               </Pressable>
             </LinearGradient>
 
             <Pressable onPress={() => setVisibility(false)} style={styles.cancelButtonView}>
-              <Text style={[styles.cancelButtonText, { color: colors.TextColor }]}>Cancel</Text>
+              <Text style={[styles.cancelButtonText, { color: colors.TitleText }]}>Cancel</Text>
             </Pressable>
           </View>
         </SafeAreaView>
@@ -195,7 +197,7 @@ const styles = StyleSheet.create({
     width: '90%',
     borderWidth: 1,
     borderRadius: 30,
-    marginVertical: 8,
+    marginVertical: 4,
     alignSelf: 'center',
     paddingHorizontal: 5,
     justifyContent: 'center',

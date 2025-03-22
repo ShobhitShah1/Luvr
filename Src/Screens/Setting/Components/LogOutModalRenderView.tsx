@@ -41,7 +41,15 @@ const LogOutModalRenderView: FC<SettingModalProps> = ({
       <View style={styles.ContentContainer}>
         <View style={styles.TextContainerView}>
           <Text style={[styles.TitleText, { color: colors.TextColor }]}>{title}</Text>
-          {typeof description === 'string' ? <Text style={styles.DescriptionText}>{description}</Text> : description}
+          {typeof description === 'string' ? (
+            <Text
+              style={[styles.DescriptionText, { color: isDark ? 'rgba(198, 198, 198, 1)' : 'rgba(108, 108, 108, 1)' }]}
+            >
+              {description}
+            </Text>
+          ) : (
+            description
+          )}
         </View>
 
         <View style={styles.ButtonContainer}>
@@ -70,7 +78,7 @@ const styles = StyleSheet.create({
   CloseModalContainerView: {
     zIndex: 9999,
     position: 'absolute',
-    right: 20,
+    right: 15,
     top: 20,
     justifyContent: 'center',
   },
@@ -91,14 +99,12 @@ const styles = StyleSheet.create({
   TitleText: {
     fontSize: 19,
     textAlign: 'center',
-    color: COLORS.Black,
     fontFamily: FONTS.Bold,
   },
   DescriptionText: {
     fontSize: 14.5,
     marginVertical: 5,
     textAlign: 'center',
-    color: 'rgba(108, 108, 108, 1)',
     fontFamily: FONTS.Medium,
   },
   ButtonContainer: {
@@ -110,18 +116,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     borderRadius: 20,
-    backgroundColor: COLORS.Primary,
   },
   LogoutButtonText: {
     fontSize: 15,
-    color: COLORS.White,
     textAlign: 'center',
     fontFamily: FONTS.SemiBold,
   },
   NoButtonText: {
     marginTop: 10,
     fontSize: 15,
-    color: COLORS.Primary,
     textAlign: 'center',
     fontFamily: FONTS.SemiBold,
   },

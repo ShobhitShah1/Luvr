@@ -849,7 +849,7 @@ Let's make every moment count together! #LoveConnects`,
                   fontSize: 14.5,
                   marginVertical: 5,
                   textAlign: 'center',
-                  color: 'rgba(108, 108, 108, 1)',
+                  color: isDark ? 'rgba(198, 198, 198, 1)' : 'rgba(108, 108, 108, 1)',
                   fontFamily: FONTS.Medium,
                 }}
               >
@@ -864,6 +864,7 @@ Let's make every moment count together! #LoveConnects`,
                   setRatingCount(value);
                 }}
                 startingValue={RatingCount}
+                tintColor={!isDark ? undefined : 'rgba(0, 0, 0, 1)'}
                 ratingColor="rgba(255, 184, 0, 1)"
                 ratingBackgroundColor="rgba(255, 184, 0, 1)"
                 ratingImage={CommonIcons.rating_star_icon_unselect}

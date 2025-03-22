@@ -20,6 +20,8 @@ import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderChatRoomList from './Components/RenderChatRoomList';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import CommonIcons from '../../Common/CommonIcons';
+import LinearGradient from 'react-native-linear-gradient';
 
 const ChatRoomScreen = () => {
   const { colors, isDark } = useTheme();
@@ -150,11 +152,20 @@ const ChatRoomScreen = () => {
   const ListEmptyView = () => {
     return (
       <View style={styles.EmptyListView}>
-        <View style={styles.NoChatIconBackground}>
-          <Image source={CommonImages.NoChat} style={styles.NoChatIcon} />
-        </View>
+        <LinearGradient
+          start={{ x: 0, y: 1 }}
+          end={{ x: 1, y: 0 }}
+          colors={isDark ? colors.ButtonGradient : ['transparent', 'transparent']}
+          style={styles.NoChatIconBackground}
+        >
+          <Image
+            source={CommonIcons.ic_noChat}
+            tintColor={isDark ? colors.White : colors.Primary}
+            style={styles.NoChatIcon}
+          />
+        </LinearGradient>
         <Text style={[styles.NoChatText, { color: colors.TitleText }]}>No chats, Get swiping</Text>
-        <Text style={[styles.NoChatDescription, { color: colors.TextColor }]}>
+        <Text style={[styles.NoChatDescription, { color: isDark ? 'rgba(255, 255, 255, 0.5)' : colors.TextColor }]}>
           When you match with other peoples they’ll appear here, where you can send them a message.
         </Text>
       </View>
@@ -164,7 +175,20 @@ const ChatRoomScreen = () => {
   if (isSocketLoading) {
     return (
       <GradientView>
-        <BottomTabHeader showSetting={false} hideDonation={true} showTitle={true} hideSettingAndNotification={true} />
+        <SafeAreaView
+          style={{
+            alignSelf: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: Platform.OS === 'ios' ? hp('12.5%') : hp('7%'),
+          }}
+        >
+          <View style={styles.contentView}>
+            <View style={styles.titleTextView}>
+              <Text style={[styles.titleText, { color: colors.TitleText }]}>{APP_NAME?.toUpperCase()}</Text>
+            </View>
+          </View>
+        </SafeAreaView>
         <View style={[styles.container, styles.LoaderContainer]}>
           <ActivityIndicator size={'large'} color={colors.Primary} />
         </View>

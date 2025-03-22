@@ -33,7 +33,7 @@ const EditProfileBoxView: FC<EditProfileBoxViewProps> = ({
 }) => {
   const { colors, isDark } = useTheme();
   return IsViewLoading ? (
-    <Skeleton colors={colors.BackgroundGradient} show={true}>
+    <Skeleton colors={colors.LoaderGradient} show={true}>
       <View style={styles.LoadingView} />
     </Skeleton>
   ) : withTextInput ? (

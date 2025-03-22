@@ -57,7 +57,7 @@ const CategoryDetailCardsScreen: FC = () => {
   }, [userData, userData?.swipedLeftUserIds, userData?.swipedRightUserIds]);
 
   const checkConnectionAndFetchAPI = async () => {
-    setIsAPILoading(true);
+    setIsAPILoading(categoryData?.length === 0);
     setItsMatchModalView(false);
 
     const isConnected = (await NetInfo.fetch()).isConnected;

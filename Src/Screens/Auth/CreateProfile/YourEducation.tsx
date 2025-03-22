@@ -42,9 +42,11 @@ const YourEducation = () => {
         ]);
       }
 
-      navigation.navigate('LoginStack', {
-        screen: 'AddDailyHabits',
-      });
+      setTimeout(() => {
+        navigation.navigate('LoginStack', {
+          screen: 'AddDailyHabits',
+        });
+      }, 200);
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), String(error?.message || error), TextString.error);
     } finally {

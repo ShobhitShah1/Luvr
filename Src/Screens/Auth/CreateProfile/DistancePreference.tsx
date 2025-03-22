@@ -30,10 +30,15 @@ const DistancePreference: FC = () => {
   };
 
   const onNextPress = () => {
-    dispatch(updateField(LocalStorageFields.radius, milesValue));
-    navigation.navigate('LoginStack', {
-      screen: 'YourEducation',
-    });
+    try {
+      dispatch(updateField(LocalStorageFields.radius, milesValue));
+
+      setTimeout(() => {
+        navigation.navigate('LoginStack', {
+          screen: 'YourEducation',
+        });
+      }, 200);
+    } catch (error) {}
   };
 
   return (

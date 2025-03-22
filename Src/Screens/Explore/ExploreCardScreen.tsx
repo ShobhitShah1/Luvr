@@ -300,7 +300,7 @@ const ExploreCardScreen: FC = () => {
               disableLeftSwipe={isMatchModalVisible}
               disableRightSwipe={isMatchModalVisible}
               stackScale={0}
-              cardStyle={styles.swiperStyle}
+              cardStyle={[styles.swiperStyle, { borderColor: isDark ? colors.White : 'transparent' }]}
               overlayOpacityHorizontalThreshold={1}
               onSwiping={() => stopInterval()}
               onSwipedAborted={() => startInterval()}
@@ -448,10 +448,9 @@ const styles = StyleSheet.create({
   },
   swiperStyle: {
     height: '100%',
-    borderWidth: 1,
+    borderWidth: 0.8,
     overflow: 'hidden',
     borderRadius: hp('4%'),
-    borderColor: 'transparent',
   },
   LikeAndRejectView: {
     flex: 0.15,

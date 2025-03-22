@@ -19,12 +19,15 @@ import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 const IdentifyYourSelf: FC = () => {
   const { colors, isDark } = useTheme();
   const userData = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
   const { showToast } = useCustomToast();
+  const isKeyboardVisible = useKeyboardVisibility();
 
   const ScrollViewRef = useRef<ScrollView>(null);
   const dayInputRef = useRef<TextInput>(null);
@@ -105,10 +108,16 @@ const IdentifyYourSelf: FC = () => {
     }
   }, [navigation, FirstName, BirthDateDD, BirthDateMM, BirthDateYYYY, selectedGender, CityName]);
 
-  // Helper function to render text input with conditional gradient border
   const renderInputField = (fieldName: string, props: any) => {
     return (
-      <GradientBorderView style={[styles.TextInputViewStyle, props.containerStyle]}>
+      <GradientBorderView
+        style={[
+          styles.TextInputViewStyle,
+          { backgroundColor: isDark ? 'transparent' : colors.White, overflow: 'hidden' },
+          props.containerStyle,
+        ]}
+        gradientProps={{ colors: isDark ? colors.ButtonGradient : ['transparent', 'transparent'] }}
+      >
         <CustomTextInput
           {...props}
           onFocus={() => setFocusedInput(fieldName)}
@@ -118,33 +127,6 @@ const IdentifyYourSelf: FC = () => {
         />
       </GradientBorderView>
     );
-    // const isFocused = focusedInput === fieldName;
-
-    // if (isFocused) {
-    //   return (
-    //     <GradientBorderView style={[styles.TextInputViewStyle, props.containerStyle]}>
-    //       <CustomTextInput
-    //         {...props}
-    //         onFocus={() => setFocusedInput(fieldName)}
-    //         onBlur={() => setFocusedInput(null)}
-    //         style={styles.textInputStyle}
-    //         placeholderTextColor={COLORS.Gray}
-    //       />
-    //     </GradientBorderView>
-    //   );
-    // } else {
-    //   return (
-    //     <View style={[styles.TextInputViewStyle, styles.regularBorder, props.containerStyle]}>
-    //       <CustomTextInput
-    //         {...props}
-    //         onFocus={() => setFocusedInput(fieldName)}
-    //         onBlur={() => setFocusedInput(null)}
-    //         style={styles.textInputStyle}
-    //         placeholderTextColor={COLORS.Gray}
-    //       />
-    //     </View>
-    //   );
-    // }
   };
 
   return (
@@ -254,9 +236,7 @@ const IdentifyYourSelf: FC = () => {
                           <Text
                             style={[
                               styles.GenderText,
-                              {
-                                color: selectedGender === gender ? COLORS.White : COLORS.Gray,
-                              },
+                              { color: selectedGender === gender ? COLORS.White : COLORS.Gray },
                             ]}
                           >
                             {gender}
@@ -271,7 +251,7 @@ const IdentifyYourSelf: FC = () => {
                           {
                             width: hp('11%'),
                             borderColor: isDark ? colors.InputBackground : 'transparent',
-                            backgroundColor: 'transparent',
+                            backgroundColor: isDark ? 'transparent' : colors.White,
                           },
                         ]}
                       >
@@ -279,16 +259,7 @@ const IdentifyYourSelf: FC = () => {
                           onPress={() => handleGenderSelection(gender)}
                           style={{ flex: 1, justifyContent: 'center' }}
                         >
-                          <Text
-                            style={[
-                              styles.GenderText,
-                              {
-                                color: COLORS.Gray,
-                              },
-                            ]}
-                          >
-                            {gender}
-                          </Text>
+                          <Text style={[styles.GenderText, { color: COLORS.Gray }]}>{gender}</Text>
                         </Pressable>
                       </View>
                     )}
@@ -314,20 +285,20 @@ const IdentifyYourSelf: FC = () => {
           </View>
         </ScrollView>
 
-        {/* {!KeyboardVisible && ( */}
-        <View style={styles.BottomButton}>
-          <GradientButton
-            isLoading={false}
-            Title={'Continue'}
-            Disabled={
-              !FirstName || !BirthDateDD || !BirthDateMM || !BirthDateYYYY || !selectedGender || !CityName
-                ? true
-                : false
-            }
-            Navigation={() => OnLetsGoButtonPress()}
-          />
-        </View>
-        {/* )} */}
+        {!isKeyboardVisible && (
+          <View style={styles.BottomButton}>
+            <GradientButton
+              isLoading={false}
+              Title={'Continue'}
+              Disabled={
+                !FirstName || !BirthDateDD || !BirthDateMM || !BirthDateYYYY || !selectedGender || !CityName
+                  ? true
+                  : false
+              }
+              Navigation={() => OnLetsGoButtonPress()}
+            />
+          </View>
+        )}
       </View>
     </GradientView>
   );

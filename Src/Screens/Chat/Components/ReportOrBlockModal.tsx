@@ -44,7 +44,7 @@ const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
           ]}
         >
           <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'center', marginVertical: 10 }}>
-            <Text style={[styles.title, { color: colors.TextColor }]}>Choose an Action</Text>
+            <Text style={[styles.title, { color: colors.TitleText }]}>Choose an Action</Text>
 
             <Pressable
               style={styles.closeButton}

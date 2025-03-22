@@ -6,6 +6,9 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     zIndex: 9999,
+    // borderWidth: 1,
+    // padding: 1,
+    overflow: 'hidden',
     justifyContent: 'center',
   },
   imageContainer: {
@@ -15,6 +18,7 @@ const styles = StyleSheet.create({
   ImageStyle: {
     width: '100%',
     height: '100%',
+    overflow: 'hidden',
   },
   CardBottomDetailView: {
     bottom: 0,

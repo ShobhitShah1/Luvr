@@ -47,10 +47,14 @@ const rating_star_icon_unselect = require('../../Assets/Icons/rating_star_icon_u
 const donate_icon = require('../../Assets/Icons/donate_icon.png');
 const thanks_for_your_support = require('../../Assets/Icons/thanks_for_your_support!_icon.png');
 const ic_donate = require('../../Assets/Icons/ic_donate.png');
+const ic_donation_new = require('../../Assets/Icons/ic_donation_new.png');
 const ic_message = require('../../Assets/Icons/ic_message.png');
 const ic_noNotification = require('../../Assets/Icons/ic_no-notification.png');
 const ic_red_like_button = require('../../Assets/Icons/ic_red_like_button.png');
 const ic_cross = require('../../Assets/Icons/ic_cross.png');
+const ic_light_location = require('../../Assets/Icons/ic_light_location.png');
+const ic_dark_location = require('../../Assets/Icons/ic_dark_location.png');
+const ic_noChat = require('../../Assets/Icons/ic_noChat.png');
 
 // Home
 const LightHomeTab = require('../../Assets/Icons/BottomTab/ic_light_home.png');
@@ -119,10 +123,14 @@ export default {
   donate_icon,
   thanks_for_your_support,
   ic_donate,
+  ic_donation_new,
   ic_message,
   ic_noNotification,
   ic_red_like_button,
   ic_cross,
+  ic_dark_location,
+  ic_light_location,
+  ic_noChat,
 
   //* Home
   LightHomeTab,

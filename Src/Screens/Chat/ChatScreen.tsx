@@ -59,7 +59,7 @@ const ChatScreen = () => {
   const { showToast } = useCustomToast();
   const { params } = useRoute<ChatScreenRouteProp>();
 
-  const { userData } = store.getState().user || ({} as any);
+  const { userData } = store?.getState().user || ({} as any);
   const CurrentLoginUserId = userData?._id;
   const CurrentUserImage = userData?.recent_pik;
   const CurrentLoginUserFullName = userData?.full_name;
@@ -313,6 +313,7 @@ const ChatScreen = () => {
         wrapperStyle={{
           right: {
             padding: 3,
+            paddingHorizontal: 10,
             marginVertical: 1,
             borderTopRightRadius: 20,
             borderTopLeftRadius: 20,
@@ -322,6 +323,7 @@ const ChatScreen = () => {
           },
           left: {
             padding: 3,
+            paddingHorizontal: 10,
             marginVertical: 1,
             borderTopRightRadius: 20,
             borderBottomRightRadius: 20,

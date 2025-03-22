@@ -31,6 +31,8 @@ const HopingToFind: FC = () => {
     userData.hoping ? userData.hoping : {}
   );
 
+  console.log('SelectedLookingForIndex:', SelectedLookingForIndex);
+
   const onPressLookingFor = useCallback(
     (item: string) => {
       const isSelected = SelectedLookingForIndex === item;
@@ -93,13 +95,21 @@ const HopingToFind: FC = () => {
   };
 
   const onPressNext = () => {
-    if (SelectedLookingForIndex) {
-      dispatch(updateField(LocalStorageFields.hoping, SelectedLookingForIndex));
-      navigation.navigate('LoginStack', {
-        screen: 'DistancePreference',
-      });
-    } else {
-      showToast(TextString.error.toUpperCase(), 'Please select your hoping', 'error');
+    try {
+      if (SelectedLookingForIndex) {
+        console.log('new', SelectedLookingForIndex);
+        dispatch(updateField(LocalStorageFields.hoping, SelectedLookingForIndex));
+
+        setTimeout(() => {
+          navigation.navigate('LoginStack', {
+            screen: 'DistancePreference',
+          });
+        }, 200);
+      } else {
+        showToast(TextString.error.toUpperCase(), 'Please select your hoping', 'error');
+      }
+    } catch (error) {
+      showToast(TextString.error.toUpperCase(), String(error), 'error');
     }
   };
 

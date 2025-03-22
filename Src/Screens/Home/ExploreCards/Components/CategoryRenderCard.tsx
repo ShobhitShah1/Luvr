@@ -102,7 +102,12 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
         resizeMode="cover"
         style={styles.imageView}
       >
-        <LinearGradient colors={colors.GradientViewForCards} locations={[0, 1]} style={styles.gradient}>
+        <LinearGradient
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          colors={['transparent', 'rgba(0,0,0,0.7)', 'rgba(0,0,0,0.9)']}
+          style={styles.gradient}
+        >
           <View style={styles.DetailContainerView}>
             <View style={styles.UserInfoView}>
               <Text numberOfLines={2} style={styles.TitleText}>

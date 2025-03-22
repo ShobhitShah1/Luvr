@@ -14,7 +14,7 @@ interface ButtonProps {
 }
 
 const GradientButton: FC<ButtonProps> = ({ Title, Navigation, Disabled, isLoading }) => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   return (
     <LinearGradient
@@ -26,7 +26,7 @@ const GradientButton: FC<ButtonProps> = ({ Title, Navigation, Disabled, isLoadin
       <Pressable disabled={isLoading || Disabled} onPress={Navigation} style={{ flex: 1, zIndex: 99 }}>
         <View style={[styles.GradientViewStyle]}>
           {isLoading ? (
-            <ActivityIndicator color={colors.Primary} style={styles.LoaderView} size={25} />
+            <ActivityIndicator color={colors.White} style={styles.LoaderView} size={25} />
           ) : (
             <Text style={[styles.NewAccountText, { color: colors.ButtonText }]}>{Title}</Text>
           )}

@@ -24,7 +24,7 @@ const styles = createThemedStyles((colors) => ({
     zIndex: 99999999999,
     justifyContent: 'center',
     paddingHorizontal: hp('3%'),
-    marginVertical: Platform.OS === 'ios' ? hp('1%') : hp('6%'),
+    marginVertical: Platform.OS === 'ios' ? hp('1%') : hp('3%'),
   },
   AppNameTitle: {
     ...GROUP_FONT.h1,

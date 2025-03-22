@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { FC, memo, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Image, LayoutChangeEvent, Pressable, Text, TouchableWithoutFeedback, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 import CommonIcons from '../../../Common/CommonIcons';
 import ApiConfig from '../../../Config/ApiConfig';
 import { DummyImage } from '../../../Config/Setting';
@@ -241,6 +241,22 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
             <Image source={CommonIcons.view_profile} style={styles.ViewProfileIcon} />
           </Pressable>
         </View>
+
+        <LinearGradient
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          colors={['transparent', 'rgba(0,0,0,0.7)', 'rgba(0,0,0,0.9)']}
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '40%',
+            zIndex: 1,
+            borderBottomLeftRadius: 10,
+            borderBottomRightRadius: 10,
+          }}
+        />
       </View>
     </TouchableWithoutFeedback>
   );

@@ -133,9 +133,12 @@ const AddDailyHabits = () => {
             dispatch(updateField(LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}`], selectedItems[habit]));
           }),
         ]);
-        navigation.navigate('LoginStack', {
-          screen: 'WhatAboutYou',
-        });
+
+        setTimeout(() => {
+          navigation.navigate('LoginStack', {
+            screen: 'WhatAboutYou',
+          });
+        }, 200);
       } else {
         throw new Error('Please select all required habits');
       }
