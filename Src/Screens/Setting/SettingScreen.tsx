@@ -333,6 +333,7 @@ Let's make every moment count together! #LoveConnects`,
         setting_show_me: UserSetting?.setting_show_me || 'Everyone',
         setting_show_people_with_range: UserSetting?.setting_show_people_with_range,
       };
+
       const APIResponse = await UserService.UserRegister(DataToSend);
 
       if (APIResponse.code === 200) {

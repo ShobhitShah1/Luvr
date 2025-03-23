@@ -40,6 +40,7 @@ import { navigationRef } from './RootNavigation';
 import BootSplash from 'react-native-bootsplash';
 import { StatusBar } from 'react-native';
 import { useTheme } from '../Contexts/ThemeContext';
+import { setRootViewBackgroundColor } from '@pnthach95/react-native-root-view-background';
 
 const excludedRoutes = [
   'Login',
@@ -91,6 +92,7 @@ export default function MainRoute() {
   const [isNavigationReady, setIsNavigationReady] = useState(false);
 
   useEffect(() => {
+    setRootViewBackgroundColor(isDark ? 'rgba(141, 71, 242, 1)' : colors.Secondary);
     Promise.all([getScreenToNavigate(), handleNotificationPermission(), initGoogleSignIn()]);
   }, []);
 

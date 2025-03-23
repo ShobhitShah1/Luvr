@@ -3,7 +3,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ParamListBase, RouteProp, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
 import {
   Bubble,
   BubbleProps,
@@ -12,8 +12,11 @@ import {
   GiftedChat,
   IMessage,
   InputToolbar,
+  InputToolbarProps,
   MessageText,
   MessageTextProps,
+  Send,
+  SendProps,
 } from 'react-native-gifted-chat';
 import { Socket, io } from 'socket.io-client';
 import { COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
@@ -37,6 +40,8 @@ import ChatScreenHeader from './Components/ChatScreenHeader';
 import ReportOrBlockModal from './Components/ReportOrBlockModal';
 import GradientView from '../../Common/GradientView';
 import { useTheme } from '../../Contexts/ThemeContext';
+import CommonIcons from '../../Common/CommonIcons';
+import { Image } from 'react-native';
 
 interface ChatData {
   params: {
@@ -294,15 +299,90 @@ const ChatScreen = () => {
     ]
   );
 
-  const renderInputToolbar = (props: any) => {
+  const renderInputToolbar = (props: InputToolbarProps<IMessage>) => {
     return (
       <InputToolbar
         {...props}
-        primaryStyle={styles.inputToolbarPrimary}
-        optionTintColor={colors.Primary}
-        accessoryStyle={styles.inputToolbarAccessory}
-        containerStyle={styles.inputToolbarContainer}
+        containerStyle={{
+          marginVertical: 10,
+          paddingHorizontal: 10,
+          marginBottom: 8,
+          flex: 1,
+          flexGrow: 1,
+          justifyContent: 'center',
+          backgroundColor: 'transparent',
+          borderColor: 'transparent',
+        }}
+        primaryStyle={{
+          alignSelf: 'center',
+          alignItems: 'center',
+        }}
+        renderComposer={(composerProps) => (
+          <View
+            style={{
+              height: 59,
+              alignSelf: 'center',
+              width: '85%',
+              overflow: 'hidden',
+              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.3))' : colors.White,
+              borderRadius: 25,
+              paddingHorizontal: 15,
+              marginRight: 5,
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderWidth: 1,
+              borderColor: isDark ? colors.White : 'transparent',
+            }}
+          >
+            <View style={{ width: '88%' }}>
+              <Composer
+                {...composerProps}
+                textInputStyle={{
+                  color: colors.TextColor,
+                  backgroundColor: 'transparent',
+                  marginLeft: 0,
+                  fontSize: 14,
+                  lineHeight: 16,
+                  flex: 1,
+                  fontFamily: FONTS.Medium,
+                }}
+                placeholder="Write your message here"
+                placeholderTextColor={isDark ? 'rgba(255, 255, 255, 1)' : 'rgba(130, 130, 130, 1)'}
+              />
+            </View>
+          </View>
+        )}
       />
+    );
+  };
+
+  const renderSend = (props: SendProps<IMessage>) => {
+    return (
+      <Send
+        {...props}
+        containerStyle={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          position: 'absolute',
+          right: 15,
+          zIndex: 9999,
+        }}
+      >
+        <View
+          style={{
+            width: 35,
+            height: 35,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Image
+            source={CommonIcons.ic_send_message}
+            style={{ width: 22, height: 22, tintColor: isDark ? colors.White : 'rgba(130, 130, 130, 1)' }}
+          />
+        </View>
+      </Send>
     );
   };
 
@@ -314,7 +394,8 @@ const ChatScreen = () => {
           right: {
             padding: 3,
             paddingHorizontal: 10,
-            marginVertical: 1,
+            marginVertical: 5,
+            marginHorizontal: 10,
             borderTopRightRadius: 20,
             borderTopLeftRadius: 20,
             borderBottomRightRadius: 0,
@@ -324,7 +405,8 @@ const ChatScreen = () => {
           left: {
             padding: 3,
             paddingHorizontal: 10,
-            marginVertical: 1,
+            marginVertical: 5,
+            marginHorizontal: 10,
             borderTopRightRadius: 20,
             borderBottomRightRadius: 20,
             borderBottomLeftRadius: 0,
@@ -418,16 +500,6 @@ const ChatScreen = () => {
     );
   };
 
-  const renderComposer = (props: ComposerProps) => {
-    return (
-      <Composer
-        {...props}
-        placeholder="Write your message here"
-        textInputStyle={[styles.composerTextInput, { color: colors.TextColor }]}
-      />
-    );
-  };
-
   const onBlockProfileClick = async () => {
     const BlockData = {
       eventName: ApiConfig.BlockProfile,
@@ -475,18 +547,18 @@ const ChatScreen = () => {
     <GradientView>
       <View style={styles.Container}>
         <ChatScreenHeader data={OtherUserProfileData} onRightIconPress={() => setReportAndBlockModal(true)} />
-        <StatusBar backgroundColor={colors.White} barStyle={'dark-content'} />
         <View style={styles.ChatContainer}>
           <GiftedChat
             alignTop
+            keyboardShouldPersistTaps="handled"
             messages={userMessage}
             onSend={(messages) => onSend(messages)}
             user={{ _id: 1, avatar: avatarUrl }}
             isTyping={false}
             messagesContainerStyle={styles.messagesContainer}
             maxComposerHeight={100}
-            renderComposer={renderComposer}
-            renderInputToolbar={(props) => renderInputToolbar(props)}
+            renderInputToolbar={renderInputToolbar}
+            renderSend={renderSend}
             renderBubble={renderBubble}
             timeTextStyle={{
               left: { color: colors.White },
@@ -527,7 +599,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   messagesContainer: {
-    marginBottom: 10,
+    paddingBottom: 70,
+    height: '100%',
   },
   ChatContainer: {
     flex: 1,

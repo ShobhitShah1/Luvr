@@ -55,6 +55,7 @@ const ic_cross = require('../../Assets/Icons/ic_cross.png');
 const ic_light_location = require('../../Assets/Icons/ic_light_location.png');
 const ic_dark_location = require('../../Assets/Icons/ic_dark_location.png');
 const ic_noChat = require('../../Assets/Icons/ic_noChat.png');
+const ic_send_message = require('../../Assets/Icons/ic_send_message.png');
 
 // Home
 const LightHomeTab = require('../../Assets/Icons/BottomTab/ic_light_home.png');
@@ -131,6 +132,7 @@ export default {
   ic_dark_location,
   ic_light_location,
   ic_noChat,
+  ic_send_message,
 
   //* Home
   LightHomeTab,

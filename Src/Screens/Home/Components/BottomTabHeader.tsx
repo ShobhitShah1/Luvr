@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   iconWrapper: {
+    zIndex: 999999,
     marginHorizontal: 7,
     justifyContent: 'center',
   },

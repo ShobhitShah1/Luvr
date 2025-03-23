@@ -121,7 +121,7 @@ const TabItem: React.FC<TabItemProps> = ({ label, icon, isFocused, onPress }) =>
       <Animated.View style={[styles.iconContainer, iconStyle]}>
         <Image
           source={icon}
-          style={[styles.tabIcon, { width: isFocused ? 23 : 25, height: isFocused ? 23 : 25 }]}
+          style={[styles.tabIcon, { width: isFocused ? 23 : 25, height: isFocused ? 23 : 25 }, isFocused && { top: 2 }]}
           tintColor={isDark ? (isFocused ? colors.White : undefined) : isFocused ? colors.Background : colors.White}
         />
       </Animated.View>
