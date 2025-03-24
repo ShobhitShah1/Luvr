@@ -27,18 +27,19 @@ const AddEmail = () => {
   const { showToast } = useCustomToast();
   const userData = useSelector((state: any) => state?.user);
 
-  const [Email, setEmail] = useState<string>(userData?.identity ? userData?.identity : '');
+  const [email, setEmail] = useState<string>(userData?.identity ? userData?.identity : '');
+  const [isLoading, setIsLoading] = useState(false);
 
   const { navigate } = useNavigation<any>();
 
   const onNextClick = async () => {
     try {
+      setIsLoading(true);
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      if (emailRegex.test(Email)) {
-        let LocalEmail = Email;
-        dispatch(updateField(LocalStorageFields.identity, LocalEmail));
-        setEmail(Email);
+      if (emailRegex.test(email)) {
+        dispatch(updateField(LocalStorageFields.identity, email?.trim()));
+        setEmail(email);
 
         navigate('LoginStack', {
           screen: 'IdentifyYourSelf',
@@ -48,6 +49,8 @@ const AddEmail = () => {
       }
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -75,7 +78,7 @@ const AddEmail = () => {
                 gradientProps={{ colors: isDark ? colors.Gradient : ['transparent', 'transparent'] }}
               >
                 <CustomTextInput
-                  value={Email}
+                  value={email}
                   onChangeText={(value) => {
                     setEmail(value?.trimStart());
                   }}
@@ -89,7 +92,7 @@ const AddEmail = () => {
           </View>
 
           <View style={{ marginVertical: hp('4%') }}>
-            <GradientButton Title={'CONTINUE'} isLoading={false} Disabled={false} Navigation={onNextClick} />
+            <GradientButton Title={'CONTINUE'} isLoading={isLoading} Disabled={isLoading} Navigation={onNextClick} />
           </View>
         </ScrollView>
       </View>

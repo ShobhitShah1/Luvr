@@ -35,10 +35,12 @@ const SexualOrientation = () => {
   const userData = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
   const { showToast } = useCustomToast();
+
   const initialSexualOrientation: string[] = userData.orientation.length !== 0 ? userData.orientation : [];
 
-  const [ShowOnProfile, setShowOnProfile] = useState<boolean>(userData.is_orientation_visible);
-  const [SelectedGenderIndex, setSelectedGenderIndex] = useState<string[]>(initialSexualOrientation);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showOnProfile, setShowOnProfile] = useState<boolean>(userData.is_orientation_visible);
+  const [selectedGenderIndex, setSelectedGenderIndex] = useState<string[]>(initialSexualOrientation);
 
   const toggleCheckMark = useCallback(() => {
     setShowOnProfile((prev) => !prev);
@@ -47,16 +49,16 @@ const SexualOrientation = () => {
   const onPressGenders = useCallback(
     (item: { id: number; name: string }) => {
       const { name } = item;
-      if (SelectedGenderIndex.includes(name)) {
+      if (selectedGenderIndex.includes(name)) {
         setSelectedGenderIndex((prev) => prev.filter((selectedName) => selectedName !== name));
-      } else if (SelectedGenderIndex.length < 3) {
+      } else if (selectedGenderIndex.length < 3) {
         setSelectedGenderIndex((prev) => [...prev, name]);
       }
     },
-    [SelectedGenderIndex]
+    [selectedGenderIndex]
   );
 
-  const isGenderSelected = (item: { name: string }) => SelectedGenderIndex.includes(item?.name);
+  const isGenderSelected = (item: { name: string }) => selectedGenderIndex.includes(item?.name);
 
   const renderItem = ({ item, index }: { item: any; index: number }) => (
     <GradientBorderView
@@ -105,9 +107,10 @@ const SexualOrientation = () => {
     </GradientBorderView>
   );
 
-  const OnNextButtonClick = async () => {
+  const onSubmitPress = async () => {
     try {
-      const orientations = SelectedGenderIndex.map((gender) => gender);
+      setIsLoading(true);
+      const orientations = selectedGenderIndex.map((gender) => gender);
 
       if (orientations.length === 0) {
         throw new Error('Please select your sexual orientation');
@@ -115,7 +118,7 @@ const SexualOrientation = () => {
 
       await Promise.all([
         dispatch(updateField(LocalStorageFields.orientation, orientations)),
-        dispatch(updateField(LocalStorageFields.is_orientation_visible, ShowOnProfile)),
+        dispatch(updateField(LocalStorageFields.is_orientation_visible, showOnProfile)),
       ]);
 
       navigation.navigate('LoginStack', {
@@ -123,6 +126,8 @@ const SexualOrientation = () => {
       });
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -160,16 +165,16 @@ const SexualOrientation = () => {
           <View style={styles.BottomView}>
             <View style={styles.CheckBoxView}>
               <CustomCheckBox
-                isChecked={ShowOnProfile}
+                isChecked={showOnProfile}
                 onToggle={toggleCheckMark}
                 BoxText="Show my orientation on my profile"
               />
             </View>
             <GradientButton
-              isLoading={false}
+              isLoading={isLoading}
               Title={'Continue'}
-              Navigation={OnNextButtonClick}
-              Disabled={SelectedGenderIndex.length !== 0 ? false : true}
+              Navigation={onSubmitPress}
+              Disabled={selectedGenderIndex.length === 0 || isLoading}
             />
           </View>
         </View>

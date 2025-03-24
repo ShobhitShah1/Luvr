@@ -18,6 +18,8 @@ import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
+const requiredHabits = ['drink', 'exercise', 'movies', 'smoke'];
+
 const AddDailyHabits = () => {
   const { colors, isDark } = useTheme();
   const dispatch = useDispatch();
@@ -25,8 +27,7 @@ const AddDailyHabits = () => {
   const userData = useSelector((state: any) => state?.user);
 
   const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
-  const requiredHabits = ['drink', 'exercise', 'movies', 'smoke'];
-  const [IsSendRequestLoading, setIsSendRequestLoading] = useState<boolean>(false);
+  const [isSendRequestLoading, setIsSendRequestLoading] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
     requiredHabits.reduce((acc, habit) => {
       acc[habit] = userData?.[LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}`]] || '';
@@ -187,7 +188,7 @@ const AddDailyHabits = () => {
           <GradientButton
             Title={'Continue'}
             Disabled={false}
-            isLoading={IsSendRequestLoading}
+            isLoading={isSendRequestLoading}
             Navigation={() => onPressNext()}
           />
         </View>

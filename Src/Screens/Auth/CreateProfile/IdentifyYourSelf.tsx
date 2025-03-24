@@ -47,8 +47,7 @@ const IdentifyYourSelf: FC = () => {
   const [CityName, setCityName] = useState<string>(userData.city);
   const [selectedGender, setSelectedGender] = useState<string>(userData.gender);
 
-  // Track focused input field
-  const [focusedInput, setFocusedInput] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
 
@@ -77,8 +76,9 @@ const IdentifyYourSelf: FC = () => {
     return age >= 18 && age < 100;
   };
 
-  const OnLetsGoButtonPress = useCallback(async () => {
+  const onSubmitPress = useCallback(async () => {
     try {
+      setIsLoading(true);
       Keyboard.dismiss();
 
       if (!FirstName || !BirthDateDD || !BirthDateMM || !BirthDateYYYY || !selectedGender || !CityName) {
@@ -105,6 +105,8 @@ const IdentifyYourSelf: FC = () => {
       });
     } catch (error) {
       showToast(TextString.error.toUpperCase(), String(error), 'error');
+    } finally {
+      setIsLoading(false);
     }
   }, [navigation, FirstName, BirthDateDD, BirthDateMM, BirthDateYYYY, selectedGender, CityName]);
 
@@ -120,8 +122,6 @@ const IdentifyYourSelf: FC = () => {
       >
         <CustomTextInput
           {...props}
-          onFocus={() => setFocusedInput(fieldName)}
-          onBlur={() => setFocusedInput(null)}
           style={[styles.textInputStyle, { color: colors.TextColor }]}
           placeholderTextColor={COLORS.Gray}
         />
@@ -288,14 +288,18 @@ const IdentifyYourSelf: FC = () => {
         {!isKeyboardVisible && (
           <View style={styles.BottomButton}>
             <GradientButton
-              isLoading={false}
+              isLoading={isLoading}
               Title={'Continue'}
               Disabled={
-                !FirstName || !BirthDateDD || !BirthDateMM || !BirthDateYYYY || !selectedGender || !CityName
-                  ? true
-                  : false
+                !FirstName ||
+                !BirthDateDD ||
+                !BirthDateMM ||
+                !BirthDateYYYY ||
+                !selectedGender ||
+                !CityName ||
+                isLoading
               }
-              Navigation={() => OnLetsGoButtonPress()}
+              Navigation={() => onSubmitPress()}
             />
           </View>
         )}

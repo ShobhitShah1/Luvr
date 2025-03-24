@@ -27,11 +27,11 @@ const HopingToFind: FC = () => {
 
   const userData = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
+
+  const [isLoading, setIsLoading] = useState(false);
   const [SelectedLookingForIndex, setSelectedLookingForIndex] = useState<string>(
     userData.hoping ? userData.hoping : {}
   );
-
-  console.log('SelectedLookingForIndex:', SelectedLookingForIndex);
 
   const onPressLookingFor = useCallback(
     (item: string) => {
@@ -96,8 +96,9 @@ const HopingToFind: FC = () => {
 
   const onPressNext = () => {
     try {
+      setIsLoading(true);
+
       if (SelectedLookingForIndex) {
-        console.log('new', SelectedLookingForIndex);
         dispatch(updateField(LocalStorageFields.hoping, SelectedLookingForIndex));
 
         setTimeout(() => {
@@ -110,6 +111,8 @@ const HopingToFind: FC = () => {
       }
     } catch (error) {
       showToast(TextString.error.toUpperCase(), String(error), 'error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -136,9 +139,9 @@ const HopingToFind: FC = () => {
 
         <View style={CreateProfileStyles.BottomButton}>
           <GradientButton
-            isLoading={false}
+            isLoading={isLoading}
             Title={'Continue'}
-            Disabled={SelectedLookingForIndex ? false : true}
+            Disabled={!SelectedLookingForIndex || isLoading}
             Navigation={() => onPressNext()}
           />
         </View>

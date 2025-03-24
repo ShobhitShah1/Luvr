@@ -16,12 +16,13 @@ import { useTheme } from '../../../Contexts/ThemeContext';
 import GradientView from '../../../Common/GradientView';
 
 const DistancePreference: FC = () => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   const dispatch = useDispatch();
   const userData = useSelector((state: any) => state.user);
   const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [milesValue, setMilesValue] = useState<number>(userData.radius ? userData.radius : 75);
 
   const onChangeKM = (value: number) => {
@@ -31,6 +32,7 @@ const DistancePreference: FC = () => {
 
   const onNextPress = () => {
     try {
+      setIsLoading(true);
       dispatch(updateField(LocalStorageFields.radius, milesValue));
 
       setTimeout(() => {
@@ -38,7 +40,10 @@ const DistancePreference: FC = () => {
           screen: 'YourEducation',
         });
       }, 200);
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -66,7 +71,12 @@ const DistancePreference: FC = () => {
         </View>
 
         <View style={CreateProfileStyles.BottomButton}>
-          <GradientButton Title={'Continue'} isLoading={false} Disabled={false} Navigation={() => onNextPress()} />
+          <GradientButton
+            Title={'Continue'}
+            isLoading={isLoading}
+            Disabled={isLoading}
+            Navigation={() => onNextPress()}
+          />
         </View>
       </View>
     </GradientView>
