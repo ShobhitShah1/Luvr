@@ -81,7 +81,7 @@ const AddEmail = () => {
                   }}
                   textContentType="emailAddress"
                   placeholder="Enter your email"
-                  style={style.textInputStyle}
+                  style={[style.textInputStyle, { color: colors.TextColor }]}
                   placeholderTextColor={colors.Gray}
                 />
               </GradientBorderView>
