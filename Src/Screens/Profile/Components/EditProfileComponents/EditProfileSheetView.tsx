@@ -2,6 +2,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { FC, memo, useCallback, useMemo } from 'react';
 import { FlatList, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
 import { COLORS, FONTS, GROUP_FONT, SIZES } from '../../../../Common/Theme';
@@ -17,11 +18,9 @@ import {
   StarSignData,
   YourIntoData,
 } from '../../../../Components/Data';
-import { GradientBorderView } from '../../../../Components/GradientBorder';
 import { useTheme } from '../../../../Contexts/ThemeContext';
 import { EducationType, HabitsType, LocationType, MagicalPersonType, ProfileType } from '../../../../Types/ProfileType';
 import { ViewPositionsProps } from '../../EditProfileScreen';
-import LinearGradient from 'react-native-linear-gradient';
 
 interface EditProfileDataProps {
   profile: ProfileType;
@@ -71,7 +70,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
   );
 
   const renderHopingView = ({ item, index }: { item: any; index: number }) => {
-    const selectedOption = profile?.hoping === item;
+    const selectedOption = profile?.hoping?.includes(item) || false;
 
     return (
       <LinearGradient
@@ -155,7 +154,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
     [profile?.orientation, setProfile]
   );
 
-  const renderIntrustedView = ({ item, index }: { item: any; index: number }) => {
+  const renderInterested = ({ item, index }: { item: any; index: number }) => {
     const selectedOption =
       profile?.orientation && profile?.orientation?.length !== 0 ? profile?.orientation?.includes(item.name) : false;
 
@@ -542,11 +541,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
           }/3)`}</Text>
         </View>
         <View>
-          <FlatList
-            data={GendersData}
-            renderItem={renderIntrustedView}
-            keyExtractor={(item, index) => index.toString()}
-          />
+          <FlatList data={GendersData} renderItem={renderInterested} keyExtractor={(item, index) => index.toString()} />
         </View>
       </View>
 
