@@ -222,8 +222,6 @@ const PhoneNumber = () => {
 
       const response = await UserService.UserRegister(userDataForApi);
 
-      console.log('response:', response);
-
       if (response?.code === 200) {
         await Promise.all([
           dispatch(updateField(LocalStorageFields.mobile_no, PhoneNumberString)),
@@ -241,7 +239,6 @@ const PhoneNumber = () => {
         throw new Error(String(response?.message) || SOMETHING_WRONG);
       }
     } catch (error: any) {
-      console.log('error:', error);
       showToast(
         TextString.error.toUpperCase(),
         String(error?.message || error) || 'Failed to send OTP. Try again.',
