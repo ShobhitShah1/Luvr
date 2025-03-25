@@ -1,6 +1,6 @@
 import { Image } from 'moti';
 import React, { FC, useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ReactNativeModal from 'react-native-modal';
 import { useSelector } from 'react-redux';
@@ -12,6 +12,7 @@ import ApiConfig from '../../../Config/ApiConfig';
 import { APP_NAME, DummyImage } from '../../../Config/Setting';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { ProfileType } from '../../../Types/ProfileType';
+import CommonImages from '../../../Common/CommonImages';
 
 interface ItsAMatchProps {
   user: ProfileType | null;
@@ -50,19 +51,57 @@ const ItsAMatch: FC<ItsAMatchProps> = ({ user, onSayHiClick, onCloseModalClick, 
       onBackButtonPress={onClose}
       style={[styles.modalContainer, { backgroundColor: isDark ? 'rgba(13, 1, 38, 0.7)' : 'rgba(18, 18, 19, 0.65)' }]}
     >
-      <GradientBorderView
-        style={[
-          styles.BackgroundImageContainer,
-          {
-            borderWidth: 2,
-            backgroundColor: isDark ? 'rgba(13, 1, 38, 0.5)' : colors.White,
-          },
-        ]}
-      >
-        <View style={styles.BackgroundImageContainer}>
+      {isDark ? (
+        <GradientBorderView
+          style={[
+            styles.BackgroundImageContainer,
+            {
+              borderWidth: 2,
+              backgroundColor: 'rgba(13, 1, 38, 0.5)',
+            },
+          ]}
+        >
+          <View style={styles.BackgroundImageContainer}>
+            <View>
+              <View style={styles.ItsAMatchTextView}>
+                <Text style={[styles.ItsAMatchText, { color: colors.TitleText }]}>It’s a match!</Text>
+                <Text style={[styles.ItsAMatchDescriptionText, { color: colors.TextColor }]}>
+                  You and {user?.full_name || `${APP_NAME} User`} have liked each other.
+                </Text>
+              </View>
+              <View style={styles.MatchedProfileView}>
+                <Image resizeMode="cover" source={{ uri: myProfile }} style={[styles.UserProfileImage]} />
+                <Image source={CommonIcons.like_button} style={[styles.LikeButtonImage]} />
+                <Image resizeMode="cover" source={{ uri: likedProfile }} style={[styles.UserProfileImage]} />
+              </View>
+              <View style={styles.ButtonsContainerView}>
+                <LinearGradient
+                  start={{ x: 1, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  colors={colors.ButtonGradient}
+                  style={styles.SendMessageButton}
+                >
+                  <Pressable onPress={onSayHiClick} style={{ flex: 1, justifyContent: 'center' }}>
+                    <Text style={styles.SendMessageText}>Send a message</Text>
+                  </Pressable>
+                </LinearGradient>
+                <Text onPress={onCloseModalClick} style={[styles.KeepSwipingText, { color: colors.TitleText }]}>
+                  Keep swiping
+                </Text>
+              </View>
+            </View>
+          </View>
+        </GradientBorderView>
+      ) : (
+        <ImageBackground
+          source={CommonImages.ItsAMatch}
+          resizeMode="cover"
+          imageStyle={{ width: '100%' }}
+          style={[styles.BackgroundImageContainer]}
+        >
           <View>
             <View style={styles.ItsAMatchTextView}>
-              <Text style={[styles.ItsAMatchText, { color: colors.TitleText }]}>It’s a match!</Text>
+              <Text style={[styles.ItsAMatchText, { color: 'rgba(255, 3, 3, 1)' }]}>It’s a match!</Text>
               <Text style={[styles.ItsAMatchDescriptionText, { color: colors.TextColor }]}>
                 You and {user?.full_name || `${APP_NAME} User`} have liked each other.
               </Text>
@@ -83,13 +122,13 @@ const ItsAMatch: FC<ItsAMatchProps> = ({ user, onSayHiClick, onCloseModalClick, 
                   <Text style={styles.SendMessageText}>Send a message</Text>
                 </Pressable>
               </LinearGradient>
-              <Text onPress={onCloseModalClick} style={[styles.KeepSwipingText, { color: colors.TextColor }]}>
+              <Text onPress={onCloseModalClick} style={[styles.KeepSwipingText, { color: colors.TitleText }]}>
                 Keep swiping
               </Text>
             </View>
           </View>
-        </View>
-      </GradientBorderView>
+        </ImageBackground>
+      )}
     </ReactNativeModal>
   );
 };

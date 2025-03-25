@@ -11,7 +11,7 @@
     "build:android": "npx react-native@latest bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/"
   },
   "dependencies": {
-    "@gorhom/bottom-sheet": "^4.6.4",
+    "@gorhom/bottom-sheet": "^5.1.2",
     "@invertase/react-native-apple-authentication": "^2.3.0",
     "@notifee/react-native": "7.8.2",
     "@pnthach95/react-native-root-view-background": "^1.4.2",

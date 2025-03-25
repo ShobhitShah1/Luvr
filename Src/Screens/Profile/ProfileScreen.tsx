@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   ContentView: {
-    marginTop: 100,
+    marginTop: 95,
   },
   ProfileImageView: {
     alignItems: 'center',

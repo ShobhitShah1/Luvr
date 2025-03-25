@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
   MultipleBoxView: {
     marginTop: hp('1%'),
     borderRadius: hp('2%'),
+    overflow: 'hidden',
     marginRight: hp('0.5%'),
     paddingHorizontal: hp('0.9%'),
   },

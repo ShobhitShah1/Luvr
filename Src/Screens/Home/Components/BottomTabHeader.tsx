@@ -110,7 +110,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
               onPress={() => {
                 navigation.navigate('Notification');
               }}
-              style={styles.iconWrapper}
+              style={[styles.iconWrapper, { marginLeft: 22 }]}
             >
               <Image
                 style={styles.icons}
@@ -161,15 +161,14 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     zIndex: 999999,
-    marginHorizontal: 7,
     justifyContent: 'center',
   },
   icons: {
-    width: 22,
-    height: 22,
+    width: 21.5,
+    height: 21.5,
   },
   donateIcon: {
-    width: 30,
-    height: 30,
+    width: 38,
+    height: 38,
   },
 });

@@ -4,8 +4,9 @@ import { Skeleton } from 'moti/skeleton';
 import React, { FC, memo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { COLORS, GROUP_FONT } from '../../../Common/Theme';
+import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import CommonIcons from '../../../Common/CommonIcons';
 
 interface RenderLookingViewProps {
   item: any;
@@ -29,7 +30,7 @@ const RenderHomeNearby: FC<RenderLookingViewProps> = ({ item, IsLoading }) => {
 
         {/* Like Counter */}
         <View style={styles.likeContainer}>
-          {/* <Ionicons name="heart" size={16} color="red" /> */}
+          <Image source={CommonIcons.ic_red_heart} style={{ width: 20, height: 20 }} resizeMode="contain" />
           <Text style={styles.likeCount}>{item.likes || 10}</Text>
         </View>
 
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     width: '100%',
     height: '100%',
-    borderRadius: 5,
+    // borderRadius: 5,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    borderRadius: 16,
+    // borderRadius: 16,
   },
   overlay: {
     position: 'absolute',
@@ -75,8 +76,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: '50%',
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
+    // borderBottomLeftRadius: 16,
+    // borderBottomRightRadius: 16,
   },
   likeContainer: {
     position: 'absolute',
@@ -85,15 +86,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: COLORS.White,
     borderRadius: 20,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     paddingVertical: 5,
     alignItems: 'center',
     zIndex: 3,
   },
   likeCount: {
-    marginLeft: 4,
-    fontWeight: 'bold',
+    marginLeft: 2,
+    fontSize: 16,
     color: COLORS.Black,
+    fontFamily: FONTS.Bold,
   },
   infoContainer: {
     position: 'absolute',

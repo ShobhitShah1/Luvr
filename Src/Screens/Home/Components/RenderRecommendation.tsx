@@ -48,7 +48,7 @@ const RenderRecommendation: FC<RenderLookingViewProps> = ({ item, IsLoading }) =
         onPress={() => {
           navigation.navigate('CategoryDetailCards', { item });
         }}
-        style={{ flex: 1, justifyContent: 'center', overflow: 'hidden', borderRadius: 19 }}
+        style={{ flex: 1, justifyContent: 'center', overflow: 'hidden', borderRadius: 27 }}
       >
         <Skeleton colorMode="light" show={IsLoading} colors={COLORS.LoaderGradient}>
           <View>
@@ -71,11 +71,11 @@ export default memo(RenderRecommendation);
 
 const styles = StyleSheet.create({
   container: {
-    width: 125,
+    width: 110,
     height: 135,
     overflow: 'hidden',
     marginVertical: 5,
-    borderRadius: 20,
+    borderRadius: 28,
     borderWidth: 1.5,
   },
   imageView: {

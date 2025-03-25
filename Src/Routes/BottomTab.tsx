@@ -80,7 +80,7 @@ const TabItem: React.FC<TabItemProps> = ({ label, icon, isFocused, onPress }) =>
       bubbleOpacity.value = withTiming(1, { duration: 150 });
       bubbleScale.value = withSpring(1, springConfig);
       iconScale.value = withSpring(1.1, springConfig);
-      iconTranslateY.value = withSpring(-23, springConfig);
+      iconTranslateY.value = withSpring(-26, springConfig);
 
       setTimeout(() => {
         textOpacity.value = withTiming(1, { duration: 150 });
@@ -121,7 +121,7 @@ const TabItem: React.FC<TabItemProps> = ({ label, icon, isFocused, onPress }) =>
       <Animated.View style={[styles.iconContainer, iconStyle]}>
         <Image
           source={icon}
-          style={[styles.tabIcon, { width: isFocused ? 23 : 25, height: isFocused ? 23 : 25 }, isFocused && { top: 2 }]}
+          style={[styles.tabIcon, { width: isFocused ? 22 : 25, height: isFocused ? 22 : 25 }, isFocused && { top: 2 }]}
           tintColor={isDark ? (isFocused ? colors.White : undefined) : isFocused ? colors.Background : colors.White}
         />
       </Animated.View>
@@ -142,7 +142,7 @@ const FloatingTabBar: React.FC<FloatingTabBarProps> = ({ state, descriptors, nav
       >
         {state.routes.map((route: any, index: number) => {
           const { options } = descriptors[route.key];
-          const isFocused = state.index === index;
+          const isFocused = (state.index || 0) === index;
 
           const onPress = () => {
             const event = navigation.emit({
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 0,
 
-    elevation: 5,
+    elevation: 30,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   tabItemContainer: {
-    height: hp(7),
+    height: 60,
     alignItems: 'center',
     position: 'relative',
     justifyContent: 'center',
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    top: -15,
+    top: -18,
     zIndex: 0,
 
     elevation: 5,
@@ -301,8 +301,8 @@ const styles = StyleSheet.create({
   tabLabel: {
     zIndex: 1,
     bottom: 8,
-    marginTop: 2,
-    fontSize: 13,
+    marginTop: 1.5,
+    fontSize: 12.5,
     position: 'absolute',
     fontFamily: FONTS.Bold,
   },

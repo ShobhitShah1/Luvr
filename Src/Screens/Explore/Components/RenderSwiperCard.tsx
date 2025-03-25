@@ -26,26 +26,12 @@ interface RenderCardProps {
 }
 
 const hobbyColors = [
-  '#FF6B6B', // coral red
-  '#4ECDC4', // teal
-  '#FF8C42', // orange
-  '#6A0572', // purple
-  '#6A82FB', // periwinkle
-  '#FC5C7D', // pink
-  '#45B649', // green
-  '#3F2B96', // deep blue
-  '#FF5E62', // salmon
-  '#11998E', // emerald
-  '#8E2DE2', // violet
-  '#F86624', // tangerine
-  '#107896', // blue sapphire
-  '#FF9966', // peach
-  '#FF7EB3', // rose pink
-  '#7F00FF', // violet
-  '#00B4DB', // sky blue
-  '#FFA69E', // melon
-  '#43C6AC', // turquoise
-  '#536976', // slate
+  'rgba(6,282, 202, 1)',
+  'rgba(128, 207,16, 1)',
+  'rgba(220, 259, 35, 1)',
+  'rgba(101, 77, 42, 1)',
+  'rgba(255, 153, 0, 1)',
+  'rgba(235, 59, 112, 1)',
 ];
 
 const RenderSwiperCard: FC<RenderCardProps> = ({
@@ -207,21 +193,9 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
                 cardData.likes_into[0] !== '' && (
                   <>
                     {cardData.likes_into.map((interestedInItem, index) => {
-                      const backgroundColor = isDark
-                        ? undefined
-                        : shuffledHobbyColors[index % shuffledHobbyColors.length];
+                      const backgroundColor = shuffledHobbyColors[index % shuffledHobbyColors.length];
 
-                      return isDark ? (
-                        <LinearGradient
-                          start={{ x: 1, y: 0 }}
-                          end={{ x: 0, y: 1 }}
-                          colors={colors.ButtonGradient}
-                          key={index}
-                          style={styles.MultipleBoxView}
-                        >
-                          <Text style={styles.MultipleDetailText}>{interestedInItem || ''}</Text>
-                        </LinearGradient>
-                      ) : (
+                      return (
                         <View key={index} style={[styles.MultipleBoxView, { backgroundColor }]}>
                           <Text style={styles.MultipleDetailText}>{interestedInItem || ''}</Text>
                         </View>

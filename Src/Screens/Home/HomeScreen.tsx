@@ -91,15 +91,16 @@ const HomeScreen = () => {
               colors={[COLORS.Primary]}
             />
           }
+          contentContainerStyle={{ paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
         >
           <View style={{ paddingHorizontal: 20, alignSelf: 'center' }}>
-            <CategoryHeaderView Title="Welcome to explore" Description="I’m looking for..." />
+            <CategoryHeaderView title="Welcome to explore" description="I’m looking for..." />
             <FlatList
               horizontal
               nestedScrollEnabled
               data={HomeLookingForData}
-              contentContainerStyle={{ gap: 10 }}
+              contentContainerStyle={{ gap: 15 }}
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => {
@@ -111,7 +112,7 @@ const HomeScreen = () => {
               horizontal
               nestedScrollEnabled
               data={profiles}
-              contentContainerStyle={{ gap: 10 }}
+              contentContainerStyle={{ gap: 15 }}
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => {
@@ -119,12 +120,12 @@ const HomeScreen = () => {
               }}
             />
 
-            <CategoryHeaderView Title="Near by" Description="Base on your profile" />
+            <CategoryHeaderView title="Near by" description="Base on your profile" style={{ marginTop: 30 }} />
             <FlatList
               horizontal
               nestedScrollEnabled
               data={HomeLookingForData}
-              contentContainerStyle={{ gap: 10 }}
+              contentContainerStyle={{ gap: 15 }}
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => {

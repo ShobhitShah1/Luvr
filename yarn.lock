@@ -2824,9 +2824,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gorhom/bottom-sheet@npm:^4.6.4":
-  version: 4.6.4
-  resolution: "@gorhom/bottom-sheet@npm:4.6.4"
+"@gorhom/bottom-sheet@npm:^5.1.2":
+  version: 5.1.2
+  resolution: "@gorhom/bottom-sheet@npm:5.1.2"
   dependencies:
     "@gorhom/portal": "npm:1.0.14"
     invariant: "npm:^2.2.4"
@@ -2835,14 +2835,14 @@ __metadata:
     "@types/react-native": "*"
     react: "*"
     react-native: "*"
-    react-native-gesture-handler: ">=1.10.1"
-    react-native-reanimated: ">=2.2.0"
+    react-native-gesture-handler: ">=2.16.1"
+    react-native-reanimated: ">=3.16.0"
   peerDependenciesMeta:
     "@types/react":
       optional: true
     "@types/react-native":
       optional: true
-  checksum: 10c0/1e724733e55d200490234b00e034f5ffbf312570469c1431358ef123f52b398e3300588ffef17deba82a37deb980ddf316454429600b778344dfd8c36669ab35
+  checksum: 10c0/3743cd8b8f6fde1f6460af045aea83dd6dff6a7b048165511d3b440a7b342b09c020d48fe8df7d35b61c03c670e4301bb3195381097253ad87a210df79759776
   languageName: node
   linkType: hard
 
@@ -4717,7 +4717,7 @@ __metadata:
     "@babel/core": "npm:^7.20.0"
     "@babel/preset-env": "npm:^7.20.0"
     "@babel/runtime": "npm:^7.20.0"
-    "@gorhom/bottom-sheet": "npm:^4.6.4"
+    "@gorhom/bottom-sheet": "npm:^5.1.2"
     "@invertase/react-native-apple-authentication": "npm:^2.3.0"
     "@notifee/react-native": "npm:7.8.2"
     "@pnthach95/react-native-root-view-background": "npm:^1.4.2"
