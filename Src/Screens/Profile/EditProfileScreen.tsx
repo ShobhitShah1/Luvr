@@ -538,6 +538,8 @@ const EditProfileScreen = () => {
     bottomSheetModalRef?.current.dismiss();
   }, []);
 
+  console.log(profile?.hoping);
+
   return (
     <GradientView>
       <View style={styles.Container}>
@@ -769,7 +771,7 @@ const EditProfileScreen = () => {
                     Item={
                       profile?.hoping && Array.isArray(profile?.hoping)
                         ? profile?.hoping?.filter((item) => item.trim() !== '')
-                        : profile?.hoping || []
+                        : [profile?.hoping?.toString() || ''] || []
                     }
                     onPress={() => handlePresentModalPress('LookingFor')}
                   />

@@ -195,7 +195,17 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
                     {cardData.likes_into.map((interestedInItem, index) => {
                       const backgroundColor = shuffledHobbyColors[index % shuffledHobbyColors.length];
 
-                      return (
+                      return isDark ? (
+                        <LinearGradient
+                          start={{ x: 1, y: 0 }}
+                          end={{ x: 0, y: 1 }}
+                          colors={colors.ButtonGradient}
+                          key={index}
+                          style={styles.MultipleBoxView}
+                        >
+                          <Text style={styles.MultipleDetailText}>{interestedInItem || ''}</Text>
+                        </LinearGradient>
+                      ) : (
                         <View key={index} style={[styles.MultipleBoxView, { backgroundColor }]}>
                           <Text style={styles.MultipleDetailText}>{interestedInItem || ''}</Text>
                         </View>

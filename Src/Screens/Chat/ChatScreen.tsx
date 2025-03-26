@@ -322,19 +322,19 @@ const ChatScreen = () => {
             style={{
               height: 59,
               alignSelf: 'center',
-              width: '85%',
+              width: '90%',
               overflow: 'hidden',
               backgroundColor: isDark ? 'rgba(255, 255, 255, 0.3))' : colors.White,
               borderRadius: 25,
-              paddingHorizontal: 15,
               marginRight: 5,
               flexDirection: 'row',
               alignItems: 'center',
-              borderWidth: 1,
+              justifyContent: 'center',
+              borderWidth: 0.5,
               borderColor: isDark ? colors.White : 'transparent',
             }}
           >
-            <View style={{ width: '88%' }}>
+            <View style={{ width: '88%', top: 2.5 }}>
               <Composer
                 {...composerProps}
                 textInputStyle={{
@@ -342,7 +342,6 @@ const ChatScreen = () => {
                   backgroundColor: 'transparent',
                   marginLeft: 0,
                   fontSize: 14,
-                  lineHeight: 16,
                   flex: 1,
                   fontFamily: FONTS.Medium,
                 }}

@@ -65,7 +65,7 @@ const RenderChatRoomList = ({ item, index }: ChatRoomProps) => {
             },
           ]}
         >
-          {latestMessage?.message || 'cdscds'}
+          {latestMessage?.message}
         </Text>
       </View>
       <View style={styles.timeView}>

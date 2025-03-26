@@ -41,6 +41,7 @@ import BootSplash from 'react-native-bootsplash';
 import { StatusBar } from 'react-native';
 import { useTheme } from '../Contexts/ThemeContext';
 import { setRootViewBackgroundColor } from '@pnthach95/react-native-root-view-background';
+import SplashScreen from '../Screens/SplashScreen';
 
 const excludedRoutes = [
   'Login',
@@ -182,36 +183,32 @@ export default function MainRoute() {
   }, []);
 
   return (
-    <React.Fragment>
-      {initialRoute && (
-        <NavigationContainer
-          ref={navigationRef}
-          onReady={() => {
-            setIsNavigationReady(true);
-            BootSplash.hide({ fade: true });
-          }}
-          onStateChange={() => {
-            const currentRouteName = stateChangesCall(navigationRef.current);
-            if (currentRouteName) {
-              store.dispatch(setCurrentScreenName(currentRouteName));
-            }
-          }}
-        >
-          <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios' }} initialRouteName={initialRoute}>
-            <Stack.Screen name="NumberVerification" component={NumberVerificationStack} />
-            <Stack.Screen name="LocationStack" component={LocationStack} />
-            <Stack.Screen name="LoginStack" component={LoginStack} />
-            <Stack.Screen name="BottomTab" component={BottomTab} />
-            <Stack.Screen name="CategoryDetailCards" component={CategoryDetailCardsScreen} />
-            <Stack.Screen name="ExploreCardDetail" component={ExploreCardDetailScreen} />
-            <Stack.Screen name="Chat" component={ChatScreen} />
-            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-            <Stack.Screen name="Setting" component={SettingScreen} />
-            <Stack.Screen name="Notification" component={NotificationScreen} />
-            <Stack.Screen name="Donation" component={DonationScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      )}
-    </React.Fragment>
+    <NavigationContainer
+      ref={navigationRef}
+      onReady={() => {
+        BootSplash.hide({ fade: true });
+      }}
+      onStateChange={() => {
+        const currentRouteName = stateChangesCall(navigationRef.current);
+        if (currentRouteName) {
+          store.dispatch(setCurrentScreenName(currentRouteName));
+        }
+      }}
+    >
+      <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios' }}>
+        <Stack.Screen name="SplashScreen" component={SplashScreen} />
+        <Stack.Screen name="NumberVerification" component={NumberVerificationStack} />
+        <Stack.Screen name="LocationStack" component={LocationStack} />
+        <Stack.Screen name="LoginStack" component={LoginStack} />
+        <Stack.Screen name="BottomTab" component={BottomTab} />
+        <Stack.Screen name="CategoryDetailCards" component={CategoryDetailCardsScreen} />
+        <Stack.Screen name="ExploreCardDetail" component={ExploreCardDetailScreen} />
+        <Stack.Screen name="Chat" component={ChatScreen} />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+        <Stack.Screen name="Setting" component={SettingScreen} />
+        <Stack.Screen name="Notification" component={NotificationScreen} />
+        <Stack.Screen name="Donation" component={DonationScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }

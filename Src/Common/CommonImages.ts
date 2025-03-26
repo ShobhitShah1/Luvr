@@ -13,6 +13,8 @@ const HomeNewFriends = require('../../Assets/Images/HomeNewFriends.webp');
 const HomeSomethingCasual = require('../../Assets/Images/HomeSomethingCasual.webp');
 const HomeSortTermRelationship = require('../../Assets/Images/HomeSortTermRelationship.webp');
 const HomePartyPartner = require('../../Assets/Images/HomePartyPartner.webp');
+const light_splash_bg = require('../../Assets/Images/light_splash_bg.webp');
+const dark_splash_bg = require('../../Assets/Images/dark_splash_bg.webp');
 
 export default {
   WelcomeBackground,
@@ -30,4 +32,6 @@ export default {
   HomeSomethingCasual,
   HomeSortTermRelationship,
   HomePartyPartner,
+  light_splash_bg,
+  dark_splash_bg,
 };

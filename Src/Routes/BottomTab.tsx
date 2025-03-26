@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useEffect } from 'react';
 import { Dimensions, Image, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import CommonIcons from '../Common/CommonIcons';
 import { useTheme } from '../Contexts/ThemeContext';
 import ChatRoomScreen from '../Screens/Chat/ChatRoomScreen';
@@ -36,7 +36,7 @@ interface FloatingTabBarProps {
 
 const Tab = createBottomTabNavigator();
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const labels = ['Home', 'Match', 'Likes', 'Messages', 'Profile'];
+const labels = ['Home', 'Match', 'Likes', 'Chat', 'Profile'];
 
 const springConfig = {
   damping: 15,
@@ -55,9 +55,6 @@ const TabItem: React.FC<TabItemProps> = ({ label, icon, isFocused, onPress }) =>
   const iconScale = useSharedValue(1);
   const iconTranslateY = useSharedValue(0);
   const textOpacity = useSharedValue(0);
-
-  const specialCaseForMatch = label === 'Match';
-  const bubbleColor = specialCaseForMatch ? '#A03FBA' : '#FF3E8F';
 
   useEffect(() => {
     if (isFocused) {
@@ -126,7 +123,7 @@ const TabItem: React.FC<TabItemProps> = ({ label, icon, isFocused, onPress }) =>
         />
       </Animated.View>
 
-      <Animated.Text style={[styles.tabLabel, textStyle, { color: '#FFFFFF' }]}>{label}</Animated.Text>
+      <Animated.Text style={[styles.tabLabel, textStyle, { color: colors.White }]}>{label}</Animated.Text>
     </Pressable>
   );
 };
@@ -138,7 +135,15 @@ const FloatingTabBar: React.FC<FloatingTabBarProps> = ({ state, descriptors, nav
     <View style={styles.tabBarContainer}>
       <GradientBorderView
         gradientProps={{ colors: colors.ButtonGradient }}
-        style={[styles.floatingBar, { backgroundColor: isDark ? 'rgba(26, 2, 54, 1)' : colors.Background }]}
+        style={[
+          styles.floatingBar,
+          {
+            backgroundColor: isDark ? 'rgba(26, 2, 54, 1)' : colors.Background,
+            width: wp('90%'),
+            height: hp('6.5%'),
+            marginBottom: hp('1.5%'),
+          },
+        ]}
       >
         {state.routes.map((route: any, index: number) => {
           const { options } = descriptors[route.key];
@@ -272,7 +277,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
     justifyContent: 'center',
-    width: (SCREEN_WIDTH * 0.8) / 5,
+    width: (SCREEN_WIDTH * 0.8) / 4.7,
+    // backgroundColor: 'red',
   },
   bubbleBackground: {
     position: 'absolute',
@@ -302,7 +308,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
     bottom: 8,
     marginTop: 1.5,
-    fontSize: 12.5,
+    fontSize: wp(3),
     position: 'absolute',
     fontFamily: FONTS.Bold,
   },

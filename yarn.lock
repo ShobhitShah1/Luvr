@@ -4763,6 +4763,7 @@ __metadata:
     react-native-iap: "npm:^12.15.2"
     react-native-image-crop-picker: "npm:^0.41.2"
     react-native-image-picker: "npm:7.1.2"
+    react-native-in-app-review: "npm:^4.3.5"
     react-native-inappbrowser-reborn: "npm:3.7.0"
     react-native-linear-gradient: "npm:2.8.3"
     react-native-modal: "npm:13.0.1"
@@ -11996,6 +11997,13 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/3621e2462b4026ba2d3e0d71179161a09bf744b09ed53cf62944356971fc6204e06845298d99e69437517a51b5b7b434318e16018e62e14a3031976b67e801a3
+  languageName: node
+  linkType: hard
+
+"react-native-in-app-review@npm:^4.3.5":
+  version: 4.3.5
+  resolution: "react-native-in-app-review@npm:4.3.5"
+  checksum: 10c0/7adbfd91f6ad7a84f2148728c5387bf8d80f0bf4cb5229bf4d8ea728051c90bda297ecc1c8564921622667bf9cdc1c288b4e57ab30c090d6397f01d55d349247
   languageName: node
   linkType: hard
 
