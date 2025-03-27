@@ -1,11 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
+import { setRootViewBackgroundColor } from '@pnthach95/react-native-root-view-background';
 import messaging from '@react-native-firebase/messaging';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { StatusBar } from 'react-native';
 import { useSelector } from 'react-redux';
 import ApiConfig from '../Config/ApiConfig';
+import { useTheme } from '../Contexts/ThemeContext';
 import { useLocationPermission } from '../Hooks/useLocationPermission';
 import { setCurrentScreenName, updateField } from '../Redux/Action/actions';
 import { store } from '../Redux/Store/store';
@@ -32,16 +35,12 @@ import ExploreCardDetailScreen from '../Screens/Home/ExploreCards/ExploreCardDet
 import NotificationScreen from '../Screens/Notification/NotificationScreen';
 import EditProfileScreen from '../Screens/Profile/EditProfileScreen';
 import SettingScreen from '../Screens/Setting/SettingScreen';
+import SplashScreen from '../Screens/SplashScreen';
 import { initGoogleSignIn } from '../Services/AuthService';
 import { LocalStorageFields } from '../Types/LocalStorageFields';
 import { useCustomToast } from '../Utils/toastUtils';
 import BottomTab from './BottomTab';
 import { navigationRef } from './RootNavigation';
-import BootSplash from 'react-native-bootsplash';
-import { StatusBar } from 'react-native';
-import { useTheme } from '../Contexts/ThemeContext';
-import { setRootViewBackgroundColor } from '@pnthach95/react-native-root-view-background';
-import SplashScreen from '../Screens/SplashScreen';
 
 const excludedRoutes = [
   'Login',
@@ -186,7 +185,7 @@ export default function MainRoute() {
     <NavigationContainer
       ref={navigationRef}
       onReady={() => {
-        BootSplash.hide({ fade: true });
+        // BootSplash.hide({ fade: true });
       }}
       onStateChange={() => {
         const currentRouteName = stateChangesCall(navigationRef.current);

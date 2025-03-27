@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { StatusBar, StyleSheet, View, Text, Image, Dimensions } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../Contexts/ThemeContext';
@@ -27,14 +27,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   const ReduxUserData = useSelector((state: any) => state.user);
 
   useEffect(() => {
-    // Status Bar Configuration
-    // StatusBar.setTranslucent(true);
-    // StatusBar.setBackgroundColor('transparent');
-    // StatusBar.setBarStyle(isDark ? 'light-content' : 'dark-content');
-
-    // Hide Bootsplash
-
-    // Initialize App Flow
     initializeAppFlow();
   }, []);
 
@@ -54,11 +46,11 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
 
   const initializeAppFlow = async () => {
     try {
-      // Parallel initialization
       await Promise.all([handleNotificationPermission(), initGoogleSignIn()]);
 
-      // Navigation logic
-      await determineInitialRoute();
+      setTimeout(async () => {
+        await determineInitialRoute();
+      }, 1500);
     } catch (error) {
       showToast('Error', String(error), 'error');
       navigation.navigate('NumberVerification');
@@ -120,7 +112,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
         return;
       }
 
-      // If all checks pass, navigate to main app
       navigation.reset({
         index: 0,
         routes: [{ name: 'BottomTab' }],
@@ -263,4 +254,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SplashScreen;
+export default memo(SplashScreen);
