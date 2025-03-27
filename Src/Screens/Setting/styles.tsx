@@ -71,7 +71,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    // borderWidth: 1.5
+  },
+  GenderButton: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: SIZES.radius,
   },
   GenderText: {
     fontFamily: FONTS.Medium,

@@ -103,6 +103,13 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.SemiBold,
     color: COLORS.Primary,
   },
+  bottomShadow: {
+    height: 140,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    pointerEvents: 'none',
+  },
 });
 
 export default styles;

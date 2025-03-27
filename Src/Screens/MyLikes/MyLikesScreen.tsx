@@ -218,6 +218,25 @@ const MyLikesScreen = () => {
           )}
         </View>
       </View>
+
+      {isDark && (
+        <LinearGradient
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          colors={
+            isDark
+              ? [
+                  'rgba(13, 1, 38, 0)',
+                  'rgba(13, 1, 38, 0.5)',
+                  'rgba(13, 1, 38, 0.7)',
+                  'rgba(13, 1, 38, 0.8)',
+                  'rgba(13, 1, 38, 1)',
+                ]
+              : ['transparent', 'transparent']
+          }
+          style={styles.bottomShadow}
+        />
+      )}
     </GradientView>
   );
 };

@@ -524,7 +524,7 @@ Let's make every moment count together! #LoveConnects`,
                         },
                       ]}
                     >
-                      <Pressable onPress={() => handleShowMeSelect(gender)}>
+                      <Pressable style={styles.GenderButton} onPress={() => handleShowMeSelect(gender)}>
                         <Text
                           style={[
                             styles.GenderText,

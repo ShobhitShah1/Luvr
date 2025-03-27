@@ -5,8 +5,11 @@ import NetInfo from '@react-native-community/netinfo';
 import { useIsFocused } from '@react-navigation/native';
 import React, { memo, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, Platform, StyleSheet, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Socket, io } from 'socket.io-client';
-import CommonImages from '../../Common/CommonImages';
+import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
 import { BOTTOM_TAB_HEIGHT, COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
@@ -16,12 +19,7 @@ import { useTheme } from '../../Contexts/ThemeContext';
 import { store } from '../../Redux/Store/store';
 import { MessageItem, SocketEventHandlers } from '../../Types/Interface';
 import { useCustomToast } from '../../Utils/toastUtils';
-import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import RenderChatRoomList from './Components/RenderChatRoomList';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import CommonIcons from '../../Common/CommonIcons';
-import LinearGradient from 'react-native-linear-gradient';
 
 const ChatRoomScreen = () => {
   const { colors, isDark } = useTheme();
@@ -219,7 +217,7 @@ const ChatRoomScreen = () => {
             <FlatList
               data={messages}
               contentContainerStyle={{
-                flex: 1,
+                flexGrow: messages?.length === 0 ? 1 : undefined,
                 paddingBottom: BOTTOM_TAB_HEIGHT,
                 justifyContent: messages.length === 0 ? 'center' : undefined,
               }}
