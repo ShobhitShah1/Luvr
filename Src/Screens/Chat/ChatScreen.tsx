@@ -3,12 +3,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ParamListBase, RouteProp, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
 import {
   Bubble,
   BubbleProps,
   Composer,
-  ComposerProps,
   GiftedChat,
   IMessage,
   InputToolbar,
@@ -19,7 +18,9 @@ import {
   SendProps,
 } from 'react-native-gifted-chat';
 import { Socket, io } from 'socket.io-client';
-import { COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
+import CommonIcons from '../../Common/CommonIcons';
+import GradientView from '../../Common/GradientView';
+import { FONTS, GROUP_FONT } from '../../Common/Theme';
 import ReportUserModalView from '../../Components/ReportUserModalView';
 import ApiConfig from '../../Config/ApiConfig';
 import {
@@ -30,6 +31,7 @@ import {
   MESSAGE_EVENT,
   READ_ALL,
 } from '../../Config/Setting';
+import { useTheme } from '../../Contexts/ThemeContext';
 import { onSwipeLeft } from '../../Redux/Action/actions';
 import { store } from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
@@ -38,10 +40,6 @@ import { chatRoomDataType } from '../../Types/chatRoomDataType';
 import { useCustomToast } from '../../Utils/toastUtils';
 import ChatScreenHeader from './Components/ChatScreenHeader';
 import ReportOrBlockModal from './Components/ReportOrBlockModal';
-import GradientView from '../../Common/GradientView';
-import { useTheme } from '../../Contexts/ThemeContext';
-import CommonIcons from '../../Common/CommonIcons';
-import { Image } from 'react-native';
 
 interface ChatData {
   params: {

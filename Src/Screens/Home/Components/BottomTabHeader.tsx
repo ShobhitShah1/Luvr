@@ -57,19 +57,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
   }, [playAnimation]);
 
   return (
-    <SafeAreaView
-      style={[
-        styles.container,
-        { backgroundColor: !isDark ? colors.White : 'transparent' },
-        !isDark && {
-          shadowColor: colors.Black,
-          shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.2,
-          shadowRadius: 10,
-          elevation: 10,
-        },
-      ]}
-    >
+    <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
       <View style={styles.contentView}>
         {Platform.OS === 'android' && !hideDonation && (
           <Pressable
@@ -168,7 +156,7 @@ const styles = StyleSheet.create({
     height: 21.5,
   },
   donateIcon: {
-    width: 38,
-    height: 38,
+    width: 33,
+    height: 33,
   },
 });

@@ -55,7 +55,7 @@ const MatchesContent: FC<LikesProps> = ({ LikesData }) => {
               source={
                 matchData?.recent_pik?.[0]
                   ? { uri: ApiConfig.IMAGE_BASE_URL + matchData?.recent_pik[0] }
-                  : CommonImages.WelcomeBackground
+                  : { uri: ApiConfig.PLACEHOLDER_IMAGE }
               }
             />
           </View>

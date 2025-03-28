@@ -31,23 +31,23 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({ data, onRightIconPress }) => {
               style={styles.TinderBackIcon}
             />
           </Pressable>
-          <View style={styles.UserInfoView}>
-            <View style={styles.ProfileImageView}>
-              <FastImage
-                style={styles.ProfileImage}
-                source={
-                  data?.recent_pik && data?.recent_pik?.length !== 0
-                    ? {
-                        uri: ApiConfig.IMAGE_BASE_URL + data?.recent_pik?.[0],
-                        priority: FastImage.priority.high,
-                      }
-                    : CommonImages.WelcomeBackground
-                }
-              />
-            </View>
+          <View style={styles.ProfileImageView}>
+            <Image
+              style={styles.ProfileImage}
+              source={{
+                uri: data?.recent_pik?.[0]
+                  ? ApiConfig.IMAGE_BASE_URL + data?.recent_pik?.[0]
+                  : ApiConfig.PLACEHOLDER_IMAGE,
+              }}
+            />
+          </View>
+          <View style={[styles.UserInfoView, { flex: 1, justifyContent: 'center' }]}>
             {data?.full_name && (
-              <View style={styles.ProfileNameView}>
-                <Text numberOfLines={1} style={[styles.ProfileNameText, { color: colors.TextColor }]}>
+              <View style={[styles.ProfileNameView, { alignSelf: 'center', justifyContent: 'center' }]}>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.ProfileNameText, { color: colors.TitleText, textAlign: 'center' }]}
+                >
                   {data?.full_name || ''}
                 </Text>
                 <Image source={CommonIcons.Verification_Icon} style={styles.VerifyIconView} />
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     height: 24,
   },
   UserInfoView: {
-    marginLeft: 5,
+    marginRight: 5,
     alignItems: 'center',
     flexDirection: 'row',
   },
@@ -103,7 +103,9 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   ProfileNameView: {
-    marginLeft: 5,
+    width: '80%',
+    alignItems: 'center',
+    alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
   },

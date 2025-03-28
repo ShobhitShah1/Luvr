@@ -46,7 +46,9 @@ const RenderChatRoomList = ({ item, index }: ChatRoomProps) => {
         <FastImage
           resizeMode="cover"
           style={styles.profilePic}
-          source={item?.profile ? { uri: ApiConfig.IMAGE_BASE_URL + item?.profile } : CommonImages.WelcomeBackground}
+          source={
+            item?.profile ? { uri: ApiConfig.IMAGE_BASE_URL + item?.profile } : { uri: ApiConfig.PLACEHOLDER_IMAGE }
+          }
         />
       </View>
       <View style={styles.nameAndMessageView}>

@@ -11,6 +11,9 @@ const ApiConfig = {
   GOOGLE_WEB_CLIENT_ID: '126773940218-vqp2euiee90i9pecsh3gfdiaa19hj0rv.apps.googleusercontent.com',
   FACEBOOK_GRAPH_API: 'https://graph.facebook.com/v2.5/me?fields=email,name,picture,birthday,gender&access_token=',
 
+  PLACEHOLDER_IMAGE:
+    'https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+
   //* EventName's
   BlockProfile: 'block_users',
   ReportProfile: 'report_users',

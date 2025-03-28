@@ -108,7 +108,7 @@ const ItsAMatch: FC<ItsAMatchProps> = ({ user, onSayHiClick, onCloseModalClick, 
             </View>
             <View style={styles.MatchedProfileView}>
               <Image resizeMode="cover" source={{ uri: myProfile }} style={[styles.UserProfileImage]} />
-              <Image source={CommonIcons.like_button} style={[styles.LikeButtonImage]} />
+              <Image source={CommonIcons.its_match_like} style={[styles.LikeButtonImage]} />
               <Image resizeMode="cover" source={{ uri: likedProfile }} style={[styles.UserProfileImage]} />
             </View>
             <View style={styles.ButtonsContainerView}>
@@ -171,12 +171,13 @@ const styles = StyleSheet.create({
     borderRadius: 500,
     borderWidth: 2,
     borderColor: COLORS.White,
-    marginHorizontal: -33,
+    marginHorizontal: -38,
   },
   LikeButtonImage: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
     right: 5,
+    top: 5,
     zIndex: 9999,
   },
   BackgroundImageStyle: {

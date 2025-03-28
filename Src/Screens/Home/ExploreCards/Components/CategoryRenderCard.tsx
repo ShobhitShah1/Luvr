@@ -52,7 +52,7 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
   const imagePath =
     item?.recent_pik && item?.recent_pik?.length !== 0
       ? { uri: ApiConfig.IMAGE_BASE_URL + item?.recent_pik[0] }
-      : CommonImages.WelcomeBackground;
+      : { uri: ApiConfig.PLACEHOLDER_IMAGE };
 
   const Age = useCalculateAge(item.birthdate);
 

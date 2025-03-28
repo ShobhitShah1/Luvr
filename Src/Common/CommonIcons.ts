@@ -57,6 +57,7 @@ const ic_dark_location = require('../../Assets/Icons/ic_dark_location.png');
 const ic_noChat = require('../../Assets/Icons/ic_noChat.png');
 const ic_send_message = require('../../Assets/Icons/ic_send_message.png');
 const ic_red_heart = require('../../Assets/Icons/ic_red_heart.png');
+const its_match_like = require('../../Assets/Icons/its_match_like.png');
 
 // Home
 const LightHomeTab = require('../../Assets/Icons/BottomTab/ic_light_home.png');
@@ -135,6 +136,7 @@ export default {
   ic_noChat,
   ic_send_message,
   ic_red_heart,
+  its_match_like,
 
   //* Home
   LightHomeTab,

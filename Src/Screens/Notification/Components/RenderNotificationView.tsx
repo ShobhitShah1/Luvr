@@ -6,6 +6,7 @@ import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import { formatDate } from '../../../Utils/formatDate';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { GradientBorderView } from '../../../Components/GradientBorder';
+import ApiConfig from '../../../Config/ApiConfig';
 
 interface NotificationData {
   title: string;
@@ -26,7 +27,7 @@ const RenderNotificationView: FC<NotificationData> = ({ title, description, date
         style={[styles.detailBoxContainerView, { backgroundColor: isDark ? 'transparent' : colors.White }]}
       >
         <View style={styles.likeImageView}>
-          <Image style={styles.likeImageProfile} source={CommonImages.WelcomeBackground} />
+          <Image style={styles.likeImageProfile} source={{ uri: ApiConfig.PLACEHOLDER_IMAGE }} />
         </View>
         <View style={styles.likeTextView}>
           <Text numberOfLines={3} style={[styles.titleMatchText, { color: colors.TitleText }]}>

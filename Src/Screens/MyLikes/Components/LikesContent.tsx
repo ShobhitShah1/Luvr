@@ -24,7 +24,9 @@ const LikesContent: FC<LikesProps> = ({ LikesData }) => {
 
   const imageSource = useMemo(
     () =>
-      data?.recent_pik?.[0] ? { uri: ApiConfig.IMAGE_BASE_URL + data.recent_pik[0] } : CommonImages.WelcomeBackground,
+      data?.recent_pik?.[0]
+        ? { uri: ApiConfig.IMAGE_BASE_URL + data.recent_pik[0] }
+        : { uri: ApiConfig.PLACEHOLDER_IMAGE },
     [data]
   );
 

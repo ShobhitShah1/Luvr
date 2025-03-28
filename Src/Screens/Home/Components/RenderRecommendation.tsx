@@ -1,12 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Skeleton } from 'moti/skeleton';
-import React, { FC, memo, useMemo } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { FC, memo } from 'react';
+import { ImageBackground, Pressable, StyleSheet, Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { COLORS, GROUP_FONT } from '../../../Common/Theme';
-import { useTheme } from '../../../Contexts/ThemeContext';
+import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import { GradientBorderView } from '../../../Components/GradientBorder';
+import { useTheme } from '../../../Contexts/ThemeContext';
 
 interface RenderLookingViewProps {
   item: {
@@ -17,7 +16,6 @@ interface RenderLookingViewProps {
   IsLoading: boolean;
 }
 
-// Function to generate random hex color
 const getRandomColor = () => {
   const letters = '0123456789ABCDEF';
   let color = '#';
@@ -30,11 +28,6 @@ const getRandomColor = () => {
 const RenderRecommendation: FC<RenderLookingViewProps> = ({ item, IsLoading }) => {
   const { isDark, colors } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<{ CategoryDetailCards: {} }>>();
-
-  // Generate random border color, white for dark mode
-  const borderColor = useMemo(() => {
-    return isDark ? 'white' : getRandomColor();
-  }, [isDark]);
 
   return (
     <GradientBorderView
@@ -50,18 +43,25 @@ const RenderRecommendation: FC<RenderLookingViewProps> = ({ item, IsLoading }) =
         }}
         style={{ flex: 1, justifyContent: 'center', overflow: 'hidden', borderRadius: 27 }}
       >
-        <Skeleton colorMode="light" show={IsLoading} colors={COLORS.LoaderGradient}>
-          <View>
-            <Image resizeMode="cover" source={item.image} style={styles.imageView} />
-            <LinearGradient colors={COLORS.GradientViewForCards} style={styles.gradient}>
-              {!IsLoading && (
-                <Text numberOfLines={2} style={styles.TitleText}>
-                  {item?.title}
-                </Text>
-              )}
-            </LinearGradient>
-          </View>
-        </Skeleton>
+        <ImageBackground source={item.image} style={styles.imageView}>
+          <LinearGradient
+            start={{ x: 0, y: 1 }}
+            end={{ x: 0, y: 0 }}
+            colors={['rgba(90, 76, 138, 0)', 'rgba(8, 2, 27, 0.8)'].reverse()}
+            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 50 }}
+          />
+          <LinearGradient
+            start={{ x: 1, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            colors={isDark ? colors.ButtonGradient : [colors.White, colors.White]}
+            style={styles.gradient}
+          >
+            <Text numberOfLines={2} style={[styles.titleText, { color: colors.TextColor }]}>
+              {'View profile'}
+              {/* {item?.title} */}
+            </Text>
+          </LinearGradient>
+        </ImageBackground>
       </Pressable>
     </GradientBorderView>
   );
@@ -81,7 +81,8 @@ const styles = StyleSheet.create({
   imageView: {
     width: '100%',
     height: '100%',
-    // borderRadius: 20,
+    alignItems: 'center',
+    alignSelf: 'center',
     overflow: 'hidden',
     justifyContent: 'flex-end',
   },
@@ -92,21 +93,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   gradient: {
-    bottom: 0,
-    left: 0,
-    right: 0,
-    width: '100%',
-    paddingVertical: 5,
-    overflow: 'hidden',
-    position: 'absolute',
+    bottom: 9,
+    width: '85%',
+    maxHeight: 45,
+    paddingVertical: 4,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignSelf: 'center',
     alignItems: 'center',
-    justifyContent: 'flex-end',
   },
-  TitleText: {
+  titleText: {
     width: '88%',
-    ...GROUP_FONT.h2,
-    fontSize: 16,
-    lineHeight: 20,
+    fontSize: 12.5,
+    fontFamily: FONTS.Bold,
     textAlign: 'center',
     color: COLORS.White,
     alignSelf: 'center',
