@@ -20,7 +20,6 @@ if (!__DEV__) {
 LogBox.ignoreAllLogs();
 
 messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-  console.log('setBackgroundMessageHandler remoteMessage', remoteMessage);
   const title = remoteMessage.notification?.title || '';
   const body = remoteMessage.notification?.body || '';
   if (title && body) {

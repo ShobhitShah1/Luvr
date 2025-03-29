@@ -538,8 +538,6 @@ const EditProfileScreen = () => {
     bottomSheetModalRef?.current.dismiss();
   }, []);
 
-  console.log(profile?.hoping);
-
   return (
     <GradientView>
       <View style={styles.Container}>
