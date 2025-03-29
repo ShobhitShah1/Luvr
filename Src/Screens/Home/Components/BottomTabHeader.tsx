@@ -134,8 +134,8 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    height: '100%', // Use height instead of flex with absolute positioning
-    zIndex: 10, // Even a smaller z-index should work
+    height: '100%',
+    zIndex: 10,
   },
   titleText: {
     fontFamily: FONTS.Bold,

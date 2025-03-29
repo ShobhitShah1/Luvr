@@ -228,10 +228,8 @@ const styles = StyleSheet.create({
   ImageContainerView: {
     width: 210,
     height: 210,
-    // borderWidth: 5,
     justifyContent: 'center',
     overflow: 'hidden',
-    // borderColor: COLORS.White,
     borderRadius: Dimensions.get('window').width / 2,
   },
   ProfileViewContainer: {

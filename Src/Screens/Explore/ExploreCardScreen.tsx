@@ -2,7 +2,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import { addEventListener } from '@react-native-community/netinfo';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Animated,
@@ -520,4 +520,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ExploreCardScreen;
+export default memo(ExploreCardScreen);

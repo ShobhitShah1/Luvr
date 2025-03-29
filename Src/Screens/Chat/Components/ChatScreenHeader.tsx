@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     height: 24,
   },
   UserInfoView: {
-    marginRight: 5,
+    marginRight: 15,
     alignItems: 'center',
     flexDirection: 'row',
   },

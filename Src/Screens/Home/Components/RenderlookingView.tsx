@@ -1,6 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Skeleton } from 'moti/skeleton';
 import React, { FC, memo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -13,33 +12,27 @@ interface RenderLookingViewProps {
     title: string;
     image: number;
   };
-  IsLoading: boolean;
 }
 
-const RenderLookingView: FC<RenderLookingViewProps> = ({ item, IsLoading }) => {
+const RenderLookingView: FC<RenderLookingViewProps> = ({ item }) => {
   const { isDark, colors } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<{ CategoryDetailCards: {} }>>();
 
   return (
     <Pressable
-      disabled={IsLoading}
       onPress={() => {
         navigation.navigate('CategoryDetailCards', { item });
       }}
       style={[styles.container, { borderColor: isDark ? colors.White : 'transparent' }]}
     >
-      <Skeleton colorMode="light" show={IsLoading} colors={COLORS.LoaderGradient}>
-        <View>
-          <Image resizeMode="cover" source={item.image} style={styles.imageView} />
-          <LinearGradient colors={COLORS.GradientViewForCards} style={styles.gradient}>
-            {!IsLoading && (
-              <Text numberOfLines={2} style={styles.TitleText}>
-                {item?.title}
-              </Text>
-            )}
-          </LinearGradient>
-        </View>
-      </Skeleton>
+      <View>
+        <Image resizeMode="cover" source={item.image} style={styles.imageView} />
+        <LinearGradient colors={COLORS.GradientViewForCards} style={styles.gradient}>
+          <Text numberOfLines={2} style={styles.TitleText}>
+            {item?.title}
+          </Text>
+        </LinearGradient>
+      </View>
     </Pressable>
   );
 };

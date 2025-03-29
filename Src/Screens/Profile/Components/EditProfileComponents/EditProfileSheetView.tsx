@@ -50,7 +50,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
     }, 0);
   };
 
-  //* ================= Hoping Functions =================
   const onPressLookingFor = useCallback(
     (item: any) => {
       const isSelected = profile?.hoping === item?.Title;
@@ -128,7 +127,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
       </LinearGradient>
     );
   };
-  //* ================= Intrusted In Functions =================
+
   const onPressIntrusted = useCallback(
     (data: any) => {
       setProfile((prevSelection) => {
@@ -215,7 +214,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
     );
   };
 
-  //* ================= I'm Into Functions =================
   const handleOptionPress = useCallback(
     (YourIntoID: number, name: string) => {
       setProfile((prevSelection) => {
@@ -291,7 +289,6 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
     [profile?.likes_into, handleOptionPress]
   );
 
-  //* ======================= OTHER =======================
   const onClickChange = useCallback(
     (name: string, value: keyof (ProfileType & MagicalPersonType & EducationType & HabitsType & LocationType)) => {
       setProfile((prevProfile) => {

@@ -1,10 +1,7 @@
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { FC, memo } from 'react';
-import { ImageBackground, Pressable, StyleSheet, Text } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
-import { GradientBorderView } from '../../../Components/GradientBorder';
+import { COLORS, FONTS } from '../../../Common/Theme';
 import { useTheme } from '../../../Contexts/ThemeContext';
 
 interface RenderLookingViewProps {
@@ -13,7 +10,6 @@ interface RenderLookingViewProps {
     title: string;
     image: number;
   };
-  IsLoading: boolean;
 }
 
 const getRandomColor = () => {
@@ -25,24 +21,12 @@ const getRandomColor = () => {
   return color;
 };
 
-const RenderRecommendation: FC<RenderLookingViewProps> = ({ item, IsLoading }) => {
+const RenderRecommendation: FC<RenderLookingViewProps> = ({ item }) => {
   const { isDark, colors } = useTheme();
-  const navigation = useNavigation<NativeStackNavigationProp<{ CategoryDetailCards: {} }>>();
 
   return (
-    <GradientBorderView
-      style={styles.container}
-      gradientProps={{
-        colors: isDark ? [colors.White, colors.White] : [getRandomColor(), getRandomColor()],
-      }}
-    >
-      <Pressable
-        disabled={IsLoading}
-        onPress={() => {
-          navigation.navigate('CategoryDetailCards', { item });
-        }}
-        style={{ flex: 1, justifyContent: 'center', overflow: 'hidden', borderRadius: 27 }}
-      >
+    <View style={[styles.container, { borderColor: isDark ? colors.White : getRandomColor() }]}>
+      <View style={{ flex: 1, justifyContent: 'center', overflow: 'hidden', borderRadius: 27 }}>
         <ImageBackground source={item.image} style={styles.imageView}>
           <LinearGradient
             start={{ x: 0, y: 1 }}
@@ -58,12 +42,11 @@ const RenderRecommendation: FC<RenderLookingViewProps> = ({ item, IsLoading }) =
           >
             <Text numberOfLines={2} style={[styles.titleText, { color: colors.TextColor }]}>
               {'View profile'}
-              {/* {item?.title} */}
             </Text>
           </LinearGradient>
         </ImageBackground>
-      </Pressable>
-    </GradientBorderView>
+      </View>
+    </View>
   );
 };
 

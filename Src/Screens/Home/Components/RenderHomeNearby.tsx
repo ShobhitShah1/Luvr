@@ -1,46 +1,36 @@
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Skeleton } from 'moti/skeleton';
 import React, { FC, memo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import CommonIcons from '../../../Common/CommonIcons';
 import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import { useTheme } from '../../../Contexts/ThemeContext';
-import CommonIcons from '../../../Common/CommonIcons';
 
 interface RenderLookingViewProps {
   item: any;
-  IsLoading: boolean;
 }
 
-const RenderHomeNearby: FC<RenderLookingViewProps> = ({ item, IsLoading }) => {
-  const { isDark, colors } = useTheme();
-  const navigation = useNavigation<NativeStackNavigationProp<{ CategoryDetailCards: {} }>>();
+const RenderHomeNearby: FC<RenderLookingViewProps> = ({ item }) => {
+  const { colors } = useTheme();
 
   const handlePress = () => {};
 
   return (
-    <Pressable style={styles.container} onPress={handlePress} disabled={IsLoading}>
+    <Pressable style={styles.container} onPress={handlePress}>
       <View style={styles.cardContainer}>
-        {/* Background Image */}
         <Image source={item.image} style={styles.backgroundImage} resizeMode="cover" />
 
-        {/* Overlay for better text visibility */}
         <LinearGradient colors={colors.GradientViewForCards} style={styles.overlay} />
 
-        {/* Like Counter */}
         <View style={styles.likeContainer}>
           <Image source={CommonIcons.ic_red_heart} style={{ width: 20, height: 20 }} resizeMode="contain" />
           <Text style={styles.likeCount}>{item.likes || 10}</Text>
         </View>
 
-        {/* Profile Info - positioned at bottom */}
         <View style={styles.infoContainer}>
           <Text style={styles.nameText}>{item.name || 'Adan Smith'}</Text>
           <Text style={styles.jobText}>{item.job || 'Engineer'}</Text>
         </View>
 
-        {/* Location */}
         <View style={styles.locationContainer}>
           <Text style={styles.locationText}>{item.location || 'USA'}</Text>
         </View>
@@ -60,7 +50,6 @@ const styles = StyleSheet.create({
   cardContainer: {
     width: '100%',
     height: '100%',
-    // borderRadius: 5,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -68,7 +57,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    // borderRadius: 16,
   },
   overlay: {
     position: 'absolute',
@@ -76,8 +64,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: '50%',
-    // borderBottomLeftRadius: 16,
-    // borderBottomRightRadius: 16,
   },
   likeContainer: {
     position: 'absolute',
@@ -113,9 +99,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   jobText: {
-    // ...GROUP_FONT.body,
     color: COLORS.Primary,
-    // marginBottom: 4,
     textAlign: 'center',
   },
   locationContainer: {
@@ -125,7 +109,6 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   locationText: {
-    // ...GROUP_FONT.body,
     fontWeight: 'bold',
     color: COLORS.White,
   },

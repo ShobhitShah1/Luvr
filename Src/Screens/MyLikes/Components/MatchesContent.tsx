@@ -1,14 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { FC, memo } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useSelector } from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
-import CommonImages from '../../../Common/CommonImages';
 import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
-import { LikeInterface } from '../../../Types/Interface';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { LikeInterface } from '../../../Types/Interface';
 
 interface LikesProps {
   LikesData: LikeInterface;
@@ -67,9 +66,9 @@ const MatchesContent: FC<LikesProps> = ({ LikesData }) => {
               You and {matchData.full_name || 'User'} liked each other.
             </Text>
           </View>
-          <TouchableOpacity onPress={handleChatClick} style={styles.LikeButtonView}>
+          <Pressable onPress={handleChatClick} style={styles.LikeButtonView}>
             <Image style={styles.LikeButtonIcon} source={CommonIcons.message_button} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     );

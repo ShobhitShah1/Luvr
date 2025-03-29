@@ -278,7 +278,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     justifyContent: 'center',
     width: (SCREEN_WIDTH * 0.8) / 4.7,
-    // backgroundColor: 'red',
   },
   bubbleBackground: {
     position: 'absolute',

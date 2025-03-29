@@ -61,7 +61,7 @@ const ItsAMatch: FC<ItsAMatchProps> = ({ user, onSayHiClick, onCloseModalClick, 
             },
           ]}
         >
-          <View style={styles.BackgroundImageContainer}>
+          <View>
             <View>
               <View style={styles.ItsAMatchTextView}>
                 <Text style={[styles.ItsAMatchText, { color: colors.TitleText }]}>It’s a match!</Text>
@@ -71,7 +71,7 @@ const ItsAMatch: FC<ItsAMatchProps> = ({ user, onSayHiClick, onCloseModalClick, 
               </View>
               <View style={styles.MatchedProfileView}>
                 <Image resizeMode="cover" source={{ uri: myProfile }} style={[styles.UserProfileImage]} />
-                <Image source={CommonIcons.like_button} style={[styles.LikeButtonImage]} />
+                <Image source={CommonIcons.its_match_like} style={[styles.LikeButtonImage]} />
                 <Image resizeMode="cover" source={{ uri: likedProfile }} style={[styles.UserProfileImage]} />
               </View>
               <View style={styles.ButtonsContainerView}>
@@ -111,18 +111,21 @@ const ItsAMatch: FC<ItsAMatchProps> = ({ user, onSayHiClick, onCloseModalClick, 
               <Image source={CommonIcons.its_match_like} style={[styles.LikeButtonImage]} />
               <Image resizeMode="cover" source={{ uri: likedProfile }} style={[styles.UserProfileImage]} />
             </View>
-            <View style={styles.ButtonsContainerView}>
+            <View style={[styles.ButtonsContainerView, { marginVertical: 0, marginTop: 5 }]}>
               <LinearGradient
                 start={{ x: 1, y: 0 }}
                 end={{ x: 0, y: 1 }}
                 colors={colors.ButtonGradient}
-                style={styles.SendMessageButton}
+                style={[styles.SendMessageButton, { height: 53 }]}
               >
                 <Pressable onPress={onSayHiClick} style={{ flex: 1, justifyContent: 'center' }}>
-                  <Text style={styles.SendMessageText}>Send a message</Text>
+                  <Text style={[styles.SendMessageText, { color: colors.White, fontSize: 15 }]}>Send a message</Text>
                 </Pressable>
               </LinearGradient>
-              <Text onPress={onCloseModalClick} style={[styles.KeepSwipingText, { color: colors.TitleText }]}>
+              <Text
+                onPress={onCloseModalClick}
+                style={[styles.KeepSwipingText, { color: colors.TitleText, fontSize: 16 }]}
+              >
                 Keep swiping
               </Text>
             </View>
@@ -174,8 +177,8 @@ const styles = StyleSheet.create({
     marginHorizontal: -38,
   },
   LikeButtonImage: {
-    width: 60,
-    height: 60,
+    width: 55,
+    height: 55,
     right: 5,
     top: 5,
     zIndex: 9999,
@@ -193,7 +196,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignSelf: 'center',
     zIndex: 9999,
-    opacity: 1,
   },
   ItsAMatchTextView: {
     marginVertical: 5,

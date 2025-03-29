@@ -1,7 +1,7 @@
 import React, { FC, memo } from 'react';
-import { Pressable, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { COLORS, FONTS, GROUP_FONT } from '../../../../Common/Theme';
+import { FONTS } from '../../../../Common/Theme';
 import { useTheme } from '../../../../Contexts/ThemeContext';
 
 interface RenderCountryDataProps {

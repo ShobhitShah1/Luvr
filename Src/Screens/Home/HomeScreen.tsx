@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import messaging from '@react-native-firebase/messaging';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, ScrollView, View } from 'react-native';
 import { requestNotifications } from 'react-native-permissions';
+import CommonImages from '../../Common/CommonImages';
 import GradientView from '../../Common/GradientView';
 import { COLORS } from '../../Common/Theme';
 import { HomeLookingForData } from '../../Components/Data';
@@ -12,11 +13,10 @@ import { getProfileData } from '../../Utils/profileUtils';
 import { updateDeviceToken } from '../../Utils/updateDeviceToken';
 import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
-import RenderLookingView from './Components/RenderlookingView';
-import styles from './styles';
 import RenderHomeNearby from './Components/RenderHomeNearby';
-import CommonImages from '../../Common/CommonImages';
+import RenderLookingView from './Components/RenderlookingView';
 import RenderRecommendation from './Components/RenderRecommendation';
+import styles from './styles';
 
 const profiles = [
   {
@@ -35,11 +35,9 @@ const profiles = [
     likes: 15,
     image: CommonImages.HomeHoping,
   },
-  // More profiles...
 ];
 
 const HomeScreen = () => {
-  const [isAPIDataLoading, setIsAPIDataLoading] = useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
   const { requestLocationPermission } = useLocationPermission();
 
@@ -64,7 +62,6 @@ const HomeScreen = () => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    setIsAPIDataLoading(true);
 
     try {
       await Promise.allSettled([getMyLikes(), getProfileData()]);
@@ -72,7 +69,6 @@ const HomeScreen = () => {
       console.error('Error refreshing data:', error);
     } finally {
       setRefreshing(false);
-      setIsAPIDataLoading(false);
     }
   }, []);
 
@@ -104,7 +100,7 @@ const HomeScreen = () => {
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => {
-                return <RenderLookingView item={item} IsLoading={isAPIDataLoading} />;
+                return <RenderLookingView item={item} />;
               }}
             />
 
@@ -116,7 +112,7 @@ const HomeScreen = () => {
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => {
-                return <RenderHomeNearby item={item} IsLoading={isAPIDataLoading} />;
+                return <RenderHomeNearby item={item} />;
               }}
             />
 
@@ -129,7 +125,7 @@ const HomeScreen = () => {
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => {
-                return <RenderRecommendation item={item} IsLoading={isAPIDataLoading} />;
+                return <RenderRecommendation item={item} />;
               }}
             />
           </View>
@@ -139,4 +135,4 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default memo(HomeScreen);
