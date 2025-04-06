@@ -37,8 +37,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   FlatListContentContainerStyle: {
-    // alignSelf: 'center',
-    justifyContent: 'center',
+    flexDirection: 'row',
+    zIndex: 999999999999,
+    justifyContent: 'space-between',
   },
   FlatListColumnWrapperStyle: {
     justifyContent: 'space-between',

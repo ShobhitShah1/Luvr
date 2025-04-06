@@ -14,9 +14,9 @@ const ApiConfig = {
   PLACEHOLDER_IMAGE:
     'https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
 
-  //* EventName's
   BlockProfile: 'block_users',
   ReportProfile: 'report_users',
+  GetSubscription: 'get_subscriptions',
 };
 
 async function fetchRemoteConfigValues() {

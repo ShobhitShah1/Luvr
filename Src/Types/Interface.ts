@@ -1,30 +1,14 @@
-import {AxiosRequestConfig} from 'axios';
-import {ProfileType} from './ProfileType';
+import { AxiosRequestConfig } from 'axios';
+import { ProfileType } from './ProfileType';
 
 export interface FetchWrapper {
-  get: (
-    url: string,
-    params?: Record<string, any>,
-    config?: AxiosRequestConfig,
-  ) => Promise<any>;
-  post: (
-    url: string,
-    params: Record<string, any>,
-    config?: AxiosRequestConfig,
-  ) => Promise<any>;
+  get: (url: string, params?: Record<string, any>, config?: AxiosRequestConfig) => Promise<any>;
+  post: (url: string, params: Record<string, any>, config?: AxiosRequestConfig) => Promise<any>;
   uploadHandler: (
     url: string,
     formData: FormData | Record<string, any> | any,
-    config?: AxiosRequestConfig,
+    config?: AxiosRequestConfig
   ) => Promise<any>;
-}
-
-export interface LikeInterface {
-  _id: string;
-  first_approch: string;
-  second_approch: string;
-  status: string;
-  user_details: ProfileType[];
 }
 
 export interface MembershipProductsType {
@@ -98,4 +82,30 @@ export interface SocketEventHandlers {
   List: (data: ListResponseData | null) => void;
   message: (data: any) => void;
 }
-//
+
+export interface SubscriptionPlan {
+  key: string;
+  title: string;
+  description: string;
+  benefits: string[];
+}
+
+export interface RemoteConfigData {
+  subscriptions: SubscriptionPlan[];
+}
+
+// LIKE MATCH AND CRUSH DATA WITH USER PROFILE PROPS
+
+export interface LikeMatchAndCrushAPIDataTypes {
+  match: ListDetailProps[];
+  like: ListDetailProps[];
+  crush: ListDetailProps[];
+}
+
+export interface ListDetailProps {
+  _id: string;
+  first_approch: string;
+  second_approch: string;
+  status: string;
+  user_details: ProfileType[];
+}

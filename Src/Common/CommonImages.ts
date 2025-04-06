@@ -11,6 +11,7 @@ const HomeSortTermRelationship = require('../../Assets/Images/HomeSortTermRelati
 const HomePartyPartner = require('../../Assets/Images/HomePartyPartner.webp');
 const light_splash_bg = require('../../Assets/Images/light_splash_bg.webp');
 const dark_splash_bg = require('../../Assets/Images/dark_splash_bg.webp');
+const SubscriptionBackground = require('../../Assets/Images/SubscriptionBackground.png');
 
 export default {
   LoginBackground,
@@ -26,4 +27,5 @@ export default {
   HomePartyPartner,
   light_splash_bg,
   dark_splash_bg,
+  SubscriptionBackground,
 };

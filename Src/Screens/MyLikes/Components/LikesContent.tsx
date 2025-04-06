@@ -1,41 +1,38 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
-import CommonImages from '../../../Common/CommonImages';
 import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import { useTheme } from '../../../Contexts/ThemeContext';
-import { LikeInterface } from '../../../Types/Interface';
-
-interface LikesProps {
-  LikesData: LikeInterface;
-}
+import { ListDetailProps } from '../../../Types/Interface';
+import { ProfileType } from '../../../Types/ProfileType';
 
 let NO_IMAGE_CONTAINER = 150;
 
-const LikesContent: FC<LikesProps> = ({ LikesData }) => {
+const LikesContent = ({ LikesData }: { LikesData: ListDetailProps }) => {
   const { colors, isDark } = useTheme();
 
   const [isImageLoading, setIsImageLoading] = useState(false);
   const { status, user_details } = LikesData;
 
-  const data: any = user_details?.[0] ?? null;
+  const data: ProfileType = user_details?.[0] ?? null;
 
-  const imageSource = useMemo(
-    () =>
-      data?.recent_pik?.[0]
-        ? { uri: ApiConfig.IMAGE_BASE_URL + data.recent_pik[0] }
-        : { uri: ApiConfig.PLACEHOLDER_IMAGE },
-    [data]
-  );
+  const imageSource = useMemo(() => {
+    return {
+      uri:
+        data?.recent_pik && data?.recent_pik?.[0]
+          ? ApiConfig.IMAGE_BASE_URL + data?.recent_pik?.[0]
+          : ApiConfig.PLACEHOLDER_IMAGE,
+    };
+  }, [data]);
 
   if (status !== 'like') {
     return null;
   }
 
   return (
-    <View style={[styles.container]} key={user_details[0]._id}>
+    <View style={[styles.container]} key={user_details?.[0]?._id || LikesData?._id}>
       <View
         style={[
           styles.DetailBoxContainerView,
@@ -50,9 +47,8 @@ const LikesContent: FC<LikesProps> = ({ LikesData }) => {
           <Image
             source={imageSource}
             style={styles.LikeImageProfile}
-            onLoadStart={() => setIsImageLoading(true)}
             onLoad={() => setIsImageLoading(false)}
-            onLoadEnd={() => setIsImageLoading(false)}
+            onLoadStart={() => setIsImageLoading(true)}
           />
           {isImageLoading && (
             <View style={styles.ImageLoadingView}>
@@ -67,7 +63,7 @@ const LikesContent: FC<LikesProps> = ({ LikesData }) => {
           <Text numberOfLines={2} style={[styles.DescriptionText, { color: colors.TextColor }]}>
             You've taken the first step! You liked{' '}
             <Text style={{ fontFamily: FONTS.Bold, color: colors.Primary }}>
-              {`${user_details[0].full_name}'s ` || 'User'}
+              {`${user_details?.[0]?.full_name}'s ` || 'User'}
             </Text>
             profile.
           </Text>
@@ -80,7 +76,7 @@ const LikesContent: FC<LikesProps> = ({ LikesData }) => {
   );
 };
 
-export default LikesContent;
+export default memo(LikesContent);
 
 const styles = StyleSheet.create({
   ListEmptyComponentView: {

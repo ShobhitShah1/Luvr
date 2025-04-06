@@ -18,6 +18,7 @@ import MainRoute from './Src/Routes/MainRoute';
 import { navigationRef } from './Src/Routes/RootNavigation';
 import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
 import { ThemeProvider } from './Src/Contexts/ThemeContext';
+import { StatusBar } from 'react-native';
 
 export default function App() {
   useEffect(() => {
@@ -90,6 +91,7 @@ export default function App() {
                   ),
                 }}
               >
+                <StatusBar translucent />
                 <MainRoute />
               </ToastProvider>
             </GestureHandlerRootView>

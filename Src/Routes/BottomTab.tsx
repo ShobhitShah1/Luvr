@@ -139,8 +139,8 @@ const FloatingTabBar: React.FC<FloatingTabBarProps> = ({ state, descriptors, nav
           styles.floatingBar,
           {
             backgroundColor: isDark ? 'rgba(26, 2, 54, 1)' : colors.Background,
-            width: wp('90%'),
-            height: hp('6.5%'),
+            width: wp('88%'),
+            height: hp('6.6%'),
             marginBottom: hp('1.5%'),
           },
         ]}
@@ -257,8 +257,6 @@ const styles = StyleSheet.create({
   floatingBar: {
     flexDirection: 'row',
     borderRadius: 30,
-    height: 60,
-    width: SCREEN_WIDTH * 0.85,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 0,
@@ -277,7 +275,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
     justifyContent: 'center',
-    width: (SCREEN_WIDTH * 0.8) / 4.7,
+    width: (SCREEN_WIDTH * 0.8) / 4.8,
   },
   bubbleBackground: {
     position: 'absolute',
