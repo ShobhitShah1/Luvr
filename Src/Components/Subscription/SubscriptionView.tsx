@@ -1,5 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 import remoteConfig from '@react-native-firebase/remote-config';
+import { useNavigation } from '@react-navigation/native';
 import React, { memo, useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import * as RNIap from 'react-native-iap';
@@ -9,9 +10,171 @@ import CommonImages from '../../Common/CommonImages';
 import { FONTS } from '../../Common/Theme';
 import ApiConfig from '../../Config/ApiConfig';
 import { useTheme } from '../../Contexts/ThemeContext';
-import { subscriptionData } from '../../Screens/Donation/DonationScreen';
+import UserService from '../../Services/AuthService';
+import { SubscriptionPlanProps } from '../../Types/Interface';
 import { useCustomToast } from '../../Utils/toastUtils';
 import OpenURL from '../OpenURL';
+
+export const subscriptionData = {
+  subscriptions: [
+    {
+      key: 'com.luvr.platinum.monthly',
+      title: 'Platinum',
+      description: 'This is a paid membership that includes all the features of Gold Membership plus additional perks.',
+      price: '$45',
+      popularityTag: 'Most popular',
+      icon: 'ic_dark_heart_purple',
+      colors: {
+        light: {
+          title: 'rgba(18, 18, 19, 1)',
+          secondary: 'rgba(235, 235, 235, 1)',
+          background: 'rgba(255, 255, 255, 1)',
+          border: 'rgba(130, 130, 130, 1)',
+          checkIcon: 'rgba(255, 184, 0, 1)',
+          featuresBackground: 'rgba(255, 255, 255, 1)',
+          featuresBackgroundDark: 'rgba(54, 60, 76, 1)',
+          crownBackground: 'rgba(255, 255, 255, 1)',
+          crownBorder: 'rgba(255, 184, 0, 1)',
+          priceUnselectedColor: 'rgba(119, 119, 119, 1)',
+          gradientColors: ['rgba(240, 236, 255, 0.01)', 'rgba(240, 236, 255, 0.04)', 'rgba(240, 236, 255, 0.9)'],
+          buyButton: ['rgba(253, 235, 92, 1)', 'rgba(224, 187, 18, 1)'],
+          buyButtonText: 'rgba(45, 45, 47, 1)',
+          buyButtonBorder: 'rgba(173, 151, 7, 1)',
+          priceContainerBorder: 'rgba(130, 130, 130, 1)',
+        },
+        dark: {
+          title: 'rgba(255, 255, 255, 1)',
+          secondary: 'rgba(43, 47, 59, 1)',
+          background: 'rgba(35, 35, 36, 1)',
+          border: 'rgba(219, 219, 219, 1)',
+          checkIcon: 'rgba(255, 184, 0, 1)',
+          featuresBackground: 'rgba(0, 0, 0, 0.5)',
+          featuresBackgroundDark: 'rgba(54, 60, 76, 1)',
+          priceUnselectedColor: 'rgba(119, 119, 119, 1)',
+          crownBackground: 'rgba(17, 16, 16, 0.3)',
+          crownBorder: 'rgba(255, 184, 0, 1)',
+          gradientColors: ['rgba(22, 3, 42, 0)', 'rgba(22, 3, 42, 0.88)', 'rgba(22, 3, 42, 1)'],
+          buyButton: ['rgba(253, 235, 92, 1)', 'rgba(224, 187, 18, 1)'],
+          buyButtonText: 'rgba(45, 45, 47, 1)',
+          buyButtonBorder: 'rgba(173, 151, 7, 1)',
+          priceContainerBorder: 'transparent',
+        },
+      },
+      benefits: [
+        'All the features of free membership',
+        'Incognito mode',
+        'Ability to make yourself visible offline',
+        'Hide yourself from users who signed up with your contact list',
+        'Control who you see',
+      ],
+    },
+    {
+      key: 'com.luvr.gold.monthly',
+      title: 'Gold',
+      description: 'This is a paid membership that includes all the features of free membership plus additional perks.',
+      price: '$45',
+      popularityTag: 'Popular',
+      icon: 'ic_dark_heart_gold_focus',
+      colors: {
+        light: {
+          title: 'rgba(255, 184, 0, 1)',
+          secondary: 'rgba(251, 239, 204, 1)',
+          background: 'rgba(255, 255, 255, 1)',
+          border: 'rgba(255, 215, 0, 0.5)',
+          checkIcon: 'rgba(255, 184, 0, 1)',
+          featuresBackground: 'rgba(255, 255, 255, 1)',
+          featuresBackgroundDark: 'rgba(54, 60, 76, 1)',
+          priceUnselectedColor: 'rgba(119, 119, 119, 1)',
+          crownBackground: 'rgba(255, 255, 255, 1)',
+          crownBorder: 'rgba(255, 184, 0, 1)',
+          gradientColors: ['rgba(240, 236, 255, 0.01)', 'rgba(240, 236, 255, 0.04)', 'rgba(240, 236, 255, 0.9)'],
+          buyButton: ['rgba(253, 235, 92, 1)', 'rgba(224, 187, 18, 1)'],
+          buyButtonText: 'rgba(45, 45, 47, 1)',
+          buyButtonBorder: 'rgba(173, 151, 7, 1)',
+          priceContainerBorder: 'rgba(255, 215, 0, 0.5)',
+        },
+        dark: {
+          title: 'rgba(255, 184, 0, 1)',
+          secondary: 'rgba(43, 47, 59, 1)',
+          background: 'rgba(35, 35, 36, 1)',
+          border: 'rgba(255, 215, 0, 0.5)',
+          checkIcon: 'rgba(255, 184, 0, 1)',
+          featuresBackground: 'rgba(0, 0, 0, 0.5)',
+          featuresBackgroundDark: 'rgba(54, 60, 76, 1)',
+          priceUnselectedColor: 'rgba(119, 119, 119, 1)',
+          crownBackground: 'rgba(17, 16, 16, 0.3)',
+          crownBorder: 'rgba(255, 184, 0, 1)',
+          gradientColors: ['rgba(22, 3, 42, 0)', 'rgba(22, 3, 42, 0.88)', 'rgba(22, 3, 42, 1)'],
+          buyButton: ['rgba(253, 235, 92, 1)', 'rgba(224, 187, 18, 1)'],
+          buyButtonText: 'rgba(45, 45, 47, 1)',
+          buyButtonBorder: 'rgba(173, 151, 7, 1)',
+          priceContainerBorder: 'transparent',
+        },
+      },
+      benefits: [
+        'All the features of free membership',
+        'Chatting feature',
+        'See who likes you',
+        'Block user',
+        'Top pick limit',
+        'Share profile',
+        'No advertisement',
+        'See who is online',
+      ],
+    },
+    {
+      key: 'Free',
+      title: 'Free',
+      description: 'This is a paid membership that includes all the features of Gold Membership plus additional perks.',
+      price: '$0',
+      popularityTag: 'Most popular',
+      icon: 'ic_dark_heart_purple',
+      colors: {
+        light: {
+          title: 'rgba(157, 133, 240, 1)',
+          secondary: 'rgba(240, 236, 255, 1)',
+          background: 'rgba(255, 255, 255, 1)',
+          border: 'rgba(157, 133, 240, 1)',
+          checkIcon: 'rgba(255, 184, 0, 1)',
+          featuresBackground: 'rgba(255, 255, 255, 1)',
+          featuresBackgroundDark: 'rgba(54, 60, 76, 1)',
+          crownBackground: 'rgba(255, 255, 255, 1)',
+          crownBorder: 'rgba(255, 184, 0, 1)',
+          priceUnselectedColor: 'rgba(119, 119, 119, 1)',
+          gradientColors: ['rgba(240, 236, 255, 0.01)', 'rgba(240, 236, 255, 0.04)', 'rgba(240, 236, 255, 0.9)'],
+          buyButton: ['rgba(253, 235, 92, 1)', 'rgba(224, 187, 18, 1)'],
+          buyButtonText: 'rgba(45, 45, 47, 1)',
+          buyButtonBorder: 'rgba(173, 151, 7, 1)',
+          priceContainerBorder: 'rgba(157, 133, 240, 1)',
+        },
+        dark: {
+          title: 'rgba(157, 133, 240, 1)',
+          secondary: 'rgba(43, 47, 59, 1)',
+          background: 'rgba(35, 35, 36, 1)',
+          border: 'rgba(157, 133, 240, 1)',
+          checkIcon: 'rgba(255, 184, 0, 1)',
+          featuresBackground: 'rgba(0, 0, 0, 0.5)',
+          featuresBackgroundDark: 'rgba(54, 60, 76, 1)',
+          crownBackground: 'rgba(17, 16, 16, 0.3)',
+          crownBorder: 'rgba(255, 184, 0, 1)',
+          priceUnselectedColor: 'rgba(119, 119, 119, 1)',
+          gradientColors: ['rgba(22, 3, 42, 0)', 'rgba(22, 3, 42, 0.88)', 'rgba(22, 3, 42, 1)'],
+          buyButton: ['rgba(253, 235, 92, 1)', 'rgba(224, 187, 18, 1)'],
+          buyButtonText: 'rgba(45, 45, 47, 1)',
+          buyButtonBorder: 'rgba(173, 151, 7, 1)',
+          priceContainerBorder: 'transparent',
+        },
+      },
+      benefits: [
+        'All the features of free membership',
+        'Incognito mode',
+        'Ability to make yourself visible offline',
+        'Hide yourself from users who signed up with your contact list',
+        'Control who you see',
+      ],
+    },
+  ],
+};
 
 const { width } = Dimensions.get('window');
 
@@ -22,8 +185,12 @@ const SubscriptionView = ({
   selectedPlan: string;
   handlePlanSelection: (key: string) => void;
 }) => {
+  const navigation = useNavigation();
+
   const { isDark, colors } = useTheme();
   const { showToast } = useCustomToast();
+
+  const [apiSubscriptionData, setApiSubscriptionData] = useState<SubscriptionPlanProps[]>([]);
 
   const [remoteConfigLinks, setRemoteConfigLinks] = useState<any>();
   const [subscriptionProducts, setSubscriptionProducts] = useState<Array<RNIap.Subscription>>([]);
@@ -43,7 +210,7 @@ const SubscriptionView = ({
       const connected = await RNIap.initConnection();
 
       if (connected) {
-        const skus = subscriptionData.subscriptions.map((plan) => plan.key);
+        const skus = apiSubscriptionData.map((plan) => plan.key);
         const products = await RNIap.getSubscriptions({ skus });
         setSubscriptionProducts(products);
       }
@@ -53,9 +220,12 @@ const SubscriptionView = ({
   };
 
   useEffect(() => {
+    getSubscriptionData();
     getRemoteConfigValue();
     connectIAP();
+  }, []);
 
+  useEffect(() => {
     const purchaseUpdateSubscription = RNIap.purchaseUpdatedListener(async (purchase) => {
       console.log('Purchase updated:', purchase);
 
@@ -99,6 +269,15 @@ const SubscriptionView = ({
     };
   }, []);
 
+  const getSubscriptionData = async () => {
+    try {
+      const APIResponse = await UserService.UserRegister({ eventName: ApiConfig.GetSubscription });
+      if (APIResponse?.code === 200) {
+        setApiSubscriptionData(APIResponse.data);
+      }
+    } catch (error) {}
+  };
+
   const validatePurchase = async (purchase: RNIap.Purchase) => {
     // TODO: modify this
     try {
@@ -133,6 +312,7 @@ const SubscriptionView = ({
     }
 
     if (selectedPlan == 'Free') {
+      navigation.navigate('QRCodeScreen');
       return;
     }
 
@@ -172,7 +352,7 @@ const SubscriptionView = ({
   };
 
   const getSelectedPlan = () => {
-    return subscriptionData.subscriptions.find((plan) => plan.key === selectedPlan);
+    return apiSubscriptionData && apiSubscriptionData.find((plan) => plan.key === selectedPlan);
   };
 
   const getThemeColors = () => {
@@ -194,7 +374,7 @@ const SubscriptionView = ({
       }
     }
 
-    const plan = subscriptionData.subscriptions.find((p) => p.key === productId);
+    const plan = apiSubscriptionData.find((p) => p.key === productId);
     return plan?.price || '';
   };
 
@@ -244,10 +424,13 @@ const SubscriptionView = ({
           </View>
         </View>
 
-        <LinearGradient colors={themeColors?.gradientColors || []} style={styles.gradient} />
+        <LinearGradient
+          colors={themeColors?.gradientColors || ['transparent', 'transparent']}
+          style={styles.gradient}
+        />
 
         <View style={styles.plansContainer}>
-          {subscriptionData.subscriptions.map((plan) => {
+          {apiSubscriptionData.map((plan) => {
             const planColors = isDark ? plan.colors.dark : plan.colors.light;
             const isSelected = selectedPlan === plan.key;
             const productPrice = getProductPrice(plan.key);

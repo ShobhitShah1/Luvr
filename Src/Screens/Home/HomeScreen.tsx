@@ -17,6 +17,7 @@ import RenderHomeNearby from './Components/RenderHomeNearby';
 import RenderLookingView from './Components/RenderlookingView';
 import RenderRecommendation from './Components/RenderRecommendation';
 import styles from './styles';
+import { useFocusEffect } from '@react-navigation/native';
 
 const profiles = [
   {
@@ -38,18 +39,20 @@ const profiles = [
 ];
 
 const HomeScreen = () => {
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const { requestLocationPermission } = useLocationPermission();
 
-  useEffect(() => {
-    Promise.all([
-      getMyLikes(),
-      getProfileData(),
-      askNotificationPermission(),
-      updateDeviceToken(),
-      handleLocationPermissionRequest(),
-    ]);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getMyLikes();
+      getProfileData();
+      askNotificationPermission();
+      updateDeviceToken();
+      handleLocationPermissionRequest();
+
+      return () => {};
+    }, [])
+  );
 
   const askNotificationPermission = async () => {
     requestNotifications(['alert', 'sound']);

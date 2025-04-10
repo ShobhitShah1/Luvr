@@ -109,3 +109,46 @@ export interface ListDetailProps {
   status: string;
   user_details: ProfileType[];
 }
+
+// NEW
+
+export interface SubscriptionPlanProps {
+  _id: string;
+  benefits: string[];
+  colors: Colors;
+  date: Date;
+  description: string;
+  enable: number;
+  icon: string;
+  key: string;
+  popularityTag: string;
+  price: string;
+  title: string;
+}
+
+interface Date {
+  $date: string;
+}
+
+interface Colors {
+  dark: Dark;
+  light: Dark;
+}
+
+interface Dark {
+  background: string;
+  border: string;
+  buyButton: string[];
+  buyButtonBorder: string;
+  buyButtonText: string;
+  checkIcon: string;
+  crownBackground: string;
+  crownBorder: string;
+  featuresBackground: string;
+  featuresBackgroundDark: string;
+  gradientColors: string[];
+  priceContainerBorder: string;
+  priceUnselectedColor: string;
+  secondary: string;
+  title: string;
+}

@@ -12,9 +12,10 @@ interface HeaderProps {
   Title: string;
   onUpdatePress?: () => void;
   isLoading?: boolean;
+  showRightIcon?: boolean;
 }
 
-const ProfileAndSettingHeader: FC<HeaderProps> = ({ Title, onUpdatePress, isLoading }) => {
+const ProfileAndSettingHeader: FC<HeaderProps> = ({ Title, onUpdatePress, isLoading, showRightIcon = true }) => {
   const { colors, isDark } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
 
@@ -22,13 +23,13 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({ Title, onUpdatePress, isLoad
     <View
       style={[
         styles.container,
-        !isDark && {
-          backgroundColor: colors.White,
-          shadowColor: colors.Black,
-          elevation: 5,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.5,
-        },
+        // !isDark && {
+        //   backgroundColor: colors.White,
+        //   shadowColor: colors.Black,
+        //   elevation: 5,
+        //   shadowOffset: { width: 0, height: 2 },
+        //   shadowOpacity: 0.5,
+        // },
       ]}
     >
       <SafeAreaView />
@@ -41,10 +42,10 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({ Title, onUpdatePress, isLoad
             source={CommonIcons.TinderBack}
           />
         </Pressable>
-        <View style={[styles.TitleView, { right: Title === 'Notification' ? 10 : 0 }]}>
+        <View style={[styles.TitleView, { right: Title === 'Notification' ? 10 : 3 }]}>
           <Text style={[styles.Title, { color: colors.TextColor }]}>{Title}</Text>
         </View>
-        {Title !== 'Notification' ? (
+        {Title !== 'Notification' && showRightIcon ? (
           <Pressable disabled={isLoading} style={styles.ModalSubmitButton} onPress={onUpdatePress}>
             <Image
               source={CommonIcons.Check}
@@ -53,7 +54,7 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({ Title, onUpdatePress, isLoad
             />
           </Pressable>
         ) : (
-          <View />
+          <View style={{ width: 25 }} />
         )}
       </View>
     </View>

@@ -91,7 +91,6 @@ export default function App() {
                   ),
                 }}
               >
-                <StatusBar translucent />
                 <MainRoute />
               </ToastProvider>
             </GestureHandlerRootView>

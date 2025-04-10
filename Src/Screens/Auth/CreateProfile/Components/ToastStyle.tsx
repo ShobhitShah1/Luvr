@@ -1,15 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {COLORS, FONTS, GROUP_FONT} from '../../../../Common/Theme';
+import { StyleSheet, Text, View } from 'react-native';
+import { COLORS, FONTS, GROUP_FONT } from '../../../../Common/Theme';
 
-const ToastStyle = ({status, title, message}: any) => {
+const ToastStyle = ({ status, title, message }: any) => {
   return (
-    <View
-      style={[
-        styles.Container,
-        {borderLeftColor: status === 'success' ? 'green' : 'red'},
-      ]}>
+    <View style={[styles.Container, { borderLeftColor: status === 'success' ? 'green' : 'red' }]}>
       <View>
         {title === null ? (
           <Text style={styles.MessageText}>{message}</Text>
