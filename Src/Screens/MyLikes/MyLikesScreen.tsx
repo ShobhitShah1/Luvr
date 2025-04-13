@@ -199,10 +199,9 @@ const MyLikesScreen = () => {
           return <MatchesContent MatchData={item} />;
         case 2:
           return <LikesContent LikesData={item} />;
-        // return <SubscriptionView selectedPlan={selectedPlan} handlePlanSelection={setSelectedPlan} />;
 
         default:
-          return <Text>Nothing</Text>;
+          return;
       }
     },
     [selectedTabIndex, selectedPlan, setSelectedPlan]

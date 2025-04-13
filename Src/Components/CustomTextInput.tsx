@@ -1,10 +1,9 @@
-import React, { forwardRef } from 'react';
-import { TextInput, TextInputProps, StyleProp, ViewStyle } from 'react-native';
+import React, { forwardRef, memo } from 'react';
+import { StyleProp, TextInput, TextInputProps, ViewStyle } from 'react-native';
 import { COLORS } from '../Common/Theme';
 import { useTheme } from '../Contexts/ThemeContext';
 
-interface CustomTextInputProps extends TextInputProps {}
-const CustomTextInput: React.FC<CustomTextInputProps> = (props, ref) => {
+const CustomTextInput = forwardRef<TextInput, TextInputProps>((props, ref) => {
   const { style, ...restProps } = props;
   const { colors } = useTheme();
 
@@ -20,6 +19,6 @@ const CustomTextInput: React.FC<CustomTextInputProps> = (props, ref) => {
       {...restProps}
     />
   );
-};
+});
 
-export default forwardRef(CustomTextInput);
+export default memo(CustomTextInput);

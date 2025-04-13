@@ -1,4 +1,4 @@
-import {LocalStorageFields} from '../../Types/LocalStorageFields';
+import { LocalStorageFields } from '../../Types/LocalStorageFields';
 import UserDataType from '../../Types/UserDataType';
 import {
   ON_SWIPE_LEFT,
@@ -20,10 +20,7 @@ const initialState: UserDataType & {
 } & {
   notifications: string[];
 } = {
-  ...Object.keys(LocalStorageFields).reduce(
-    (acc, field) => ({...acc, [field]: ''}),
-    {} as UserDataType,
-  ),
+  ...Object.keys(LocalStorageFields).reduce((acc, field) => ({ ...acc, [field]: '' }), {} as UserDataType),
   swipedLeftUserIds: [],
   swipedRightUserIds: [],
   userData: [],
@@ -43,7 +40,7 @@ const userReducer = (
   } & {
     CurrentScreen: string;
   } = initialState,
-  action: any,
+  action: any
 ) => {
   switch (action.type) {
     case SET_USER_DATA:
@@ -62,12 +59,8 @@ const userReducer = (
         swipedLeftUserIds: [...(state?.swipedLeftUserIds || []), action.userId],
       };
     case ON_SWIPE_RIGHT:
-      const newUserId =
-        action.userId instanceof Array ? action.userId : [action.userId];
-      const uniqueUserIds = new Set([
-        ...(state?.swipedRightUserIds || []),
-        ...newUserId,
-      ]);
+      const newUserId = action.userId instanceof Array ? action.userId : [action.userId];
+      const uniqueUserIds = new Set([...(state?.swipedRightUserIds || []), ...newUserId]);
 
       return {
         ...state,

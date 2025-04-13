@@ -42,6 +42,7 @@ import { useCustomToast } from '../Utils/toastUtils';
 import BottomTab from './BottomTab';
 import { navigationRef } from './RootNavigation';
 import QRCodeScreen from '../Screens/Donation/QRCodeScreen';
+import RedeemReferralCode from '../Screens/Donation/RedeemReferralCode';
 
 const excludedRoutes = [
   'Login',
@@ -209,6 +210,7 @@ export default function MainRoute() {
         <Stack.Screen name="Notification" component={NotificationScreen} />
         <Stack.Screen name="Donation" component={DonationScreen} />
         <Stack.Screen name="QRCodeScreen" component={QRCodeScreen} />
+        <Stack.Screen name="RedeemReferralCode" component={RedeemReferralCode} />
       </Stack.Navigator>
     </NavigationContainer>
   );

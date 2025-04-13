@@ -38,7 +38,6 @@ const CountryPickerView = forwardRef<TextInput, CountryPickerProps>(
             setDefaultDiallingCode(country.dialling_code);
           }
         } catch (error) {
-          console.error('Error in component:', error);
           setDiallingCode('+91');
           setDefaultDiallingCode('+91');
         } finally {

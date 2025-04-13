@@ -10,18 +10,27 @@ import { FONTS } from '../../Common/Theme';
 import { GradientBorderView } from '../../Components/GradientBorder';
 import { APP_NAME } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
+import { useUserData } from '../../Contexts/UserDataContext';
 import { useCustomToast } from '../../Utils/toastUtils';
 import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
+import ApiConfig from '../../Config/ApiConfig';
+
+const whatUserGet = [
+  'Like and dislike',
+  'Ability to verify Account',
+  'This is a free version which should include profile creation',
+];
 
 const QRCodeScreen = () => {
   const { isDark, colors } = useTheme();
   const { showToast } = useCustomToast();
+  const { userData } = useUserData();
 
-  const [referralCode] = useState('3erfawr234t');
+  const [referralCode] = useState((userData?._id && userData?._id?.toString()?.slice(-8)) || '');
 
-  const handleCopy = async () => {
+  const handleCopy = () => {
     try {
-      await Clipboard.setString(referralCode);
+      Clipboard.setString(referralCode);
 
       showToast(TextString.success.toUpperCase(), 'Referral code copied to clipboard', 'success');
     } catch (error) {
@@ -31,14 +40,10 @@ const QRCodeScreen = () => {
 
   const handleShare = async () => {
     try {
-      const result = await Share.share({
-        message: `Join me on ${APP_NAME} and get access to exclusive features! Use my referral code: ${referralCode}\n\nDownload the app now: https://example.com/app`, // Replace with your app's download link
+      Share.share({
+        message: `Join me on ${APP_NAME} and get access to exclusive features! Use my referral code: ${referralCode}\n\nDownload the app now: ${ApiConfig.PLAY_STORE}`,
         title: `${APP_NAME} Invitation`,
       });
-
-      if (result.action === Share.sharedAction) {
-        showToast(TextString.success.toUpperCase(), 'Referral shared successfully', 'success');
-      }
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), error?.message?.toString(), 'error');
     }
@@ -59,32 +64,33 @@ const QRCodeScreen = () => {
             style={[styles.qrContainer, { shadowColor: colors.Primary }]}
           >
             <View style={[styles.qrCodeWrapper, { backgroundColor: colors.White }]}>
-              <QRCode value="3erfawr234t" size={125} backgroundColor="transparent" />
+              <QRCode value={referralCode} size={128} backgroundColor="transparent" />
             </View>
           </GradientBorderView>
 
           <GradientBorderView
             gradientProps={{ colors: colors.ButtonGradient }}
-            style={[styles.referralContainer, { backgroundColor: isDark ? 'transparent' : colors.White }]}
+            style={[styles.referralContainer, { backgroundColor: 'transparent' }]}
           >
             <Text style={[styles.referralLabel, { color: colors.TextColor }]}>Referral Code</Text>
             <View
-              style={[
-                styles.referralCodeBox,
-                { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(240, 236, 255, 1)' },
-              ]}
+              style={[styles.referralCodeBox, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White }]}
             >
-              <Text style={[styles.referralCode, { color: colors.TextColor }]}>3erfawr234t</Text>
+              <Text style={[styles.referralCode, { color: colors.TextColor }]}>{referralCode}</Text>
               <Pressable onPress={handleCopy}>
                 <Text style={[styles.copyText, { color: colors.Primary }]}>Copy</Text>
               </Pressable>
             </View>
           </GradientBorderView>
 
-          <Text style={[styles.descriptionText, { color: colors.TextColor }]}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-            industry's standard dummy text ever since
-          </Text>
+          <View style={{ alignSelf: 'flex-start', gap: 15, marginBottom: 30, marginHorizontal: 5 }}>
+            {whatUserGet.map((res) => (
+              <View key={res?.toString()} style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
+                <Image source={CommonIcons.Check} style={{ width: 10, height: 10 }} tintColor={colors.Primary} />
+                <Text style={[styles.descriptionText, { color: colors.TextColor }]}>{res?.toString()}</Text>
+              </View>
+            ))}
+          </View>
 
           <LinearGradient
             start={{ x: 0, y: 0 }}
@@ -126,8 +132,8 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Medium,
   },
   qrContainer: {
-    width: 195,
-    height: 190,
+    width: 200,
+    height: 195,
     borderWidth: 13,
     borderRadius: 38,
     overflow: 'hidden',
@@ -152,7 +158,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 17,
     borderRadius: 20,
-    marginBottom: 30,
+    marginBottom: 25,
     marginTop: 5,
     overflow: 'hidden',
   },
@@ -160,7 +166,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     paddingLeft: 5,
     fontSize: 14,
-    fontFamily: FONTS.Medium,
+    fontFamily: FONTS.SemiBold,
   },
   referralCodeBox: {
     marginTop: 3,
@@ -177,17 +183,14 @@ const styles = StyleSheet.create({
   },
   copyText: {
     fontSize: 14,
-    fontFamily: FONTS.SemiBold,
+    fontFamily: FONTS.Bold,
   },
   descriptionText: {
-    textAlign: 'center',
-    marginBottom: 30,
-    fontSize: 14,
-    lineHeight: 23,
-    fontFamily: FONTS.Medium,
+    fontSize: 13,
+    fontFamily: FONTS.SemiBold,
   },
   shareButton: {
-    height: 45,
+    height: 53,
     width: '45%',
     borderRadius: 25,
     marginBottom: 20,
@@ -205,7 +208,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   shareText: {
-    fontSize: 16,
-    fontFamily: FONTS.Medium,
+    fontSize: 16.5,
+    fontFamily: FONTS.SemiBold,
   },
 });

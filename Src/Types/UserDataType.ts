@@ -1,12 +1,13 @@
-import {LocalStorageFields} from './LocalStorageFields';
+import { LocalStorageFields } from './LocalStorageFields';
 
 export interface UserDataType {
-  [LocalStorageFields._id]: number;
+  [LocalStorageFields._id]: number | string;
   [LocalStorageFields.eventName]: string;
   [LocalStorageFields.login_type]: string;
   [LocalStorageFields.about]: string;
   [LocalStorageFields.user_from]: string;
   [LocalStorageFields.mobile_no]: string;
+  [LocalStorageFields.phoneNumberWithoutCode]: string;
   [LocalStorageFields.identity]: string;
   [LocalStorageFields.profile_image]: string;
   [LocalStorageFields.full_name]: string;
