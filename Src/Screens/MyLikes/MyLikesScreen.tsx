@@ -8,16 +8,16 @@ import LinearGradient from 'react-native-linear-gradient';
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
+import { BOTTOM_TAB_HEIGHT } from '../../Common/Theme';
+import SubscriptionView from '../../Components/Subscription/SubscriptionView';
 import { useTheme } from '../../Contexts/ThemeContext';
 import UserService from '../../Services/AuthService';
-import { ListDetailProps, LikeMatchAndCrushAPIDataTypes } from '../../Types/Interface';
+import { LikeMatchAndCrushAPIDataTypes, ListDetailProps } from '../../Types/Interface';
 import { useCustomToast } from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import LikesContent from './Components/LikesContent';
 import MatchesContent from './Components/MatchesContent';
 import styles from './styles';
-import { BOTTOM_TAB_HEIGHT } from '../../Common/Theme';
-import SubscriptionView from '../../Components/Subscription/SubscriptionView';
 
 type TabData = { title: string; index?: number };
 
@@ -54,7 +54,6 @@ const MyLikesScreen = () => {
     match: [],
   });
 
-  const [matchAndLikeData, setMatchAndLikeData] = useState<ListDetailProps[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [isAPILoading, setIsAPILoading] = useState(true);
 
@@ -258,12 +257,11 @@ const MyLikesScreen = () => {
                   }
                   initialNumToRender={20}
                   maxToRenderPerBatch={20}
+                  ListEmptyComponent={<ListEmptyLikeView />}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item }) => <RenderContent item={item} />}
                 />
               )}
-
-              {/* <ListEmptyLikeView /> */}
             </View>
           )}
         </View>

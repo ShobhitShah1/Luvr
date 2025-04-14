@@ -23,6 +23,7 @@ import { useCustomToast } from '../../Utils/toastUtils';
 import TextString from '../../Common/TextString';
 import UserService from '../../Services/AuthService';
 import ApiConfig from '../../Config/ApiConfig';
+import { Camera, useCameraDevice, useCameraPermission, useCodeScanner } from 'react-native-vision-camera';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(CustomTextInput);
 
@@ -33,9 +34,23 @@ const RedeemReferralCode = () => {
 
   const code = (userData?._id && userData?._id?.toString()?.slice(-8)) || '';
 
+  const { hasPermission, requestPermission } = useCameraPermission();
   const [referralCode, setReferralCode] = useState<string[]>(Array(8).fill(''));
+
+  const device = useCameraDevice('back');
+  const codeScanner = useCodeScanner({
+    codeTypes: ['qr', 'ean-13'],
+    onCodeScanned: (codes) => {
+      for (const code of codes) {
+        if (code?.value && code.value?.length === 8) {
+          setReferralCode(code.value.split(''));
+        }
+        break;
+      }
+    },
+  });
+
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const inputRefs = useRef<Array<TextInput | null>>(Array(8).fill(null));
 
@@ -124,8 +139,6 @@ const RedeemReferralCode = () => {
     }, 100);
   };
 
-  const handleSubmit = () => {};
-
   const submitReferralCode = async () => {
     try {
       if (referralCode?.join('')?.length !== 8) {
@@ -201,25 +214,30 @@ const RedeemReferralCode = () => {
               { shadowColor: colors.Primary, backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White },
             ]}
           >
-            {isCameraActive && hasPermission ? (
+            {device && isCameraActive && hasPermission ? (
               <Animated.View entering={FadeIn} style={styles.cameraContainer}>
                 <Pressable style={[styles.closeCamera, { backgroundColor: colors.Primary }]} onPress={toggleCamera}>
                   <Text style={{ color: colors.White }}>✕</Text>
                 </Pressable>
+
+                <Camera style={StyleSheet.absoluteFill} device={device} isActive={true} codeScanner={codeScanner} />
               </Animated.View>
             ) : (
-              <View style={styles.qrCodeWrapper}>
+              <Pressable
+                style={styles.qrCodeWrapper}
+                onPress={() => requestPermission().then((res) => setIsCameraActive(res))}
+              >
                 <Text style={[styles.scanText, { color: colors.TextColor }]}>Tap to scan referral code</Text>
                 <View style={styles.scanFrame}>
                   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', opacity: 0.5 }}>
-                    <QRCode value={code} size={100} backgroundColor="transparent" />
+                    <QRCode value={code} size={95} color={colors.TextColor} backgroundColor="transparent" />
                   </View>
                   <View style={[styles.cornerTL, { borderColor: colors.Primary }]} />
                   <View style={[styles.cornerTR, { borderColor: colors.Primary }]} />
                   <View style={[styles.cornerBL, { borderColor: colors.Primary }]} />
                   <View style={[styles.cornerBR, { borderColor: colors.Primary }]} />
                 </View>
-              </View>
+              </Pressable>
             )}
           </GradientBorderView>
 
@@ -292,14 +310,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: hp('4%'),
     borderRadius: SIZES.radius,
-
-    // shadowOffset: {
-    //   height: 0,
-    //   width: 0,
-    // },
-    // shadowOpacity: 0.8,
-    // shadowRadius: 10,
-    // elevation: 10,
   },
   qrCodeWrapper: {
     height: hp('27%'),
@@ -383,12 +393,10 @@ const styles = StyleSheet.create({
     fontSize: SIZES.body4,
   },
   cameraContainer: {
-    height: hp('25%'),
-    borderRadius: SIZES.radius,
+    height: hp('27%'),
     overflow: 'hidden',
-    marginBottom: hp('4%'),
-    position: 'relative',
-    backgroundColor: 'rgba(0,0,0,0.1)', // Placeholder for camera view
+    borderRadius: SIZES.radius,
+    backgroundColor: 'rgba(0,0,0,0.1)',
   },
   camera: {
     flex: 1,
@@ -400,6 +408,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
+    zIndex: 99999,
     justifyContent: 'center',
     alignItems: 'center',
   },

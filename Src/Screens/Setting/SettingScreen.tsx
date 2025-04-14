@@ -55,7 +55,7 @@ const SOMETHING_WENT_WRONG =
 const SettingScreen = () => {
   const { colors, isDark } = useTheme();
   const dispatch = useDispatch();
-  const { reset } = useNavigation();
+  const navigation = useNavigation();
   const { showToast } = useCustomToast();
   const UserData = useSelector((state: any) => state?.user);
 
@@ -215,7 +215,7 @@ const SettingScreen = () => {
           await GoogleSignin.signOut();
         } catch (error) {}
       }
-      await reset({
+      await navigation.reset({
         index: 0,
         routes: [{ name: 'NumberVerification' }],
       });
@@ -788,6 +788,12 @@ Let's make every moment count together! #LoveConnects`,
                           setRateUsModalView(!RateUsModalView);
                         }
                       }}
+                    />
+                    <SettingFlexView
+                      isActive={false}
+                      style={styles.ShareFlexViewStyle}
+                      Item={'Have a referral code?'}
+                      onPress={() => navigation.navigate('RedeemReferralCode')}
                     />
                   </View>
                 </EditProfileBoxView>

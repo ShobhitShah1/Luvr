@@ -52,27 +52,27 @@ export default function App() {
     });
   }, []);
 
-  // useEffect(() => {
-  //   fetchProducts();
-  // }, []);
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
-  // const fetchProducts = async () => {
-  //   try {
-  //     const connected = await initConnection();
-  //     if (connected && skus && store) {
-  //       const products = await getProducts({ skus });
+  const fetchProducts = async () => {
+    try {
+      const connected = await initConnection();
+      if (connected && skus && store) {
+        const products = await getProducts({ skus });
 
-  //       if (products) {
-  //         store.dispatch({
-  //           type: MEMBERSHIP_PRODUCTS,
-  //           membershipProducts: products,
-  //         });
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching products:', error);
-  //   }
-  // };
+        if (products) {
+          store.dispatch({
+            type: MEMBERSHIP_PRODUCTS,
+            membershipProducts: products,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
 
   return (
     <Provider store={store}>

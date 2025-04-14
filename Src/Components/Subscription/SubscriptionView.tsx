@@ -46,12 +46,14 @@ const SubscriptionView = ({
     }
   };
 
-  const connectIAP = async () => {
+  const connectIAP = async (data: SubscriptionPlanProps[]) => {
     try {
       const connected = await RNIap.initConnection();
 
       if (connected) {
-        const skus = apiSubscriptionData.map((plan) => plan.key)?.filter((value) => value !== 'Free');
+        const skus = data
+          ? data.map((plan) => plan.key)?.filter((value) => value !== 'Free')
+          : apiSubscriptionData.map((plan) => plan.key)?.filter((value) => value !== 'Free');
 
         if (skus?.length === 0) {
           return;
@@ -120,10 +122,9 @@ const SubscriptionView = ({
       const APIResponse = await UserService.UserRegister({ eventName: ApiConfig.GetSubscription });
       if (APIResponse?.code === 200 && APIResponse.data) {
         setApiSubscriptionData(APIResponse.data);
-        connectIAP();
+        connectIAP(APIResponse.data);
       }
     } catch (error) {
-      console.log('GET SUBSCRIPTION DATA ERROR:', error);
       setIsProductFetchLoading(false);
     }
   };
@@ -165,7 +166,6 @@ const SubscriptionView = ({
         } as RNIap.RequestSubscriptionIOS);
       }
     } catch (error: any) {
-      console.error('Purchase request error:', error);
       setIsPurchasing(false);
 
       if (error?.code !== 'E_USER_CANCELLED') {
@@ -235,7 +235,7 @@ const SubscriptionView = ({
             </View>
 
             <View style={styles.featuresGrid}>
-              {getSelectedPlan() &&
+              {getSelectedPlan?.() &&
                 getSelectedPlan()?.benefits?.map((feature, index) => (
                   <View key={index} style={styles.featureItem}>
                     <Image
