@@ -148,9 +148,11 @@ const RedeemReferralCode = () => {
       const code = referralCode.join('');
 
       const dataToSend = {
-        eventName: ApiConfig.UserReferral,
+        eventName: ApiConfig.HaveReferralCode,
         user_id: userData?._id,
         referral_code: code,
+        subscription_count: 1,
+        subscription_month: 3,
       };
       const APIResponse = await UserService.UserRegister(dataToSend);
 

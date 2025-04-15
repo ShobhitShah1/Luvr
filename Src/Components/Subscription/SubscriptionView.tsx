@@ -15,6 +15,7 @@ import UserService from '../../Services/AuthService';
 import { SubscriptionPlanProps } from '../../Types/Interface';
 import { useCustomToast } from '../../Utils/toastUtils';
 import OpenURL from '../OpenURL';
+import { getProfileData } from '../../Utils/profileUtils';
 
 const { width } = Dimensions.get('window');
 
@@ -91,7 +92,6 @@ const SubscriptionView = ({
 
           setPurchaseProcessed(true);
           setIsPurchasing(false);
-          showToast('Success', 'Your subscription has been activated successfully!', 'success');
         } catch (error: any) {
           setIsPurchasing(false);
           showToast(TextString.error?.toUpperCase(), error?.message?.toString(), TextString.error);
@@ -152,7 +152,7 @@ const SubscriptionView = ({
       if (product.platform === RNIap.SubscriptionPlatform.android) {
         const androidProduct = product as RNIap.SubscriptionAndroid;
 
-        await RNIap.requestSubscription({
+        const response = await RNIap.requestSubscription({
           subscriptionOffers: [
             {
               sku: product.productId,
@@ -160,10 +160,15 @@ const SubscriptionView = ({
             },
           ],
         } as RNIap.RequestSubscriptionAndroid);
+
+        console.log('response:', response);
+        if (response) callPurchaseAPI(Array.isArray(response) ? response[0] : response);
       } else {
-        await RNIap.requestSubscription({
+        const response = await RNIap.requestSubscription({
           sku: product.productId,
         } as RNIap.RequestSubscriptionIOS);
+
+        if (response) callPurchaseAPI(Array.isArray(response) ? response[0] : response);
       }
     } catch (error: any) {
       setIsPurchasing(false);
@@ -171,6 +176,45 @@ const SubscriptionView = ({
       if (error?.code !== 'E_USER_CANCELLED') {
         showToast('Error', error?.message || 'Failed to initiate purchase. Please try again later.', 'error');
       }
+    }
+  };
+
+  const callPurchaseAPI = async (purchaseResponse: RNIap.SubscriptionPurchase) => {
+    try {
+      if (!purchaseResponse) {
+        return;
+      }
+
+      const payment_response = {
+        platform: Platform.OS?.toLowerCase(),
+        productId: purchaseResponse.productId,
+        productIds: purchaseResponse.productIds || [],
+        purchaseToken: purchaseResponse.purchaseToken,
+        transactionId: purchaseResponse.transactionId,
+        transactionDate: purchaseResponse.transactionDate,
+        autoRenewing: purchaseResponse.autoRenewingAndroid,
+        isAcknowledged: purchaseResponse.isAcknowledgedAndroid,
+        purchaseState: purchaseResponse.purchaseStateAndroid,
+        packageName: purchaseResponse.packageNameAndroid,
+        signature: purchaseResponse.signatureAndroid,
+        developerPayload: purchaseResponse.developerPayloadAndroid || '',
+        obfuscatedAccountId: purchaseResponse.obfuscatedAccountIdAndroid || '',
+        obfuscatedProfileId: purchaseResponse.obfuscatedProfileIdAndroid || '',
+        transactionReceipt: JSON.parse(purchaseResponse.transactionReceipt || '{}'),
+        dataAndroid: JSON.parse(purchaseResponse.dataAndroid || '{}'),
+      };
+
+      const dataToSend = { eventName: 'purchase', payment_response };
+      const APIResponse = await UserService.UserRegister(dataToSend);
+
+      if (APIResponse.code === 200) {
+        await getProfileData().then((res) => console.log(res));
+        showToast(TextString.success.toUpperCase(), APIResponse?.message?.toString(), TextString.success);
+      }
+    } catch (error: any) {
+      showToast(TextString.error, error?.message?.toString(), TextString.error);
+    } finally {
+      setIsPurchasing(false);
     }
   };
 

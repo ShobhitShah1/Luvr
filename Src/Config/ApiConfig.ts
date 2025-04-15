@@ -21,6 +21,7 @@ const ApiConfig = {
   ReportProfile: 'report_users',
   GetSubscription: 'get_subscriptions',
   UserReferral: 'user_referral',
+  HaveReferralCode: 'have_referral_code',
 };
 
 async function fetchRemoteConfigValues() {

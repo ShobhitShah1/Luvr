@@ -33,6 +33,7 @@ export const getProfileData = async (): Promise<boolean> => {
     }
 
     const flattenedData = flattenObject(APIResponse.data);
+    console.log('flattenedData:', flattenedData);
     const validFields: FieldValuePair[] = [];
 
     for (const [field, value] of Object.entries(flattenedData)) {

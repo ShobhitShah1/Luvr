@@ -18,6 +18,7 @@ import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import LikesContent from './Components/LikesContent';
 import MatchesContent from './Components/MatchesContent';
 import styles from './styles';
+import { useUserData } from '../../Contexts/UserDataContext';
 
 type TabData = { title: string; index?: number };
 
@@ -36,6 +37,7 @@ interface LikeStateProps {
 const MyLikesScreen = () => {
   const { colors, isDark } = useTheme();
   const { showToast } = useCustomToast();
+  const { userData } = useUserData();
 
   const [selectedTabIndex, setSelectedTabIndex] = useState<TabData>({
     title: '',
