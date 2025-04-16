@@ -12,7 +12,7 @@ import { COLORS } from './Src/Common/Theme';
 import { onDisplayNotification } from './Src/Components/onDisplayNotification';
 import { skus } from './Src/Config/ApiConfig';
 import { UserDataProvider } from './Src/Contexts/UserDataContext';
-import { MEMBERSHIP_PRODUCTS } from './Src/Redux/Action/actions';
+import { DONATION_PRODUCTS } from './Src/Redux/Action/actions';
 import { persistor, store } from './Src/Redux/Store/store';
 import MainRoute from './Src/Routes/MainRoute';
 import { navigationRef } from './Src/Routes/RootNavigation';
@@ -64,8 +64,8 @@ export default function App() {
 
         if (products) {
           store.dispatch({
-            type: MEMBERSHIP_PRODUCTS,
-            membershipProducts: products,
+            type: DONATION_PRODUCTS,
+            donationProducts: products,
           });
         }
       }

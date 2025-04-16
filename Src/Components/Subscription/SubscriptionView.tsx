@@ -16,6 +16,7 @@ import { SubscriptionPlanProps } from '../../Types/Interface';
 import { useCustomToast } from '../../Utils/toastUtils';
 import OpenURL from '../OpenURL';
 import { getProfileData } from '../../Utils/profileUtils';
+import { debouncedGetSubscription } from '../../Services/SubscriptionService';
 
 const { width } = Dimensions.get('window');
 
@@ -161,7 +162,6 @@ const SubscriptionView = ({
           ],
         } as RNIap.RequestSubscriptionAndroid);
 
-        console.log('response:', response);
         if (response) callPurchaseAPI(Array.isArray(response) ? response[0] : response);
       } else {
         const response = await RNIap.requestSubscription({
@@ -208,13 +208,14 @@ const SubscriptionView = ({
       const APIResponse = await UserService.UserRegister(dataToSend);
 
       if (APIResponse.code === 200) {
-        await getProfileData().then((res) => console.log(res));
+        await getProfileData();
         showToast(TextString.success.toUpperCase(), APIResponse?.message?.toString(), TextString.success);
       }
     } catch (error: any) {
       showToast(TextString.error, error?.message?.toString(), TextString.error);
     } finally {
       setIsPurchasing(false);
+      debouncedGetSubscription(1000);
     }
   };
 

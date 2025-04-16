@@ -1,21 +1,38 @@
+// Context/UserDataContext.tsx
 import React, { ReactNode, createContext, useContext, useReducer, useEffect, useRef, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { LocalStorageFields, UserField } from '../Types/LocalStorageFields';
 import { store } from '../Redux/Store/store';
 import { updateField as reduxUpdateField } from '../Redux/Action/actions';
-import { createSelector } from 'reselect'; // Add this import
+import { createSelector } from 'reselect';
 import UserDataType from '../Types/UserDataType';
+import { SubscriptionData } from '../Types/SubscriptionTypes';
+import { debouncedGetSubscription } from '../Services/SubscriptionService';
 
 interface RootState {
   user: {
     userData?: any[];
     [key: string]: any;
   };
+  membership: {
+    subscription: SubscriptionData | null;
+    isSubscriptionActive: boolean;
+    isLoading: boolean;
+    error: string | null;
+  };
 }
+
 interface UserDataContextProps {
   userData: UserDataType;
+  subscription: {
+    data: SubscriptionData | null;
+    isActive: boolean;
+    isLoading: boolean;
+    error: string | null;
+  };
   updateField: (field: UserField, value: any) => void;
   resetUserData: () => void;
+  refreshSubscription: () => Promise<boolean>;
 }
 
 type UserAction =
@@ -55,6 +72,7 @@ const userReducer = (state: UserDataType, action: UserAction): UserDataType => {
 const selectUserState = (state: RootState) => state.user;
 const selectUserFields = (state: RootState) => state.user;
 const selectUserDataArray = (state: RootState) => state.user.userData;
+const selectSubscription = (state: RootState) => state.membership;
 
 const selectUserData = createSelector(
   [selectUserState, selectUserFields, selectUserDataArray],
@@ -89,6 +107,7 @@ const UserDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const prevReduxData = useRef<Record<string, any>>({});
 
   const reduxUserData = useSelector(selectUserData);
+  const subscriptionData = useSelector(selectSubscription);
 
   useEffect(() => {
     const hasDataChanged = () => {
@@ -105,6 +124,11 @@ const UserDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
   }, [reduxUserData]);
 
+  // Fetch subscription data on initial load
+  useEffect(() => {
+    debouncedGetSubscription();
+  }, []);
+
   const updateField = (field: UserField, value: any) => {
     store.dispatch(reduxUpdateField(field, value));
 
@@ -117,13 +141,24 @@ const UserDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     dispatch({ type: 'RESET' });
   };
 
+  const refreshSubscription = async () => {
+    return await debouncedGetSubscription();
+  };
+
   const contextValue = useMemo(
     () => ({
       userData: localUserData,
+      subscription: {
+        data: subscriptionData.subscription,
+        isActive: subscriptionData.isSubscriptionActive,
+        isLoading: subscriptionData.isLoading,
+        error: subscriptionData.error,
+      },
       updateField,
       resetUserData,
+      refreshSubscription,
     }),
-    [localUserData]
+    [localUserData, subscriptionData]
   );
 
   return <UserDataContext.Provider value={contextValue}>{children}</UserDataContext.Provider>;

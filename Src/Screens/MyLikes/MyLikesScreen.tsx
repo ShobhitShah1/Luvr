@@ -37,7 +37,7 @@ interface LikeStateProps {
 const MyLikesScreen = () => {
   const { colors, isDark } = useTheme();
   const { showToast } = useCustomToast();
-  const { userData } = useUserData();
+  const { userData, subscription, refreshSubscription } = useUserData();
 
   const [selectedTabIndex, setSelectedTabIndex] = useState<TabData>({
     title: '',
@@ -232,13 +232,13 @@ const MyLikesScreen = () => {
             </View>
           ) : (
             <View style={{ flex: 1 }}>
-              {selectedTabIndex.index === 2 && (
+              {selectedTabIndex.index === 2 && !subscription.isActive && (
                 <View style={{ flex: 1, marginTop: 30 }}>
                   <SubscriptionView selectedPlan={selectedPlan} handlePlanSelection={setSelectedPlan} />
                 </View>
               )}
 
-              {selectedTabIndex.index !== 2 && (
+              {selectedTabIndex.index !== 2 && !subscription.isActive && (
                 <FlatList
                   data={
                     matchLikeAndCrushData[

@@ -8,7 +8,7 @@ export const ON_SWIPE_LEFT = 'ON_SWIPE_LEFT';
 export const ON_SWIPE_RIGHT = 'ON_SWIPE_RIGHT';
 export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 export const CURRENT_SCREEN = 'CURRENT_SCREEN';
-export const MEMBERSHIP_PRODUCTS = 'MEMBERSHIP_PRODUCTS';
+export const DONATION_PRODUCTS = 'DONATION_PRODUCTS';
 
 export type NotificationPayload = {
   title: string;

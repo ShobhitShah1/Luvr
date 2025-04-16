@@ -8,12 +8,11 @@ import { useSelector } from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
-import { COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
+import { FONTS, GROUP_FONT } from '../../Common/Theme';
 import GradientButton from '../../Components/AuthComponents/GradientButton';
 import { skus } from '../../Config/ApiConfig';
 import { useTheme } from '../../Contexts/ThemeContext';
 import UserService from '../../Services/AuthService';
-import { MembershipProductsType } from '../../Types/Interface';
 import { useCustomToast } from '../../Utils/toastUtils';
 
 const BackgroundImageSize = 150;
@@ -24,16 +23,12 @@ const DonationScreen = () => {
   const { isDark, colors } = useTheme();
   const { showToast } = useCustomToast();
 
-  const membershipStore = useSelector((state: any) => state.membership);
+  const donationStore = useSelector((state: any) => state.donation);
+  const donationAmount =
+    donationStore?.donationProducts?.[1]?.price || donationStore?.donationProducts?.[0]?.price || 0;
 
   const [isPaymentSuccess, setPaymentSuccess] = useState(false);
   const [isPaymentLoading, setPaymentLoader] = useState(false);
-  const [membershipProductsList, setMembershipProductsList] = useState<MembershipProductsType[]>(
-    membershipStore?.membershipProducts
-  );
-  const [donationAmount, setDonationAmount] = useState<string | number>(
-    membershipProductsList?.[1]?.price || membershipProductsList?.[0]?.price
-  );
 
   useEffect(() => {
     initializedConnection();
@@ -147,7 +142,7 @@ const DonationScreen = () => {
             <GradientButton
               Title={isPaymentSuccess ? 'Make another donation' : `Donate now ${donationAmount}`}
               isLoading={isPaymentLoading}
-              Navigation={() => requestDonationPurchase({ id: [membershipProductsList?.[1]?.productId] })}
+              Navigation={() => requestDonationPurchase({ id: [donationStore?.donationProducts?.[1]?.productId] })}
               Disabled={false}
             />
             {!isPaymentSuccess && (
