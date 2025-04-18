@@ -3,7 +3,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import NetInfo from '@react-native-community/netinfo';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
+import { ActivityIndicator, Button, FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
@@ -19,6 +19,7 @@ import LikesContent from './Components/LikesContent';
 import MatchesContent from './Components/MatchesContent';
 import styles from './styles';
 import { useUserData } from '../../Contexts/UserDataContext';
+import { cancelSubscription } from '../../Services/SubscriptionService';
 
 type TabData = { title: string; index?: number };
 
@@ -37,7 +38,7 @@ interface LikeStateProps {
 const MyLikesScreen = () => {
   const { colors, isDark } = useTheme();
   const { showToast } = useCustomToast();
-  const { userData, subscription, refreshSubscription } = useUserData();
+  const { subscription } = useUserData();
 
   const [selectedTabIndex, setSelectedTabIndex] = useState<TabData>({
     title: '',
@@ -208,9 +209,18 @@ const MyLikesScreen = () => {
     [selectedTabIndex, selectedPlan, setSelectedPlan]
   );
 
+  console.log('subscription:', subscription?.data?._id, subscription?.isActive);
+
   return (
     <GradientView>
       <View style={styles.container}>
+        {subscription.isActive && (
+          <Button
+            title="Cancel"
+            onPress={() => subscription?.data?._id && cancelSubscription(subscription?.data?._id)}
+          />
+        )}
+
         <BottomTabHeader showSetting={false} />
         <View style={styles.TopTabContainerView}>
           <View style={styles.FlatListContentContainerStyle}>
@@ -232,13 +242,11 @@ const MyLikesScreen = () => {
             </View>
           ) : (
             <View style={{ flex: 1 }}>
-              {selectedTabIndex.index === 2 && !subscription.isActive && (
+              {selectedTabIndex.index === 2 && !subscription.isActive ? (
                 <View style={{ flex: 1, marginTop: 30 }}>
                   <SubscriptionView selectedPlan={selectedPlan} handlePlanSelection={setSelectedPlan} />
                 </View>
-              )}
-
-              {selectedTabIndex.index !== 2 && !subscription.isActive && (
+              ) : (
                 <FlatList
                   data={
                     matchLikeAndCrushData[
@@ -257,8 +265,8 @@ const MyLikesScreen = () => {
                       colors={[colors.Primary]}
                     />
                   }
-                  initialNumToRender={20}
-                  maxToRenderPerBatch={20}
+                  initialNumToRender={50}
+                  maxToRenderPerBatch={50}
                   ListEmptyComponent={<ListEmptyLikeView />}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item }) => <RenderContent item={item} />}

@@ -1,6 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
 import notifee, { EventType } from '@notifee/react-native';
-import { setRootViewBackgroundColor } from '@pnthach95/react-native-root-view-background';
 import messaging from '@react-native-firebase/messaging';
 import React, { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -8,17 +7,15 @@ import { getProducts, initConnection } from 'react-native-iap';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import { COLORS } from './Src/Common/Theme';
 import { onDisplayNotification } from './Src/Components/onDisplayNotification';
 import { skus } from './Src/Config/ApiConfig';
+import { ThemeProvider } from './Src/Contexts/ThemeContext';
 import { UserDataProvider } from './Src/Contexts/UserDataContext';
 import { DONATION_PRODUCTS } from './Src/Redux/Action/actions';
 import { persistor, store } from './Src/Redux/Store/store';
 import MainRoute from './Src/Routes/MainRoute';
 import { navigationRef } from './Src/Routes/RootNavigation';
 import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
-import { ThemeProvider } from './Src/Contexts/ThemeContext';
-import { StatusBar } from 'react-native';
 
 export default function App() {
   useEffect(() => {

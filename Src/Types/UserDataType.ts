@@ -50,6 +50,8 @@ export interface UserDataType {
   [LocalStorageFields.email]: string;
   [LocalStorageFields.CurrentScreen]: string;
   [LocalStorageFields.apple_id]: string;
+  [LocalStorageFields.phoneNumberCountryCode]: string;
+  [LocalStorageFields.phoneNumberWithoutCode]: string;
 }
 
 export default UserDataType;

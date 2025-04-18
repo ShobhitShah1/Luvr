@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import messaging from '@react-native-firebase/messaging';
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { memo, useCallback, useState } from 'react';
 import { FlatList, RefreshControl, ScrollView, View } from 'react-native';
 import { requestNotifications } from 'react-native-permissions';
 import CommonImages from '../../Common/CommonImages';
@@ -17,7 +18,6 @@ import RenderHomeNearby from './Components/RenderHomeNearby';
 import RenderLookingView from './Components/RenderlookingView';
 import RenderRecommendation from './Components/RenderRecommendation';
 import styles from './styles';
-import { useFocusEffect } from '@react-navigation/native';
 
 const profiles = [
   {

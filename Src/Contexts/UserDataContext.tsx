@@ -7,7 +7,7 @@ import { updateField as reduxUpdateField } from '../Redux/Action/actions';
 import { createSelector } from 'reselect';
 import UserDataType from '../Types/UserDataType';
 import { SubscriptionData } from '../Types/SubscriptionTypes';
-import { debouncedGetSubscription } from '../Services/SubscriptionService';
+import { debouncedGetSubscription, scheduleSubscriptionExpiryCheck } from '../Services/SubscriptionService';
 
 interface RootState {
   user: {
@@ -50,13 +50,11 @@ const UserDataContext = createContext<UserDataContextProps | undefined>(undefine
 const userReducer = (state: UserDataType, action: UserAction): UserDataType => {
   switch (action.type) {
     case 'UPDATE_FIELD':
-      // Avoid re-renders if the value hasn't changed
       if (state[action.field] === action.value) {
         return state;
       }
       return { ...state, [action.field]: action.value };
     case 'SET_ALL_DATA':
-      // Only update if there are actual changes
       const hasChanges = Object.entries(action.data).some(([key, value]) => state[key as UserField] !== value);
       if (!hasChanges) {
         return state;
@@ -87,7 +85,6 @@ const selectUserData = createSelector(
     });
 
     if (userDataArray && userDataArray.length > 0) {
-      // Check if userData[0] is an object before processing
       const firstUserData = userDataArray[0];
       if (firstUserData && typeof firstUserData === 'object') {
         Object.entries(firstUserData).forEach(([key, value]) => {
@@ -124,10 +121,22 @@ const UserDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
   }, [reduxUserData]);
 
-  // Fetch subscription data on initial load
   useEffect(() => {
     debouncedGetSubscription();
   }, []);
+
+  // In the UserDataProvider component, add this effect to handle subscription updates
+  useEffect(() => {
+    if (subscriptionData.subscription && subscriptionData.isSubscriptionActive) {
+      scheduleSubscriptionExpiryCheck(subscriptionData.subscription);
+    }
+  }, [subscriptionData.subscription, subscriptionData.isSubscriptionActive]);
+
+  // useEffect(() => {
+  //   return () => {
+  //     clearSubscriptionTimers();
+  //   };
+  // }, []);
 
   const updateField = (field: UserField, value: any) => {
     store.dispatch(reduxUpdateField(field, value));
