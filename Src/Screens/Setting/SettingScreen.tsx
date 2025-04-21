@@ -611,19 +611,34 @@ Let's make every moment count together! #LoveConnects`,
                 }}
               >
                 <EditProfileBoxView IsViewLoading={IsSettingLoading}>
-                  <SettingFlexView
-                    isActive={UserSetting?.setting_active_status}
-                    style={styles.PhoneNumberFlexStyle}
-                    Item={'Show my status'}
-                    onPress={() => {}}
-                    onSwitchPress={() => {
-                      setUserSettingData((prevState) => ({
-                        ...prevState,
-                        setting_active_status: !UserSetting?.setting_active_status,
-                      }));
-                    }}
-                    IsSwitch={true}
-                  />
+                  <View>
+                    <SettingFlexView
+                      isActive={UserSetting?.setting_active_status}
+                      style={styles.PhoneNumberFlexStyle}
+                      Item={'Show my status'}
+                      onPress={() => {}}
+                      onSwitchPress={() => {
+                        setUserSettingData((prevState) => ({
+                          ...prevState,
+                          setting_active_status: !UserSetting?.setting_active_status,
+                        }));
+                      }}
+                      IsSwitch={true}
+                    />
+                    <SettingFlexView
+                      isActive={UserSetting?.setting_active_status}
+                      style={styles.PhoneNumberFlexStyle}
+                      Item={'Show my status'}
+                      onPress={() => {}}
+                      onSwitchPress={() => {
+                        setUserSettingData((prevState) => ({
+                          ...prevState,
+                          setting_active_status: !UserSetting?.setting_active_status,
+                        }));
+                      }}
+                      IsSwitch={true}
+                    />
+                  </View>
                 </EditProfileBoxView>
               </GradientBorderView>
             </View>

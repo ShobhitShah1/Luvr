@@ -1,5 +1,5 @@
 import { Image } from 'moti';
-import React, { FC, useMemo } from 'react';
+import React, { FC, memo, useMemo } from 'react';
 import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ReactNativeModal from 'react-native-modal';
@@ -136,7 +136,7 @@ const ItsAMatch: FC<ItsAMatchProps> = ({ user, onSayHiClick, onCloseModalClick, 
   );
 };
 
-export default ItsAMatch;
+export default memo(ItsAMatch);
 
 const styles = StyleSheet.create({
   modalContainer: {

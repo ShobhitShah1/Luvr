@@ -3,7 +3,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Skeleton } from 'moti/skeleton';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Dimensions, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import LinearGradient from 'react-native-linear-gradient';
@@ -202,7 +202,7 @@ const ProfileScreen = () => {
   );
 };
 
-export default ProfileScreen;
+export default memo(ProfileScreen);
 
 const styles = StyleSheet.create({
   container: {

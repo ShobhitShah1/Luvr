@@ -1038,7 +1038,11 @@ const EditProfileScreen = () => {
           >
             <View style={styles.CloseViewContainer}>
               <LinearGradient style={styles.ModalCloseIconBTN} colors={colors.ButtonGradient}>
-                <Pressable onPress={() => bottomSheetModalRef?.current?.close()}>
+                <Pressable
+                  onPress={() => bottomSheetModalRef?.current?.close()}
+                  style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
                   <Image source={CommonIcons.ic_cross} style={styles.ModalCloseIcon} />
                 </Pressable>
               </LinearGradient>
@@ -1058,6 +1062,7 @@ const EditProfileScreen = () => {
                     style={{ flex: 1, justifyContent: 'center' }}
                     disabled={isFetchDataAPILoading}
                     onPress={() => onUpdateProfile()}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                   >
                     <Image
                       source={CommonIcons.Check}

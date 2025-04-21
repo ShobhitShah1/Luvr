@@ -1,22 +1,17 @@
-import React, {FC, useState} from 'react';
-import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {COLORS} from '../../../../Common/Theme';
+import React, { FC, memo, useState } from 'react';
+import { ActivityIndicator, Dimensions, Image, StyleSheet, View } from 'react-native';
+import { COLORS } from '../../../../Common/Theme';
 import ApiConfig from '../../../../Config/ApiConfig';
-import {DummyImage} from '../../../../Config/Setting';
+import { DummyImage } from '../../../../Config/Setting';
 
 interface UserImagesProps {
   Images: string;
   index: number;
 }
 
-const RenderUserImagesView: FC<UserImagesProps> = ({Images, index}) => {
+const RenderUserImagesView: FC<UserImagesProps> = ({ Images, index }) => {
   const [IsImageLoading, setIsImageLoading] = useState(false);
+
   return (
     <View style={styles.ImageContainer} key={index}>
       <Image
@@ -39,7 +34,7 @@ const RenderUserImagesView: FC<UserImagesProps> = ({Images, index}) => {
   );
 };
 
-export default RenderUserImagesView;
+export default memo(RenderUserImagesView);
 
 const styles = StyleSheet.create({
   ImageContainer: {

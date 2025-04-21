@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
@@ -21,7 +21,11 @@ const CategoryDetailHeader: FC<CategoryHeaderProps> = ({ item }) => {
   return (
     <SafeAreaView style={styles.Container}>
       <View style={styles.ContentView}>
-        <Pressable onPress={() => navigation?.canGoBack() && navigation.goBack()} style={styles.BackIconView}>
+        <Pressable
+          onPress={() => navigation?.canGoBack() && navigation.goBack()}
+          style={styles.BackIconView}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
           <Image
             resizeMode="contain"
             tintColor={colors.TextColor}
@@ -38,7 +42,7 @@ const CategoryDetailHeader: FC<CategoryHeaderProps> = ({ item }) => {
   );
 };
 
-export default CategoryDetailHeader;
+export default memo(CategoryDetailHeader);
 
 const styles = StyleSheet.create({
   Container: {

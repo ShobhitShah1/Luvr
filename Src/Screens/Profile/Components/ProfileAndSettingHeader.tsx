@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
@@ -34,7 +34,12 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({ Title, onUpdatePress, isLoad
     >
       <SafeAreaView />
       <View style={styles.ContentView}>
-        <Pressable disabled={isLoading} onPress={() => navigation.goBack()} style={styles.ViewStyle}>
+        <Pressable
+          disabled={isLoading}
+          onPress={() => navigation.goBack()}
+          style={styles.ViewStyle}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
           <Image
             resizeMode="contain"
             tintColor={colors.TextColor}
@@ -46,7 +51,12 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({ Title, onUpdatePress, isLoad
           <Text style={[styles.Title, { color: colors.TextColor }]}>{Title}</Text>
         </View>
         {Title !== 'Notification' && showRightIcon ? (
-          <Pressable disabled={isLoading} style={styles.ModalSubmitButton} onPress={onUpdatePress}>
+          <Pressable
+            disabled={isLoading}
+            style={styles.ModalSubmitButton}
+            onPress={onUpdatePress}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
             <Image
               source={CommonIcons.Check}
               tintColor={isDark ? colors.TextColor : colors.White}
@@ -61,7 +71,7 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({ Title, onUpdatePress, isLoad
   );
 };
 
-export default ProfileAndSettingHeader;
+export default memo(ProfileAndSettingHeader);
 
 const styles = StyleSheet.create({
   container: {

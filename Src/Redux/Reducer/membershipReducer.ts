@@ -9,7 +9,7 @@ export const fetchSubscriptionRequest = () => ({
   type: FETCH_SUBSCRIPTION_REQUEST,
 });
 
-export const fetchSubscriptionSuccess = (subscription: SubscriptionData) => ({
+export const fetchSubscriptionSuccess = (subscription: SubscriptionData | null) => ({
   type: FETCH_SUBSCRIPTION_SUCCESS,
   payload: subscription,
 });
@@ -33,7 +33,7 @@ const initialState: MembershipState = {
 const checkSubscriptionActive = (subscription: SubscriptionData | null): boolean => {
   if (!subscription) return false;
 
-  return subscription.payment_response.autoRenewing && subscription.payment_response.purchaseState === 1;
+  return subscription.payment_response.purchaseState === 1;
 };
 
 const membershipReducer = (state = initialState, action: any): MembershipState => {

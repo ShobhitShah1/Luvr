@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import NetInfo from '@react-native-community/netinfo';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Button, FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import CommonIcons from '../../Common/CommonIcons';
@@ -299,4 +299,4 @@ const MyLikesScreen = () => {
   );
 };
 
-export default MyLikesScreen;
+export default memo(MyLikesScreen);

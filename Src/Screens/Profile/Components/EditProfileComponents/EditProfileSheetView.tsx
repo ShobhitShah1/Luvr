@@ -443,7 +443,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
                 onPress={() => {
                   setProfile((prevState) => ({ ...prevState, gender: gender }));
                 }}
-                style={{ flex: 1, justifyContent: 'center' }}
+                style={{ flex: 1, width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}
               >
                 <Text
                   style={[

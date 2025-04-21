@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { COLORS, FONTS } from '../Common/Theme';
@@ -32,7 +32,7 @@ const Button: FC<ButtonProps> = ({ onPress, ButtonTitle, isLoading }) => {
   );
 };
 
-export default Button;
+export default memo(Button);
 
 const styles = StyleSheet.create({
   ButtonContainer: {

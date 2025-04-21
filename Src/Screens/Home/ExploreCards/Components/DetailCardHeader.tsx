@@ -36,7 +36,11 @@ const DetailCardHeader: FC<DetailCardRouteParams> = ({ props }) => {
     >
       <SafeAreaView />
       <View style={styles.ContentView}>
-        <Pressable onPress={() => goBack()} style={styles.BackIconView}>
+        <Pressable
+          onPress={() => goBack()}
+          style={styles.BackIconView}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
           <Image
             resizeMode="contain"
             style={styles.BackIcon}

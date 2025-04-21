@@ -61,6 +61,10 @@ const its_match_like = require('../../Assets/Icons/its_match_like.png');
 const ic_crown = require('../../Assets/Icons/ic_crown.png');
 const ic_share = require('../../Assets/Icons/ic_share.png');
 
+const ic_rocket = require('../../Assets/Icons/ic_rocket.png');
+const ic_dark_boost = require('../../Assets/Icons/ic_dark_boost.jpeg');
+const ic_light_boost = require('../../Assets/Icons/ic_light_boost.jpeg');
+
 const ic_dark_heart_purple = require('../../Assets/Icons/ic_dark_heart_purple.png');
 const ic_dark_heart_gold_focus = require('../../Assets/Icons/ic_dark_heart_gold_focus.png');
 const ic_light_heart_purple = require('../../Assets/Icons/ic_light_heart_purple.png');
@@ -146,6 +150,10 @@ export default {
   its_match_like,
   ic_crown,
   ic_share,
+
+  ic_rocket,
+  ic_dark_boost,
+  ic_light_boost,
 
   ic_dark_heart_purple,
   ic_dark_heart_gold_focus,

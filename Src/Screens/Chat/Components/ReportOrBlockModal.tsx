@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { Dimensions, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import ReactNativeModal from 'react-native-modal';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -36,12 +36,7 @@ const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
     >
       <SafeAreaView style={styles.safeAreaContainer}>
         <GradientBorderView
-          style={[
-            styles.modalContent,
-            {
-              backgroundColor: isDark ? 'rgba(13, 1, 38, 0.9)' : colors.White,
-            },
-          ]}
+          style={[styles.modalContent, { backgroundColor: isDark ? 'rgba(13, 1, 38, 0.9)' : colors.White }]}
         >
           <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'center', marginVertical: 10 }}>
             <Text style={[styles.title, { color: colors.TitleText }]}>Choose an Action</Text>
@@ -63,8 +58,9 @@ const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
               style={styles.actionButton}
             >
               <Pressable
-                style={{ flex: 1, justifyContent: 'center', flexDirection: 'row', alignItems: 'center' }}
+                style={styles.button}
                 onPress={onBlockProfileClick}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
                 <Image
                   resizeMode="contain"
@@ -87,7 +83,8 @@ const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
                   setReportAndBlockModal(false);
                   setShowReportModalView(!ShowReportModalView);
                 }}
-                style={{ flex: 1, justifyContent: 'center', flexDirection: 'row', alignItems: 'center' }}
+                style={styles.button}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
                 <Image
                   resizeMode="contain"
@@ -109,7 +106,7 @@ const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
   );
 };
 
-export default ReportOrBlockModal;
+export default memo(ReportOrBlockModal);
 
 const styles = StyleSheet.create({
   modalContainer: {
@@ -156,13 +153,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 20,
     borderWidth: 1,
-
-    // borderColor: 'rgba(100, 100, 100, 0.2)',
-    // shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.1,
-    // shadowRadius: 3,
-    // elevation: 2,
   },
   actionIcon: {
     width: 20,
@@ -181,5 +171,13 @@ const styles = StyleSheet.create({
   cancelText: {
     fontSize: 15,
     fontFamily: FONTS.Medium,
+  },
+  button: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

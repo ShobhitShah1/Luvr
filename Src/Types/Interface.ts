@@ -134,3 +134,8 @@ interface Dark {
   secondary: string;
   title: string;
 }
+
+export interface BoostModalProps {
+  isVisible: boolean;
+  onClose: () => void;
+}

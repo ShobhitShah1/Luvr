@@ -1,4 +1,3 @@
-// Define color theme structure
 export interface ThemeColors {
   Primary: string;
   Secondary: string;
@@ -37,14 +36,12 @@ export interface ThemeColors {
   lightFiledBackground: string;
 }
 
-// Theme preference options
 export enum ThemeOption {
   LIGHT = 'light',
   DARK = 'dark',
   SYSTEM = 'system',
 }
 
-// Theme context state type
 export interface ThemeContextType {
   colors: ThemeColors;
   isDark: boolean;

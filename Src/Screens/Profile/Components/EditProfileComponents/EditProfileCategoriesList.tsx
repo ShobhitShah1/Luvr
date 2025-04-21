@@ -37,6 +37,7 @@ const EditProfileCategoriesList: FC<CategoriesListProps> = ({ Item, onPress, Emp
           styles.rightIconView,
           { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(234, 234, 234, 1)' },
         ]}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
         <Image
           tintColor={colors.TextColor}

@@ -186,9 +186,6 @@ export default function MainRoute() {
   return (
     <NavigationContainer
       ref={navigationRef}
-      onReady={() => {
-        // BootSplash.hide({ fade: true });
-      }}
       onStateChange={() => {
         const currentRouteName = stateChangesCall(navigationRef.current);
         if (currentRouteName) {

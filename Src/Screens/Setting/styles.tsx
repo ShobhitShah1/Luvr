@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   PhoneNumberFlexStyle: {
-    marginVertical: 0,
+    marginVertical: 5,
   },
   NotificationFlexView: {
     marginVertical: 5,

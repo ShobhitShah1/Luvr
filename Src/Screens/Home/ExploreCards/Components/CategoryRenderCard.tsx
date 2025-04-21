@@ -1,7 +1,7 @@
 import NetInfo from '@react-native-community/netinfo';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { FC, useState } from 'react';
+import React, { FC, memo, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
@@ -147,7 +147,7 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
   );
 };
 
-export default CategoryRenderCard;
+export default memo(CategoryRenderCard);
 
 const styles = StyleSheet.create({
   container: {

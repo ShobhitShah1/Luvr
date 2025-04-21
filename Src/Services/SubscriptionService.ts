@@ -1,17 +1,13 @@
-import UserService from './AuthService';
-import { store } from '../Redux/Store/store';
+import NetInfo from '@react-native-community/netinfo';
 import {
+  fetchSubscriptionFailure,
   fetchSubscriptionRequest,
   fetchSubscriptionSuccess,
-  fetchSubscriptionFailure,
 } from '../Redux/Reducer/membershipReducer';
-import NetInfo from '@react-native-community/netinfo';
-import { Platform } from 'react-native';
-// import BackgroundTimer from 'react-native-background-timer';
+import { store } from '../Redux/Store/store';
 import { SubscriptionData } from '../Types/SubscriptionTypes';
+import UserService from './AuthService';
 
-// Track subscription expiry timers
-let subscriptionExpiryTimer: number | null = null;
 let subscriptionFetchTimeout: NodeJS.Timeout | null = null;
 
 /**
@@ -54,21 +50,18 @@ export const cancelSubscription = async (purchaseId: string): Promise<boolean> =
       return false;
     }
 
-    const dataToSend = {
-      eventName: 'cancel_purchase',
-      purchase_id: purchaseId,
-    };
+    const dataToSend = { eventName: 'cancel_purchase', purchase_id: purchaseId };
 
     const response = await UserService.UserRegister(dataToSend);
 
     if (response?.code === 200) {
       await debouncedGetSubscription(0);
+
       return true;
     } else {
       return false;
     }
   } catch (error) {
-    console.error('Error canceling subscription:', error);
     return false;
   }
 };
@@ -78,11 +71,6 @@ export const cancelSubscription = async (purchaseId: string): Promise<boolean> =
  * @param {SubscriptionData} subscription - Subscription data
  */
 export const scheduleSubscriptionExpiryCheck = (subscription: SubscriptionData): void => {
-  if (subscriptionExpiryTimer !== null) {
-    // BackgroundTimer.clearTimeout(subscriptionExpiryTimer);
-    subscriptionExpiryTimer = null;
-  }
-
   if (!subscription || !subscription._id) {
     return;
   }
@@ -139,27 +127,6 @@ export const scheduleSubscriptionExpiryCheck = (subscription: SubscriptionData):
   }
 
   console.log(`Scheduling next subscription check in ${Math.floor(checkDelay / (1000 * 60 * 60))} hours`);
-
-  // subscriptionExpiryTimer = BackgroundTimer.setTimeout(async () => {
-  //   // Fetch latest subscription data
-  //   await debouncedGetSubscription(0);
-
-  //   // Get updated subscription status
-  //   const state = store.getState();
-  //   const updatedSubscription = state.membership.subscription;
-
-  //   if (updatedSubscription && updatedSubscription._id) {
-  //     const updatedExpiry = calculateExpiryTimestamp(updatedSubscription);
-
-  //     if (Date.now() >= updatedExpiry) {
-  //       console.log('Subscription expired, canceling');
-  //       await cancelSubscription(updatedSubscription._id);
-  //     } else {
-  //       // Re-schedule check with updated data
-  //       scheduleSubscriptionExpiryCheck(updatedSubscription);
-  //     }
-  //   }
-  // }, checkDelay);
 };
 
 /**
@@ -178,21 +145,18 @@ export const getSubscription = async (): Promise<boolean> => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 20000);
 
-    const dataToSend = {
-      eventName: 'get_purchase',
-      user_id: store.getState().user._id || '',
-    };
+    const dataToSend = { eventName: 'get_purchase', user_id: store.getState().user._id || '' };
 
     const response = await UserService.UserRegister(dataToSend);
 
     clearTimeout(timeoutId);
 
-    if (response?.code !== 200 || !response.data) {
+    if (response?.code !== 200) {
       store.dispatch(fetchSubscriptionFailure('Invalid response'));
       return false;
     }
 
-    store.dispatch(fetchSubscriptionSuccess(response.data));
+    store.dispatch(fetchSubscriptionSuccess(response.data || null));
 
     if (response.data && response.data._id) {
       scheduleSubscriptionExpiryCheck(response.data);
@@ -238,11 +202,6 @@ export const debouncedGetSubscription = (delayMs = 300): Promise<boolean> => {
  * Should be called on logout or app cleanup
  */
 export const clearSubscriptionTimers = (): void => {
-  if (subscriptionExpiryTimer !== null) {
-    // BackgroundTimer.clearTimeout(subscriptionExpiryTimer);
-    subscriptionExpiryTimer = null;
-  }
-
   if (subscriptionFetchTimeout) {
     clearTimeout(subscriptionFetchTimeout);
     subscriptionFetchTimeout = null;

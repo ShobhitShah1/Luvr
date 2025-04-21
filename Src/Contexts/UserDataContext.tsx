@@ -125,18 +125,11 @@ const UserDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     debouncedGetSubscription();
   }, []);
 
-  // In the UserDataProvider component, add this effect to handle subscription updates
   useEffect(() => {
     if (subscriptionData.subscription && subscriptionData.isSubscriptionActive) {
       scheduleSubscriptionExpiryCheck(subscriptionData.subscription);
     }
   }, [subscriptionData.subscription, subscriptionData.isSubscriptionActive]);
-
-  // useEffect(() => {
-  //   return () => {
-  //     clearSubscriptionTimers();
-  //   };
-  // }, []);
 
   const updateField = (field: UserField, value: any) => {
     store.dispatch(reduxUpdateField(field, value));

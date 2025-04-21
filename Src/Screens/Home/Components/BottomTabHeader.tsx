@@ -35,7 +35,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
 }) => {
   const navigation = useNavigation<any>();
   const rotation = useSharedValue(0);
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ rotateZ: `${rotation.value}deg` }],
@@ -64,6 +64,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
             onPress={() => {
               navigation.navigate('Donation');
             }}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Animated.View style={[styles.iconWrapper, animatedStyle]}>
               <Image style={styles.donateIcon} resizeMode="contain" source={CommonIcons.donate_icon} />
@@ -84,6 +85,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
                 navigation.navigate('Setting');
               }}
               style={styles.iconWrapper}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <Image
                 style={styles.icons}
@@ -99,6 +101,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
                 navigation.navigate('Notification');
               }}
               style={[styles.iconWrapper, { marginLeft: 22 }]}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <Image
                 style={styles.icons}

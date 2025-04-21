@@ -51,7 +51,11 @@ const ReportUserModalView: FC<ReportUserProps> = ({
             <View style={styles.titleView}>
               <View />
               <Text style={[styles.titleText, { color: colors.TitleText }]}>Report Profile</Text>
-              <Pressable onPress={() => setVisibility(false)} style={styles.closeModalIconView}>
+              <Pressable
+                onPress={() => setVisibility(false)}
+                style={styles.closeModalIconView}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
                 <Image source={CommonIcons.CloseModal} style={styles.closeModalIcon} />
               </Pressable>
             </View>
@@ -126,7 +130,7 @@ const ReportUserModalView: FC<ReportUserProps> = ({
             >
               <Pressable
                 onPress={onReportPress}
-                style={{ flex: 1, justifyContent: 'center' }}
+                style={styles.reportButton}
                 disabled={SelectedReportReason === '' || SelectedReportReason.length === 0 ? true : false}
               >
                 <Text style={[styles.reportButtonText, { color: isDark ? colors.TextColor : colors.White }]}>
@@ -260,5 +264,11 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
+  },
+  reportButton: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
   },
 });

@@ -39,7 +39,11 @@ const SettingFlexView: FC<SettingFlexViewProps> = ({
   }, [isActive, Item, IsSwitch]);
 
   return (
-    <Pressable onPress={onPress} style={[styles.SettingView, style]}>
+    <Pressable
+      onPress={onPress}
+      style={[styles.SettingView, style]}
+      hitSlop={{ top: 7, bottom: 7, left: 10, right: 10 }}
+    >
       <Text style={[styles.ItemTextStyle, { color: colors.TextColor }, itemStyle]}>{Item}</Text>
       {!hideRightIcon && IsSwitch ? (
         <SwitchComponent size={38} isActive={localIsActive} onPress={() => (onSwitchPress ? onSwitchPress() : {})} />

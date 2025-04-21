@@ -16,6 +16,7 @@ import { persistor, store } from './Src/Redux/Store/store';
 import MainRoute from './Src/Routes/MainRoute';
 import { navigationRef } from './Src/Routes/RootNavigation';
 import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
+import BoostModal from './Src/Components/Subscription/BoostModal';
 
 export default function App() {
   useEffect(() => {
@@ -89,6 +90,7 @@ export default function App() {
                 }}
               >
                 <MainRoute />
+                <BoostModal isVisible={false} onClose={() => {}} />
               </ToastProvider>
             </GestureHandlerRootView>
           </UserDataProvider>
