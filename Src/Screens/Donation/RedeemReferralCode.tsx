@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { Keyboard, NativeSyntheticEvent, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
@@ -259,7 +259,7 @@ const RedeemReferralCode = () => {
   );
 };
 
-export default RedeemReferralCode;
+export default memo(RedeemReferralCode);
 
 const styles = StyleSheet.create({
   container: {

@@ -30,8 +30,11 @@ import {
 import AddEmail from '../Screens/Auth/CreateProfile/AddEmail';
 import ChatScreen from '../Screens/Chat/ChatScreen';
 import DonationScreen from '../Screens/Donation/DonationScreen';
+import QRCodeScreen from '../Screens/Donation/QRCodeScreen';
+import RedeemReferralCode from '../Screens/Donation/RedeemReferralCode';
 import CategoryDetailCardsScreen from '../Screens/Home/ExploreCards/CategoryDetailCardsScreen';
 import ExploreCardDetailScreen from '../Screens/Home/ExploreCards/ExploreCardDetailScreen';
+import IncognitoScreen from '../Screens/Incognito/Index';
 import NotificationScreen from '../Screens/Notification/NotificationScreen';
 import EditProfileScreen from '../Screens/Profile/EditProfileScreen';
 import SettingScreen from '../Screens/Setting/SettingScreen';
@@ -41,8 +44,6 @@ import { LocalStorageFields } from '../Types/LocalStorageFields';
 import { useCustomToast } from '../Utils/toastUtils';
 import BottomTab from './BottomTab';
 import { navigationRef } from './RootNavigation';
-import QRCodeScreen from '../Screens/Donation/QRCodeScreen';
-import RedeemReferralCode from '../Screens/Donation/RedeemReferralCode';
 
 const excludedRoutes = [
   'Login',
@@ -208,6 +209,7 @@ export default function MainRoute() {
         <Stack.Screen name="Donation" component={DonationScreen} />
         <Stack.Screen name="QRCodeScreen" component={QRCodeScreen} />
         <Stack.Screen name="RedeemReferralCode" component={RedeemReferralCode} />
+        <Stack.Screen name="IncognitoScreen" component={IncognitoScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

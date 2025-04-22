@@ -4862,6 +4862,7 @@ __metadata:
     react: "npm:18.2.0"
     react-native: "npm:0.74.7"
     react-native-circular-progress: "npm:1.4.0"
+    react-native-contacts: "npm:^8.0.4"
     react-native-fast-image: "npm:8.6.3"
     react-native-geolocation-service: "npm:5.3.1"
     react-native-gesture-handler: "npm:2.19.0"
@@ -10732,7 +10733,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.1.23, nanoid@npm:^3.3.1":
+"nanoid@npm:^3.1.23":
+  version: 3.3.11
+  resolution: "nanoid@npm:3.3.11"
+  bin:
+    nanoid: bin/nanoid.cjs
+  checksum: 10c0/40e7f70b3d15f725ca072dfc4f74e81fcf1fbb02e491cf58ac0c79093adc9b0a73b152bcde57df4b79cd097e13023d7504acb38404a4da7bc1cd8e887b82fe0b
+  languageName: node
+  linkType: hard
+
+"nanoid@npm:^3.3.1":
   version: 3.3.7
   resolution: "nanoid@npm:3.3.7"
   bin:
@@ -11741,6 +11751,16 @@ __metadata:
   version: 2.2.1
   resolution: "react-native-communications@npm:2.2.1"
   checksum: 10c0/12224bcd0d895f5a0eb63106409ba8dbbd996bed40c2fcae983815031c064eae194016a1e6d4eed982d0cd7f95ab73602b71619255da3a4ff0c085b6fe62027c
+  languageName: node
+  linkType: hard
+
+"react-native-contacts@npm:^8.0.4":
+  version: 8.0.4
+  resolution: "react-native-contacts@npm:8.0.4"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/d7de6f274f3fd4381829ca8c1a5cbd0cb1786bda12807e2a65622c85c7a0d3fd32d7181be431b4f0d8edc4a28ba76c489ddcac16bf88e28fd2b281da558bde98
   languageName: node
   linkType: hard
 

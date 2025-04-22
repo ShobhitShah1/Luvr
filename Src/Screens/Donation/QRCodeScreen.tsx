@@ -1,5 +1,5 @@
 import Clipboard from '@react-native-clipboard/clipboard';
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { Image, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import QRCode from 'react-native-qrcode-svg';
@@ -109,7 +109,7 @@ const QRCodeScreen = () => {
   );
 };
 
-export default QRCodeScreen;
+export default memo(QRCodeScreen);
 
 const styles = StyleSheet.create({
   container: {

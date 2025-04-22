@@ -611,34 +611,19 @@ Let's make every moment count together! #LoveConnects`,
                 }}
               >
                 <EditProfileBoxView IsViewLoading={IsSettingLoading}>
-                  <View>
-                    <SettingFlexView
-                      isActive={UserSetting?.setting_active_status}
-                      style={styles.PhoneNumberFlexStyle}
-                      Item={'Show my status'}
-                      onPress={() => {}}
-                      onSwitchPress={() => {
-                        setUserSettingData((prevState) => ({
-                          ...prevState,
-                          setting_active_status: !UserSetting?.setting_active_status,
-                        }));
-                      }}
-                      IsSwitch={true}
-                    />
-                    <SettingFlexView
-                      isActive={UserSetting?.setting_active_status}
-                      style={styles.PhoneNumberFlexStyle}
-                      Item={'Show my status'}
-                      onPress={() => {}}
-                      onSwitchPress={() => {
-                        setUserSettingData((prevState) => ({
-                          ...prevState,
-                          setting_active_status: !UserSetting?.setting_active_status,
-                        }));
-                      }}
-                      IsSwitch={true}
-                    />
-                  </View>
+                  <SettingFlexView
+                    isActive={UserSetting?.setting_active_status}
+                    style={styles.PhoneNumberFlexStyle}
+                    Item={'Show my status'}
+                    onPress={() => {}}
+                    onSwitchPress={() => {
+                      setUserSettingData((prevState) => ({
+                        ...prevState,
+                        setting_active_status: !UserSetting?.setting_active_status,
+                      }));
+                    }}
+                    IsSwitch={true}
+                  />
                 </EditProfileBoxView>
               </GradientBorderView>
             </View>
@@ -795,7 +780,7 @@ Let's make every moment count together! #LoveConnects`,
                       onPress={() => {
                         if (InAppReview.isAvailable()) {
                           InAppReview.RequestInAppReview()
-                            .then((hasFlowFinishedSuccessfully) => {
+                            .then(() => {
                               Alert.alert('Review', 'Thank you for your review! It has been recorded.');
                             })
                             .catch((error) => {});
@@ -814,6 +799,17 @@ Let's make every moment count together! #LoveConnects`,
                 </EditProfileBoxView>
               </GradientBorderView>
             </View>
+
+            <LinearGradient
+              start={{ x: 0, y: 1 }}
+              end={{ x: 1, y: 0 }}
+              colors={colors.ButtonGradient}
+              style={styles.incognitoView}
+            >
+              <Pressable style={styles.incognitoButton} onPress={() => navigation.navigate('IncognitoScreen')}>
+                <Text style={[styles.incognitoText, { color: colors.White }]}>Incognito Mode</Text>
+              </Pressable>
+            </LinearGradient>
 
             <View style={styles.DeleteAndLogoutContainerView}>
               <Pressable

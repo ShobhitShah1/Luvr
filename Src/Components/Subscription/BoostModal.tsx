@@ -31,7 +31,11 @@ const BoostModal = ({ isVisible, onClose }: BoostModalProps) => {
     >
       <View style={[styles.modalContainer, { backgroundColor: isDark ? 'rgba(18, 18, 19, 2)' : colors.White }]}>
         <View style={styles.imageContainer}>
-          <Image source={isDark ? CommonIcons.ic_dark_boost : CommonIcons.ic_light_boost} style={styles.boostImage} />
+          <Image
+            resizeMode="cover"
+            style={styles.boostImage}
+            source={isDark ? CommonIcons.ic_dark_boost : CommonIcons.ic_light_boost}
+          />
         </View>
 
         <View style={styles.boostCardContainer}>
@@ -107,7 +111,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: '100%',
-    height: 240,
+    height: 300,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -125,7 +129,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     overflow: 'hidden',
     alignItems: 'center',
-    justifyContent: 'center',
     paddingBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
