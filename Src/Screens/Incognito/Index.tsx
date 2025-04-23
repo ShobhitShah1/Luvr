@@ -1,11 +1,20 @@
 import React, { memo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Contact } from 'react-native-contacts/type';
+import { useDispatch, useSelector } from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import { FONTS } from '../../Common/Theme';
 import { GradientBorderView } from '../../Components/GradientBorder';
 import { useTheme } from '../../Contexts/ThemeContext';
+import {
+  EmailItem,
+  saveContactsToApi,
+  saveEmailsToApi,
+  setIncognitoMode,
+  toggleIncognitoModeCall,
+} from '../../Redux/Action/IncognitoActions';
+import { IncognitoState } from '../../Redux/Reducer/IncognitoReducer';
 import EditProfileBoxView from '../Profile/Components/EditProfileComponents/EditProfileBoxView';
 import EditProfileTitleView from '../Profile/Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
@@ -14,52 +23,57 @@ import EmailInputModal from './Components/EmailInputModal';
 import IncognitoFlexView from './Components/IncognitoFlexView';
 import SelectContactModal from './Components/SelectContactModal';
 
-interface EmailItem {
-  id: string;
-  email: string;
-}
-
-const IncognitoScreen = () => {
+const IncognitoScreen: React.FC = () => {
   const { colors, isDark } = useTheme();
-  const [isContactModalVisible, setContactModalVisible] = useState(false);
-  const [isEmailModalVisible, setEmailModalVisible] = useState(false);
-  const [selectedContacts, setSelectedContacts] = useState<Contact[]>([]);
-  const [emailItems, setEmailItems] = useState<EmailItem[]>([]);
-  const [isIncognitoEnabled, setIsIncognitoEnabled] = useState(false);
+  const dispatch = useDispatch();
+  const { isIncognitoEnabled, contacts, emails, isLoading } = useSelector(
+    (state: { incognito: IncognitoState }) => state.incognito
+  );
 
-  const handleSelectContacts = (contacts: Contact[]) => {
-    setSelectedContacts(contacts);
+  const [isContactModalVisible, setContactModalVisible] = useState<boolean>(false);
+  const [isEmailModalVisible, setEmailModalVisible] = useState<boolean>(false);
+
+  const handleSelectContacts = (selectedContacts: Contact[]) => {
+    dispatch(saveContactsToApi(selectedContacts) as any);
+    setContactModalVisible(false);
   };
 
   const handleAddEmail = (email: string) => {
-    const newEmailItem: EmailItem = {
-      id: Date.now().toString(),
-      email: email,
-    };
-    setEmailItems([...emailItems, newEmailItem]);
+    const newEmailItem: EmailItem = { id: Date.now().toString(), email };
+    const updatedEmails: EmailItem[] = [...emails, newEmailItem];
+    dispatch(saveEmailsToApi(updatedEmails) as any);
+    setEmailModalVisible(false);
+  };
+
+  const removeContact = (contactId: string) => {
+    const updatedContacts = contacts.filter((contact) => contact.recordID !== contactId);
+    dispatch(saveContactsToApi(updatedContacts) as any);
+  };
+
+  const removeEmail = (emailId: string) => {
+    const updatedEmails = emails.filter((email) => email.id !== emailId);
+    dispatch(saveEmailsToApi(updatedEmails) as any);
   };
 
   const toggleIncognitoMode = () => {
-    setIsIncognitoEnabled(!isIncognitoEnabled);
+    dispatch(toggleIncognitoModeCall(!isIncognitoEnabled) as any);
   };
 
   const getContactDisplayName = (contact: Contact): string => {
     return contact.displayName || `${contact.givenName} ${contact.familyName}`.trim();
   };
 
-  const removeContact = (id: string) => {
-    setSelectedContacts(selectedContacts.filter((contact) => contact.recordID !== id));
-  };
-
-  const removeEmail = (id: string) => {
-    setEmailItems(emailItems.filter((item) => item.id !== id));
-  };
-
   return (
     <GradientView>
       <ProfileAndSettingHeader Title="Incognito" showRightIcon={false} />
 
-      <View style={styles.detailContainerView}>
+      <ScrollView
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        style={styles.detailContainerView}
+        contentContainerStyle={styles.containContainer}
+      >
         <EditProfileTitleView
           style={styles.titleViewStyle}
           isIcon={false}
@@ -75,7 +89,7 @@ const IncognitoScreen = () => {
             marginTop: 10,
           }}
         >
-          <EditProfileBoxView IsViewLoading={false}>
+          <EditProfileBoxView IsViewLoading={isLoading}>
             <SettingFlexView
               isActive={isIncognitoEnabled}
               style={styles.switchContainer}
@@ -102,7 +116,7 @@ const IncognitoScreen = () => {
             marginTop: 10,
           }}
         >
-          <EditProfileBoxView IsViewLoading={false}>
+          <EditProfileBoxView IsViewLoading={isLoading}>
             <View>
               <IncognitoFlexView
                 style={styles.switchContainer}
@@ -111,8 +125,8 @@ const IncognitoScreen = () => {
               />
 
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 15 }}>
-                {selectedContacts.length > 0 ? (
-                  selectedContacts.map((contact) => (
+                {contacts.length > 0 ? (
+                  contacts.map((contact) => (
                     <Pressable key={contact.recordID} onPress={() => removeContact(contact.recordID)}>
                       <Text
                         style={[
@@ -150,7 +164,7 @@ const IncognitoScreen = () => {
             marginTop: 10,
           }}
         >
-          <EditProfileBoxView IsViewLoading={false}>
+          <EditProfileBoxView IsViewLoading={isLoading}>
             <View>
               <IncognitoFlexView
                 style={styles.switchContainer}
@@ -159,8 +173,8 @@ const IncognitoScreen = () => {
               />
 
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 15 }}>
-                {emailItems.length > 0 ? (
-                  emailItems.map((item) => (
+                {emails.length > 0 ? (
+                  emails.map((item) => (
                     <Pressable key={item.id} onPress={() => removeEmail(item.id)}>
                       <Text
                         style={[
@@ -182,14 +196,14 @@ const IncognitoScreen = () => {
             </View>
           </EditProfileBoxView>
         </GradientBorderView>
-      </View>
+      </ScrollView>
 
       <SelectContactModal
         isVisible={isContactModalVisible}
         onClose={() => setContactModalVisible(false)}
         onSelectContacts={handleSelectContacts}
         multipleSelection={true}
-        selectedContacts={selectedContacts}
+        selectedContacts={contacts}
       />
 
       <EmailInputModal
@@ -208,7 +222,9 @@ const styles = StyleSheet.create({
     width: '90%',
     marginTop: 5,
     alignSelf: 'center',
-    justifyContent: 'center',
+  },
+  containContainer: {
+    paddingBottom: 20,
   },
   titleViewStyle: {
     marginTop: 20,

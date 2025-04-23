@@ -7,7 +7,7 @@ import messaging from '@react-native-firebase/messaging';
 import remoteConfig from '@react-native-firebase/remote-config';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useNavigation } from '@react-navigation/native';
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   AppState,
@@ -64,18 +64,18 @@ const SettingScreen = () => {
   const [RateUsModalView, setRateUsModalView] = useState(false);
   const [UserSetting, setUserSettingData] = useState<ProfileType>(UserData?.userData);
   const [RatingCount, setRatingCount] = useState(3);
-  const [IsSettingLoading, setIsSettingLoading] = useState(false);
+  const [isSettingLoading, setIsSettingLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  const settingAgeRangeMin = UserSetting?.setting_age_range_min || '';
-
-  let startAge = settingAgeRangeMin?.[0] || '';
-  let endAge = settingAgeRangeMin?.[1] || '';
-
-  if (settingAgeRangeMin) {
-    [startAge, endAge] = settingAgeRangeMin?.split('-');
-  }
+  const [startAge, endAge] = useMemo(() => {
+    const range = UserSetting?.setting_age_range_min;
+    if (typeof range === 'string') {
+      const [start, end] = range.split('-').map(Number);
+      return [start || 0, end || 0];
+    }
+    return [0, 0];
+  }, [UserSetting?.setting_age_range_min]);
 
   const [RemoteConfigLinks, setRemoteConfigLinks] = useState<any>();
 
@@ -378,7 +378,7 @@ Let's make every moment count together! #LoveConnects`,
         <ProfileAndSettingHeader
           Title={'Settings'}
           onUpdatePress={() => {
-            if (!IsSettingLoading) {
+            if (!isSettingLoading) {
               onUpdateProfile();
             }
           }}
@@ -415,7 +415,7 @@ Let's make every moment count together! #LoveConnects`,
                   backgroundColor: isDark ? 'transparent' : 'rgba(255, 255, 255, 1)',
                 }}
               >
-                <EditProfileBoxView IsViewLoading={IsSettingLoading}>
+                <EditProfileBoxView IsViewLoading={isSettingLoading}>
                   <SettingFlexView
                     hideRightIcon={true}
                     isActive={false}
@@ -443,7 +443,7 @@ Let's make every moment count together! #LoveConnects`,
                   marginTop: 10,
                 }}
               >
-                <EditProfileBoxView IsViewLoading={IsSettingLoading}>
+                <EditProfileBoxView IsViewLoading={isSettingLoading}>
                   <React.Fragment>
                     <View style={styles.DistanceAndAgeView}>
                       <Text style={[styles.DistanceAndAgeRangeTitleText, { color: colors.TextColor }]}>
@@ -454,27 +454,29 @@ Let's make every moment count together! #LoveConnects`,
                       >{`${UserSetting?.setting_distance_preference || 20}KM`}</Text>
                     </View>
                     <View style={{ width: '100%', overflow: 'visible' }}>
-                      <MultiSlider
-                        onValuesChange={(v) => {
-                          setUserSettingData((prevState) => ({
-                            ...prevState,
-                            setting_distance_preference: v[0]?.toString() || '',
-                          }));
-                        }}
-                        values={[Number(UserSetting?.setting_distance_preference) || 20]}
-                        isMarkersSeparated={true}
-                        max={100}
-                        sliderLength={Dimensions.get('window').width - 85}
-                        customMarkerLeft={() => {
-                          return <View style={styles.CustomMarkerStyle} />;
-                        }}
-                        customMarkerRight={() => {
-                          return <View style={styles.CustomMarkerStyle} />;
-                        }}
-                        containerStyle={styles.SliderContainerStyle}
-                        trackStyle={styles.SliderContainer}
-                        selectedStyle={{ backgroundColor: colors.Primary }}
-                      />
+                      {!isSettingLoading && (
+                        <MultiSlider
+                          onValuesChange={(v) => {
+                            setUserSettingData((prevState) => ({
+                              ...prevState,
+                              setting_distance_preference: v[0]?.toString() || '',
+                            }));
+                          }}
+                          values={[Number(UserSetting?.setting_distance_preference) || 20]}
+                          isMarkersSeparated={true}
+                          max={100}
+                          sliderLength={Dimensions.get('window').width - 85}
+                          customMarkerLeft={() => {
+                            return <View style={styles.CustomMarkerStyle} />;
+                          }}
+                          customMarkerRight={() => {
+                            return <View style={styles.CustomMarkerStyle} />;
+                          }}
+                          containerStyle={styles.SliderContainerStyle}
+                          trackStyle={styles.SliderContainer}
+                          selectedStyle={{ backgroundColor: colors.Primary }}
+                        />
+                      )}
                     </View>
                     <SettingFlexView
                       isActive={UserSetting?.setting_show_people_with_range}
@@ -556,7 +558,7 @@ Let's make every moment count together! #LoveConnects`,
                   marginTop: 10,
                 }}
               >
-                <EditProfileBoxView IsViewLoading={IsSettingLoading}>
+                <EditProfileBoxView IsViewLoading={isSettingLoading}>
                   <>
                     <View style={styles.DistanceAndAgeView}>
                       <Text style={[styles.DistanceAndAgeRangeTitleText, { color: colors.TextColor }]}>
@@ -567,27 +569,29 @@ Let's make every moment count together! #LoveConnects`,
                       >{`${startAge || 18} - ${endAge || 35}`}</Text>
                     </View>
                     <View style={{ width: '100%', overflow: 'visible' }}>
-                      <MultiSlider
-                        onValuesChange={(v) => {
-                          setUserSettingData((prevState) => ({
-                            ...prevState,
-                            setting_age_range_min: `${v[0]}-${v[1]}`,
-                          }));
-                        }}
-                        values={[Number(startAge || 18), Number(endAge || 35)]}
-                        isMarkersSeparated={true}
-                        max={100}
-                        sliderLength={Dimensions.get('window').width - 85}
-                        customMarkerLeft={() => {
-                          return <View style={styles.CustomMarkerStyle} />;
-                        }}
-                        customMarkerRight={() => {
-                          return <View style={styles.CustomMarkerStyle} />;
-                        }}
-                        containerStyle={styles.SliderContainerStyle}
-                        trackStyle={styles.SliderContainer}
-                        selectedStyle={{ backgroundColor: colors.Primary }}
-                      />
+                      {!isSettingLoading && (
+                        <MultiSlider
+                          onValuesChange={(v) => {
+                            setUserSettingData((prevState) => ({
+                              ...prevState,
+                              setting_age_range_min: `${v[0]}-${v[1]}`,
+                            }));
+                          }}
+                          values={[Number(startAge || 18), Number(endAge || 35)]}
+                          isMarkersSeparated={true}
+                          max={100}
+                          sliderLength={Dimensions.get('window').width - 85}
+                          customMarkerLeft={() => {
+                            return <View style={styles.CustomMarkerStyle} />;
+                          }}
+                          customMarkerRight={() => {
+                            return <View style={styles.CustomMarkerStyle} />;
+                          }}
+                          containerStyle={styles.SliderContainerStyle}
+                          trackStyle={styles.SliderContainer}
+                          selectedStyle={{ backgroundColor: colors.Primary }}
+                        />
+                      )}
                     </View>
                   </>
                 </EditProfileBoxView>
@@ -610,7 +614,7 @@ Let's make every moment count together! #LoveConnects`,
                   marginTop: 10,
                 }}
               >
-                <EditProfileBoxView IsViewLoading={IsSettingLoading}>
+                <EditProfileBoxView IsViewLoading={isSettingLoading}>
                   <SettingFlexView
                     isActive={UserSetting?.setting_active_status}
                     style={styles.PhoneNumberFlexStyle}
@@ -644,7 +648,7 @@ Let's make every moment count together! #LoveConnects`,
                   marginTop: 10,
                 }}
               >
-                <EditProfileBoxView IsViewLoading={IsSettingLoading}>
+                <EditProfileBoxView IsViewLoading={isSettingLoading}>
                   <View>
                     <SettingFlexView
                       isActive={isEnabled}
@@ -691,7 +695,7 @@ Let's make every moment count together! #LoveConnects`,
                   marginTop: 10,
                 }}
               >
-                <EditProfileBoxView IsViewLoading={IsSettingLoading}>
+                <EditProfileBoxView IsViewLoading={isSettingLoading}>
                   <View>
                     <SettingFlexView
                       isActive={false}
@@ -765,7 +769,7 @@ Let's make every moment count together! #LoveConnects`,
                   marginBottom: 10,
                 }}
               >
-                <EditProfileBoxView IsViewLoading={IsSettingLoading}>
+                <EditProfileBoxView IsViewLoading={isSettingLoading}>
                   <View>
                     <SettingFlexView
                       isActive={false}

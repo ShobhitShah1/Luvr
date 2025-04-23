@@ -22,6 +22,8 @@ const ApiConfig = {
   GetSubscription: 'get_subscriptions',
   UserReferral: 'user_referral',
   HaveReferralCode: 'have_referral_code',
+  incognitoMobile: 'incognito_mobile',
+  incognitoIdentity: 'incognito_identity',
 };
 
 async function fetchRemoteConfigValues() {

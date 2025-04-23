@@ -1,8 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
-import { MotiImage, MotiTransitionProp, MotiView } from 'moti';
 import React, { FC, memo, useMemo } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { Easing } from 'react-native-reanimated';
+import { Pressable, StyleSheet, View, Image } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+  interpolateColor,
+} from 'react-native-reanimated';
 import CommonIcons from '../Common/CommonIcons';
 import { COLORS } from '../Common/Theme';
 import { useTheme } from '../Contexts/ThemeContext';
@@ -13,11 +18,8 @@ interface SwitchComponentProps {
   onPress: () => void;
 }
 
-const transition: MotiTransitionProp = {
-  type: 'timing',
-  duration: 300,
-  easing: Easing.inOut(Easing.ease),
-};
+const ANIMATION_DURATION = 300;
+const EASING = Easing.inOut(Easing.ease);
 
 const SwitchComponent: FC<SwitchComponentProps> = ({ isActive, size, onPress }) => {
   const { colors, isDark } = useTheme();
@@ -29,29 +31,56 @@ const SwitchComponent: FC<SwitchComponentProps> = ({ isActive, size, onPress }) 
     InActiveBackground: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(234, 234, 234, 1)',
   };
 
-  const trackWidth = useMemo(() => {
-    return size * 1.5;
-  }, [size]);
+  const trackWidth = useMemo(() => size * 1.5, [size]);
+  const trackHeight = useMemo(() => size * 0.88, [size]);
 
-  const trackHeight = useMemo(() => {
-    return size * 0.88;
-  }, [size]);
+  const progress = useSharedValue(isActive ? 1 : 0);
+  const translateX = useSharedValue(isActive ? trackWidth / 5 : -trackWidth / 5);
+  const opacity = useSharedValue(0);
+
+  React.useEffect(() => {
+    progress.value = withTiming(isActive ? 1 : 0, {
+      duration: ANIMATION_DURATION,
+      easing: EASING,
+    });
+
+    translateX.value = withTiming(isActive ? trackWidth / 5 : -trackWidth / 5, {
+      duration: ANIMATION_DURATION,
+      easing: EASING,
+    });
+
+    opacity.value = withTiming(1, {
+      duration: ANIMATION_DURATION,
+      easing: EASING,
+    });
+  }, [isActive, progress, translateX, opacity, trackWidth]);
+
+  const trackAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: interpolateColor(progress.value, [0, 1], [_colors.InActiveBackground, _colors.ActiveBackground]),
+      borderColor: interpolateColor(progress.value, [0, 1], [_colors.InActive, _colors.Active]),
+    };
+  });
+
+  const thumbAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }],
+      backgroundColor: interpolateColor(progress.value, [0, 1], [_colors.InActive, _colors.Active]),
+    };
+  });
+
+  const iconAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    };
+  });
 
   return (
-    <Pressable onPress={onPress} style={{ width: size * 1.5, height: size * 1, justifyContent: 'center' }}>
-      <View style={styles.SwitchContainer}>
-        <MotiView
-          transition={transition}
-          from={{
-            backgroundColor: isActive ? _colors.InActiveBackground : _colors.ActiveBackground,
-            borderColor: isActive ? _colors.InActive : _colors.Active,
-          }}
-          animate={{
-            backgroundColor: isActive ? _colors.ActiveBackground : _colors.InActiveBackground,
-            borderColor: isActive ? _colors.Active : _colors.InActive,
-          }}
+    <Pressable onPress={onPress} style={{ width: trackWidth, height: size, justifyContent: 'center' }}>
+      <View style={styles.switchContainer}>
+        <Animated.View
           style={[
-            styles.MotiTopViewStyle,
+            styles.track,
             {
               width: trackWidth,
               height: trackHeight,
@@ -59,32 +88,29 @@ const SwitchComponent: FC<SwitchComponentProps> = ({ isActive, size, onPress }) 
               borderWidth: 1.5,
               paddingHorizontal: 5,
             },
+            trackAnimatedStyle,
           ]}
         />
-        <MotiView
-          transition={transition}
-          animate={{
-            translateX: isActive ? trackWidth / 5 : -trackWidth / 5,
-          }}
-          style={{
-            width: size / 1.5,
-            height: size / 1.5,
-            borderRadius: size / 2,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: isActive ? _colors.Active : _colors.InActive,
-          }}
+        <Animated.View
+          style={[
+            styles.thumb,
+            {
+              width: size / 1.5,
+              height: size / 1.5,
+              borderRadius: size / 2,
+            },
+            thumbAnimatedStyle,
+          ]}
         >
-          <MotiImage
-            transition={transition}
-            from={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            resizeMode="contain"
-            style={{ width: 11.5, height: 11.5 }}
-            source={isActive ? CommonIcons.Check : CommonIcons.Cancel}
-            tintColor={COLORS.White}
-          />
-        </MotiView>
+          <Animated.View style={iconAnimatedStyle}>
+            <Image
+              resizeMode="contain"
+              style={{ width: 11.5, height: 11.5 }}
+              source={isActive ? CommonIcons.Check : CommonIcons.Cancel}
+              tintColor={COLORS.White}
+            />
+          </Animated.View>
+        </Animated.View>
       </View>
     </Pressable>
   );
@@ -93,11 +119,15 @@ const SwitchComponent: FC<SwitchComponentProps> = ({ isActive, size, onPress }) 
 export default memo(SwitchComponent);
 
 const styles = StyleSheet.create({
-  SwitchContainer: {
+  switchContainer: {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  MotiTopViewStyle: {
+  track: {
     position: 'absolute',
+  },
+  thumb: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

@@ -3,7 +3,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import NetInfo from '@react-native-community/netinfo';
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Button, FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
@@ -11,6 +11,7 @@ import TextString from '../../Common/TextString';
 import { BOTTOM_TAB_HEIGHT } from '../../Common/Theme';
 import SubscriptionView from '../../Components/Subscription/SubscriptionView';
 import { useTheme } from '../../Contexts/ThemeContext';
+import { useUserData } from '../../Contexts/UserDataContext';
 import UserService from '../../Services/AuthService';
 import { LikeMatchAndCrushAPIDataTypes, ListDetailProps } from '../../Types/Interface';
 import { useCustomToast } from '../../Utils/toastUtils';
@@ -18,8 +19,6 @@ import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import LikesContent from './Components/LikesContent';
 import MatchesContent from './Components/MatchesContent';
 import styles from './styles';
-import { useUserData } from '../../Contexts/UserDataContext';
-import { cancelSubscription } from '../../Services/SubscriptionService';
 
 type TabData = { title: string; index?: number };
 
@@ -143,7 +142,6 @@ const MyLikesScreen = () => {
   };
 
   useEffect(() => {
-    // setIsAPILoading(matchAndLikeData?.length === 0);
     fetchLikesAndMatchAPI();
   }, []);
 
@@ -209,18 +207,9 @@ const MyLikesScreen = () => {
     [selectedTabIndex, selectedPlan, setSelectedPlan]
   );
 
-  console.log('subscription:', subscription?.data?._id, subscription?.isActive);
-
   return (
     <GradientView>
       <View style={styles.container}>
-        {subscription.isActive && (
-          <Button
-            title="Cancel"
-            onPress={() => subscription?.data?._id && cancelSubscription(subscription?.data?._id)}
-          />
-        )}
-
         <BottomTabHeader showSetting={false} />
         <View style={styles.TopTabContainerView}>
           <View style={styles.FlatListContentContainerStyle}>

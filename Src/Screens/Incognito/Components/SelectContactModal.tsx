@@ -100,7 +100,6 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
         }
       }
     } catch (error) {
-      console.log('Permission error: ', error);
       setLoading(false);
     }
   };
@@ -118,7 +117,6 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
         setLoading(false);
       })
       .catch((error) => {
-        console.log('Error loading contacts: ', error);
         setLoading(false);
       });
   };
