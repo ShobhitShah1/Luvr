@@ -24,11 +24,23 @@ import TextString from '../../Common/TextString';
 import UserService from '../../Services/AuthService';
 import ApiConfig from '../../Config/ApiConfig';
 import { Camera, useCameraDevice, useCameraPermission, useCodeScanner } from 'react-native-vision-camera';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(CustomTextInput);
 
+interface RouteParams {
+  fromRegistration: string;
+}
+
 const RedeemReferralCode = () => {
   const { colors, isDark } = useTheme();
+  const { params } = useRoute();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<{ BottomTab: {}; RedeemReferralCode: { fromRegistration: boolean } }>>();
+
+  const fromRegistration = (params as RouteParams)?.fromRegistration || false;
+
   const { userData } = useUserData();
   const { showToast } = useCustomToast();
 
@@ -178,7 +190,7 @@ const RedeemReferralCode = () => {
   return (
     <GradientView>
       <View style={styles.container}>
-        <ProfileAndSettingHeader Title="Have referral code?" showRightIcon={false} />
+        <ProfileAndSettingHeader Title="Have referral code?" showRightIcon={false} showBackIcon={!fromRegistration} />
 
         <View style={styles.content}>
           <Text style={[styles.label, { color: colors.TextColor }]}>Enter referral code:</Text>
@@ -232,7 +244,7 @@ const RedeemReferralCode = () => {
                 <Text style={[styles.scanText, { color: colors.TextColor }]}>Tap to scan referral code</Text>
                 <View style={styles.scanFrame}>
                   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', opacity: 0.5 }}>
-                    <QRCode value={code} size={95} color={colors.TextColor} backgroundColor="transparent" />
+                    <QRCode value={code || '12'} size={95} color={colors.TextColor} backgroundColor="transparent" />
                   </View>
                   <View style={[styles.cornerTL, { borderColor: colors.Primary }]} />
                   <View style={[styles.cornerTR, { borderColor: colors.Primary }]} />
@@ -253,6 +265,19 @@ const RedeemReferralCode = () => {
               <Text style={[styles.submitButtonText, { color: colors.White }]}>Submit</Text>
             </LinearGradient>
           </Pressable>
+
+          {fromRegistration && (
+            <Pressable
+              onPress={() =>
+                navigation.replace('BottomTab', {
+                  screen: 'Home',
+                })
+              }
+              style={styles.skipButton}
+            >
+              <Text style={[styles.skipButtonText, { color: colors.TextColor }]}>Skip</Text>
+            </Pressable>
+          )}
         </View>
       </View>
     </GradientView>

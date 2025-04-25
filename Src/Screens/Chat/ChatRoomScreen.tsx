@@ -20,11 +20,15 @@ import { store } from '../../Redux/Store/store';
 import { MessageItem, SocketEventHandlers } from '../../Types/Interface';
 import { useCustomToast } from '../../Utils/toastUtils';
 import RenderChatRoomList from './Components/RenderChatRoomList';
+import { useUserData } from '../../Contexts/UserDataContext';
+import SubscriptionView from '../../Components/Subscription/SubscriptionView';
 
 const ChatRoomScreen = () => {
   const { colors, isDark } = useTheme();
   const isFocused = useIsFocused();
   const { showToast } = useCustomToast();
+  const { subscription } = useUserData();
+
   const currentLoginUserId = store.getState().user?.userData?._id || '';
 
   const [socket, setSocket] = useState<Socket | undefined>();
@@ -170,7 +174,7 @@ const ChatRoomScreen = () => {
     );
   };
 
-  if (isSocketLoading) {
+  if (isSocketLoading && subscription.isActive) {
     return (
       <GradientView>
         <SafeAreaView
@@ -213,20 +217,26 @@ const ChatRoomScreen = () => {
         </SafeAreaView>
 
         <View style={styles.ListChatView}>
-          {!isSocketLoading && (
-            <FlatList
-              data={messages}
-              contentContainerStyle={{
-                flexGrow: messages?.length === 0 ? 1 : undefined,
-                paddingBottom: BOTTOM_TAB_HEIGHT,
-                justifyContent: messages.length === 0 ? 'center' : undefined,
-              }}
-              maxToRenderPerBatch={10}
-              renderItem={({ item, index }) => {
-                return <RenderChatRoomList item={item} index={index} />;
-              }}
-              ListEmptyComponent={<ListEmptyView />}
-            />
+          {!subscription.isActive ? (
+            <View style={{ flex: 1, marginTop: 30 }}>
+              <SubscriptionView selectedPlan={''} handlePlanSelection={() => {}} />
+            </View>
+          ) : (
+            !isSocketLoading && (
+              <FlatList
+                data={messages}
+                contentContainerStyle={{
+                  flexGrow: messages?.length === 0 ? 1 : undefined,
+                  paddingBottom: BOTTOM_TAB_HEIGHT,
+                  justifyContent: messages.length === 0 ? 'center' : undefined,
+                }}
+                maxToRenderPerBatch={10}
+                renderItem={({ item, index }) => {
+                  return <RenderChatRoomList item={item} index={index} />;
+                }}
+                ListEmptyComponent={<ListEmptyView />}
+              />
+            )
           )}
         </View>
       </View>

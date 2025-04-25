@@ -11,7 +11,6 @@ import {
   EmailItem,
   saveContactsToApi,
   saveEmailsToApi,
-  setIncognitoMode,
   toggleIncognitoModeCall,
 } from '../../Redux/Action/IncognitoActions';
 import { IncognitoState } from '../../Redux/Reducer/IncognitoReducer';
@@ -81,9 +80,9 @@ const IncognitoScreen: React.FC = () => {
           Title="Incognito"
         />
         <GradientBorderView
-          gradientProps={{ colors: colors.editFiledBackground }}
+          gradientProps={{ colors: isDark ? colors.editFiledBackground : colors.ButtonGradient }}
           style={{
-            backgroundColor: isDark ? 'transparent' : 'rgba(255, 255, 255, 1)',
+            backgroundColor: 'transparent',
             borderWidth: 1,
             borderRadius: 15,
             marginTop: 10,
@@ -108,12 +107,13 @@ const IncognitoScreen: React.FC = () => {
           Title="My contact"
         />
         <GradientBorderView
-          gradientProps={{ colors: colors.editFiledBackground }}
+          gradientProps={{ colors: isDark ? colors.editFiledBackground : colors.ButtonGradient }}
           style={{
-            backgroundColor: isDark ? 'transparent' : 'rgba(255, 255, 255, 1)',
+            backgroundColor: 'transparent',
             borderWidth: 1,
             borderRadius: 15,
             marginTop: 10,
+            opacity: isIncognitoEnabled ? 0.5 : 1,
           }}
         >
           <EditProfileBoxView IsViewLoading={isLoading}>
@@ -125,25 +125,28 @@ const IncognitoScreen: React.FC = () => {
               />
 
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 15 }}>
-                {contacts.length > 0 ? (
+                {contacts.length > 0 &&
                   contacts.map((contact) => (
-                    <Pressable key={contact.recordID} onPress={() => removeContact(contact.recordID)}>
+                    <Pressable
+                      disabled={isIncognitoEnabled}
+                      key={contact.recordID}
+                      onPress={() => removeContact(contact.recordID)}
+                    >
                       <Text
                         style={[
                           styles.listText,
                           {
-                            color: colors.TextColor,
+                            color: isDark ? colors.TextColor : colors.Primary,
+                            borderWidth: 1,
+                            borderColor: !isDark ? colors.Primary : 'transparent',
                             backgroundColor: isDark ? colors.lightBackground : colors.InputBackground,
                           },
                         ]}
                       >
-                        {getContactDisplayName(contact)} ✕
+                        {getContactDisplayName(contact)?.trim()}
                       </Text>
                     </Pressable>
-                  ))
-                ) : (
-                  <Text style={[styles.emptyText, { color: colors.SecondaryTextColor }]}>No contacts selected</Text>
-                )}
+                  ))}
               </View>
             </View>
           </EditProfileBoxView>
@@ -156,12 +159,13 @@ const IncognitoScreen: React.FC = () => {
           Title="My email"
         />
         <GradientBorderView
-          gradientProps={{ colors: colors.editFiledBackground }}
+          gradientProps={{ colors: isDark ? colors.editFiledBackground : colors.ButtonGradient }}
           style={{
-            backgroundColor: isDark ? 'transparent' : 'rgba(255, 255, 255, 1)',
+            backgroundColor: 'transparent',
             borderWidth: 1,
             borderRadius: 15,
             marginTop: 10,
+            opacity: isIncognitoEnabled ? 0.5 : 1,
           }}
         >
           <EditProfileBoxView IsViewLoading={isLoading}>
@@ -173,25 +177,24 @@ const IncognitoScreen: React.FC = () => {
               />
 
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 15 }}>
-                {emails.length > 0 ? (
+                {emails.length > 0 &&
                   emails.map((item) => (
-                    <Pressable key={item.id} onPress={() => removeEmail(item.id)}>
+                    <Pressable disabled={isIncognitoEnabled} key={item.id} onPress={() => removeEmail(item.id)}>
                       <Text
                         style={[
                           styles.listText,
                           {
-                            color: colors.TextColor,
+                            color: isDark ? colors.TextColor : colors.Primary,
+                            borderWidth: 1,
+                            borderColor: !isDark ? colors.Primary : 'transparent',
                             backgroundColor: isDark ? colors.lightBackground : colors.InputBackground,
                           },
                         ]}
                       >
-                        {item.email} ✕
+                        {item.email?.trim()}
                       </Text>
                     </Pressable>
-                  ))
-                ) : (
-                  <Text style={[styles.emptyText, { color: colors.SecondaryTextColor }]}>No emails added</Text>
-                )}
+                  ))}
               </View>
             </View>
           </EditProfileBoxView>
@@ -233,7 +236,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   listText: {
-    padding: 10,
+    padding: 9,
     paddingHorizontal: 15,
     borderRadius: 15,
     fontSize: 14,

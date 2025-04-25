@@ -101,18 +101,17 @@ const PhoneNumber = () => {
       const isValidNumber =
         StorePhoneNumber?.length >= 10 && StorePhoneNumber?.length <= 12 && StorePhoneNumber.match('[0-9]{10}');
 
-      // const isGuestNumber = StorePhoneNumber === '7041526621';
-      const isGuestNumber = true;
+      const isGuestNumber = StorePhoneNumber === '9999999999';
 
       if (isGuestNumber) {
         await getUserWithoutOTP();
         return;
       }
 
-      // if (isValidNumber) {
-      //   await handleSendOtp();
-      //   return;
-      // }
+      if (isValidNumber) {
+        await handleSendOtp();
+        return;
+      }
 
       showToast('Invalid Phone Number', 'Please check your phone number', 'error');
     } catch (error: any) {

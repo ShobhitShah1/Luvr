@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   PermissionsAndroid,
   Platform,
   Pressable,
@@ -17,6 +18,7 @@ import { FONTS, SIZES } from '../../../Common/Theme';
 import { GradientBorderView } from '../../../Components/GradientBorder';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import LinearGradient from 'react-native-linear-gradient';
+import CommonIcons from '../../../Common/CommonIcons';
 
 interface SelectContactModalProps {
   isVisible: boolean;
@@ -204,17 +206,22 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
               styles.searchContainer,
               {
                 borderBottomWidth: 1,
-                borderBottomColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.InputBackground,
+                borderBottomColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(198, 198, 198, 1)',
               },
             ]}
           >
-            <Text style={[styles.searchIcon, { color: isDark ? colors.White : colors.Gray }]}>🔍</Text>
+            <Image
+              source={CommonIcons.Search}
+              style={{ width: 18, height: 18, marginRight: 10 }}
+              tintColor={isDark ? colors.White : colors.Gray}
+            />
+            {/* <Text style={[styles.searchIcon, { color: isDark ? colors.White : colors.Gray }]}>🔍</Text> */}
             <TextInput
               style={[
                 styles.searchInput,
                 {
                   color: isDark ? colors.White : colors.TextColor,
-                  fontFamily: FONTS.Regular,
+                  fontFamily: FONTS.SemiBold,
                 },
               ]}
               placeholder="Search contact"
@@ -250,7 +257,9 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
                     style={[
                       styles.contactItem,
                       {
-                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.lightFiledBackground,
+                        borderWidth: 1,
+                        borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.Primary,
+                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
                       },
                     ]}
                     onPress={() => toggleContactSelection(contact.recordID)}
@@ -272,7 +281,7 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
                           styles.contactPhone,
                           {
                             color: isDark ? 'rgba(255, 255, 255, 0.7)' : colors.SecondaryTextColor,
-                            fontFamily: FONTS.Regular,
+                            fontFamily: FONTS.SemiBold,
                           },
                         ]}
                       >

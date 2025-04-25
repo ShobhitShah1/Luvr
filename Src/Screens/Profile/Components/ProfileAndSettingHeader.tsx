@@ -13,40 +13,38 @@ interface HeaderProps {
   onUpdatePress?: () => void;
   isLoading?: boolean;
   showRightIcon?: boolean;
+  showBackIcon?: boolean;
 }
 
-const ProfileAndSettingHeader: FC<HeaderProps> = ({ Title, onUpdatePress, isLoading, showRightIcon = true }) => {
+const ProfileAndSettingHeader: FC<HeaderProps> = ({
+  Title,
+  onUpdatePress,
+  isLoading,
+  showRightIcon = true,
+  showBackIcon = true,
+}) => {
   const { colors, isDark } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
 
   return (
-    <View
-      style={[
-        styles.container,
-        // !isDark && {
-        //   backgroundColor: colors.White,
-        //   shadowColor: colors.Black,
-        //   elevation: 5,
-        //   shadowOffset: { width: 0, height: 2 },
-        //   shadowOpacity: 0.5,
-        // },
-      ]}
-    >
+    <View style={styles.container}>
       <SafeAreaView />
       <View style={styles.ContentView}>
-        <Pressable
-          disabled={isLoading}
-          onPress={() => navigation.goBack()}
-          style={styles.ViewStyle}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Image
-            resizeMode="contain"
-            tintColor={colors.TextColor}
-            style={styles.BackIcon}
-            source={CommonIcons.TinderBack}
-          />
-        </Pressable>
+        {showBackIcon && (
+          <Pressable
+            disabled={isLoading}
+            onPress={() => navigation.goBack()}
+            style={styles.ViewStyle}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Image
+              resizeMode="contain"
+              tintColor={colors.TextColor}
+              style={styles.BackIcon}
+              source={CommonIcons.TinderBack}
+            />
+          </Pressable>
+        )}
         <View style={[styles.TitleView, { right: Title === 'Notification' ? 10 : 3 }]}>
           <Text style={[styles.Title, { color: colors.TextColor }]}>{Title}</Text>
         </View>

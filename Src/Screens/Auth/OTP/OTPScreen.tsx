@@ -31,7 +31,7 @@ const OTPScreen: FC = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<any>();
   const OTPInputRef = useRef<TextInput>(null);
-  const { isDark } = useTheme();
+  const { isDark, colors } = useTheme();
 
   const style = useThemedStyles(styles);
   const { showToast } = useCustomToast();
@@ -246,9 +246,9 @@ const OTPScreen: FC = () => {
         <View style={{ paddingHorizontal: heightPercentageToDP('1.7%') }}>
           <View style={style.CodeAndNumberView}>
             <Text style={style.MyCodeText}>Enter your{'\n'}code</Text>
-            <Text style={style.DescText}>
+            <Text style={[style.DescText, { color: colors.TextColor }]}>
               Enter 4-digit code. We have sent to{'\n'}you at{' '}
-              <Text style={style.NumberText}>{number?.toString() || ''}</Text>
+              <Text style={[style.NumberText, { color: colors.Primary }]}>{number?.toString() || ''}</Text>
             </Text>
           </View>
 
@@ -256,7 +256,7 @@ const OTPScreen: FC = () => {
             <SmoothPinCodeInput
               value={otp}
               isDark={isDark}
-              ref={OTPInputRef}
+              ref={OTPInputRef as any}
               codeLength={OTPInputs}
               disableFullscreenUI={false}
               cellStyle={style.OTPCellStyle}

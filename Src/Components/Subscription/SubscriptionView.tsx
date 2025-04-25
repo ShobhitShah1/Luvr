@@ -21,11 +21,11 @@ import { debouncedGetSubscription } from '../../Services/SubscriptionService';
 const { width } = Dimensions.get('window');
 
 const SubscriptionView = ({
-  selectedPlan,
-  handlePlanSelection,
+  selectedPlan: initialSelectedPlan,
+  handlePlanSelection: externalHandlePlanSelection,
 }: {
-  selectedPlan: string;
-  handlePlanSelection: (key: string) => void;
+  selectedPlan?: string;
+  handlePlanSelection?: (key: string) => void;
 }) => {
   const navigation = useNavigation();
 
@@ -34,11 +34,33 @@ const SubscriptionView = ({
 
   const [isProductFetchLoading, setIsProductFetchLoading] = useState(true);
   const [apiSubscriptionData, setApiSubscriptionData] = useState<SubscriptionPlanProps[]>([]);
+  const [internalSelectedPlan, setInternalSelectedPlan] = useState<string>(initialSelectedPlan || '');
 
   const [remoteConfigLinks, setRemoteConfigLinks] = useState<any>();
   const [subscriptionProducts, setSubscriptionProducts] = useState<Array<RNIap.Subscription>>([]);
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [purchaseProcessed, setPurchaseProcessed] = useState(false);
+
+  const selectedPlan = initialSelectedPlan || internalSelectedPlan;
+
+  const handlePlanSelection = (key: string) => {
+    if (externalHandlePlanSelection) {
+      externalHandlePlanSelection(key);
+      setInternalSelectedPlan(key);
+    } else {
+      setInternalSelectedPlan(key);
+    }
+  };
+
+  useEffect(() => {
+    if (apiSubscriptionData.length > 0 && !selectedPlan) {
+      const firstPlan = apiSubscriptionData[0]?.key;
+
+      if (firstPlan) {
+        handlePlanSelection(firstPlan);
+      }
+    }
+  }, [apiSubscriptionData, selectedPlan]);
 
   const getRemoteConfigValue = async () => {
     await remoteConfig().fetch(100);
@@ -125,7 +147,9 @@ const SubscriptionView = ({
         setApiSubscriptionData(APIResponse.data);
         connectIAP(APIResponse.data);
       }
-    } catch (error) {
+    } catch (error: any) {
+      showToast('Error', String(error?.message || error), 'error');
+    } finally {
       setIsProductFetchLoading(false);
     }
   };

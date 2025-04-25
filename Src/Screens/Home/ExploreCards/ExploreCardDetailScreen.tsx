@@ -31,6 +31,7 @@ import { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import DetailCardHeader from './Components/DetailCardHeader';
 import RenderUserImagesView from './Components/RenderUserImagesView';
+import { useUserData } from '../../../Contexts/UserDataContext';
 
 type DetailCardRouteParams = {
   props: ProfileType;
@@ -41,6 +42,7 @@ const ExploreCardDetailScreen = () => {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
   const { showToast } = useCustomToast();
+  const { subscription } = useUserData();
 
   const cardDetail = useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
 
@@ -73,11 +75,7 @@ const ExploreCardDetailScreen = () => {
           setCardData(APIResponse.data);
         }
       } else {
-        showToast(
-          TextString.error?.toUpperString(),
-          APIResponse?.message || 'Please try again letter',
-          TextString.error
-        );
+        showToast('Error', APIResponse?.message || 'Please try again letter', TextString.error);
         setCardData({} as ProfileType);
       }
     } catch (error) {
@@ -404,10 +402,12 @@ const ExploreCardDetailScreen = () => {
 
               <View style={styles.BlockAndReportProfileView}>
                 <Pressable
+                  disabled={!subscription.isActive}
                   onPress={onBlockProfileClick}
                   style={[
                     styles.BlockAndReportButtonView,
                     {
+                      opacity: !subscription.isActive ? 0.5 : 1,
                       backgroundColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White,
                       borderColor: isDark ? 'transparent' : colors.Black,
                     },

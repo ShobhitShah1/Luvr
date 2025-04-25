@@ -24,6 +24,7 @@ import AddUserPhoto from './Components/AddUserPhoto';
 import ChooseFromModal from './Components/ChooseFromModal';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
+import { getProfileData } from '../../../Utils/profileUtils';
 
 const AddRecentPics = () => {
   const { colors } = useTheme();
@@ -157,12 +158,11 @@ const AddRecentPics = () => {
     try {
       const validImages = data.filter((image) => image.url);
       uploadImagesSequentially(validImages)
-        .then(() => {
+        .then(async () => {
           dispatch(updateField(LocalStorageFields.isImageUploaded, true));
+          await getProfileData();
           showToast('Congratulations! Image Uploaded', 'Your profile is ready to go!', 'success');
-          navigation.replace('BottomTab', {
-            screen: 'Home',
-          });
+          navigation.replace('RedeemReferralCode' as any, { fromRegistration: true });
           setIsLoading(false);
         })
         .catch((error) => {

@@ -158,7 +158,7 @@ export default function MainRoute() {
     return (
       <>
         <StatusBar barStyle={isDark ? 'dark-content' : 'light-content'} backgroundColor={colors.Primary} />
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios' }}>
           {userIdentityExists && <Stack.Screen component={AddEmail} name="AddEmail" />}
           <Stack.Screen component={IdentifyYourSelf} name="IdentifyYourSelf" />
           <Stack.Screen component={SexualOrientation} name="SexualOrientationScreen" />
