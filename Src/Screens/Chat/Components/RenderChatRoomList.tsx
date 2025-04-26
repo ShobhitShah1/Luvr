@@ -2,10 +2,9 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { memo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
 import CommonIcons from '../../../Common/CommonIcons';
-import CommonImages from '../../../Common/CommonImages';
-import { COLORS, GROUP_FONT } from '../../../Common/Theme';
+import { GROUP_FONT } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { ChatRoomProps } from '../../../Types/Interface';

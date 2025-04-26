@@ -2,10 +2,10 @@
 import { Skeleton } from 'moti/skeleton';
 import React, { memo, useMemo, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
-import { COLORS, GROUP_FONT, SIZES } from '../../../../Common/Theme';
+import { GROUP_FONT, SIZES } from '../../../../Common/Theme';
 import ApiConfig from '../../../../Config/ApiConfig';
 import { useTheme } from '../../../../Contexts/ThemeContext';
 

@@ -1,12 +1,13 @@
-import { createStore, combineReducers, Reducer, applyMiddleware } from 'redux';
-import { persistReducer, persistStore } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { applyMiddleware, combineReducers, createStore, Reducer } from 'redux';
+import { persistReducer, persistStore } from 'redux-persist';
 
-import userReducer from '../Reducer/userReducer';
-import donationReducer from '../Reducer/donationReducer';
-import membershipReducer from '../Reducer/membershipReducer';
-import incognitoReducer, { IncognitoState } from '../Reducer/IncognitoReducer';
 import { thunk } from 'redux-thunk';
+import boostModalReducer, { BoostModalState } from '../Reducer/BoostModalReducer';
+import donationReducer from '../Reducer/donationReducer';
+import incognitoReducer, { IncognitoState } from '../Reducer/IncognitoReducer';
+import membershipReducer from '../Reducer/membershipReducer';
+import userReducer from '../Reducer/userReducer';
 
 interface UserState {}
 interface DonationState {}
@@ -17,6 +18,7 @@ export const rootReducer = combineReducers({
   donation: donationReducer,
   membership: membershipReducer,
   incognito: incognitoReducer as Reducer<IncognitoState | undefined>,
+  boostModal: boostModalReducer as Reducer<BoostModalState | undefined>,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -31,4 +33,4 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 const store = createStore(persistedReducer, applyMiddleware(thunk));
 const persistor = persistStore(store);
 
-export { store, persistor };
+export { persistor, store };

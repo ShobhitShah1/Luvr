@@ -137,5 +137,7 @@ interface Dark {
 
 export interface BoostModalProps {
   isVisible: boolean;
+  isLoading: boolean;
   onClose: () => void;
+  onBoostMe: () => void;
 }

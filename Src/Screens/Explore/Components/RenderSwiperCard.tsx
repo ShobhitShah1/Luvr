@@ -3,8 +3,9 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { FC, memo, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Image, LayoutChangeEvent, Pressable, Text, TouchableWithoutFeedback, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
+import FastImage from '@d11/react-native-fast-image';
+import LinearGradient from 'react-native-linear-gradient';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import CommonIcons from '../../../Common/CommonIcons';
 import ApiConfig from '../../../Config/ApiConfig';
 import { DummyImage } from '../../../Config/Setting';
@@ -12,7 +13,6 @@ import { useTheme } from '../../../Contexts/ThemeContext';
 import useCalculateAge from '../../../Hooks/useCalculateAge';
 import { SwiperCard } from '../../../Types/SwiperCard';
 import styles from '../styles';
-import LinearGradient from 'react-native-linear-gradient';
 
 interface RenderCardProps {
   CurrentCardIndex: number;

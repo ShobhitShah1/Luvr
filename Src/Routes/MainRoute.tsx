@@ -66,7 +66,7 @@ const Stack = createNativeStackNavigator();
 
 const NumberVerificationStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios' }}>
       <Stack.Screen component={LoginScreen} name="Login" />
       <Stack.Screen component={PhoneNumber} name="PhoneNumber" />
       <Stack.Screen component={OTPScreen} name="OTP" />
@@ -76,7 +76,7 @@ const NumberVerificationStack = () => {
 
 const LocationStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios' }}>
       <Stack.Screen component={LocationPermission} name="LocationPermission" />
     </Stack.Navigator>
   );
