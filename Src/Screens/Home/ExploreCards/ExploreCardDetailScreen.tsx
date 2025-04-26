@@ -104,7 +104,7 @@ const ExploreCardDetailScreen = () => {
         // }
         store.dispatch(onSwipeRight(String(UserID)));
         showToast('Swipe Right Success', 'You swiped right! Waiting for the other user to match.', 'success');
-        navigation.goBack();
+        navigation.canGoBack() && navigation.goBack();
       } else {
         showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Please try again letter', TextString.error);
       }
@@ -116,7 +116,7 @@ const ExploreCardDetailScreen = () => {
   const onRejectPress = async () => {
     if (UserID) {
       store.dispatch(onSwipeLeft(String(UserID)));
-      navigation.goBack();
+      navigation.canGoBack() && navigation.goBack();
     } else {
       showToast(TextString.error.toUpperCase(), "Can't find UserID please try again letter", TextString.error);
     }
@@ -136,7 +136,7 @@ const ExploreCardDetailScreen = () => {
         `Your request to block ${cardDetail.params?.props?.full_name} is successfully send`,
         'success'
       );
-      navigation.goBack();
+      navigation.canGoBack() && navigation.goBack();
     } else {
       showToast(
         TextString.error.toUpperCase(),
@@ -162,7 +162,7 @@ const ExploreCardDetailScreen = () => {
         `Your report against ${cardDetail.params?.props?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${SelectedReportReason}`,
         'success'
       );
-      navigation.goBack();
+      navigation.canGoBack() && navigation.goBack();
     } else {
       showToast(
         TextString.error.toUpperCase(),

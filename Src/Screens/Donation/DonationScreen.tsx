@@ -101,7 +101,7 @@ const DonationScreen = () => {
             position: 'absolute',
             top: Platform.OS === 'ios' ? 60 : 20,
           }}
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.canGoBack() && navigation.goBack()}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Image
@@ -147,7 +147,10 @@ const DonationScreen = () => {
               Disabled={false}
             />
             {!isPaymentSuccess && (
-              <Text onPress={() => navigation.goBack()} style={[styles.MayBeLaterButton, { color: colors.TextColor }]}>
+              <Text
+                onPress={() => navigation.canGoBack() && navigation.goBack()}
+                style={[styles.MayBeLaterButton, { color: colors.TextColor }]}
+              >
                 Maybe later
               </Text>
             )}

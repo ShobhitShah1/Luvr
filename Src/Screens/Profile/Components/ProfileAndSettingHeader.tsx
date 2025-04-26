@@ -33,7 +33,7 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({
         {showBackIcon && (
           <Pressable
             disabled={isLoading}
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.canGoBack() && navigation.goBack()}
             style={styles.ViewStyle}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >

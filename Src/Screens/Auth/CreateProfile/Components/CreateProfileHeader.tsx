@@ -59,7 +59,7 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({ ProgressCount, Skip, hand
           {!hideBack && (
             <Pressable
               style={styles.backButtonView}
-              onPress={() => navigation.goBack()}
+              onPress={() => navigation.canGoBack() && navigation.goBack()}
               hitSlop={{ bottom: 10, top: 10, left: 10, right: 10 }}
             >
               <Image

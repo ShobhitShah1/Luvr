@@ -511,7 +511,8 @@ const ChatScreen = () => {
         `Your request to block ${OtherUserProfileData?.full_name} is successfully send`,
         'success'
       );
-      navigation.goBack();
+
+      navigation.canGoBack() && navigation.goBack();
     } else {
       showToast('Error', 'Something went wrong', 'error');
     }
@@ -534,7 +535,7 @@ const ChatScreen = () => {
         `Your report against ${OtherUserProfileData?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${SelectedReportReason}`,
         'success'
       );
-      navigation.goBack();
+      navigation.canGoBack() && navigation.goBack();
     } else {
       showToast('Error', 'Something went wrong', 'error');
     }

@@ -5,16 +5,9 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { COLORS, GROUP_FONT } from '../../../Common/Theme';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { HomeListProps } from '../../../Types/Interface';
 
-interface RenderLookingViewProps {
-  item: {
-    id: number;
-    title: string;
-    image: number;
-  };
-}
-
-const RenderLookingView: FC<RenderLookingViewProps> = ({ item }) => {
+const RenderLookingView: FC<HomeListProps> = ({ item }) => {
   const { isDark, colors } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<{ CategoryDetailCards: {} }>>();
 
