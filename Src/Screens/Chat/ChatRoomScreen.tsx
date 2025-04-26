@@ -14,7 +14,7 @@ import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
 import { BOTTOM_TAB_HEIGHT, COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
 import ApiConfig from '../../Config/ApiConfig';
-import { APP_NAME, JOIN_EVENT, LIST_EVENT, UPDATE_LIST } from '../../Config/Setting';
+import { APP_NAME, gradientEnd, gradientStart, JOIN_EVENT, LIST_EVENT, UPDATE_LIST } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { store } from '../../Redux/Store/store';
 import { MessageItem, SocketEventHandlers } from '../../Types/Interface';
@@ -155,8 +155,8 @@ const ChatRoomScreen = () => {
     return (
       <View style={styles.EmptyListView}>
         <LinearGradient
-          start={{ x: 0, y: 1 }}
-          end={{ x: 1, y: 0 }}
+          start={gradientStart}
+          end={gradientEnd}
           colors={isDark ? colors.ButtonGradient : ['transparent', 'transparent']}
           style={styles.NoChatIconBackground}
         >

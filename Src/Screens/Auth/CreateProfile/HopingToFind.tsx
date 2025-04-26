@@ -58,14 +58,14 @@ const HopingToFind: FC = () => {
         gradientProps={{
           colors: selected
             ? isDark
-              ? colors.Gradient
+              ? colors.ButtonGradient
               : ['transparent', 'transparent']
             : isDark
               ? colors.UnselectedGradient
               : ['transparent', 'transparent'],
         }}
       >
-        <Pressable onPress={() => onPressLookingFor(item)} key={index}>
+        <Pressable style={styles.buttonView} onPress={() => onPressLookingFor(item)} key={index}>
           <View style={styles.TextView}>
             <Text
               numberOfLines={2}
@@ -216,10 +216,12 @@ const styles = StyleSheet.create({
   },
   LookingForText: {
     ...GROUP_FONT.h3,
-    // marginVertical: hp('0.2%'),
-    // ...GROUP_FONT.body3,
-    // fontSize: hp('1.6%'),
-    // color: COLORS.Black,
-    // textAlign: 'center',
+  },
+  buttonView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
   },
 });

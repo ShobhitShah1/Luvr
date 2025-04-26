@@ -88,7 +88,7 @@ const AddDailyHabits = () => {
                 gradientProps={{
                   colors: selected
                     ? isDark
-                      ? colors.Gradient
+                      ? colors.ButtonGradient
                       : ['transparent', 'transparent']
                     : isDark
                       ? colors.UnselectedGradient
@@ -131,7 +131,12 @@ const AddDailyHabits = () => {
       if (allHabitsSelected) {
         await Promise.all([
           requiredHabits.forEach((habit) => {
-            dispatch(updateField(LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}`], selectedItems[habit]));
+            dispatch(
+              updateField(
+                LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}` as keyof typeof LocalStorageFields],
+                selectedItems[habit]
+              )
+            );
           }),
         ]);
 

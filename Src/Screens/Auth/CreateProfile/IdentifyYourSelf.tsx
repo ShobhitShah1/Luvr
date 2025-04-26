@@ -220,7 +220,7 @@ const IdentifyYourSelf: FC = () => {
                   <View key={index}>
                     {selectedGender === gender ? (
                       <GradientBorderView
-                        gradientProps={{ colors: isDark ? colors.Gradient : ['transparent', 'transparent'] }}
+                        gradientProps={{ colors: isDark ? colors.ButtonGradient : ['transparent', 'transparent'] }}
                         style={[
                           styles.GenderView,
                           {
@@ -231,7 +231,13 @@ const IdentifyYourSelf: FC = () => {
                       >
                         <Pressable
                           onPress={() => handleGenderSelection(gender)}
-                          style={{ flex: 1, justifyContent: 'center' }}
+                          style={{
+                            flex: 1,
+                            width: '100%',
+                            height: '100%',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
                         >
                           <Text
                             style={[
@@ -257,7 +263,13 @@ const IdentifyYourSelf: FC = () => {
                       >
                         <Pressable
                           onPress={() => handleGenderSelection(gender)}
-                          style={{ flex: 1, justifyContent: 'center' }}
+                          style={{
+                            flex: 1,
+                            width: '100%',
+                            height: '100%',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
                         >
                           <Text style={[styles.GenderText, { color: COLORS.Gray }]}>{gender}</Text>
                         </Pressable>

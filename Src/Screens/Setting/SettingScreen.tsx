@@ -33,7 +33,7 @@ import TextString from '../../Common/TextString';
 import { COLORS, FONTS } from '../../Common/Theme';
 import { GradientBorderView } from '../../Components/GradientBorder';
 import OpenURL from '../../Components/OpenURL';
-import { ANDROID_APP_VERSION, IOS_APP_VERSION, PLAYSTORE } from '../../Config/Setting';
+import { ANDROID_APP_VERSION, gradientEnd, gradientStart, IOS_APP_VERSION, PLAYSTORE } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { resetUserData } from '../../Redux/Action/actions';
 import UserService from '../../Services/AuthService';
@@ -509,8 +509,8 @@ Let's make every moment count together! #LoveConnects`,
                   return (
                     <LinearGradient
                       key={index}
-                      start={{ x: 0, y: 1 }}
-                      end={{ x: 1, y: 0 }}
+                      start={gradientStart}
+                      end={gradientEnd}
                       colors={
                         isSelected
                           ? colors.ButtonGradient
@@ -805,8 +805,8 @@ Let's make every moment count together! #LoveConnects`,
             </View>
 
             <LinearGradient
-              start={{ x: 0, y: 1 }}
-              end={{ x: 1, y: 0 }}
+              start={gradientStart}
+              end={gradientEnd}
               colors={colors.ButtonGradient}
               style={styles.incognitoView}
             >

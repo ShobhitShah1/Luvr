@@ -3,6 +3,7 @@ import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { COLORS, FONTS } from '../../../Common/Theme';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { gradientEnd, gradientStart } from '../../../Config/Setting';
 
 interface RenderLookingViewProps {
   item: {
@@ -29,8 +30,8 @@ const RenderRecommendation: FC<RenderLookingViewProps> = ({ item }) => {
       <View style={{ flex: 1, justifyContent: 'center', overflow: 'hidden', borderRadius: 27 }}>
         <ImageBackground source={item.image} style={styles.imageView}>
           <LinearGradient
-            start={{ x: 0, y: 1 }}
-            end={{ x: 0, y: 0 }}
+            start={gradientStart}
+            end={gradientEnd}
             colors={['rgba(90, 76, 138, 0)', 'rgba(8, 2, 27, 0.8)'].reverse()}
             style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 50 }}
           />

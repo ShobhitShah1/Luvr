@@ -10,6 +10,7 @@ import { COLORS, GROUP_FONT, SIZES } from '../../../../Common/Theme';
 import GradientView from '../../../../Common/GradientView';
 import { useTheme } from '../../../../Contexts/ThemeContext';
 import LinearGradient from 'react-native-linear-gradient';
+import { gradientEnd, gradientStart } from '../../../../Config/Setting';
 
 interface ChooseFromModalProps {
   isModalVisible: boolean;
@@ -46,8 +47,8 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({ isModalVisible, toggleModal
       style={styles.container}
     >
       <LinearGradient
-        start={{ x: 0, y: 1 }}
-        end={{ x: 1, y: 0 }}
+        start={gradientStart}
+        end={gradientEnd}
         colors={isDark ? ['rgba(255, 255, 255, 0.35)', 'rgba(255, 255, 255, 0.35)'] : [colors.White, colors.White]}
         style={styles.ModalView}
       >
@@ -58,7 +59,11 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({ isModalVisible, toggleModal
               <Text style={[styles.DescriptionText, { color: colors.TextColor }]}>Select source for upload photos</Text>
             </View>
 
-            <Pressable style={styles.CloseButton} onPress={toggleModal}>
+            <Pressable
+              hitSlop={{ top: 10, bottom: 10, right: 10, left: 10 }}
+              style={styles.CloseButton}
+              onPress={toggleModal}
+            >
               <Image source={CommonIcons.CloseModal} style={styles.CloseButtonIcon} />
             </Pressable>
           </View>
@@ -138,9 +143,8 @@ const styles = StyleSheet.create({
     top: 3,
   },
   CloseButton: {
-    width: '20%',
-    alignItems: 'flex-end',
-    alignSelf: 'flex-start',
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
   CloseButtonIcon: {
     justifyContent: 'center',

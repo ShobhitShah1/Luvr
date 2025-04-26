@@ -13,6 +13,7 @@ import { updateField } from '../Redux/Action/actions';
 import messaging from '@react-native-firebase/messaging';
 import { useCustomToast } from '../Utils/toastUtils';
 import { initGoogleSignIn } from '../Services/AuthService';
+import { gradientEnd, gradientStart } from '../Config/Setting';
 
 const { width } = Dimensions.get('window');
 
@@ -127,8 +128,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        start={{ x: 0, y: 1 }}
-        end={{ x: 1, y: 0 }}
+        start={gradientStart}
+        end={gradientEnd}
         colors={isDark ? ['#1A0933', '#170729', '#230D45'] : ['#744DFD', '#5F3BDD4D']}
         style={styles.gradientBackground}
       >

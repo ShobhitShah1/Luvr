@@ -8,6 +8,7 @@ import { GradientBorderView } from '../../../Components/GradientBorder';
 import { ReportOrBlockInterface } from '../../../Types/Interface';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import LinearGradient from 'react-native-linear-gradient';
+import { gradientEnd, gradientStart } from '../../../Config/Setting';
 
 const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
   isVisible,
@@ -52,8 +53,8 @@ const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
 
           <View style={styles.buttonContainer}>
             <LinearGradient
-              start={{ x: 0, y: 1 }}
-              end={{ x: 1, y: 0 }}
+              start={gradientStart}
+              end={gradientEnd}
               colors={isDark ? colors.ButtonGradient : [colors.White, colors.White]}
               style={styles.actionButton}
             >
@@ -73,8 +74,8 @@ const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
             </LinearGradient>
 
             <LinearGradient
-              start={{ x: 0, y: 1 }}
-              end={{ x: 1, y: 0 }}
+              start={gradientStart}
+              end={gradientEnd}
               colors={isDark ? colors.ButtonGradient : [colors.White, colors.White]}
               style={styles.actionButton}
             >

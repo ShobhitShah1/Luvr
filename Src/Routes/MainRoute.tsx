@@ -1,14 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
-import { setRootViewBackgroundColor } from '@pnthach95/react-native-root-view-background';
 import messaging from '@react-native-firebase/messaging';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StatusBar } from 'react-native';
 import { useSelector } from 'react-redux';
 import ApiConfig from '../Config/ApiConfig';
-import { useTheme } from '../Contexts/ThemeContext';
 import { useLocationPermission } from '../Hooks/useLocationPermission';
 import { setCurrentScreenName, updateField } from '../Redux/Action/actions';
 import { store } from '../Redux/Store/store';
@@ -83,19 +80,18 @@ const LocationStack = () => {
 };
 
 export default function MainRoute() {
-  const { colors, isDark } = useTheme();
   const { showToast } = useCustomToast();
   const { checkLocationPermission } = useLocationPermission();
-  const ReduxUserData = useSelector((state: any) => state.user);
+
+  const storedData = useSelector((state: any) => state.user);
   const isUserVerified = useMemo(() => {
-    return ReduxUserData?.isVerified;
-  }, [ReduxUserData]);
+    return storedData?.isVerified;
+  }, [storedData]);
 
   const [initialRoute, setInitialRoute] = useState<string>('');
   const [isNavigationReady, setIsNavigationReady] = useState(false);
 
   useEffect(() => {
-    setRootViewBackgroundColor(isDark ? 'rgba(141, 71, 242, 1)' : colors.Secondary);
     Promise.all([getScreenToNavigate(), handleNotificationPermission(), initGoogleSignIn()]);
   }, []);
 
@@ -113,10 +109,10 @@ export default function MainRoute() {
   const getScreenToNavigate = useCallback(async () => {
     try {
       const checkLoginPermission = await checkLocationPermission();
-      const isNumber = !ReduxUserData.mobile_no || ReduxUserData.mobile_no.length === 0;
+      const isNumber = !storedData.mobile_no || storedData.mobile_no.length === 0;
       const isImageUploaded =
-        ReduxUserData?.isImageUploaded ||
-        (ReduxUserData?.userData?.recent_pik && ReduxUserData?.userData?.recent_pik?.length !== 0);
+        storedData?.isImageUploaded ||
+        (storedData?.userData?.recent_pik && storedData?.userData?.recent_pik?.length !== 0);
 
       if (!isUserVerified) {
         setInitialRoute('NumberVerification');
@@ -153,11 +149,10 @@ export default function MainRoute() {
   }, [isUserVerified, navigationRef, isNavigationReady, ApiConfig]);
 
   const LoginStack = () => {
-    const userIdentityExists = ReduxUserData?.identity?.length === 0 && store.getState().user?.identity?.length === 0;
+    const userIdentityExists = storedData?.identity?.length === 0 && store.getState().user?.identity?.length === 0;
 
     return (
       <>
-        <StatusBar barStyle={isDark ? 'dark-content' : 'light-content'} backgroundColor={colors.Primary} />
         <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios' }}>
           {userIdentityExists && <Stack.Screen component={AddEmail} name="AddEmail" />}
           <Stack.Screen component={IdentifyYourSelf} name="IdentifyYourSelf" />

@@ -72,7 +72,7 @@ const SexualOrientation = () => {
       gradientProps={{
         colors: isGenderSelected(item)
           ? isDark
-            ? colors.Gradient
+            ? colors.ButtonGradient
             : ['transparent', 'transparent']
           : isDark
             ? colors.UnselectedGradient

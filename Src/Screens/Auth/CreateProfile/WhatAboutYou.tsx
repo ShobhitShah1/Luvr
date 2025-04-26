@@ -65,7 +65,7 @@ const WhatAboutYou = () => {
                   gradientProps={{
                     colors: selected
                       ? isDark
-                        ? colors.Gradient
+                        ? colors.ButtonGradient
                         : ['transparent', 'transparent']
                       : isDark
                         ? colors.UnselectedGradient

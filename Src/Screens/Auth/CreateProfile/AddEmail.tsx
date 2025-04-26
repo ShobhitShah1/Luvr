@@ -75,7 +75,7 @@ const AddEmail = () => {
               <Text style={style.NameText}>My email is</Text>
               <GradientBorderView
                 style={[style.TextInputViewStyle, { backgroundColor: isDark ? 'transparent' : colors.White }]}
-                gradientProps={{ colors: isDark ? colors.Gradient : ['transparent', 'transparent'] }}
+                gradientProps={{ colors: isDark ? colors.ButtonGradient : ['transparent', 'transparent'] }}
               >
                 <CustomTextInput
                   value={email}
