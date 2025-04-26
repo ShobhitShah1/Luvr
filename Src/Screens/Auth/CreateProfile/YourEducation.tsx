@@ -1,5 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { memo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -11,6 +9,7 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import CustomTextInput from '../../../Components/CustomTextInput';
 import { GradientBorderView } from '../../../Components/GradientBorder';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
 import { updateField } from '../../../Redux/Action/actions';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
@@ -24,7 +23,7 @@ const YourEducation = () => {
   const { showToast } = useCustomToast();
 
   const KeyboardVisible = useKeyboardVisibility();
-  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
+  const navigation = useCustomNavigation();
   const userData = useSelector((state: any) => state?.user);
 
   const [EducationDegree, setEducationDegree] = useState<string>(userData.digree);

@@ -1,5 +1,4 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useNavigation } from '@react-navigation/native';
 import React, { memo, useEffect, useState } from 'react';
 import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { flushFailedPurchasesCachedAsPendingAndroid, initConnection, requestPurchase } from 'react-native-iap';
@@ -12,13 +11,14 @@ import { FONTS, GROUP_FONT } from '../../Common/Theme';
 import GradientButton from '../../Components/AuthComponents/GradientButton';
 import { skus } from '../../Config/ApiConfig';
 import { useTheme } from '../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import UserService from '../../Services/AuthService';
 import { useCustomToast } from '../../Utils/toastUtils';
 
 const BackgroundImageSize = 150;
 
 const DonationScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useCustomNavigation();
 
   const { isDark, colors } = useTheme();
   const { showToast } = useCustomToast();

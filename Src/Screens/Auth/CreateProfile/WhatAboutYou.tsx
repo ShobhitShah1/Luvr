@@ -1,5 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { memo, useCallback, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -11,6 +9,7 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import { WhatAboutYouData } from '../../../Components/Data';
 import { GradientBorderView } from '../../../Components/GradientBorder';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { updateField } from '../../../Redux/Action/actions';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
@@ -23,7 +22,7 @@ const WhatAboutYou = () => {
   const { showToast } = useCustomToast();
   const userData = useSelector((state: any) => state?.user);
 
-  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
+  const navigation = useCustomNavigation();
   const [selectedItems, setSelectedItems] = useState<Record<string, String>>({
     communication_stry: userData.communication_stry,
     education_level: userData.education_level,

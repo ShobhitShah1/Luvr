@@ -1,5 +1,98 @@
 import { AxiosRequestConfig } from 'axios';
 import { ProfileType } from './ProfileType';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
+import { chatRoomDataType } from './chatRoomDataType';
+
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
+}
+
+export type RootStackParamList = {
+  SplashScreen: undefined;
+
+  NumberVerificationStack: {
+    screen?: 'Login' | 'PhoneNumber' | 'OTP';
+    params?: any;
+  };
+
+  NumberVerification: undefined;
+
+  LoginStack: {
+    screen?:
+      | 'AddEmail'
+      | 'IdentifyYourSelf'
+      | 'HopingToFind'
+      | 'DistancePreference'
+      | 'YourEducation'
+      | 'AddDailyHabits'
+      | 'WhatAboutYou'
+      | 'YourIntro'
+      | 'AddRecentPics'
+      | 'SexualOrientationScreen';
+    params?: any;
+  };
+
+  BottomTab: {
+    screen?: 'Home' | 'ExploreCard' | 'MyLikes' | 'ChatRoom' | 'Profile';
+  };
+
+  LocationStack: {
+    screen?: 'LocationPermission';
+    params?: any;
+  };
+
+  Login: undefined;
+  PhoneNumber: undefined;
+  OTP: { number?: string };
+
+  LocationPermission: undefined;
+
+  AddEmail: undefined;
+  IdentifyYourSelf: undefined;
+  SexualOrientationScreen: undefined;
+  HopingToFind: undefined;
+  DistancePreference: undefined;
+  YourEducation: undefined;
+  AddDailyHabits: undefined;
+  WhatAboutYou: undefined;
+  YourIntro: undefined;
+  AddRecentPics: undefined;
+
+  CategoryDetailCards: {
+    item: {
+      id: number;
+      title: string;
+      image: any;
+    };
+  };
+  ExploreCardDetail: {
+    props: ProfileType;
+  };
+  Chat: {
+    id?: string;
+    ChatData?: chatRoomDataType;
+  };
+  EditProfile: undefined;
+  Setting: undefined;
+  Notification: undefined;
+  Donation: undefined;
+  QRCodeScreen: undefined;
+  RedeemReferralCode: { fromRegistration?: boolean };
+  IncognitoScreen: undefined;
+};
+
+// Create generic navigation and route types
+export type StackNavigationProp<T extends keyof RootStackParamList> = NativeStackNavigationProp<RootStackParamList, T>;
+
+export type StackRouteProp<T extends keyof RootStackParamList> = RouteProp<RootStackParamList, T>;
+
+export type ScreenProps<T extends keyof RootStackParamList> = {
+  navigation: StackNavigationProp<T>;
+  route: StackRouteProp<T>;
+};
 
 export interface FetchWrapper {
   get: (url: string, params?: Record<string, any>, config?: AxiosRequestConfig) => Promise<any>;
@@ -140,4 +233,12 @@ export interface BoostModalProps {
   isLoading: boolean;
   onClose: () => void;
   onBoostMe: () => void;
+}
+
+export interface HomeListProps {
+  item: {
+    id: number;
+    title: string;
+    image: number;
+  };
 }

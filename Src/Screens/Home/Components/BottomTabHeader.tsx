@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useNavigation } from '@react-navigation/native';
 import React, { FC, memo, useCallback, useEffect } from 'react';
 import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import Animated, {
@@ -15,6 +14,7 @@ import CommonIcons from '../../../Common/CommonIcons';
 import { COLORS, FONTS } from '../../../Common/Theme';
 import { APP_NAME, DonationIconAnimationTime } from '../../../Config/Setting';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 
 interface BottomTabHeaderProps {
   hideSettingAndNotification?: boolean;
@@ -33,7 +33,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
   hideDonation = false,
   showTitle = false,
 }) => {
-  const navigation = useNavigation<any>();
+  const navigation = useCustomNavigation();
   const rotation = useSharedValue(0);
   const { colors } = useTheme();
 

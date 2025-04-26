@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import { addEventListener } from '@react-native-community/netinfo';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -25,6 +25,7 @@ import { BOTTOM_TAB_HEIGHT, COLORS, GROUP_FONT } from '../../Common/Theme';
 import GradientButton from '../../Components/AuthComponents/GradientButton';
 import { CardDelay, CardLimit } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import useInterval from '../../Hooks/useInterval';
 import { onSwipeLeft, onSwipeRight } from '../../Redux/Action/actions';
 import { store } from '../../Redux/Store/store';
@@ -44,7 +45,7 @@ const ExploreCardScreen: FC = () => {
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const slideDownAnimation = useRef(new Animated.Value(1)).current;
 
-  const navigation = useNavigation() as any;
+  const navigation = useCustomNavigation();
   const isScreenFocused = useIsFocused();
 
   const userData = useSelector((state: any) => state?.user);

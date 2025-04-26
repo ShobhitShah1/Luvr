@@ -1,6 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import { useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Image, Keyboard, KeyboardAvoidingView, ScrollView, Text, TextInput, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -15,6 +14,7 @@ import CustomTextInput from '../../../Components/CustomTextInput';
 import { CountryWithCode } from '../../../Components/Data';
 import { GradientBorderView } from '../../../Components/GradientBorder';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { useLocationPermission } from '../../../Hooks/useLocationPermission';
 import { useThemedStyles } from '../../../Hooks/useThemedStyles';
 import { updateField } from '../../../Redux/Action/actions';
@@ -39,7 +39,7 @@ const PhoneNumber = () => {
   const { showToast } = useCustomToast();
   const { checkLocationPermission } = useLocationPermission();
 
-  const navigation = useNavigation<any>();
+  const navigation = useCustomNavigation();
   const userData = useSelector((state: any) => state?.user);
   const textInputRef = useRef<TextInput>(null);
 

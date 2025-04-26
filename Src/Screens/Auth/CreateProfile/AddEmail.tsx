@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import React, { memo, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -12,12 +11,12 @@ import CustomTextInput from '../../../Components/CustomTextInput';
 import { GradientBorderView } from '../../../Components/GradientBorder';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import createThemedStyles from '../../../Hooks/createThemedStyles';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { useThemedStyles } from '../../../Hooks/useThemedStyles';
 import { updateField } from '../../../Redux/Action/actions';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
-
 const AddEmail = () => {
   const dispatch = useDispatch();
 
@@ -30,7 +29,7 @@ const AddEmail = () => {
   const [email, setEmail] = useState<string>(userData?.identity ? userData?.identity : '');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { navigate } = useNavigation<any>();
+  const { navigate } = useCustomNavigation();
 
   const onNextClick = async () => {
     try {

@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import React, { FC, memo } from 'react';
 import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -6,6 +5,7 @@ import CommonIcons from '../../../Common/CommonIcons';
 import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { ProfileType } from '../../../Types/ProfileType';
 
 interface ChatHeaderProps {
@@ -15,7 +15,7 @@ interface ChatHeaderProps {
 
 const ChatScreenHeader: FC<ChatHeaderProps> = ({ data, onRightIconPress }) => {
   const { colors } = useTheme();
-  const navigation = useNavigation();
+  const navigation = useCustomNavigation();
 
   return (
     <SafeAreaView style={styles.Container}>

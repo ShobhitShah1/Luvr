@@ -1,6 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-// import Slider from 'azir-slider';
 import React, { FC, memo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -14,13 +13,14 @@ import CreateProfileStyles from './styles';
 import CustomSlider from '../../../Components/CustomSlider';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import GradientView from '../../../Common/GradientView';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 
 const DistancePreference: FC = () => {
   const { colors } = useTheme();
 
   const dispatch = useDispatch();
   const userData = useSelector((state: any) => state.user);
-  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
+  const navigation = useCustomNavigation();
 
   const [isLoading, setIsLoading] = useState(false);
   const [milesValue, setMilesValue] = useState<number>(userData.radius ? userData.radius : 75);

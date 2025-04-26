@@ -2,16 +2,9 @@ import React, { FC, memo } from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { COLORS, FONTS } from '../../../Common/Theme';
-import { useTheme } from '../../../Contexts/ThemeContext';
 import { gradientEnd, gradientStart } from '../../../Config/Setting';
-
-interface RenderLookingViewProps {
-  item: {
-    id: number;
-    title: string;
-    image: number;
-  };
-}
+import { useTheme } from '../../../Contexts/ThemeContext';
+import { HomeListProps } from '../../../Types/Interface';
 
 const getRandomColor = () => {
   const letters = '0123456789ABCDEF';
@@ -22,7 +15,7 @@ const getRandomColor = () => {
   return color;
 };
 
-const RenderRecommendation: FC<RenderLookingViewProps> = ({ item }) => {
+const RenderRecommendation: FC<HomeListProps> = ({ item }) => {
   const { isDark, colors } = useTheme();
 
   return (

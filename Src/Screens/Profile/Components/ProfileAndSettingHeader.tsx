@@ -1,12 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { FC, memo } from 'react';
 import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
 import { COLORS, GROUP_FONT } from '../../../Common/Theme';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 
 interface HeaderProps {
   Title: string;
@@ -24,7 +23,7 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({
   showBackIcon = true,
 }) => {
   const { colors, isDark } = useTheme();
-  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
+  const navigation = useCustomNavigation();
 
   return (
     <View style={styles.container}>

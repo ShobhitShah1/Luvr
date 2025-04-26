@@ -1,6 +1,4 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
 import React, { memo, useState } from 'react';
 import { FlatList, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -15,16 +13,17 @@ import ApiConfig from '../../../Config/ApiConfig';
 import { TotalProfilePicCanUpload } from '../../../Config/Setting';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { useCameraPermission } from '../../../Hooks/useCameraPermission';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { useGalleryPermission } from '../../../Hooks/useGalleryPermission';
 import { updateField } from '../../../Redux/Action/actions';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { addUrlToItem, deleteUrlFromItem, sortByUrl } from '../../../Utils/ImagePickerUtils';
+import { getProfileData } from '../../../Utils/profileUtils';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import AddUserPhoto from './Components/AddUserPhoto';
 import ChooseFromModal from './Components/ChooseFromModal';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import { getProfileData } from '../../../Utils/profileUtils';
 
 const AddRecentPics = () => {
   const { colors } = useTheme();
@@ -32,7 +31,7 @@ const AddRecentPics = () => {
   const { showToast } = useCustomToast();
 
   const userData = useSelector((state: any) => state?.user);
-  const navigation = useNavigation<NativeStackNavigationProp<{ BottomTab: {} }>>();
+  const navigation = useCustomNavigation();
 
   const { requestCameraPermission } = useCameraPermission();
   const { requestGalleryPermission } = useGalleryPermission();
@@ -162,7 +161,7 @@ const AddRecentPics = () => {
           dispatch(updateField(LocalStorageFields.isImageUploaded, true));
           await getProfileData();
           showToast('Congratulations! Image Uploaded', 'Your profile is ready to go!', 'success');
-          navigation.replace('RedeemReferralCode' as any, { fromRegistration: true });
+          navigation.replace('RedeemReferralCode', { fromRegistration: true });
           setIsLoading(false);
         })
         .catch((error) => {

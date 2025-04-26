@@ -1,18 +1,11 @@
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { FC, memo, useEffect } from 'react';
 import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import Animated, { interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  interpolate,
-} from 'react-native-reanimated';
 import CommonIcons from '../../../../Common/CommonIcons';
 import { COLORS, GROUP_FONT } from '../../../../Common/Theme';
 import { useTheme } from '../../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../../Hooks/useCustomNavigation';
 
 interface CreateProfileProps {
   ProgressCount: number;
@@ -23,26 +16,20 @@ interface CreateProfileProps {
 
 const CreateProfileHeader: FC<CreateProfileProps> = ({ ProgressCount, Skip, handleSkipPress, hideBack }) => {
   const { colors } = useTheme();
-  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
+  const navigation = useCustomNavigation();
 
-  // Shared values for animations
   const countValue = useSharedValue(ProgressCount);
   const opacity = useSharedValue(1);
 
   useEffect(() => {
-    // Animate count change
     if (countValue.value !== ProgressCount) {
-      // Fade out
       opacity.value = withTiming(0, { duration: 150 }, () => {
-        // Update value
         countValue.value = ProgressCount;
-        // Fade in
         opacity.value = withTiming(1, { duration: 300 });
       });
     }
   }, [ProgressCount]);
 
-  // Animated styles for count text
   const countAnimatedStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
@@ -54,7 +41,6 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({ ProgressCount, Skip, hand
     <View style={styles.headerContainer}>
       <SafeAreaView />
       <View style={styles.buttonAndTitleContainer}>
-        {/* Left: Back Button */}
         <Animated.View style={[styles.leftSection]}>
           {!hideBack && (
             <Pressable
@@ -72,7 +58,6 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({ ProgressCount, Skip, hand
           )}
         </Animated.View>
 
-        {/* Center: Progress Count */}
         <Animated.View style={[styles.centerSection]}>
           {ProgressCount !== 0 && (
             <Animated.Text style={[styles.pageCount, { color: colors.TextColor }, countAnimatedStyle]}>
@@ -81,7 +66,6 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({ ProgressCount, Skip, hand
           )}
         </Animated.View>
 
-        {/* Right: Skip Button */}
         <Animated.View style={[styles.rightSection]}>
           {Skip && (
             <Pressable

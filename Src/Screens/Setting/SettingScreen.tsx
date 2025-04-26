@@ -6,7 +6,6 @@ import NetInfo from '@react-native-community/netinfo';
 import messaging from '@react-native-firebase/messaging';
 import remoteConfig from '@react-native-firebase/remote-config';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { useNavigation } from '@react-navigation/native';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
@@ -22,6 +21,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import InAppReview from 'react-native-in-app-review';
 import LinearGradient from 'react-native-linear-gradient';
 import { checkNotifications, requestNotifications } from 'react-native-permissions';
 import { Rating } from 'react-native-ratings';
@@ -35,6 +35,7 @@ import { GradientBorderView } from '../../Components/GradientBorder';
 import OpenURL from '../../Components/OpenURL';
 import { ANDROID_APP_VERSION, gradientEnd, gradientStart, IOS_APP_VERSION, PLAYSTORE } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import { resetUserData } from '../../Redux/Action/actions';
 import UserService from '../../Services/AuthService';
 import { ProfileType } from '../../Types/ProfileType';
@@ -46,7 +47,6 @@ import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHead
 import SettingCustomModal from './Components/SettingCustomModal';
 import SettingFlexView from './Components/SettingFlexView';
 import styles from './styles';
-import InAppReview from 'react-native-in-app-review';
 
 const ShowMeArray = ['Male', 'Female', 'Everyone'];
 const SOMETHING_WENT_WRONG =
@@ -55,7 +55,7 @@ const SOMETHING_WENT_WRONG =
 const SettingScreen = () => {
   const { colors, isDark } = useTheme();
   const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const navigation = useCustomNavigation();
   const { showToast } = useCustomToast();
   const UserData = useSelector((state: any) => state?.user);
 
@@ -797,7 +797,7 @@ Let's make every moment count together! #LoveConnects`,
                       isActive={false}
                       style={styles.ShareFlexViewStyle}
                       Item={'Have a referral code?'}
-                      onPress={() => navigation.navigate('RedeemReferralCode')}
+                      onPress={() => navigation.navigate('RedeemReferralCode', { fromRegistration: false })}
                     />
                   </View>
                 </EditProfileBoxView>

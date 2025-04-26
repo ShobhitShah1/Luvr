@@ -3,10 +3,8 @@
 import messaging from '@react-native-firebase/messaging';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import ApiConfig from '../Config/ApiConfig';
-import { useLocationPermission } from '../Hooks/useLocationPermission';
 import { setCurrentScreenName, updateField } from '../Redux/Action/actions';
 import { store } from '../Redux/Store/store';
 import {
@@ -37,8 +35,8 @@ import EditProfileScreen from '../Screens/Profile/EditProfileScreen';
 import SettingScreen from '../Screens/Setting/SettingScreen';
 import SplashScreen from '../Screens/SplashScreen';
 import { initGoogleSignIn } from '../Services/AuthService';
+import { RootStackParamList } from '../Types/Interface';
 import { LocalStorageFields } from '../Types/LocalStorageFields';
-import { useCustomToast } from '../Utils/toastUtils';
 import BottomTab from './BottomTab';
 import { navigationRef } from './RootNavigation';
 
@@ -59,7 +57,7 @@ const excludedRoutes = [
   'AddEmail',
 ];
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const NumberVerificationStack = () => {
   return (
@@ -80,19 +78,10 @@ const LocationStack = () => {
 };
 
 export default function MainRoute() {
-  const { showToast } = useCustomToast();
-  const { checkLocationPermission } = useLocationPermission();
-
   const storedData = useSelector((state: any) => state.user);
-  const isUserVerified = useMemo(() => {
-    return storedData?.isVerified;
-  }, [storedData]);
-
-  const [initialRoute, setInitialRoute] = useState<string>('');
-  const [isNavigationReady, setIsNavigationReady] = useState(false);
 
   useEffect(() => {
-    Promise.all([getScreenToNavigate(), handleNotificationPermission(), initGoogleSignIn()]);
+    Promise.all([handleNotificationPermission(), initGoogleSignIn()]);
   }, []);
 
   const handleNotificationPermission = async () => {
@@ -105,48 +94,6 @@ export default function MainRoute() {
       }
     }
   };
-
-  const getScreenToNavigate = useCallback(async () => {
-    try {
-      const checkLoginPermission = await checkLocationPermission();
-      const isNumber = !storedData.mobile_no || storedData.mobile_no.length === 0;
-      const isImageUploaded =
-        storedData?.isImageUploaded ||
-        (storedData?.userData?.recent_pik && storedData?.userData?.recent_pik?.length !== 0);
-
-      if (!isUserVerified) {
-        setInitialRoute('NumberVerification');
-        return;
-      }
-
-      if (!checkLoginPermission) {
-        setInitialRoute('LocationStack');
-        return;
-      }
-
-      if (isNumber) {
-        setInitialRoute('NumberVerification');
-        navigationRef &&
-          navigationRef?.navigate('NumberVerification', {
-            screen: 'PhoneNumber',
-          });
-        return;
-      }
-
-      if (isImageUploaded) {
-        setInitialRoute('BottomTab');
-      } else {
-        setInitialRoute('LoginStack');
-        navigationRef &&
-          navigationRef?.navigate('LoginStack', {
-            screen: 'AddRecentPics',
-          });
-      }
-    } catch (error) {
-      showToast('Error', String(error), 'error');
-      setInitialRoute('NumberVerification');
-    }
-  }, [isUserVerified, navigationRef, isNavigationReady, ApiConfig]);
 
   const LoginStack = () => {
     const userIdentityExists = storedData?.identity?.length === 0 && store.getState().user?.identity?.length === 0;
