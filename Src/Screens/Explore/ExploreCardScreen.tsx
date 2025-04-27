@@ -381,7 +381,7 @@ const ExploreCardScreen: FC = () => {
           onSayHiClick={() => {
             setIsMatchModalVisible(false);
             navigation.navigate('Chat', {
-              id: MatchedUserInfo?._id,
+              id: MatchedUserInfo?._id?.toString(),
             });
           }}
           onCloseModalClick={() => {

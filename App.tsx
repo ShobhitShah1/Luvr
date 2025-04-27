@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { onDisplayNotification } from './Src/Components/onDisplayNotification';
 import { skus } from './Src/Config/ApiConfig';
+import { BoostModalProvider } from './Src/Contexts/BoostModalProvider';
 import { ThemeProvider } from './Src/Contexts/ThemeContext';
 import { UserDataProvider } from './Src/Contexts/UserDataContext';
 import { DONATION_PRODUCTS } from './Src/Redux/Action/actions';
@@ -16,8 +17,7 @@ import { persistor, store } from './Src/Redux/Store/store';
 import MainRoute from './Src/Routes/MainRoute';
 import { navigationRef } from './Src/Routes/RootNavigation';
 import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
-import BoostModal from './Src/Components/Subscription/BoostModal';
-import { BoostModalProvider } from './Src/Contexts/BoostModalProvider';
+import BoostProvider from './Src/Contexts/BoostProvider';
 
 export default function App() {
   useEffect(() => {
@@ -78,23 +78,25 @@ export default function App() {
       <PersistGate persistor={persistor}>
         <ThemeProvider>
           <UserDataProvider>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <ToastProvider
-                placement="top"
-                duration={4000}
-                offset={30}
-                animationType="zoom-in"
-                renderType={{
-                  custom_toast: (toast: any) => (
-                    <ToastStyle title={toast?.title} message={toast?.message} status={toast?.status} />
-                  ),
-                }}
-              >
-                <BoostModalProvider>
-                  <MainRoute />
-                </BoostModalProvider>
-              </ToastProvider>
-            </GestureHandlerRootView>
+            <BoostProvider>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <ToastProvider
+                  placement="top"
+                  duration={4000}
+                  offset={30}
+                  animationType="zoom-in"
+                  renderType={{
+                    custom_toast: (toast: any) => (
+                      <ToastStyle title={toast?.title} message={toast?.message} status={toast?.status} />
+                    ),
+                  }}
+                >
+                  <BoostModalProvider>
+                    <MainRoute />
+                  </BoostModalProvider>
+                </ToastProvider>
+              </GestureHandlerRootView>
+            </BoostProvider>
           </UserDataProvider>
         </ThemeProvider>
       </PersistGate>

@@ -18,7 +18,6 @@ export const getProfileData = async (): Promise<boolean> => {
   try {
     const netInfo = await NetInfo.fetch();
     if (!netInfo.isConnected) {
-      console.log('Network unavailable, skipping profile fetch');
       return false;
     }
 

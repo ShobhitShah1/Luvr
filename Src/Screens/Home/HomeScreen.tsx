@@ -20,6 +20,7 @@ import RenderHomeNearby from './Components/RenderHomeNearby';
 import RenderLookingView from './Components/RenderlookingView';
 import RenderRecommendation from './Components/RenderRecommendation';
 import styles from './styles';
+import { useBoost } from '../../Hooks/useBoost';
 
 const PROFILES = [
   {
@@ -42,6 +43,7 @@ const PROFILES = [
 
 const HomeScreen = () => {
   const { showModal } = useBoostModal();
+  const { isBoostActive } = useBoost();
   const isFocus = useIsFocused();
 
   const [refreshing, setRefreshing] = useState(false);
@@ -56,6 +58,12 @@ const HomeScreen = () => {
       };
 
       setupPermissions();
+    }
+
+    if (isFocus && !isBoostActive) {
+      setTimeout(() => {
+        showModal();
+      }, 5000);
     }
   }, [permissionsRequested]);
 
@@ -73,14 +81,6 @@ const HomeScreen = () => {
       return () => {};
     }, [])
   );
-
-  useEffect(() => {
-    if (isFocus) {
-      setTimeout(() => {
-        showModal();
-      }, 5000);
-    }
-  }, []);
 
   const askNotificationPermission = async () => {
     try {

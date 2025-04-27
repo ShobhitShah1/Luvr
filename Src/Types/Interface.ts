@@ -244,3 +244,39 @@ export interface HomeListProps {
     image: number;
   };
 }
+
+export interface BoostPaymentResponse {
+  platform: string;
+  productId: string;
+  productIds: string[];
+  purchaseToken: string;
+  transactionId: string;
+  transactionDate: number;
+  autoRenewing?: boolean;
+  isAcknowledged?: boolean;
+  purchaseState?: number;
+  packageName?: string;
+  signature?: string;
+  developerPayload?: string;
+  obfuscatedAccountId?: string;
+  obfuscatedProfileId?: string;
+  transactionReceipt?: any;
+  dataAndroid?: any;
+}
+
+export interface BoostData {
+  _id: string;
+  user_id: string;
+  payment_response: BoostPaymentResponse;
+  created_at: string;
+  updated_at: string;
+  expires_at?: string;
+  is_active: boolean;
+}
+
+export interface BoostState {
+  isLoading: boolean;
+  error: string | null;
+  activeBoost: BoostData | null;
+  isBoostActive: boolean;
+}

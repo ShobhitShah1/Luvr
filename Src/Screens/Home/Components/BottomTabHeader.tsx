@@ -15,6 +15,7 @@ import { COLORS, FONTS } from '../../../Common/Theme';
 import { APP_NAME, DonationIconAnimationTime } from '../../../Config/Setting';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
+import { useBoostModal } from '../../../Hooks/useBoostModal';
 
 interface BottomTabHeaderProps {
   hideSettingAndNotification?: boolean;
@@ -36,6 +37,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
   const navigation = useCustomNavigation();
   const rotation = useSharedValue(0);
   const { colors } = useTheme();
+  const { showModal } = useBoostModal();
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ rotateZ: `${rotation.value}deg` }],
@@ -61,9 +63,8 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
       <View style={styles.contentView}>
         {Platform.OS === 'android' && !hideDonation && (
           <Pressable
-            onPress={() => {
-              navigation.navigate('Donation');
-            }}
+            onLongPress={() => showModal()}
+            onPress={() => navigation.navigate('Donation')}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Animated.View style={[styles.iconWrapper, animatedStyle]}>

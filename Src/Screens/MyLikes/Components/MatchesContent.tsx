@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useSelector } from 'react-redux';
@@ -8,72 +8,71 @@ import ApiConfig from '../../../Config/ApiConfig';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { ListDetailProps } from '../../../Types/Interface';
+import { useUserData } from '../../../Contexts/UserDataContext';
+import { useCustomToast } from '../../../Utils/toastUtils';
 
-let NO_IMAGE_CONTAINER = 150;
+const NO_IMAGE_CONTAINER = 150;
 
 const MatchesContent = ({ MatchData }: { MatchData: ListDetailProps }) => {
   const { colors, isDark } = useTheme();
   const navigation = useCustomNavigation();
-
+  const { showToast } = useCustomToast();
+  const { subscription } = useUserData();
   const userData = useSelector((state: any) => state?.user?.userData || {});
+
   const matchData = MatchData?.user_details?.[0];
 
-  const handleChatClick = () => {
-    if (userData._id !== matchData?._id) {
-      navigation.navigate('Chat', { id: matchData?._id?.toString() || '' });
-    }
-  };
-
-  if (MatchData?.status === 'match' && matchData && userData._id !== matchData._id) {
-    return (
-      <View style={styles.Container} key={matchData._id}>
-        <View
-          style={[
-            styles.DetailBoxContainerView,
-            {
-              borderWidth: 1,
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
-              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White,
-            },
-          ]}
-        >
-          <View style={styles.MatchImageView}>
-            <Image
-              style={styles.MatchCardMyProfilePic}
-              source={{
-                uri: ApiConfig.IMAGE_BASE_URL + userData.recent_pik[0] || userData?.userData?.recent_pik[0],
-              }}
-            />
-            <Image style={styles.LikeButtonInMiddleIcon} source={CommonIcons.ic_red_like_button} />
-            <Image
-              style={styles.MatchCardOpponentProfilePic}
-              source={
-                matchData?.recent_pik?.[0]
-                  ? { uri: ApiConfig.IMAGE_BASE_URL + matchData?.recent_pik[0] }
-                  : { uri: ApiConfig.PLACEHOLDER_IMAGE }
-              }
-            />
-          </View>
-          <View style={styles.MatchTextView}>
-            <Text numberOfLines={1} style={[styles.TitleMatchText, { color: colors.TitleText }]}>
-              It's a match!
-            </Text>
-            <Text numberOfLines={2} style={[styles.DescriptionText, { color: colors.TextColor }]}>
-              You and {matchData.full_name || 'User'} liked each other.
-            </Text>
-          </View>
-          <Pressable onPress={handleChatClick} style={styles.LikeButtonView}>
-            <Image style={styles.LikeButtonIcon} source={CommonIcons.message_button} />
-          </Pressable>
-        </View>
-      </View>
-    );
+  if (MatchData?.status !== 'match' || !matchData || userData._id === matchData._id) {
+    return null;
   }
 
-  return null;
-};
+  const handleChatClick = () => {
+    if (!subscription.isActive) {
+      showToast('Alert', 'Please subscribe to chat with your matches.', 'error');
+      return;
+    }
+    navigation.navigate('Chat', { id: matchData?._id?.toString() || '' });
+  };
 
-export default memo(MatchesContent);
+  const detailBoxStyle = [
+    styles.DetailBoxContainerView,
+    {
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White,
+    },
+  ];
+
+  const userImageSource = {
+    uri: ApiConfig.IMAGE_BASE_URL + userData.recent_pik[0] || userData?.userData?.recent_pik[0],
+  };
+  const matchImageSource = matchData?.recent_pik?.[0]
+    ? { uri: ApiConfig.IMAGE_BASE_URL + matchData.recent_pik[0] }
+    : { uri: ApiConfig.PLACEHOLDER_IMAGE };
+
+  return (
+    <View style={styles.Container} key={matchData._id}>
+      <View style={detailBoxStyle}>
+        <View style={styles.MatchImageView}>
+          <Image style={styles.MatchCardMyProfilePic} source={userImageSource} />
+          <Image style={styles.LikeButtonInMiddleIcon} source={CommonIcons.ic_red_like_button} />
+          <Image style={styles.MatchCardOpponentProfilePic} source={matchImageSource} />
+        </View>
+        <View style={styles.MatchTextView}>
+          <Text numberOfLines={1} style={[styles.TitleMatchText, { color: colors.TitleText }]}>
+            It's a match!
+          </Text>
+          <Text numberOfLines={2} style={[styles.DescriptionText, { color: colors.TextColor }]}>
+            You and {matchData.full_name || 'User'} liked each other.
+          </Text>
+        </View>
+        <Pressable onPress={handleChatClick} style={styles.LikeButtonView}>
+          <Image style={styles.LikeButtonIcon} source={CommonIcons.message_button} />
+        </Pressable>
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   ListEmptyComponentView: {
@@ -112,7 +111,6 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.SemiBold,
     color: COLORS.Black,
   },
-
   Container: {
     width: '90%',
     alignSelf: 'center',
@@ -144,7 +142,6 @@ const styles = StyleSheet.create({
     width: hp(6.5),
     height: hp(6.5),
   },
-
   // Match Box
   MatchImageView: {
     width: '32%',
@@ -178,3 +175,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+export default memo(MatchesContent);

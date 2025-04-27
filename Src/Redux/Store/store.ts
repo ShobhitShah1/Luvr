@@ -8,6 +8,8 @@ import donationReducer from '../Reducer/donationReducer';
 import incognitoReducer, { IncognitoState } from '../Reducer/IncognitoReducer';
 import membershipReducer from '../Reducer/membershipReducer';
 import userReducer from '../Reducer/userReducer';
+import boostReducer from '../Reducer/boostReducer';
+import { BoostState } from '../../Types/Interface';
 
 interface UserState {}
 interface DonationState {}
@@ -19,6 +21,7 @@ export const rootReducer = combineReducers({
   membership: membershipReducer,
   incognito: incognitoReducer as Reducer<IncognitoState | undefined>,
   boostModal: boostModalReducer as Reducer<BoostModalState | undefined>,
+  boost: boostReducer as Reducer<BoostState | undefined>,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

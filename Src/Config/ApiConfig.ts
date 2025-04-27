@@ -51,4 +51,9 @@ export const skus = Platform.select({
   ios: ['com.luvr.dating.donation', 'com.luvr.gold', 'com.luve.platinum'],
 });
 
+export const boostSkus = Platform.select({
+  android: ['com.boost.day'],
+  ios: ['com.boost.day'],
+});
+
 export default ApiConfig;
