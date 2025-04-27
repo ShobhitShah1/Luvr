@@ -1,30 +1,63 @@
-import React, { memo, useEffect, useState } from 'react';
-import { StatusBar, StyleSheet, View, Text, Image, Dimensions } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import { useTheme } from '../Contexts/ThemeContext';
-import { FONTS } from '../Common/Theme';
-import CommonImages from '../Common/CommonImages';
-import { useSelector } from 'react-redux';
-import { NavigationProp } from '@react-navigation/native';
-import { useLocationPermission } from '../Hooks/useLocationPermission';
-import { store } from '../Redux/Store/store';
-import { LocalStorageFields } from '../Types/LocalStorageFields';
-import { updateField } from '../Redux/Action/actions';
 import messaging from '@react-native-firebase/messaging';
-import { useCustomToast } from '../Utils/toastUtils';
+import { NavigationProp } from '@react-navigation/native';
+import React, { memo, useEffect, useState } from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { useSelector } from 'react-redux';
+import CommonImages from '../Common/CommonImages';
+import { FONTS } from '../Common/Theme';
+import { gradientEnd, gradientStart } from '../Config/Setting';
+import { useTheme } from '../Contexts/ThemeContext';
+import { useLocationPermission } from '../Hooks/useLocationPermission';
+import { updateField } from '../Redux/Action/actions';
+import { store } from '../Redux/Store/store';
 import { initGoogleSignIn } from '../Services/AuthService';
-
-const { width } = Dimensions.get('window');
+import { LocalStorageFields } from '../Types/LocalStorageFields';
+import { useCustomToast } from '../Utils/toastUtils';
 
 interface SplashScreenProps {
   navigation: NavigationProp<any>;
+}
+
+enum NavigationDestination {
+  NUMBER_VERIFICATION = 'NumberVerification',
+  LOCATION_STACK = 'LocationStack',
+  LOGIN_STACK = 'LoginStack',
+  BOTTOM_TAB = 'BottomTab',
+}
+
+enum InitializationStep {
+  NOTIFICATIONS = 'notifications',
+  GOOGLE_SIGN_IN = 'googleSignIn',
+  LOCATION_PERMISSION = 'locationPermission',
+  USER_VERIFICATION = 'userVerification',
+  PHONE_NUMBER = 'phoneNumber',
+  PROFILE_IMAGE = 'profileImage',
 }
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   const { isDark, colors } = useTheme();
   const { showToast } = useCustomToast();
   const { checkLocationPermission } = useLocationPermission();
-  const ReduxUserData = useSelector((state: any) => state.user);
+
+  const userStoreData = useSelector((state: any) => state.user);
+  const [initializationStatus, setInitializationStatus] = useState<Record<InitializationStep, boolean>>({
+    [InitializationStep.NOTIFICATIONS]: false,
+    [InitializationStep.GOOGLE_SIGN_IN]: false,
+    [InitializationStep.LOCATION_PERMISSION]: false,
+    [InitializationStep.USER_VERIFICATION]: false,
+    [InitializationStep.PHONE_NUMBER]: false,
+    [InitializationStep.PROFILE_IMAGE]: false,
+  });
+
+  // For debugging - logs the current initialization state
+  const logInitializationState = (step: InitializationStep, success: boolean, details?: any) => {
+    console.log(`[SplashScreen] ${step}: ${success ? 'SUCCESS' : 'FAILED'}`, details || '');
+    setInitializationStatus((prev) => ({
+      ...prev,
+      [step]: success,
+    }));
+  };
 
   useEffect(() => {
     initializeAppFlow();
@@ -37,88 +70,119 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
         const Token = await messaging().getToken();
         if (Token) {
           store.dispatch(updateField(LocalStorageFields.notification_token, Token));
+          logInitializationState(InitializationStep.NOTIFICATIONS, true, { token: Token });
+          return true;
         }
       }
+      logInitializationState(InitializationStep.NOTIFICATIONS, false, { authStatus });
+      return false;
     } catch (error) {
-      console.error('Notification Permission Error:', error);
+      logInitializationState(InitializationStep.NOTIFICATIONS, false, { error: String(error) });
+      console.error('[SplashScreen] Notification Permission Error:', error);
+      return false;
     }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await initGoogleSignIn();
+      logInitializationState(InitializationStep.GOOGLE_SIGN_IN, true);
+      return true;
+    } catch (error) {
+      logInitializationState(InitializationStep.GOOGLE_SIGN_IN, false, { error: String(error) });
+      console.error('[SplashScreen] Google Sign In Error:', error);
+      return false;
+    }
+  };
+
+  const handleLocationPermission = async () => {
+    try {
+      const isLocationEnabled = await checkLocationPermission();
+      logInitializationState(InitializationStep.LOCATION_PERMISSION, isLocationEnabled);
+      return isLocationEnabled;
+    } catch (error) {
+      logInitializationState(InitializationStep.LOCATION_PERMISSION, false, { error: String(error) });
+      console.error('[SplashScreen] Location Permission Error:', error);
+      return false;
+    }
+  };
+
+  const checkUserVerification = () => {
+    const isVerified = !!userStoreData?.isVerified;
+    logInitializationState(InitializationStep.USER_VERIFICATION, isVerified);
+    return isVerified;
+  };
+
+  const checkPhoneNumber = () => {
+    const hasPhoneNumber = !(!userStoreData.mobile_no || userStoreData.mobile_no.length === 0);
+    logInitializationState(InitializationStep.PHONE_NUMBER, hasPhoneNumber, {
+      number: hasPhoneNumber ? 'present' : 'missing',
+    });
+    return hasPhoneNumber;
+  };
+
+  const checkProfileImage = () => {
+    const hasImage =
+      userStoreData?.isImageUploaded ||
+      (userStoreData?.userData?.recent_pik && userStoreData?.userData?.recent_pik?.length !== 0);
+    logInitializationState(InitializationStep.PROFILE_IMAGE, hasImage);
+    return hasImage;
+  };
+
+  const navigateToDestination = (destination: NavigationDestination, params?: object) => {
+    console.log(`[SplashScreen] Navigating to ${destination}`, params || '');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: destination, ...(params && { params }) }],
+    });
   };
 
   const initializeAppFlow = async () => {
     try {
-      await Promise.all([handleNotificationPermission(), initGoogleSignIn()]);
+      console.log('[SplashScreen] Starting app initialization');
 
-      setTimeout(async () => {
-        await determineInitialRoute();
-      }, 1500);
+      await handleNotificationPermission();
+      await handleGoogleSignIn();
+
+      if (!checkUserVerification()) {
+        navigateToDestination(NavigationDestination.NUMBER_VERIFICATION);
+        return;
+      }
+
+      const locationEnabled = await handleLocationPermission();
+      if (!locationEnabled) {
+        navigateToDestination(NavigationDestination.LOCATION_STACK);
+        return;
+      }
+
+      if (!checkPhoneNumber()) {
+        navigateToDestination(NavigationDestination.NUMBER_VERIFICATION, {
+          screen: 'PhoneNumber',
+        });
+        return;
+      }
+
+      if (!checkProfileImage()) {
+        navigateToDestination(NavigationDestination.LOGIN_STACK, {
+          screen: 'AddRecentPics',
+        });
+        return;
+      }
+
+      navigateToDestination(NavigationDestination.BOTTOM_TAB);
     } catch (error) {
-      showToast('Error', String(error), 'error');
-      navigation.navigate('NumberVerification');
-    }
-  };
+      console.error('[SplashScreen] Initialization Error:', error);
+      showToast('Initialization Error', `Could not complete setup: ${String(error)}`, 'error');
 
-  const determineInitialRoute = async () => {
-    try {
-      // Check location permission
-      const checkLoginPermission = await checkLocationPermission();
-
-      // Validation checks
-      const isUserVerified = ReduxUserData?.isVerified;
-      const isNumberMissing = !ReduxUserData.mobile_no || ReduxUserData.mobile_no.length === 0;
-      const isImageUploaded =
-        ReduxUserData?.isImageUploaded ||
-        (ReduxUserData?.userData?.recent_pik && ReduxUserData?.userData?.recent_pik?.length !== 0);
-
-      // Navigation decisions
-      if (!isUserVerified) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'NumberVerification' }],
-        });
-        return;
+      if (!initializationStatus[InitializationStep.USER_VERIFICATION]) {
+        navigateToDestination(NavigationDestination.NUMBER_VERIFICATION);
+      } else if (!initializationStatus[InitializationStep.LOCATION_PERMISSION]) {
+        navigateToDestination(NavigationDestination.LOCATION_STACK);
+      } else if (!initializationStatus[InitializationStep.PHONE_NUMBER]) {
+        navigateToDestination(NavigationDestination.NUMBER_VERIFICATION, { screen: 'PhoneNumber' });
+      } else {
+        navigateToDestination(NavigationDestination.NUMBER_VERIFICATION);
       }
-
-      if (!checkLoginPermission) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'LocationStack' }],
-        });
-        return;
-      }
-
-      if (isNumberMissing) {
-        navigation.reset({
-          index: 0,
-          routes: [
-            {
-              name: 'NumberVerification',
-              params: { screen: 'PhoneNumber' },
-            },
-          ],
-        });
-        return;
-      }
-
-      if (!isImageUploaded) {
-        navigation.reset({
-          index: 0,
-          routes: [
-            {
-              name: 'LoginStack',
-              params: { screen: 'AddRecentPics' },
-            },
-          ],
-        });
-        return;
-      }
-
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'BottomTab' }],
-      });
-    } catch (error) {
-      showToast('Navigation Error', String(error), 'error');
-      navigation.navigate('NumberVerification');
     }
   };
 
@@ -127,22 +191,14 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        start={{ x: 0, y: 1 }}
-        end={{ x: 1, y: 0 }}
+        start={gradientStart}
+        end={gradientEnd}
         colors={isDark ? ['#1A0933', '#170729', '#230D45'] : ['#744DFD', '#5F3BDD4D']}
         style={styles.gradientBackground}
       >
         <View style={styles.contentContainer}>
           <View style={styles.appIconContainer}>
-            <View
-              style={[
-                styles.appIcon,
-                {
-                  backgroundColor: colors.White,
-                  shadowColor: colors.ShadowColor,
-                },
-              ]}
-            >
+            <View style={[styles.appIcon, { backgroundColor: colors.White, shadowColor: colors.ShadowColor }]}>
               <Text style={[styles.appIconText, { color: colors.Primary }]}>LUVR</Text>
             </View>
           </View>
@@ -208,49 +264,13 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Regular,
     fontSize: 16,
   },
-  coupleContainer: {
-    position: 'relative',
-    width: width,
-    height: 200,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  coupleImageContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  person: {
-    width: 80,
-    height: 120,
-    borderRadius: 40,
-  },
-  personLeft: {
-    transform: [{ rotate: '-15deg' }],
-    marginRight: -20,
-  },
-  personRight: {
-    transform: [{ rotate: '15deg' }],
-    marginLeft: -20,
-  },
-  heartContainer: {
-    position: 'absolute',
-    flexDirection: 'row',
-    top: -20,
-  },
-  heart: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
-  },
   bottomImage: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     width: '100%',
-    height: '30%', // Adjust as needed
+    height: '30%',
   },
 });
 

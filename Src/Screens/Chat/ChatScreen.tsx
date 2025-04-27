@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { ParamListBase, RouteProp, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import { ParamListBase, RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
 import {
@@ -32,6 +32,7 @@ import {
   READ_ALL,
 } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import { onSwipeLeft } from '../../Redux/Action/actions';
 import { store } from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
@@ -58,7 +59,7 @@ const ChatScreen = () => {
   const { colors, isDark } = useTheme();
 
   const isFocused = useIsFocused();
-  const navigation = useNavigation();
+  const navigation = useCustomNavigation();
   const { showToast } = useCustomToast();
   const { params } = useRoute<ChatScreenRouteProp>();
 
@@ -511,7 +512,8 @@ const ChatScreen = () => {
         `Your request to block ${OtherUserProfileData?.full_name} is successfully send`,
         'success'
       );
-      navigation.goBack();
+
+      navigation.canGoBack() && navigation.goBack();
     } else {
       showToast('Error', 'Something went wrong', 'error');
     }
@@ -534,7 +536,7 @@ const ChatScreen = () => {
         `Your report against ${OtherUserProfileData?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${SelectedReportReason}`,
         'success'
       );
-      navigation.goBack();
+      navigation.canGoBack() && navigation.goBack();
     } else {
       showToast('Error', 'Something went wrong', 'error');
     }

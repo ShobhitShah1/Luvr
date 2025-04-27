@@ -1,7 +1,6 @@
 import appleAuth, { AppleRequestResponse } from '@invertase/react-native-apple-authentication';
 import remoteConfig from '@react-native-firebase/remote-config';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import { useNavigation } from '@react-navigation/native';
 import React, { memo, useEffect, useState } from 'react';
 import { Alert, ImageBackground, Linking, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -13,6 +12,7 @@ import LoginButton from '../../../Components/AuthComponents/LoginButton';
 import OpenURL from '../../../Components/OpenURL';
 import { APP_NAME } from '../../../Config/Setting';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { useThemedStyles } from '../../../Hooks/useThemedStyles';
 import { updateField } from '../../../Redux/Action/actions';
 import { store } from '../../../Redux/Store/store';
@@ -49,7 +49,7 @@ const LoginScreen = () => {
   const { colors, isDark } = useTheme();
 
   const dispatch = useDispatch();
-  const navigation = useNavigation<any>();
+  const navigation = useCustomNavigation();
   const userData = useSelector((state: any) => state?.user);
 
   const [IsSocialLoginLoading, setIsSocialLoginLoading] = useState({

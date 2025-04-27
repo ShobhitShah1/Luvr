@@ -1,22 +1,18 @@
-import { useNavigation } from '@react-navigation/native';
 import React, { FC, memo } from 'react';
 import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
 import { COLORS, GROUP_FONT, SIZES } from '../../../../Common/Theme';
 import { useTheme } from '../../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../../Hooks/useCustomNavigation';
 
 interface CategoryHeaderProps {
-  item: {
-    id: number;
-    title: string;
-    image: any;
-  };
+  item: { id: number; title: string; image: any };
 }
 
 const CategoryDetailHeader: FC<CategoryHeaderProps> = ({ item }) => {
   const { colors } = useTheme();
-  const navigation = useNavigation();
+  const navigation = useCustomNavigation();
 
   return (
     <SafeAreaView style={styles.Container}>

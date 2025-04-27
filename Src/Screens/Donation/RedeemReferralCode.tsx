@@ -1,6 +1,17 @@
+import { useRoute } from '@react-navigation/native';
 import React, { memo, useEffect, useRef, useState } from 'react';
-import { Keyboard, NativeSyntheticEvent, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Keyboard,
+  NativeSyntheticEvent,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TextInputKeyPressEventData,
+  View,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import QRCode from 'react-native-qrcode-svg';
 import Animated, {
   FadeIn,
   interpolateColor,
@@ -10,22 +21,19 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { Camera, useCameraDevice, useCameraPermission, useCodeScanner } from 'react-native-vision-camera';
 import GradientView from '../../Common/GradientView';
+import TextString from '../../Common/TextString';
 import { FONTS, SIZES } from '../../Common/Theme';
 import CustomTextInput from '../../Components/CustomTextInput';
 import { GradientBorderView } from '../../Components/GradientBorder';
-import { useTheme } from '../../Contexts/ThemeContext';
-import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
-import { TextInputKeyPressEventData } from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
-import { useUserData } from '../../Contexts/UserDataContext';
-import { useCustomToast } from '../../Utils/toastUtils';
-import TextString from '../../Common/TextString';
-import UserService from '../../Services/AuthService';
 import ApiConfig from '../../Config/ApiConfig';
-import { Camera, useCameraDevice, useCameraPermission, useCodeScanner } from 'react-native-vision-camera';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTheme } from '../../Contexts/ThemeContext';
+import { useUserData } from '../../Contexts/UserDataContext';
+import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
+import UserService from '../../Services/AuthService';
+import { useCustomToast } from '../../Utils/toastUtils';
+import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(CustomTextInput);
 
@@ -36,8 +44,7 @@ interface RouteParams {
 const RedeemReferralCode = () => {
   const { colors, isDark } = useTheme();
   const { params } = useRoute();
-  const navigation =
-    useNavigation<NativeStackNavigationProp<{ BottomTab: {}; RedeemReferralCode: { fromRegistration: boolean } }>>();
+  const navigation = useCustomNavigation();
 
   const fromRegistration = (params as RouteParams)?.fromRegistration || false;
 

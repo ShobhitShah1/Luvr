@@ -1,13 +1,11 @@
-import { useNavigation } from '@react-navigation/native';
 import React, { FC, memo } from 'react';
 import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../Common/CommonIcons';
-import CommonImages from '../../../Common/CommonImages';
 import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { ProfileType } from '../../../Types/ProfileType';
 
 interface ChatHeaderProps {
@@ -17,13 +15,16 @@ interface ChatHeaderProps {
 
 const ChatScreenHeader: FC<ChatHeaderProps> = ({ data, onRightIconPress }) => {
   const { colors } = useTheme();
-  const navigation = useNavigation();
+  const navigation = useCustomNavigation();
 
   return (
     <SafeAreaView style={styles.Container}>
       <View style={styles.ContentView}>
         <View style={styles.BackAndProfileInfoView}>
-          <Pressable onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <Pressable
+            onPress={() => navigation.canGoBack() && navigation.goBack()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
             <Image
               resizeMode="contain"
               tintColor={colors.TextColor}

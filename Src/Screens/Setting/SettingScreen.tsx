@@ -6,7 +6,6 @@ import NetInfo from '@react-native-community/netinfo';
 import messaging from '@react-native-firebase/messaging';
 import remoteConfig from '@react-native-firebase/remote-config';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { useNavigation } from '@react-navigation/native';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
@@ -22,6 +21,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import InAppReview from 'react-native-in-app-review';
 import LinearGradient from 'react-native-linear-gradient';
 import { checkNotifications, requestNotifications } from 'react-native-permissions';
 import { Rating } from 'react-native-ratings';
@@ -33,8 +33,9 @@ import TextString from '../../Common/TextString';
 import { COLORS, FONTS } from '../../Common/Theme';
 import { GradientBorderView } from '../../Components/GradientBorder';
 import OpenURL from '../../Components/OpenURL';
-import { ANDROID_APP_VERSION, IOS_APP_VERSION, PLAYSTORE } from '../../Config/Setting';
+import { ANDROID_APP_VERSION, gradientEnd, gradientStart, IOS_APP_VERSION, PLAYSTORE } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import { resetUserData } from '../../Redux/Action/actions';
 import UserService from '../../Services/AuthService';
 import { ProfileType } from '../../Types/ProfileType';
@@ -46,7 +47,7 @@ import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHead
 import SettingCustomModal from './Components/SettingCustomModal';
 import SettingFlexView from './Components/SettingFlexView';
 import styles from './styles';
-import InAppReview from 'react-native-in-app-review';
+import { useUserData } from '../../Contexts/UserDataContext';
 
 const ShowMeArray = ['Male', 'Female', 'Everyone'];
 const SOMETHING_WENT_WRONG =
@@ -55,14 +56,15 @@ const SOMETHING_WENT_WRONG =
 const SettingScreen = () => {
   const { colors, isDark } = useTheme();
   const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const navigation = useCustomNavigation();
   const { showToast } = useCustomToast();
-  const UserData = useSelector((state: any) => state?.user);
+  const { subscription } = useUserData();
+  const userStoredData = useSelector((state: any) => state?.user);
 
   const [LogOutModalView, setLogOutModalView] = useState(false);
   const [DeleteAccountModalView, setDeleteAccountModalView] = useState(false);
   const [RateUsModalView, setRateUsModalView] = useState(false);
-  const [UserSetting, setUserSettingData] = useState<ProfileType>(UserData?.userData);
+  const [UserSetting, setUserSettingData] = useState<ProfileType>(userStoredData?.userData);
   const [RatingCount, setRatingCount] = useState(3);
   const [isSettingLoading, setIsSettingLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
@@ -96,7 +98,7 @@ const SettingScreen = () => {
   const checkConnection = async () => {
     try {
       const isInternetConnected = (await NetInfo.fetch()).isConnected;
-      const localData = UserData?.userData;
+      const localData = userStoredData?.userData;
 
       if (isInternetConnected) {
         if (!localData || !localData?.mobile_no || !localData?.setting_age_range_min || !localData?.setting_show_me) {
@@ -321,8 +323,8 @@ Let's make every moment count together! #LoveConnects`,
         },
         likes_into: UserSetting?.likes_into || [],
         is_block_contact: UserSetting?.is_block_contact || false,
-        latitude: UserData?.latitude || '',
-        longitude: UserData?.longitude || '',
+        latitude: userStoredData?.latitude || '',
+        longitude: userStoredData?.longitude || '',
         radius: UserSetting?.radius || 0,
         setting_active_status: UserSetting?.setting_active_status,
         setting_age_range_min: UserSetting?.setting_age_range_min || '18-35',
@@ -509,8 +511,8 @@ Let's make every moment count together! #LoveConnects`,
                   return (
                     <LinearGradient
                       key={index}
-                      start={{ x: 0, y: 1 }}
-                      end={{ x: 1, y: 0 }}
+                      start={gradientStart}
+                      end={gradientEnd}
                       colors={
                         isSelected
                           ? colors.ButtonGradient
@@ -797,7 +799,7 @@ Let's make every moment count together! #LoveConnects`,
                       isActive={false}
                       style={styles.ShareFlexViewStyle}
                       Item={'Have a referral code?'}
-                      onPress={() => navigation.navigate('RedeemReferralCode')}
+                      onPress={() => navigation.navigate('RedeemReferralCode', { fromRegistration: false })}
                     />
                   </View>
                 </EditProfileBoxView>
@@ -805,12 +807,16 @@ Let's make every moment count together! #LoveConnects`,
             </View>
 
             <LinearGradient
-              start={{ x: 0, y: 1 }}
-              end={{ x: 1, y: 0 }}
-              colors={colors.ButtonGradient}
+              start={gradientStart}
+              end={gradientEnd}
+              colors={subscription.isActive ? colors.ButtonGradient : [colors.LightGray, colors.LightGray]}
               style={styles.incognitoView}
             >
-              <Pressable style={styles.incognitoButton} onPress={() => navigation.navigate('IncognitoScreen')}>
+              <Pressable
+                disabled={!subscription.isActive}
+                style={[styles.incognitoButton, { opacity: subscription.isActive ? 1 : 0.5 }]}
+                onPress={() => navigation.navigate('IncognitoScreen')}
+              >
                 <Text style={[styles.incognitoText, { color: colors.White }]}>Incognito Mode</Text>
               </Pressable>
             </LinearGradient>

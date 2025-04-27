@@ -3,6 +3,7 @@ import UserService from '../../Services/AuthService';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { Action } from 'redux';
 import { rootReducer, RootState } from '../Store/store';
+import { AppDispatch, AppThunk } from './Index';
 
 export const SET_INCOGNITO_MODE = 'SET_INCOGNITO_MODE';
 export const SET_CONTACTS = 'SET_CONTACTS';
@@ -52,10 +53,6 @@ export type IncognitoActionTypes =
   | SetLoadingAction
   | SetErrorAction
   | ClearErrorAction;
-
-export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>;
-
-export type AppDispatch = ThunkDispatch<RootState, unknown, Action<string>>;
 
 export const setIncognitoMode = (isEnabled: boolean): SetIncognitoModeAction => ({
   type: SET_INCOGNITO_MODE,

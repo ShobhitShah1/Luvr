@@ -1,13 +1,17 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { FC, memo, useEffect, useRef, useState } from 'react';
 import { Keyboard, Text, TextInput, View } from 'react-native';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
+import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import SmoothPinCodeInput from '../../../Components/SmoothPinCodeInput';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { useLocationPermission } from '../../../Hooks/useLocationPermission';
+import { useThemedStyles } from '../../../Hooks/useThemedStyles';
 import { updateField } from '../../../Redux/Action/actions';
 import UserService from '../../../Services/AuthService';
 import { transformUserDataForApi } from '../../../Services/dataTransformService';
@@ -15,9 +19,6 @@ import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import styles from './styles';
-import GradientView from '../../../Common/GradientView';
-import { useThemedStyles } from '../../../Hooks/useThemedStyles';
-import { useTheme } from '../../../Contexts/ThemeContext';
 
 const OTPInputs = 4;
 
@@ -29,7 +30,7 @@ const OTPScreen: FC = () => {
   const route = useRoute();
   const focus = useIsFocused();
   const dispatch = useDispatch();
-  const navigation = useNavigation<any>();
+  const navigation = useCustomNavigation();
   const OTPInputRef = useRef<TextInput>(null);
   const { isDark, colors } = useTheme();
 

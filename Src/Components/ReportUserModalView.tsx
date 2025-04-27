@@ -9,6 +9,7 @@ import { COLORS, deviceHeightWithStatusbar, FONTS } from '../Common/Theme';
 import { useTheme } from '../Contexts/ThemeContext';
 import { reportReasons } from './Data';
 import { GradientBorderView } from './GradientBorder';
+import { gradientEnd, gradientStart } from '../Config/Setting';
 
 interface ReportUserProps {
   Visible: boolean;
@@ -123,8 +124,8 @@ const ReportUserModalView: FC<ReportUserProps> = ({
 
           <View style={styles.buttonView}>
             <LinearGradient
-              start={{ x: 0, y: 1 }}
-              end={{ x: 1, y: 0 }}
+              start={gradientStart}
+              end={gradientEnd}
               colors={colors.ButtonGradient}
               style={styles.reportButtonView}
             >

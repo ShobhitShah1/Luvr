@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import React, { memo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -7,20 +6,21 @@ import CommonIcons from '../../../Common/CommonIcons';
 import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { ListDetailProps } from '../../../Types/Interface';
 
 let NO_IMAGE_CONTAINER = 150;
 
 const MatchesContent = ({ MatchData }: { MatchData: ListDetailProps }) => {
   const { colors, isDark } = useTheme();
-  const navigation = useNavigation<any>();
+  const navigation = useCustomNavigation();
 
   const userData = useSelector((state: any) => state?.user?.userData || {});
   const matchData = MatchData?.user_details?.[0];
 
   const handleChatClick = () => {
     if (userData._id !== matchData?._id) {
-      navigation.navigate('Chat', { id: matchData?._id });
+      navigation.navigate('Chat', { id: matchData?._id?.toString() || '' });
     }
   };
 

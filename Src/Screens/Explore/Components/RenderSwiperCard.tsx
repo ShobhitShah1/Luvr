@@ -1,18 +1,18 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useNavigation } from '@react-navigation/native';
+import FastImage from '@d11/react-native-fast-image';
 import React, { FC, memo, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Image, LayoutChangeEvent, Pressable, Text, TouchableWithoutFeedback, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
+import LinearGradient from 'react-native-linear-gradient';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import CommonIcons from '../../../Common/CommonIcons';
 import ApiConfig from '../../../Config/ApiConfig';
 import { DummyImage } from '../../../Config/Setting';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import useCalculateAge from '../../../Hooks/useCalculateAge';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { SwiperCard } from '../../../Types/SwiperCard';
 import styles from '../styles';
-import LinearGradient from 'react-native-linear-gradient';
 
 interface RenderCardProps {
   CurrentCardIndex: number;
@@ -48,7 +48,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
 
   const isFirstCard = CurrentCardIndex === card;
   const age = useCalculateAge(cardData?.birthdate);
-  const navigation = useNavigation();
+  const navigation = useCustomNavigation();
 
   const handlePressIn = () => {
     stopInterval();

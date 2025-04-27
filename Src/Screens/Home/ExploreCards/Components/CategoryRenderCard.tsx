@@ -1,9 +1,7 @@
+import FastImage from '@d11/react-native-fast-image';
 import NetInfo from '@react-native-community/netinfo';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { FC, memo, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
@@ -13,6 +11,7 @@ import { COLORS, FONTS } from '../../../../Common/Theme';
 import ApiConfig from '../../../../Config/ApiConfig';
 import { useTheme } from '../../../../Contexts/ThemeContext';
 import useCalculateAge from '../../../../Hooks/useCalculateAge';
+import { useCustomNavigation } from '../../../../Hooks/useCustomNavigation';
 import { onSwipeRight } from '../../../../Redux/Action/actions';
 import { store } from '../../../../Redux/Store/store';
 import UserService from '../../../../Services/AuthService';
@@ -41,7 +40,7 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
   const { colors } = useTheme();
   const { showToast } = useCustomToast();
 
-  const navigation = useNavigation<NativeStackNavigationProp<{ ExploreCardDetail: {} }>>();
+  const navigation = useCustomNavigation();
 
   const [IsImageLoading, setIsImageLoading] = useState(false);
 

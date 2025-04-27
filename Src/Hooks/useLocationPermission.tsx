@@ -1,87 +1,95 @@
-import {useState} from 'react';
-import {Alert, BackHandler, Linking, Platform} from 'react-native';
-import {PERMISSIONS, RESULTS, check, request} from 'react-native-permissions';
-import {store} from '../Redux/Store/store';
-import {updateField} from '../Redux/Action/actions';
-import {LocalStorageFields} from '../Types/LocalStorageFields';
+import { useEffect, useState } from 'react';
+import { Alert, BackHandler, Linking, Platform } from 'react-native';
+import { PERMISSIONS, RESULTS, check, request, Permission } from 'react-native-permissions';
+import { store } from '../Redux/Store/store';
+import { updateField } from '../Redux/Action/actions';
+import { LocalStorageFields } from '../Types/LocalStorageFields';
 import Geolocation from 'react-native-geolocation-service';
-import {APP_NAME} from '../Config/Setting';
+import { APP_NAME } from '../Config/Setting';
+
+const getLocationPermission = (): Permission => {
+  if (Platform.OS === 'android') {
+    return PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
+  } else {
+    return PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
+  }
+};
 
 export const useLocationPermission = () => {
-  const [locationPermission, setLocationPermission] = useState(false);
+  const [locationPermission, setLocationPermission] = useState<boolean>(false);
 
-  const checkLocationPermission = async () => {
+  useEffect(() => {
+    checkLocationPermission();
+  }, []);
+
+  const checkLocationPermission = async (): Promise<boolean> => {
     try {
-      const permission =
-        Platform.OS === 'android'
-          ? PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION
-          : PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
-
+      const permission = getLocationPermission();
       const result = await check(permission);
-      if (result === RESULTS.GRANTED) {
-        setLocationPermission(true);
+
+      const isGranted = result === RESULTS.GRANTED;
+      setLocationPermission(isGranted);
+
+      if (isGranted) {
+        storeCurrentCods();
       }
-      return result === RESULTS.GRANTED;
+
+      return isGranted;
     } catch (error) {
       return false;
     }
   };
 
-  const requestLocationPermission = async () => {
+  const requestLocationPermission = async (): Promise<boolean> => {
     try {
-      const permission =
-        Platform.OS === 'android'
-          ? PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION
-          : PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
+      const permission = getLocationPermission();
 
-      const result = await check(permission);
+      const checkResult = await check(permission);
 
-      if (result === RESULTS.GRANTED) {
+      if (checkResult === RESULTS.GRANTED) {
         setLocationPermission(true);
-        StoreLetAndLong();
+        storeCurrentCods();
         return true;
-      } else {
-        const requestPermission = await request(permission);
-
-        const isPermissionGranted = requestPermission === RESULTS.GRANTED;
-        setLocationPermission(isPermissionGranted);
-
-        if (!isPermissionGranted) {
-          if (requestPermission === RESULTS.BLOCKED) {
-            showAlertAndNavigateToSettings();
-          }
-        } else {
-          StoreLetAndLong();
-        }
-
-        return isPermissionGranted;
       }
+
+      const requestResult = await request(permission);
+      const isGranted = requestResult === RESULTS.GRANTED;
+
+      setLocationPermission(isGranted);
+
+      if (!isGranted) {
+        if (requestResult === RESULTS.BLOCKED) {
+          showAlertAndNavigateToSettings();
+        }
+      } else {
+        storeCurrentCods();
+      }
+
+      return isGranted;
     } catch (error) {
       return false;
     }
   };
 
-  const StoreLetAndLong = async () => {
+  const storeCurrentCods = async (): Promise<void> => {
     Geolocation.getCurrentPosition(
-      async position => {
-        const {coords} = position;
+      async (position) => {
+        const { coords } = position;
         if (coords) {
           await Promise.all([
-            store.dispatch(
-              updateField(LocalStorageFields.longitude, coords.longitude),
-            ),
-            store.dispatch(
-              updateField(LocalStorageFields.latitude, coords.latitude),
-            ),
+            store.dispatch(updateField(LocalStorageFields.longitude, coords.longitude)),
+            store.dispatch(updateField(LocalStorageFields.latitude, coords.latitude)),
           ]);
         }
       },
-      error => {},
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      (error) => {
+        console.error('Error getting current location:', error);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
     );
   };
 
-  const showAlertAndNavigateToSettings = () => {
+  const showAlertAndNavigateToSettings = (): void => {
     Alert.alert(
       'Location Permission',
       `${APP_NAME} needs access to your location for a better user experience. This allows us to show you potential matches in your area and enhance your overall app experience.`,
@@ -95,7 +103,7 @@ export const useLocationPermission = () => {
           text: 'Open Settings',
           onPress: () => Linking.openSettings(),
         },
-      ],
+      ]
     );
   };
 

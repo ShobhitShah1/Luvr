@@ -1,14 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import messaging from '@react-native-firebase/messaging';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { memo, useCallback, useState } from 'react';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, ScrollView, View } from 'react-native';
 import { requestNotifications } from 'react-native-permissions';
 import CommonImages from '../../Common/CommonImages';
 import GradientView from '../../Common/GradientView';
 import { COLORS } from '../../Common/Theme';
 import { HomeLookingForData } from '../../Components/Data';
+import { useBoostModal } from '../../Hooks/useBoostModal';
 import { useLocationPermission } from '../../Hooks/useLocationPermission';
+import { HomeListProps } from '../../Types/Interface';
 import { getMyLikes } from '../../Utils/getMyLikes';
 import { getProfileData } from '../../Utils/profileUtils';
 import { updateDeviceToken } from '../../Utils/updateDeviceToken';
@@ -19,7 +21,7 @@ import RenderLookingView from './Components/RenderlookingView';
 import RenderRecommendation from './Components/RenderRecommendation';
 import styles from './styles';
 
-const profiles = [
+const PROFILES = [
   {
     id: 1,
     name: 'Adan Smith',
@@ -39,28 +41,62 @@ const profiles = [
 ];
 
 const HomeScreen = () => {
+  const { showModal } = useBoostModal();
+  const isFocus = useIsFocused();
+
   const [refreshing, setRefreshing] = useState(false);
+  const [permissionsRequested, setPermissionsRequested] = useState(false);
   const { requestLocationPermission } = useLocationPermission();
+
+  useEffect(() => {
+    if (!permissionsRequested) {
+      const setupPermissions = async () => {
+        await Promise.all([askNotificationPermission(), handleLocationPermissionRequest(), updateDeviceToken()]);
+        setPermissionsRequested(true);
+      };
+
+      setupPermissions();
+    }
+  }, [permissionsRequested]);
 
   useFocusEffect(
     useCallback(() => {
-      getMyLikes();
-      getProfileData();
-      askNotificationPermission();
-      updateDeviceToken();
-      handleLocationPermissionRequest();
+      const fetchData = async () => {
+        try {
+          await Promise.all([getMyLikes(), getProfileData()]);
+        } catch (error) {
+          console.error('Error fetching data on focus:', error);
+        }
+      };
 
+      fetchData();
       return () => {};
     }, [])
   );
 
+  useEffect(() => {
+    if (isFocus) {
+      setTimeout(() => {
+        showModal();
+      }, 5000);
+    }
+  }, []);
+
   const askNotificationPermission = async () => {
-    requestNotifications(['alert', 'sound']);
-    await messaging().requestPermission();
+    try {
+      await requestNotifications(['alert', 'sound']);
+      await messaging().requestPermission();
+    } catch (error) {
+      console.error('Notification permission error:', error);
+    }
   };
 
   const handleLocationPermissionRequest = async () => {
-    requestLocationPermission();
+    try {
+      await requestLocationPermission();
+    } catch (error) {
+      console.error('Location permission error:', error);
+    }
   };
 
   const onRefresh = useCallback(async () => {
@@ -73,6 +109,20 @@ const HomeScreen = () => {
     } finally {
       setRefreshing(false);
     }
+  }, []);
+
+  const keyExtractor = useCallback((item: any, index: number) => `${item.id || index.toString()}`, []);
+
+  const renderLookingItem = useCallback(({ item }: { item: HomeListProps['item'] }) => {
+    return <RenderLookingView item={item} />;
+  }, []);
+
+  const renderHomeNearbyItem = useCallback(({ item }: { item: any }) => {
+    return <RenderHomeNearby item={item} />;
+  }, []);
+
+  const renderRecommendationItem = useCallback(({ item }: { item: HomeListProps['item'] }) => {
+    return <RenderRecommendation item={item} />;
   }, []);
 
   return (
@@ -94,29 +144,33 @@ const HomeScreen = () => {
           showsVerticalScrollIndicator={false}
         >
           <View style={{ paddingHorizontal: 20, alignSelf: 'center' }}>
-            <CategoryHeaderView title="Welcome to explore" description="I’m looking for..." />
+            <CategoryHeaderView title="Welcome to explore" description="I'm looking for..." />
             <FlatList
               horizontal
               nestedScrollEnabled
               data={HomeLookingForData}
               contentContainerStyle={{ gap: 15 }}
               showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => {
-                return <RenderLookingView item={item} />;
-              }}
+              keyExtractor={keyExtractor}
+              renderItem={renderLookingItem}
+              initialNumToRender={4}
+              maxToRenderPerBatch={4}
+              windowSize={5}
+              removeClippedSubviews={true}
             />
 
             <FlatList
               horizontal
               nestedScrollEnabled
-              data={profiles}
+              data={PROFILES}
               contentContainerStyle={{ gap: 15 }}
               showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => {
-                return <RenderHomeNearby item={item} />;
-              }}
+              keyExtractor={keyExtractor}
+              renderItem={renderHomeNearbyItem}
+              initialNumToRender={2}
+              maxToRenderPerBatch={2}
+              windowSize={3}
+              removeClippedSubviews={true}
             />
 
             <CategoryHeaderView title="Near by" description="Base on your profile" style={{ marginTop: 30 }} />
@@ -126,10 +180,12 @@ const HomeScreen = () => {
               data={HomeLookingForData}
               contentContainerStyle={{ gap: 15 }}
               showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => {
-                return <RenderRecommendation item={item} />;
-              }}
+              keyExtractor={keyExtractor}
+              renderItem={renderRecommendationItem}
+              initialNumToRender={4}
+              maxToRenderPerBatch={4}
+              windowSize={5}
+              removeClippedSubviews={true}
             />
           </View>
         </ScrollView>

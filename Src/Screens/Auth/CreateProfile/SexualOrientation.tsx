@@ -1,5 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { memo, useCallback, useState } from 'react';
 import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -13,6 +11,7 @@ import CustomCheckBox from '../../../Components/CustomCheckBox';
 import { GendersData } from '../../../Components/Data';
 import { GradientBorderView } from '../../../Components/GradientBorder';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { updateField } from '../../../Redux/Action/actions';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
@@ -31,7 +30,7 @@ const ListEmptyComponent = () => {
 
 const SexualOrientation = () => {
   const { colors, isDark } = useTheme();
-  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
+  const navigation = useCustomNavigation();
   const userData = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
   const { showToast } = useCustomToast();
@@ -72,7 +71,7 @@ const SexualOrientation = () => {
       gradientProps={{
         colors: isGenderSelected(item)
           ? isDark
-            ? colors.Gradient
+            ? colors.ButtonGradient
             : ['transparent', 'transparent']
           : isDark
             ? colors.UnselectedGradient

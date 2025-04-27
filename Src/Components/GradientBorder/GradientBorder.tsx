@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient, { LinearGradientProps } from 'react-native-linear-gradient';
 import { useTheme } from '../../Contexts/ThemeContext';
+import { gradientEnd, gradientStart } from '../../Config/Setting';
 
 export type GradientProps = Omit<LinearGradientProps, 'style' | 'pointerEvents'>;
 
@@ -119,8 +120,8 @@ export default function GradientBorder({
         style={StyleSheet.absoluteFill}
         pointerEvents="none"
         colors={colors.ButtonGradient}
-        start={{ x: 0, y: 1 }}
-        end={{ x: 1, y: 0 }}
+        start={gradientStart}
+        end={gradientEnd}
         {...gradientProps}
       />
     </MaskedView>

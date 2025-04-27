@@ -1,16 +1,16 @@
-import { useNavigation } from '@react-navigation/native';
 import React, { FC, memo, useState } from 'react';
 import { Image, Text, View } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
-import CommonImages from '../../../Common/CommonImages';
+import CommonIcons from '../../../Common/CommonIcons';
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
 import { FONTS } from '../../../Common/Theme';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import createThemedStyles from '../../../Hooks/createThemedStyles';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { useLocationPermission } from '../../../Hooks/useLocationPermission';
 import { useThemedStyles } from '../../../Hooks/useThemedStyles';
 import { updateField } from '../../../Redux/Action/actions';
@@ -19,14 +19,13 @@ import { transformUserDataForApi } from '../../../Services/dataTransformService'
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileStyles from './styles';
-import CommonIcons from '../../../Common/CommonIcons';
 
 const LocationPermission: FC = () => {
   const { colors, isDark } = useTheme();
   const dispatch = useDispatch();
   const style = useThemedStyles(styles);
 
-  const navigation = useNavigation<any>();
+  const navigation = useCustomNavigation();
   const { showToast } = useCustomToast();
 
   const userData = useSelector((state: any) => state?.user);

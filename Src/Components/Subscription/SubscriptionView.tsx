@@ -1,6 +1,5 @@
 import { BlurView } from '@react-native-community/blur';
 import remoteConfig from '@react-native-firebase/remote-config';
-import { useNavigation } from '@react-navigation/native';
 import React, { memo, useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import * as RNIap from 'react-native-iap';
@@ -11,12 +10,13 @@ import TextString from '../../Common/TextString';
 import { FONTS } from '../../Common/Theme';
 import ApiConfig from '../../Config/ApiConfig';
 import { useTheme } from '../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import UserService from '../../Services/AuthService';
+import { debouncedGetSubscription } from '../../Services/SubscriptionService';
 import { SubscriptionPlanProps } from '../../Types/Interface';
+import { getProfileData } from '../../Utils/profileUtils';
 import { useCustomToast } from '../../Utils/toastUtils';
 import OpenURL from '../OpenURL';
-import { getProfileData } from '../../Utils/profileUtils';
-import { debouncedGetSubscription } from '../../Services/SubscriptionService';
 
 const { width } = Dimensions.get('window');
 
@@ -27,7 +27,7 @@ const SubscriptionView = ({
   selectedPlan?: string;
   handlePlanSelection?: (key: string) => void;
 }) => {
-  const navigation = useNavigation();
+  const navigation = useCustomNavigation();
 
   const { isDark, colors } = useTheme();
   const { showToast } = useCustomToast();
@@ -389,7 +389,7 @@ const SubscriptionView = ({
             <Pressable
               style={styles.buyButtonContent}
               onPress={handlePurchase}
-              onLongPress={() => navigation.navigate('RedeemReferralCode')}
+              onLongPress={() => navigation.navigate('RedeemReferralCode', { fromRegistration: false })}
               disabled={isPurchasing || !selectedPlan || purchaseProcessed}
             >
               {isPurchasing ? (

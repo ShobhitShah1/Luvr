@@ -1,7 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -13,6 +11,7 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import { YourIntoData } from '../../../Components/Data';
 import { GradientBorderView } from '../../../Components/GradientBorder';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { updateField } from '../../../Redux/Action/actions';
 import UserService from '../../../Services/AuthService';
 import { transformUserDataForApi } from '../../../Services/dataTransformService';
@@ -23,7 +22,7 @@ import CreateProfileStyles from './styles';
 
 const YourIntro = () => {
   const { colors, isDark } = useTheme();
-  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
+  const navigation = useCustomNavigation();
   const userData = useSelector((state: any) => state?.user);
 
   const dispatch = useDispatch();
@@ -55,7 +54,7 @@ const YourIntro = () => {
             gradientProps={{
               colors: selected
                 ? isDark
-                  ? colors.Gradient
+                  ? colors.ButtonGradient
                   : ['transparent', 'transparent']
                 : isDark
                   ? colors.UnselectedGradient

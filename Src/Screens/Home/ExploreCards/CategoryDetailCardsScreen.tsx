@@ -1,13 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import NetInfo from '@react-native-community/netinfo';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { FC, memo, useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { store } from '../../../Redux/Store/store';
 import UserService from '../../../Services/AuthService';
 import { ProfileType } from '../../../Types/ProfileType';
@@ -18,13 +19,7 @@ import CategoryRenderCard from './Components/CategoryRenderCard';
 import styles from './styles';
 
 type RootStackParamList = {
-  CategoryDetailCards: {
-    item: {
-      id: number;
-      title: string;
-      image: any;
-    };
-  };
+  CategoryDetailCards: { item: { id: number; title: string; image: any } };
 };
 
 interface CategoryDetailCardsInterface extends RouteProp<RootStackParamList, 'CategoryDetailCards'> {}
@@ -42,7 +37,7 @@ const ListEmptyView = ({ categoryName }: { categoryName: string }) => {
 const CategoryDetailCardsScreen: FC = () => {
   const { colors } = useTheme();
   const { showToast } = useCustomToast();
-  const navigation = useNavigation() as any;
+  const navigation = useCustomNavigation();
 
   const { params } = useRoute<CategoryDetailCardsInterface>();
   const userData = useSelector((state: any) => state?.user);
@@ -160,7 +155,7 @@ const CategoryDetailCardsScreen: FC = () => {
             if (categoryData[currentCardIndex]?._id) {
               setItsMatchModalView(false);
               navigation?.navigate('Chat', {
-                id: categoryData[currentCardIndex]?._id,
+                id: categoryData[currentCardIndex]?._id?.toString() || '',
               });
             } else {
               showToast('Error', "Sorry! Can't find user", 'error');

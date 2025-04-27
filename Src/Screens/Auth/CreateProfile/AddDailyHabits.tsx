@@ -1,6 +1,4 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -12,6 +10,7 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import { LifestyleData } from '../../../Components/Data';
 import { GradientBorderView } from '../../../Components/GradientBorder';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { updateField } from '../../../Redux/Action/actions';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
@@ -26,7 +25,7 @@ const AddDailyHabits = () => {
   const { showToast } = useCustomToast();
   const userData = useSelector((state: any) => state?.user);
 
-  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
+  const navigation = useCustomNavigation();
   const [isSendRequestLoading, setIsSendRequestLoading] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
     requiredHabits.reduce((acc, habit) => {
@@ -88,7 +87,7 @@ const AddDailyHabits = () => {
                 gradientProps={{
                   colors: selected
                     ? isDark
-                      ? colors.Gradient
+                      ? colors.ButtonGradient
                       : ['transparent', 'transparent']
                     : isDark
                       ? colors.UnselectedGradient
@@ -131,7 +130,12 @@ const AddDailyHabits = () => {
       if (allHabitsSelected) {
         await Promise.all([
           requiredHabits.forEach((habit) => {
-            dispatch(updateField(LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}`], selectedItems[habit]));
+            dispatch(
+              updateField(
+                LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}` as keyof typeof LocalStorageFields],
+                selectedItems[habit]
+              )
+            );
           }),
         ]);
 

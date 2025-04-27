@@ -1,5 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { FC, memo, useCallback, useState } from 'react';
 import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -12,6 +10,7 @@ import GradientButton from '../../../Components/AuthComponents/GradientButton';
 import { LookingFor } from '../../../Components/Data';
 import { GradientBorderView } from '../../../Components/GradientBorder';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { updateField } from '../../../Redux/Action/actions';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
@@ -22,7 +21,7 @@ const { width } = Dimensions.get('window');
 
 const HopingToFind: FC = () => {
   const { colors, isDark } = useTheme();
-  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
+  const navigation = useCustomNavigation();
   const { showToast } = useCustomToast();
 
   const userData = useSelector((state: any) => state.user);
@@ -58,14 +57,14 @@ const HopingToFind: FC = () => {
         gradientProps={{
           colors: selected
             ? isDark
-              ? colors.Gradient
+              ? colors.ButtonGradient
               : ['transparent', 'transparent']
             : isDark
               ? colors.UnselectedGradient
               : ['transparent', 'transparent'],
         }}
       >
-        <Pressable onPress={() => onPressLookingFor(item)} key={index}>
+        <Pressable style={styles.buttonView} onPress={() => onPressLookingFor(item)} key={index}>
           <View style={styles.TextView}>
             <Text
               numberOfLines={2}
@@ -216,10 +215,12 @@ const styles = StyleSheet.create({
   },
   LookingForText: {
     ...GROUP_FONT.h3,
-    // marginVertical: hp('0.2%'),
-    // ...GROUP_FONT.body3,
-    // fontSize: hp('1.6%'),
-    // color: COLORS.Black,
-    // textAlign: 'center',
+  },
+  buttonView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
   },
 });

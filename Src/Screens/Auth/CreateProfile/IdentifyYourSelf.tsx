@@ -1,6 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { FC, memo, useCallback, useRef, useState } from 'react';
 import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -13,21 +11,23 @@ import CustomTextInput from '../../../Components/CustomTextInput';
 import { MainGenders } from '../../../Components/Data';
 import { GradientBorderView } from '../../../Components/GradientBorder';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
+import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
 import { updateField } from '../../../Redux/Action/actions';
 import { store } from '../../../Redux/Store/store';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
-import useKeyboardVisibility from '../../../Hooks/useKeyboardVisibility';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 const IdentifyYourSelf: FC = () => {
   const { colors, isDark } = useTheme();
-  const userData = useSelector((state: any) => state.user);
+  const navigation = useCustomNavigation();
   const dispatch = useDispatch();
-  const { showToast } = useCustomToast();
   const isKeyboardVisible = useKeyboardVisibility();
+  const { showToast } = useCustomToast();
+
+  const userData = useSelector((state: any) => state.user);
 
   const ScrollViewRef = useRef<ScrollView>(null);
   const dayInputRef = useRef<TextInput>(null);
@@ -48,8 +48,6 @@ const IdentifyYourSelf: FC = () => {
   const [selectedGender, setSelectedGender] = useState<string>(userData.gender);
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const navigation = useNavigation<NativeStackNavigationProp<{ LoginStack: {} }>>();
 
   const handleGenderSelection = (gender: string) => {
     setSelectedGender(gender);
@@ -220,7 +218,7 @@ const IdentifyYourSelf: FC = () => {
                   <View key={index}>
                     {selectedGender === gender ? (
                       <GradientBorderView
-                        gradientProps={{ colors: isDark ? colors.Gradient : ['transparent', 'transparent'] }}
+                        gradientProps={{ colors: isDark ? colors.ButtonGradient : ['transparent', 'transparent'] }}
                         style={[
                           styles.GenderView,
                           {
@@ -231,7 +229,13 @@ const IdentifyYourSelf: FC = () => {
                       >
                         <Pressable
                           onPress={() => handleGenderSelection(gender)}
-                          style={{ flex: 1, justifyContent: 'center' }}
+                          style={{
+                            flex: 1,
+                            width: '100%',
+                            height: '100%',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
                         >
                           <Text
                             style={[
@@ -257,7 +261,13 @@ const IdentifyYourSelf: FC = () => {
                       >
                         <Pressable
                           onPress={() => handleGenderSelection(gender)}
-                          style={{ flex: 1, justifyContent: 'center' }}
+                          style={{
+                            flex: 1,
+                            width: '100%',
+                            height: '100%',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
                         >
                           <Text style={[styles.GenderText, { color: COLORS.Gray }]}>{gender}</Text>
                         </Pressable>

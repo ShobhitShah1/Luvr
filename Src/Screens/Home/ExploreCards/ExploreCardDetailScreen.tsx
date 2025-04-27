@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import { RouteProp, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -24,6 +24,8 @@ import Paginator from '../../../Components/Paginator';
 import ReportUserModalView from '../../../Components/ReportUserModalView';
 import ApiConfig from '../../../Config/ApiConfig';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useUserData } from '../../../Contexts/UserDataContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { onSwipeLeft, onSwipeRight } from '../../../Redux/Action/actions';
 import { store } from '../../../Redux/Store/store';
 import UserService from '../../../Services/AuthService';
@@ -31,7 +33,6 @@ import { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import DetailCardHeader from './Components/DetailCardHeader';
 import RenderUserImagesView from './Components/RenderUserImagesView';
-import { useUserData } from '../../../Contexts/UserDataContext';
 
 type DetailCardRouteParams = {
   props: ProfileType;
@@ -40,7 +41,7 @@ type DetailCardRouteParams = {
 const ExploreCardDetailScreen = () => {
   const { colors, isDark } = useTheme();
   const isFocused = useIsFocused();
-  const navigation = useNavigation();
+  const navigation = useCustomNavigation();
   const { showToast } = useCustomToast();
   const { subscription } = useUserData();
 
@@ -104,7 +105,7 @@ const ExploreCardDetailScreen = () => {
         // }
         store.dispatch(onSwipeRight(String(UserID)));
         showToast('Swipe Right Success', 'You swiped right! Waiting for the other user to match.', 'success');
-        navigation.goBack();
+        navigation.canGoBack() && navigation.goBack();
       } else {
         showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Please try again letter', TextString.error);
       }
@@ -116,7 +117,7 @@ const ExploreCardDetailScreen = () => {
   const onRejectPress = async () => {
     if (UserID) {
       store.dispatch(onSwipeLeft(String(UserID)));
-      navigation.goBack();
+      navigation.canGoBack() && navigation.goBack();
     } else {
       showToast(TextString.error.toUpperCase(), "Can't find UserID please try again letter", TextString.error);
     }
@@ -136,7 +137,7 @@ const ExploreCardDetailScreen = () => {
         `Your request to block ${cardDetail.params?.props?.full_name} is successfully send`,
         'success'
       );
-      navigation.goBack();
+      navigation.canGoBack() && navigation.goBack();
     } else {
       showToast(
         TextString.error.toUpperCase(),
@@ -162,7 +163,7 @@ const ExploreCardDetailScreen = () => {
         `Your report against ${cardDetail.params?.props?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${SelectedReportReason}`,
         'success'
       );
-      navigation.goBack();
+      navigation.canGoBack() && navigation.goBack();
     } else {
       showToast(
         TextString.error.toUpperCase(),

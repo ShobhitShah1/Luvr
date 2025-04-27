@@ -3,7 +3,6 @@ import { Image, StyleSheet, Text, View, Dimensions } from 'react-native';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../Contexts/ThemeContext';
-import { BoostModalProps } from '../../Types/Interface';
 import CommonIcons from '../../Common/CommonIcons';
 import GradientButton from '../AuthComponents/GradientButton';
 import GradientBorder from '../GradientBorder/GradientBorder';
@@ -16,18 +15,37 @@ const benefits = [
   "You're highlighted for 30 minutes, increasing your chances of getting more matches",
 ];
 
-const BoostModal = ({ isVisible, onClose }: BoostModalProps) => {
+export interface BoostModalProps {
+  isVisible: boolean;
+  onClose: () => void;
+  isLoading?: boolean;
+  onBoostMe?: () => void;
+}
+
+const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostModalProps) => {
   const { colors, isDark } = useTheme();
+
+  const handleBoostMe = () => {
+    if (onBoostMe) {
+      onBoostMe();
+    } else {
+      onClose();
+    }
+  };
 
   return (
     <Modal
       hasBackdrop
       isVisible={isVisible}
       style={styles.modal}
-      animationIn="fadeIn"
-      animationOut="fadeOut"
+      animationIn="slideInUp"
+      animationOut="slideOutDown"
       onBackdropPress={onClose}
       onBackButtonPress={onClose}
+      useNativeDriver
+      useNativeDriverForBackdrop
+      hideModalContentWhileAnimating
+      presentationStyle="overFullScreen"
     >
       <View style={[styles.modalContainer, { backgroundColor: isDark ? 'rgba(18, 18, 19, 2)' : colors.White }]}>
         <View style={styles.imageContainer}>
@@ -80,7 +98,7 @@ const BoostModal = ({ isVisible, onClose }: BoostModalProps) => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <GradientButton Title="Boost me" Navigation={onClose} isLoading={false} Disabled={false} />
+          <GradientButton Title="Boost me" Navigation={handleBoostMe} isLoading={isLoading} Disabled={isLoading} />
         </View>
       </View>
     </Modal>
@@ -98,7 +116,6 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: width * 0.85,
-
     borderRadius: 25,
     overflow: 'hidden',
     alignItems: 'center',

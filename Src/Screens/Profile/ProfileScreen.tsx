@@ -1,7 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import NetInfo from '@react-native-community/netinfo';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Skeleton } from 'moti/skeleton';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Dimensions, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -17,6 +15,7 @@ import ApiConfig from '../../Config/ApiConfig';
 import { DummyImage } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
 import useCalculateAge from '../../Hooks/useCalculateAge';
+import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import UserService from '../../Services/AuthService';
 import { ProfileType } from '../../Types/ProfileType';
 import { useCustomToast } from '../../Utils/toastUtils';
@@ -28,7 +27,7 @@ const ProfileScreen = () => {
   const { showToast } = useCustomToast();
   const userData = useSelector((state: any) => state?.user);
   const Age = useCalculateAge(userData?.birthdate);
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useCustomNavigation();
 
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [isLoading, setIsAPILoading] = useState(true);
