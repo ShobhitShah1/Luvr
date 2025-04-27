@@ -1,13 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import messaging from '@react-native-firebase/messaging';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { memo, useCallback, useState } from 'react';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, ScrollView, View } from 'react-native';
 import { requestNotifications } from 'react-native-permissions';
 import CommonImages from '../../Common/CommonImages';
 import GradientView from '../../Common/GradientView';
 import { COLORS } from '../../Common/Theme';
 import { HomeLookingForData } from '../../Components/Data';
+import { useBoostModal } from '../../Hooks/useBoostModal';
 import { useLocationPermission } from '../../Hooks/useLocationPermission';
 import { HomeListProps } from '../../Types/Interface';
 import { getMyLikes } from '../../Utils/getMyLikes';
@@ -40,11 +41,14 @@ const PROFILES = [
 ];
 
 const HomeScreen = () => {
+  const { showModal } = useBoostModal();
+  const isFocus = useIsFocused();
+
   const [refreshing, setRefreshing] = useState(false);
   const [permissionsRequested, setPermissionsRequested] = useState(false);
   const { requestLocationPermission } = useLocationPermission();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!permissionsRequested) {
       const setupPermissions = async () => {
         await Promise.all([askNotificationPermission(), handleLocationPermissionRequest(), updateDeviceToken()]);
@@ -69,6 +73,14 @@ const HomeScreen = () => {
       return () => {};
     }, [])
   );
+
+  useEffect(() => {
+    if (isFocus) {
+      setTimeout(() => {
+        showModal();
+      }, 5000);
+    }
+  }, []);
 
   const askNotificationPermission = async () => {
     try {

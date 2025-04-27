@@ -23,8 +23,8 @@ const RenderRecommendation: FC<HomeListProps> = ({ item }) => {
       <View style={{ flex: 1, justifyContent: 'center', overflow: 'hidden', borderRadius: 27 }}>
         <ImageBackground source={item.image} style={styles.imageView}>
           <LinearGradient
-            start={gradientStart}
-            end={gradientEnd}
+            start={{ x: 0, y: 1 }}
+            end={{ x: 0, y: 0 }}
             colors={['rgba(90, 76, 138, 0)', 'rgba(8, 2, 27, 0.8)'].reverse()}
             style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 50 }}
           />
@@ -35,7 +35,7 @@ const RenderRecommendation: FC<HomeListProps> = ({ item }) => {
             style={styles.gradient}
           >
             <Text numberOfLines={2} style={[styles.titleText, { color: colors.TextColor }]}>
-              {'View profile'}
+              View profile
             </Text>
           </LinearGradient>
         </ImageBackground>

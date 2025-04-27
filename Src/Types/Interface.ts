@@ -18,7 +18,10 @@ export type RootStackParamList = {
     params?: any;
   };
 
-  NumberVerification: undefined;
+  NumberVerification: {
+    screen?: 'PhoneNumber' | 'OTP';
+    params?: any;
+  };
 
   LoginStack: {
     screen?:
@@ -84,7 +87,6 @@ export type RootStackParamList = {
   IncognitoScreen: undefined;
 };
 
-// Create generic navigation and route types
 export type StackNavigationProp<T extends keyof RootStackParamList> = NativeStackNavigationProp<RootStackParamList, T>;
 
 export type StackRouteProp<T extends keyof RootStackParamList> = RouteProp<RootStackParamList, T>;

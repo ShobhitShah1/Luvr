@@ -47,6 +47,7 @@ import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHead
 import SettingCustomModal from './Components/SettingCustomModal';
 import SettingFlexView from './Components/SettingFlexView';
 import styles from './styles';
+import { useUserData } from '../../Contexts/UserDataContext';
 
 const ShowMeArray = ['Male', 'Female', 'Everyone'];
 const SOMETHING_WENT_WRONG =
@@ -57,12 +58,13 @@ const SettingScreen = () => {
   const dispatch = useDispatch();
   const navigation = useCustomNavigation();
   const { showToast } = useCustomToast();
-  const UserData = useSelector((state: any) => state?.user);
+  const { subscription } = useUserData();
+  const userStoredData = useSelector((state: any) => state?.user);
 
   const [LogOutModalView, setLogOutModalView] = useState(false);
   const [DeleteAccountModalView, setDeleteAccountModalView] = useState(false);
   const [RateUsModalView, setRateUsModalView] = useState(false);
-  const [UserSetting, setUserSettingData] = useState<ProfileType>(UserData?.userData);
+  const [UserSetting, setUserSettingData] = useState<ProfileType>(userStoredData?.userData);
   const [RatingCount, setRatingCount] = useState(3);
   const [isSettingLoading, setIsSettingLoading] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
@@ -96,7 +98,7 @@ const SettingScreen = () => {
   const checkConnection = async () => {
     try {
       const isInternetConnected = (await NetInfo.fetch()).isConnected;
-      const localData = UserData?.userData;
+      const localData = userStoredData?.userData;
 
       if (isInternetConnected) {
         if (!localData || !localData?.mobile_no || !localData?.setting_age_range_min || !localData?.setting_show_me) {
@@ -321,8 +323,8 @@ Let's make every moment count together! #LoveConnects`,
         },
         likes_into: UserSetting?.likes_into || [],
         is_block_contact: UserSetting?.is_block_contact || false,
-        latitude: UserData?.latitude || '',
-        longitude: UserData?.longitude || '',
+        latitude: userStoredData?.latitude || '',
+        longitude: userStoredData?.longitude || '',
         radius: UserSetting?.radius || 0,
         setting_active_status: UserSetting?.setting_active_status,
         setting_age_range_min: UserSetting?.setting_age_range_min || '18-35',
@@ -807,10 +809,14 @@ Let's make every moment count together! #LoveConnects`,
             <LinearGradient
               start={gradientStart}
               end={gradientEnd}
-              colors={colors.ButtonGradient}
+              colors={subscription.isActive ? colors.ButtonGradient : [colors.LightGray, colors.LightGray]}
               style={styles.incognitoView}
             >
-              <Pressable style={styles.incognitoButton} onPress={() => navigation.navigate('IncognitoScreen')}>
+              <Pressable
+                disabled={!subscription.isActive}
+                style={[styles.incognitoButton, { opacity: subscription.isActive ? 1 : 0.5 }]}
+                onPress={() => navigation.navigate('IncognitoScreen')}
+              >
                 <Text style={[styles.incognitoText, { color: colors.White }]}>Incognito Mode</Text>
               </Pressable>
             </LinearGradient>

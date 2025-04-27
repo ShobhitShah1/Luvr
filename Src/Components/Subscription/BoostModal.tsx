@@ -42,6 +42,10 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
       animationOut="slideOutDown"
       onBackdropPress={onClose}
       onBackButtonPress={onClose}
+      useNativeDriver
+      useNativeDriverForBackdrop
+      hideModalContentWhileAnimating
+      presentationStyle="overFullScreen"
     >
       <View style={[styles.modalContainer, { backgroundColor: isDark ? 'rgba(18, 18, 19, 2)' : colors.White }]}>
         <View style={styles.imageContainer}>
