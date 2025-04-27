@@ -52,6 +52,10 @@ react {
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     // hermesFlags = ["-O", "-output-source-map"]
 
+    // If don't you want to compress the JS bundle (faster startup,
+    // higher space consumption)
+    enableBundleCompression = false
+
     /* Autolinking */
     autolinkLibrariesWithApp()
 }
