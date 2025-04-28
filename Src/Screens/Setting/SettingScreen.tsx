@@ -48,6 +48,9 @@ import SettingCustomModal from './Components/SettingCustomModal';
 import SettingFlexView from './Components/SettingFlexView';
 import styles from './styles';
 import { useUserData } from '../../Contexts/UserDataContext';
+import { setIncognitoMode } from '../../Redux/Action/IncognitoActions';
+import { AppDispatch } from '../../Redux/Action/Index';
+import { fetchBoostSuccess } from '../../Redux/Reducer/boostReducer';
 
 const ShowMeArray = ['Male', 'Female', 'Everyone'];
 const SOMETHING_WENT_WRONG =
@@ -55,7 +58,8 @@ const SOMETHING_WENT_WRONG =
 
 const SettingScreen = () => {
   const { colors, isDark } = useTheme();
-  const dispatch = useDispatch();
+
+  const dispatch = useDispatch<AppDispatch>();
   const navigation = useCustomNavigation();
   const { showToast } = useCustomToast();
   const { subscription } = useUserData();
@@ -221,10 +225,13 @@ const SettingScreen = () => {
         index: 0,
         routes: [{ name: 'NumberVerification' }],
       });
+
       setLogOutModalView(false);
 
       setTimeout(() => {
         dispatch(resetUserData());
+        dispatch(setIncognitoMode(false));
+        dispatch(fetchBoostSuccess(null));
       }, 2000);
     } catch (error) {}
   };

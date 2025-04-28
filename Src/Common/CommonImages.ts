@@ -12,6 +12,8 @@ const HomePartyPartner = require('../../Assets/Images/HomePartyPartner.webp');
 const light_splash_bg = require('../../Assets/Images/light_splash_bg.webp');
 const dark_splash_bg = require('../../Assets/Images/dark_splash_bg.webp');
 const SubscriptionBackground = require('../../Assets/Images/SubscriptionBackground.png');
+const boost_dark = require('../../Assets/Images/boost_dark.png');
+const boost_light = require('../../Assets/Images/boost_light.png');
 
 export default {
   LoginBackground,
@@ -28,4 +30,6 @@ export default {
   light_splash_bg,
   dark_splash_bg,
   SubscriptionBackground,
+  boost_dark,
+  boost_light,
 };

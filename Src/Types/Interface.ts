@@ -116,7 +116,7 @@ export interface ReportOrBlockInterface {
 
 export interface ChatRoomProps {
   item: ChatRoomDataType;
-  index: number;
+  index?: number;
 }
 
 interface MessageType {

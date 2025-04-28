@@ -140,7 +140,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
           };
         }
 
-        if (currentIntrustedIn.length >= 5) {
+        if (currentIntrustedIn.length >= 3) {
           return prevSelection;
         }
 

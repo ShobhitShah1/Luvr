@@ -70,7 +70,6 @@ export const scheduleBoostExpiryCheck = (boost: BoostData): void => {
     return;
   }
 
-  const boostId = boost._id;
   const expiryTimestamp = calculateBoostExpiryTimestamp(boost);
   const currentTime = Date.now();
 

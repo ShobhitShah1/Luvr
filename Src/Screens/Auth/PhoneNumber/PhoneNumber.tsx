@@ -109,7 +109,8 @@ const PhoneNumber = () => {
       }
 
       if (isValidNumber) {
-        await handleSendOtp();
+        await getUserWithoutOTP();
+        // await handleSendOtp();
         return;
       }
 
@@ -235,7 +236,7 @@ const PhoneNumber = () => {
           params: { number: PhoneNumberString },
         });
       } else {
-        throw new Error(String(response?.message) || SOMETHING_WRONG);
+        throw new Error(String(response?.message || 'Failed to send OTP') || SOMETHING_WRONG);
       }
     } catch (error: any) {
       showToast(

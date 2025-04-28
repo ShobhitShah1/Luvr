@@ -10,14 +10,16 @@ interface IncognitoFlexViewProps {
   onPress?: () => void;
   style?: ViewStyle;
   itemStyle?: TextStyle;
+  disabled?: boolean;
 }
 
-const IncognitoFlexView: FC<IncognitoFlexViewProps> = ({ title, onPress, style, itemStyle }) => {
+const IncognitoFlexView: FC<IncognitoFlexViewProps> = ({ title, onPress, style, itemStyle, disabled }) => {
   const { colors } = useTheme();
 
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled || false}
       style={[styles.settingView, style]}
       hitSlop={{ top: 7, bottom: 7, left: 10, right: 10 }}
     >

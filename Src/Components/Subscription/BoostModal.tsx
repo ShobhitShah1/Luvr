@@ -16,6 +16,7 @@ import { getProfileData } from '../../Utils/profileUtils';
 import { useCustomToast } from '../../Utils/toastUtils';
 import GradientButton from '../AuthComponents/GradientButton';
 import GradientBorder from '../GradientBorder/GradientBorder';
+import CommonImages from '../../Common/CommonImages';
 
 const { width } = Dimensions.get('window');
 
@@ -189,8 +190,6 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
 
       if (APIResponse.code === 200) {
         await getProfileData();
-        onClose();
-        showToast(TextString.success.toUpperCase(), APIResponse?.message?.toString(), TextString.success);
       }
     } catch (error: any) {
       showToast(TextString.error, error?.message?.toString(), TextString.error);
@@ -239,11 +238,7 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
         ) : (
           <>
             <View style={styles.imageContainer}>
-              <Image
-                resizeMode="cover"
-                style={styles.boostImage}
-                source={isDark ? CommonIcons.ic_dark_boost : CommonIcons.ic_light_boost}
-              />
+              <Image style={styles.boostImage} source={isDark ? CommonImages.boost_dark : CommonImages.boost_light} />
             </View>
 
             <View style={styles.boostCardContainer}>
@@ -304,7 +299,11 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
               {benefits.map((benefit, index) => (
                 <View key={index} style={styles.benefitRow}>
                   <View style={styles.bulletPointContainer}>
-                    <Image source={CommonIcons.ic_rocket} style={styles.rocket} />
+                    <Image
+                      tintColor={!isDark ? colors.Primary : undefined}
+                      source={CommonIcons.ic_rocket}
+                      style={styles.rocket}
+                    />
                   </View>
                   <Text style={[styles.benefitText, { color: isDark ? colors.White : colors.Black }]}>{benefit}</Text>
                 </View>
@@ -338,24 +337,26 @@ const styles = StyleSheet.create({
   modalContainer: {
     width: width * 0.85,
     borderRadius: 25,
-    overflow: 'hidden',
     alignItems: 'center',
-    paddingBottom: 20,
+    paddingBottom: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    overflow: 'visible',
   },
   imageContainer: {
     width: '100%',
-    height: 300,
+    height: 280,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'visible',
   },
   boostImage: {
-    width: '100%',
-    height: '100%',
+    width: '105%',
+    height: '105%',
+    resizeMode: 'contain',
   },
   boostCardContainer: {
     alignItems: 'center',

@@ -53,6 +53,7 @@ import EditProfileSheetView from './Components/EditProfileComponents/EditProfile
 import EditProfileTitleView from './Components/EditProfileComponents/EditProfileTitleView';
 import ProfileAndSettingHeader from './Components/ProfileAndSettingHeader';
 import LinearGradient from 'react-native-linear-gradient';
+import { getProfileData } from '../../Utils/profileUtils';
 
 export interface ViewPositionsProps {
   Gender: number;
@@ -105,7 +106,7 @@ const EditProfileScreen = () => {
   const { requestGalleryPermission } = useGalleryPermission();
 
   const [refreshing, setRefreshing] = useState(false);
-  const [isFetchDataAPILoading, setIsFetchDataAPILoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [profile, setProfile] = useState<ProfileType>(userData?.userData || '');
   const [chooseModalVisible, setChooseModalVisible] = useState(false);
   const [bio, setBio] = useState(profile?.about || '');
@@ -172,14 +173,15 @@ const EditProfileScreen = () => {
         }));
         setUserPicks(updatedPicks);
         if (!localData || !localData?._id || !localData?.full_name) {
-          setIsFetchDataAPILoading(true);
-          await getProfileData();
+          setIsLoading(true);
+          await fetchProfileData();
+          getProfileData();
         }
       }
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), String(error?.message || error), TextString.error);
     } finally {
-      setIsFetchDataAPILoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -229,7 +231,7 @@ const EditProfileScreen = () => {
     }
   };
 
-  const getProfileData = async () => {
+  const fetchProfileData = async () => {
     try {
       const userDataForApi = { eventName: 'get_profile' };
 
@@ -296,7 +298,7 @@ const EditProfileScreen = () => {
       showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
     } finally {
       setRefreshing(false);
-      setIsFetchDataAPILoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -387,13 +389,13 @@ const EditProfileScreen = () => {
   };
 
   const uploadImage = async (items: any[]) => {
-    setIsFetchDataAPILoading(true);
+    setIsLoading(true);
 
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
     if (!InInternetConnected) {
       showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
-      setIsFetchDataAPILoading(false);
+      setIsLoading(false);
       return;
     }
 
@@ -428,6 +430,7 @@ const EditProfileScreen = () => {
       const allUploadsSuccessful = uploadResults.every((result) => result?.code === 200);
 
       if (allUploadsSuccessful) {
+        fetchProfileData();
         getProfileData();
         showToast('Image Uploaded', 'Your images have been uploaded successfully.', 'success');
       } else {
@@ -436,7 +439,7 @@ const EditProfileScreen = () => {
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), String(error?.message), 'error');
     } finally {
-      setIsFetchDataAPILoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -445,11 +448,11 @@ const EditProfileScreen = () => {
 
     if (!InInternetConnected) {
       showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
-      setIsFetchDataAPILoading(false);
+      setIsLoading(false);
 
       return;
     }
-    setIsFetchDataAPILoading(true);
+    setIsLoading(true);
     try {
       const age = calculateAge(`${BirthdateDay},${BirthdateMonth},${BirthdateYear}`);
       const isValid = isEligible(age);
@@ -503,9 +506,12 @@ const EditProfileScreen = () => {
         setting_show_people_with_range: profile?.setting_show_people_with_range || true,
       };
 
+      console.log('DataToSend:', JSON.stringify(DataToSend, null, 2));
+
       const APIResponse = await UserService.UserRegister(DataToSend);
 
       if (APIResponse.code === 200) {
+        fetchProfileData();
         getProfileData();
 
         showToast('Profile Updated', 'Your profile information has been successfully updated.', 'success');
@@ -519,7 +525,7 @@ const EditProfileScreen = () => {
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), String(error?.message), 'Error');
     } finally {
-      setIsFetchDataAPILoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -541,11 +547,7 @@ const EditProfileScreen = () => {
   return (
     <GradientView>
       <View style={styles.Container}>
-        <ProfileAndSettingHeader
-          Title={'Edit Profile'}
-          onUpdatePress={onUpdateProfile}
-          isLoading={isFetchDataAPILoading}
-        />
+        <ProfileAndSettingHeader Title={'Edit Profile'} onUpdatePress={onUpdateProfile} isLoading={isLoading} />
         <ScrollView
           bounces={false}
           style={styles.ContentView}
@@ -554,6 +556,7 @@ const EditProfileScreen = () => {
               refreshing={refreshing}
               onRefresh={() => {
                 setRefreshing(true);
+                fetchProfileData();
                 getProfileData();
               }}
               progressBackgroundColor={colors.White}
@@ -574,7 +577,7 @@ const EditProfileScreen = () => {
                   children={<></>}
                   onChangeText={setUserName}
                   value={userName?.toString() || ''}
-                  IsViewLoading={isFetchDataAPILoading}
+                  IsViewLoading={isLoading}
                   PlaceholderText="What's your full name?"
                   TextInputStyle={styles.textInputTextStyle}
                   TextInputContainerStyle={{ justifyContent: 'center' }}
@@ -589,7 +592,7 @@ const EditProfileScreen = () => {
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
               >
-                <EditProfileBoxView IsViewLoading={isFetchDataAPILoading}>
+                <EditProfileBoxView IsViewLoading={isLoading}>
                   <View style={styles.BirthDateContainerView}>
                     <CustomTextInput
                       ref={dayInputRef}
@@ -673,7 +676,7 @@ const EditProfileScreen = () => {
                     setUserPicks={setUserPicks}
                     UserPicks={UserPicks}
                     OnToggleModal={onToggleModal}
-                    isLoading={isFetchDataAPILoading}
+                    isLoading={isLoading}
                   />
                 )}
                 keyExtractor={(item, index) => index.toString()}
@@ -692,7 +695,7 @@ const EditProfileScreen = () => {
                   children={<></>}
                   onChangeText={setBio}
                   maxLength={500}
-                  IsViewLoading={isFetchDataAPILoading}
+                  IsViewLoading={isLoading}
                   TextInputStyle={styles.textInputTextStyle}
                   TextInputChildren={<Text style={styles.TotalWordCount}>{`${bio?.length}/500`}</Text>}
                   PlaceholderText="Write something about you..."
@@ -706,7 +709,7 @@ const EditProfileScreen = () => {
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
               >
-                <EditProfileBoxView IsViewLoading={isFetchDataAPILoading}>
+                <EditProfileBoxView IsViewLoading={isLoading}>
                   <EditProfileCategoriesList
                     EmptyTitleText="Your gender?"
                     Item={profile?.gender ? (Array.isArray(profile?.gender) ? profile?.gender : [profile?.gender]) : []}
@@ -730,7 +733,7 @@ const EditProfileScreen = () => {
                   maxLength={20}
                   TextInputContainerStyle={{ justifyContent: 'center' }}
                   TextInputStyle={styles.textInputTextStyle}
-                  IsViewLoading={isFetchDataAPILoading}
+                  IsViewLoading={isLoading}
                   PlaceholderText="Where are you from?"
                 />
               </GradientBorderView>
@@ -743,7 +746,7 @@ const EditProfileScreen = () => {
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
               >
-                <EditProfileBoxView IsViewLoading={isFetchDataAPILoading}>
+                <EditProfileBoxView IsViewLoading={isLoading}>
                   <EditProfileCategoriesList
                     EmptyTitleText="What you like?"
                     Item={
@@ -763,13 +766,13 @@ const EditProfileScreen = () => {
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
               >
-                <EditProfileBoxView IsViewLoading={isFetchDataAPILoading}>
+                <EditProfileBoxView IsViewLoading={isLoading}>
                   <EditProfileCategoriesList
                     EmptyTitleText="Add what you looking for"
                     Item={
                       profile?.hoping && Array.isArray(profile?.hoping)
                         ? profile?.hoping?.filter((item) => item.trim() !== '')
-                        : [profile?.hoping?.toString() || ''] || []
+                        : [profile?.hoping?.toString()]
                     }
                     onPress={() => handlePresentModalPress('LookingFor')}
                   />
@@ -783,7 +786,7 @@ const EditProfileScreen = () => {
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
               >
-                <EditProfileBoxView IsViewLoading={isFetchDataAPILoading}>
+                <EditProfileBoxView IsViewLoading={isLoading}>
                   <EditProfileCategoriesList
                     EmptyTitleText="What's your Interest?"
                     Item={
@@ -806,7 +809,7 @@ const EditProfileScreen = () => {
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
               >
-                <EditProfileBoxView IsViewLoading={isFetchDataAPILoading}>
+                <EditProfileBoxView IsViewLoading={isLoading}>
                   <EditProfileCategoriesList
                     EmptyTitleText="Add Your Zodiac Sign"
                     Item={
@@ -828,7 +831,7 @@ const EditProfileScreen = () => {
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
               >
-                <EditProfileBoxView IsViewLoading={isFetchDataAPILoading}>
+                <EditProfileBoxView IsViewLoading={isLoading}>
                   <View>
                     <View style={styles.EducationInputView}>
                       <Text style={[styles.EducationTitleText, { color: colors.TextColor }]}>
@@ -898,7 +901,7 @@ const EditProfileScreen = () => {
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
               >
-                <EditProfileBoxView IsViewLoading={isFetchDataAPILoading}>
+                <EditProfileBoxView IsViewLoading={isLoading}>
                   <EditProfileCategoriesList
                     EmptyTitleText="Add Communication Style"
                     Item={
@@ -921,7 +924,7 @@ const EditProfileScreen = () => {
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
               >
-                <EditProfileBoxView IsViewLoading={isFetchDataAPILoading}>
+                <EditProfileBoxView IsViewLoading={isLoading}>
                   <EditProfileCategoriesList
                     EmptyTitleText="How often you do Exercise?"
                     Item={
@@ -943,7 +946,7 @@ const EditProfileScreen = () => {
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
               >
-                <EditProfileBoxView IsViewLoading={isFetchDataAPILoading}>
+                <EditProfileBoxView IsViewLoading={isLoading}>
                   <EditProfileCategoriesList
                     EmptyTitleText="Are you into Smoke & drinks?"
                     Item={
@@ -965,7 +968,7 @@ const EditProfileScreen = () => {
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
               >
-                <EditProfileBoxView IsViewLoading={isFetchDataAPILoading}>
+                <EditProfileBoxView IsViewLoading={isLoading}>
                   <EditProfileCategoriesList
                     EmptyTitleText="how often you movies?"
                     Item={
@@ -987,7 +990,7 @@ const EditProfileScreen = () => {
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
               >
-                <EditProfileBoxView IsViewLoading={isFetchDataAPILoading}>
+                <EditProfileBoxView IsViewLoading={isLoading}>
                   <EditProfileCategoriesList
                     EmptyTitleText="What you drink?"
                     Item={
@@ -1047,7 +1050,7 @@ const EditProfileScreen = () => {
                 </Pressable>
               </LinearGradient>
 
-              {isFetchDataAPILoading ? (
+              {isLoading ? (
                 <View style={styles.ModalSubmitButton}>
                   <ActivityIndicator size={17} color={colors.Primary} />
                 </View>
@@ -1058,18 +1061,22 @@ const EditProfileScreen = () => {
                     isDark ? ['rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.3)'] : [colors.White, colors.White]
                   }
                 >
-                  <Pressable
-                    style={{ flex: 1, justifyContent: 'center' }}
-                    disabled={isFetchDataAPILoading}
-                    onPress={() => onUpdateProfile()}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  >
-                    <Image
-                      source={CommonIcons.Check}
-                      tintColor={isDark ? 'rgba(255, 255, 255, 0.3)' : colors.Primary}
-                      style={styles.ModalSubmitIcon}
-                    />
-                  </Pressable>
+                  {isLoading ? (
+                    <ActivityIndicator size={17} color={colors.Primary} />
+                  ) : (
+                    <Pressable
+                      style={{ flex: 1, justifyContent: 'center' }}
+                      disabled={isLoading}
+                      onPress={() => onUpdateProfile()}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                      <Image
+                        source={CommonIcons.Check}
+                        tintColor={isDark ? 'rgba(255, 255, 255, 0.3)' : colors.Primary}
+                        style={styles.ModalSubmitIcon}
+                      />
+                    </Pressable>
+                  )}
                 </LinearGradient>
               )}
             </View>

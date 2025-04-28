@@ -369,6 +369,17 @@ const SubscriptionView = ({
                     </Text>
                   </View>
                 </View>
+
+                <Image
+                  source={
+                    plan.key?.includes('platinum')
+                      ? CommonIcons.ic_platinum_heart
+                      : plan.key?.includes('gold')
+                        ? CommonIcons.ic_golden_heart
+                        : CommonIcons.ic_purple_heart
+                  }
+                  style={{ width: 40, height: 40, position: 'absolute', top: -15, right: -15, zIndex: 9999 }}
+                />
               </Pressable>
             );
           })}
@@ -548,9 +559,9 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    elevation: 10,
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    elevation: 20,
+    shadowOpacity: 1,
+    shadowRadius: 5,
   },
   planName: {
     fontSize: 16,

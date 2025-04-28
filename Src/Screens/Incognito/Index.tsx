@@ -121,6 +121,7 @@ const IncognitoScreen: React.FC = () => {
               <IncognitoFlexView
                 style={styles.switchContainer}
                 title={'My contact incognito:'}
+                disabled={isIncognitoEnabled}
                 onPress={() => setContactModalVisible(true)}
               />
 
@@ -173,6 +174,7 @@ const IncognitoScreen: React.FC = () => {
               <IncognitoFlexView
                 style={styles.switchContainer}
                 title={'My email incognito:'}
+                disabled={isIncognitoEnabled}
                 onPress={() => setEmailModalVisible(true)}
               />
 

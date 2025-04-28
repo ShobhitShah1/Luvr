@@ -61,7 +61,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const NumberVerificationStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios' }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios_from_right' }}>
       <Stack.Screen component={LoginScreen} name="Login" />
       <Stack.Screen component={PhoneNumber} name="PhoneNumber" />
       <Stack.Screen component={OTPScreen} name="OTP" />
@@ -71,7 +71,7 @@ const NumberVerificationStack = () => {
 
 const LocationStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios' }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios_from_right' }}>
       <Stack.Screen component={LocationPermission} name="LocationPermission" />
     </Stack.Navigator>
   );
@@ -100,7 +100,7 @@ export default function MainRoute() {
 
     return (
       <>
-        <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios' }}>
+        <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios_from_right' }}>
           {userIdentityExists && <Stack.Screen component={AddEmail} name="AddEmail" />}
           <Stack.Screen component={IdentifyYourSelf} name="IdentifyYourSelf" />
           <Stack.Screen component={SexualOrientation} name="SexualOrientationScreen" />
@@ -136,7 +136,7 @@ export default function MainRoute() {
         }
       }}
     >
-      <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios' }}>
+      <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios_from_right' }}>
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen name="NumberVerification" component={NumberVerificationStack} />
         <Stack.Screen name="LocationStack" component={LocationStack} />

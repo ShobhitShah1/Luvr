@@ -4899,7 +4899,7 @@ __metadata:
     redux: "npm:5.0.1"
     redux-persist: "npm:6.0.0"
     redux-thunk: "npm:^3.1.0"
-    rn-swipe-deck: "npm:^0.0.2"
+    rn-swipe-deck: "npm:^0.0.5"
     socket.io-client: "npm:4.7.5"
     typescript: "npm:5.0.4"
   languageName: unknown
@@ -12612,15 +12612,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rn-swipe-deck@npm:^0.0.2":
-  version: 0.0.2
-  resolution: "rn-swipe-deck@npm:0.0.2"
+"rn-swipe-deck@npm:^0.0.5":
+  version: 0.0.5
+  resolution: "rn-swipe-deck@npm:0.0.5"
   dependencies:
     prop-types: "npm:15.5.10"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/3e8199a114565cacdd164b9f9c48195be6b4d884e97e45f36e475a28ac641e095722910dd01f6de3b842d85c7730dcaf3d49c3509979a24adc6d196490c03067
+  checksum: 10c0/94519fd488395589ef409843eb2a231fec93340945498beb12a952eb7f3889b490c3e9b326c8710d8d6081edc0dc169afcebcd29c47259836a8af6ad3e4e1ef8
   languageName: node
   linkType: hard
 
