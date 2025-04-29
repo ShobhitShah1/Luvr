@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import { addEventListener } from '@react-native-community/netinfo';
+import remoteConfig from '@react-native-firebase/remote-config';
 import { useIsFocused } from '@react-navigation/native';
 import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -14,9 +15,10 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
+import { AdEventType, AppOpenAd, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 import { Easing } from 'react-native-reanimated';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Swiper from 'rn-swipe-deck';
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
@@ -27,7 +29,7 @@ import { CardDelay, CardLimit } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import useInterval from '../../Hooks/useInterval';
-import { onSwipeLeft, onSwipeRight } from '../../Redux/Action/actions';
+import { onSwipeLeft, onSwipeRight, resetSwipeCount } from '../../Redux/Action/actions';
 import { store } from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
 import { ProfileType } from '../../Types/ProfileType';
@@ -37,9 +39,23 @@ import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
 
+const appOpenAdUnitId = __DEV__ ? TestIds.APP_OPEN : 'ca-app-pub-xxxxxxxxxxxxxxxx/yyyyyyyyyy';
+const interstitialAdUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-xxxxxxxxxxxxxxxx/zzzzzzzzzz';
+
+// Create ads
+const appOpenAd = AppOpenAd.createForAdRequest(appOpenAdUnitId, {
+  keywords: ['fashion', 'clothing', 'dating'],
+});
+
+// Create interstitial ad
+const interstitialAd = InterstitialAd.createForAdRequest(interstitialAdUnitId, {
+  keywords: ['fashion', 'clothing', 'dating'],
+});
+
 const ExploreCardScreen: FC = () => {
   const { colors, isDark } = useTheme();
   const { width } = useWindowDimensions();
+  const dispatch = useDispatch();
 
   const swipeRef = useRef<Swiper<SwiperCard>>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
@@ -49,6 +65,7 @@ const ExploreCardScreen: FC = () => {
   const isScreenFocused = useIsFocused();
 
   const userData = useSelector((state: any) => state?.user);
+  const swipeCount = useSelector((state: any) => state?.user?.swipeCount || 0);
   const { showToast } = useCustomToast();
 
   const LeftSwipedUserIds = useSelector((state: any) => state?.user?.swipedLeftUserIds || []);
@@ -63,6 +80,99 @@ const ExploreCardScreen: FC = () => {
   const [IsNetConnected, setIsNetConnected] = useState(true);
   const [isMatchModalVisible, setIsMatchModalVisible] = useState(false);
   const [MatchedUserInfo, setMatchedUserInfo] = useState<ProfileType | null>(null);
+
+  const [adSwipeThreshold, setAdSwipeThreshold] = useState(2);
+
+  const [appOpenAdLoaded, setAppOpenAdLoaded] = useState(false);
+  const [interstitialAdLoaded, setInterstitialAdLoaded] = useState(false);
+
+  useEffect(() => {
+    const setupRemoteConfig = async () => {
+      try {
+        // await remoteConfig().setDefaults({
+        //   add_swipe_count: 3, // Default threshold
+        // });
+
+        await remoteConfig().fetchAndActivate();
+
+        const thresholdValue = remoteConfig().getValue('add_swipe_count').asNumber();
+        console.log('Remote config add_swipe_count:', thresholdValue);
+        setAdSwipeThreshold(thresholdValue);
+      } catch (error) {
+        console.error('Remote config error:', error);
+      }
+    };
+
+    setupRemoteConfig();
+  }, []);
+
+  // Set up app open ad event listeners
+  useEffect(() => {
+    const unsubscribeAppOpenLoaded = appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
+      setAppOpenAdLoaded(true);
+    });
+
+    const unsubscribeAppOpenOpened = appOpenAd.addAdEventListener(AdEventType.OPENED, () => {
+      setAppOpenAdLoaded(false);
+    });
+
+    const unsubscribeAppOpenClosed = appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
+      appOpenAd.load();
+    });
+
+    // Initial load of app open ad
+    appOpenAd.load();
+
+    return () => {
+      unsubscribeAppOpenLoaded();
+      unsubscribeAppOpenOpened();
+      unsubscribeAppOpenClosed();
+    };
+  }, []);
+
+  // Set up interstitial ad event listeners
+  useEffect(() => {
+    const unsubscribeInterstitialLoaded = interstitialAd.addAdEventListener(AdEventType.LOADED, () => {
+      setInterstitialAdLoaded(true);
+    });
+
+    const unsubscribeInterstitialOpened = interstitialAd.addAdEventListener(AdEventType.OPENED, () => {
+      setInterstitialAdLoaded(false);
+    });
+
+    const unsubscribeInterstitialClosed = interstitialAd.addAdEventListener(AdEventType.CLOSED, () => {
+      interstitialAd.load();
+    });
+
+    // Initial load of interstitial ad
+    interstitialAd.load();
+
+    return () => {
+      unsubscribeInterstitialLoaded();
+      unsubscribeInterstitialOpened();
+      unsubscribeInterstitialClosed();
+    };
+  }, []);
+
+  useEffect(() => {
+    const checkAndShowAd = async () => {
+      if (swipeCount > 0 && swipeCount % adSwipeThreshold === 0) {
+        console.log(`Showing ad after ${adSwipeThreshold} swipes`);
+
+        if (interstitialAdLoaded) {
+          await interstitialAd.show();
+        } else if (appOpenAdLoaded) {
+          await appOpenAd.show();
+        } else {
+          console.log('No ads loaded yet, trying to load ads');
+          interstitialAd.load();
+          appOpenAd.load();
+        }
+      }
+    };
+
+    checkAndShowAd();
+  }, [swipeCount, adSwipeThreshold, interstitialAdLoaded, appOpenAdLoaded]);
 
   const { startInterval, stopInterval, clearInterval } = useInterval(
     () => {
@@ -164,18 +274,20 @@ const ExploreCardScreen: FC = () => {
   );
 
   const swipeCardAction = (cardIndex: number, swipeAction: (id: string) => void, shouldCallApi: boolean = false) => {
-    if (isMatchModalVisible || !cards || !cards[cardIndex]?._id) {
-      return;
-    }
+    try {
+      if (isMatchModalVisible || !cards || !cards[cardIndex]?._id) {
+        return;
+      }
 
-    const currentCard = cards[cardIndex];
-    const cardId = String(currentCard._id);
+      const currentCard = cards[cardIndex];
+      const cardId = String(currentCard._id);
 
-    if (shouldCallApi) {
-      likeUserAPICall(cardId, currentCard);
-    }
+      if (shouldCallApi) {
+        likeUserAPICall(cardId, currentCard);
+      }
 
-    store.dispatch(swipeAction(cardId));
+      store.dispatch(swipeAction(cardId));
+    } catch (error) {}
   };
 
   const onSwipeRightCard = (cardIndex: number) => {
@@ -187,21 +299,42 @@ const ExploreCardScreen: FC = () => {
   };
 
   const onSwipedCard = async (cardIndex: any) => {
-    if (!IsNetConnected) {
-      showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
-      swipeRef.current?.swipeBack();
-      return;
-    }
+    try {
+      if (!IsNetConnected) {
+        showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
+        swipeRef.current?.swipeBack();
+        return;
+      }
 
-    setCurrentImageIndex(0);
-    setCurrentCardIndex(cardIndex + 1);
+      setCurrentImageIndex(0);
+      setCurrentCardIndex(cardIndex + 1);
+
+      if ((swipeCount + 1) % adSwipeThreshold === 0) {
+        try {
+          if (interstitialAdLoaded) {
+            await interstitialAd.show();
+          } else if (appOpenAdLoaded) {
+            await appOpenAd.show();
+          }
+        } catch (error) {
+          console.error('Failed to show ad:', error);
+        } finally {
+          // Make sure we reload ads for next time
+          interstitialAd.load();
+          appOpenAd.load();
+        }
+      }
+    } catch (error) {}
   };
 
   const onSwipedAllCard = useCallback(() => {
-    setIsAPILoading(true);
-    swipeRef.current?.forceUpdate();
-    setCardToSkipNumber(cardToSkipNumber + CardLimit);
-    fetchAPIData(cardToSkipNumber + CardLimit);
+    try {
+      setIsAPILoading(true);
+      swipeRef.current?.forceUpdate();
+      setCardToSkipNumber(cardToSkipNumber + CardLimit);
+      fetchAPIData(cardToSkipNumber + CardLimit);
+      dispatch(resetSwipeCount());
+    } catch (error) {}
   }, [cardToSkipNumber, fetchAPIData]);
 
   const SwipeLeft = async () => {
@@ -274,7 +407,6 @@ const ExploreCardScreen: FC = () => {
     <GradientView>
       <View style={[styles.container, { paddingBottom: BOTTOM_TAB_HEIGHT }]}>
         <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
-
         <View style={[styles.SwiperContainer, { flex: cards?.length !== 0 ? 0.9 : 1 }]}>
           {cards && cards.length !== 0 ? (
             <Swiper
@@ -350,7 +482,6 @@ const ExploreCardScreen: FC = () => {
             )
           )}
         </View>
-
         {cards?.length !== 0 && (
           <View style={styles.LikeAndRejectView}>
             <Pressable onPress={SwipeLeft} style={styles.LikeAndRejectButtonView}>
@@ -370,7 +501,6 @@ const ExploreCardScreen: FC = () => {
             </Pressable>
           </View>
         )}
-
         <ItsAMatch
           isVisible={!IsAPILoading && isMatchModalVisible}
           onClose={() => {

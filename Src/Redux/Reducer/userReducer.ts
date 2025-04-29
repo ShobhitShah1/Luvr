@@ -19,6 +19,8 @@ const initialState: UserDataType & {
   userData: string[];
 } & {
   notifications: string[];
+} & {
+  swipeCount: number;
 } = {
   ...Object.keys(LocalStorageFields).reduce((acc, field) => ({ ...acc, [field]: '' }), {} as UserDataType),
   swipedLeftUserIds: [],
@@ -26,6 +28,7 @@ const initialState: UserDataType & {
   userData: [],
   notifications: [],
   CurrentScreen: '',
+  swipeCount: 0,
 };
 
 const userReducer = (
@@ -39,6 +42,8 @@ const userReducer = (
     notifications: string[];
   } & {
     CurrentScreen: string;
+  } & {
+    swipeCount: number;
   } = initialState,
   action: any
 ) => {
@@ -57,6 +62,7 @@ const userReducer = (
       return {
         ...state,
         swipedLeftUserIds: [...(state?.swipedLeftUserIds || []), action.userId],
+        swipeCount: state.swipeCount + 1, // Increment swipe count
       };
     case ON_SWIPE_RIGHT:
       const newUserId = action.userId instanceof Array ? action.userId : [action.userId];
@@ -65,6 +71,7 @@ const userReducer = (
       return {
         ...state,
         swipedRightUserIds: Array.from(uniqueUserIds),
+        swipeCount: state.swipeCount + 1, // Increment swipe count
       };
     case ADD_NOTIFICATION:
       return {
@@ -76,11 +83,17 @@ const userReducer = (
         ...state,
         swipedLeftUserIds: [],
         swipedRightUserIds: [],
+        swipeCount: 0, // Reset swipe count
       };
     case CURRENT_SCREEN:
       return {
         ...state,
         CurrentScreen: action.value || action.payload,
+      };
+    case 'RESET_SWIPE_COUNT':
+      return {
+        ...state,
+        swipeCount: 0,
       };
     case RESET:
       return initialState;

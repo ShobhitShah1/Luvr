@@ -9,6 +9,7 @@ export const ON_SWIPE_RIGHT = 'ON_SWIPE_RIGHT';
 export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 export const CURRENT_SCREEN = 'CURRENT_SCREEN';
 export const DONATION_PRODUCTS = 'DONATION_PRODUCTS';
+export const RESET_SWIPE_COUNT = 'RESET_SWIPE_COUNT';
 
 export type NotificationPayload = {
   title: string;
@@ -31,7 +32,8 @@ export type UserAction =
   | { type: typeof ON_SWIPE_RIGHT; userId: string | string[] }
   | { type: typeof ADD_NOTIFICATION; payload: NotificationPayload }
   | { type: typeof SET_USER_DATA; payload: any }
-  | { type: typeof CURRENT_SCREEN; payload: string };
+  | { type: typeof CURRENT_SCREEN; payload: string }
+  | { type: typeof RESET_SWIPE_COUNT };
 
 // Action creators with proper typing
 export const updateField = (field: UserField, value: any, _id?: string): UserAction => ({
@@ -72,4 +74,8 @@ export const resetUserData = (): UserAction => ({
 
 export const resetSwiperData = (): UserAction => ({
   type: RESET_SWIPER_KEYS,
+});
+
+export const resetSwipeCount = (): UserAction => ({
+  type: RESET_SWIPE_COUNT,
 });

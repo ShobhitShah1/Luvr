@@ -1,4 +1,8 @@
 {
   "name": "Luvr",
-  "displayName": "Luvr"
+  "displayName": "Luvr",
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-1572023976353510~4465209211",
+    "ios_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx"
+  }
 }

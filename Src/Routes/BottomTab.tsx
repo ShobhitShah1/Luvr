@@ -105,7 +105,7 @@ const TabItem: React.FC<TabItemProps> = ({ label, icon, isFocused, onPress }) =>
   }));
 
   return (
-    <Pressable onPress={onPress} style={styles.tabItemContainer}>
+    <Pressable accessibilityLabel="Tab" onPress={onPress} style={styles.tabItemContainer}>
       <Animated.View style={[styles.bubbleBackground, bubbleStyle]}>
         <LinearGradient
           colors={isDark ? colors.ButtonGradient : [colors.White, colors.White]}
