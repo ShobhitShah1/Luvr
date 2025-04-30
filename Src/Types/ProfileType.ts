@@ -59,6 +59,7 @@ export type ProfileType = {
   setting_people_with_range: boolean;
   setting_show_me: string;
   setting_show_people_with_range: boolean;
+  see_who_is_online: boolean;
 };
 
 export type SettingType = {

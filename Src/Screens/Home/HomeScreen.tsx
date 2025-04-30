@@ -21,6 +21,7 @@ import RenderLookingView from './Components/RenderlookingView';
 import RenderRecommendation from './Components/RenderRecommendation';
 import styles from './styles';
 import { useBoost } from '../../Hooks/useBoost';
+import useAppStateTracker from '../../Hooks/useAppStateTracker';
 
 const PROFILES = [
   {
@@ -42,6 +43,8 @@ const PROFILES = [
 ];
 
 const HomeScreen = () => {
+  useAppStateTracker();
+
   const { showModal } = useBoostModal();
   const { isBoostActive } = useBoost();
   const isFocus = useIsFocused();

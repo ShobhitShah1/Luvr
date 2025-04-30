@@ -39,8 +39,8 @@ import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
 
-const appOpenAdUnitId = __DEV__ ? TestIds.APP_OPEN : 'ca-app-pub-xxxxxxxxxxxxxxxx/yyyyyyyyyy';
-const interstitialAdUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-xxxxxxxxxxxxxxxx/zzzzzzzzzz';
+const appOpenAdUnitId = __DEV__ ? TestIds.APP_OPEN : TestIds.APP_OPEN;
+const interstitialAdUnitId = __DEV__ ? TestIds.INTERSTITIAL : TestIds.INTERSTITIAL;
 
 // Create ads
 const appOpenAd = AppOpenAd.createForAdRequest(appOpenAdUnitId, {
@@ -90,14 +90,14 @@ const ExploreCardScreen: FC = () => {
     const setupRemoteConfig = async () => {
       try {
         // await remoteConfig().setDefaults({
-        //   add_swipe_count: 3, // Default threshold
+        //   swipe_add_count: 3,
         // });
 
         await remoteConfig().fetchAndActivate();
 
-        const thresholdValue = remoteConfig().getValue('add_swipe_count').asNumber();
-        console.log('Remote config add_swipe_count:', thresholdValue);
-        setAdSwipeThreshold(thresholdValue);
+        const thresholdValue = remoteConfig().getValue('swipe_add_count').asNumber();
+        console.log('Remote config swipe_add_count:', thresholdValue);
+        setAdSwipeThreshold(3);
       } catch (error) {
         console.error('Remote config error:', error);
       }
@@ -154,25 +154,25 @@ const ExploreCardScreen: FC = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const checkAndShowAd = async () => {
-      if (swipeCount > 0 && swipeCount % adSwipeThreshold === 0) {
-        console.log(`Showing ad after ${adSwipeThreshold} swipes`);
+  // useEffect(() => {
+  //   const checkAndShowAd = async () => {
+  //     if (swipeCount > 0 && swipeCount % adSwipeThreshold === 0) {
+  //       console.log(`Showing ad after ${adSwipeThreshold} swipes`);
 
-        if (interstitialAdLoaded) {
-          await interstitialAd.show();
-        } else if (appOpenAdLoaded) {
-          await appOpenAd.show();
-        } else {
-          console.log('No ads loaded yet, trying to load ads');
-          interstitialAd.load();
-          appOpenAd.load();
-        }
-      }
-    };
+  //       if (interstitialAdLoaded) {
+  //         await interstitialAd.show();
+  //       } else if (appOpenAdLoaded) {
+  //         await appOpenAd.show();
+  //       } else {
+  //         console.log('No ads loaded yet, trying to load ads');
+  //         interstitialAd.load();
+  //         appOpenAd.load();
+  //       }
+  //     }
+  //   };
 
-    checkAndShowAd();
-  }, [swipeCount, adSwipeThreshold, interstitialAdLoaded, appOpenAdLoaded]);
+  //   checkAndShowAd();
+  // }, [swipeCount, adSwipeThreshold, interstitialAdLoaded, appOpenAdLoaded]);
 
   const { startInterval, stopInterval, clearInterval } = useInterval(
     () => {
@@ -362,6 +362,7 @@ const ExploreCardScreen: FC = () => {
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
+        console.log('DATA:', JSON.stringify(APIResponse, null, 2));
         if (APIResponse.data?.status === 'match') {
           setMatchedUserInfo(cardData);
           setIsMatchModalVisible(true);

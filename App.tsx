@@ -10,6 +10,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { onDisplayNotification } from './Src/Components/onDisplayNotification';
 import { skus } from './Src/Config/ApiConfig';
 import { BoostModalProvider } from './Src/Contexts/BoostModalProvider';
+import BoostProvider from './Src/Contexts/BoostProvider';
 import { ThemeProvider } from './Src/Contexts/ThemeContext';
 import { UserDataProvider } from './Src/Contexts/UserDataContext';
 import { DONATION_PRODUCTS } from './Src/Redux/Action/actions';
@@ -17,7 +18,6 @@ import { persistor, store } from './Src/Redux/Store/store';
 import MainRoute from './Src/Routes/MainRoute';
 import { navigationRef } from './Src/Routes/RootNavigation';
 import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
-import BoostProvider from './Src/Contexts/BoostProvider';
 
 export default function App() {
   useEffect(() => {

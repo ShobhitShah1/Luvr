@@ -62,7 +62,7 @@ const userReducer = (
       return {
         ...state,
         swipedLeftUserIds: [...(state?.swipedLeftUserIds || []), action.userId],
-        swipeCount: state.swipeCount + 1, // Increment swipe count
+        swipeCount: state.swipeCount + 1,
       };
     case ON_SWIPE_RIGHT:
       const newUserId = action.userId instanceof Array ? action.userId : [action.userId];
@@ -71,7 +71,7 @@ const userReducer = (
       return {
         ...state,
         swipedRightUserIds: Array.from(uniqueUserIds),
-        swipeCount: state.swipeCount + 1, // Increment swipe count
+        swipeCount: state.swipeCount + 1,
       };
     case ADD_NOTIFICATION:
       return {
@@ -83,7 +83,7 @@ const userReducer = (
         ...state,
         swipedLeftUserIds: [],
         swipedRightUserIds: [],
-        swipeCount: 0, // Reset swipe count
+        swipeCount: 0,
       };
     case CURRENT_SCREEN:
       return {

@@ -49,6 +49,11 @@ export const LocalStorageFields = {
   email: 'email',
   CurrentScreen: 'CurrentScreen',
   apple_id: 'apple_id',
+  incognito_identity: 'incognito_identity',
+  incognito_mobile: 'incognito_mobile',
+  incognito_mode: 'incognito_mode',
+  see_who_is_online: 'see_who_is_online',
+  is_online: 'is_online',
 } as const;
 
 export type UserField = keyof typeof LocalStorageFields;

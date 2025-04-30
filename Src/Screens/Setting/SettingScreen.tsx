@@ -200,7 +200,7 @@ const SettingScreen = () => {
           ...APIResponse.data,
           setting_show_me: APIResponse?.data?.setting_show_me || 'Everyone',
         });
-        await getProfileData();
+        getProfileData();
       } else {
         showToast('Something went wrong', APIResponse?.message || 'Please try again later', 'error');
         setUserSettingData({} as ProfileType);
@@ -342,6 +342,7 @@ Let's make every moment count together! #LoveConnects`,
         setting_people_with_range: UserSetting?.setting_people_with_range,
         setting_show_me: UserSetting?.setting_show_me || 'Everyone',
         setting_show_people_with_range: UserSetting?.setting_show_people_with_range,
+        see_who_is_online: UserSetting?.see_who_is_online,
       };
 
       const APIResponse = await UserService.UserRegister(DataToSend);
@@ -624,19 +625,34 @@ Let's make every moment count together! #LoveConnects`,
                 }}
               >
                 <EditProfileBoxView IsViewLoading={isSettingLoading}>
-                  <SettingFlexView
-                    isActive={UserSetting?.setting_active_status}
-                    style={styles.PhoneNumberFlexStyle}
-                    Item={'Show my status'}
-                    onPress={() => {}}
-                    onSwitchPress={() => {
-                      setUserSettingData((prevState) => ({
-                        ...prevState,
-                        setting_active_status: !UserSetting?.setting_active_status,
-                      }));
-                    }}
-                    IsSwitch={true}
-                  />
+                  <View>
+                    <SettingFlexView
+                      isActive={UserSetting?.setting_active_status}
+                      style={styles.PhoneNumberFlexStyle}
+                      Item={'Show my status'}
+                      onPress={() => {}}
+                      onSwitchPress={() => {
+                        setUserSettingData((prevState) => ({
+                          ...prevState,
+                          setting_active_status: !UserSetting?.setting_active_status,
+                        }));
+                      }}
+                      IsSwitch={true}
+                    />
+                    <SettingFlexView
+                      isActive={UserSetting?.see_who_is_online}
+                      style={styles.PhoneNumberFlexStyle}
+                      Item={'Show my status'}
+                      onPress={() => {}}
+                      onSwitchPress={() => {
+                        setUserSettingData((prevState) => ({
+                          ...prevState,
+                          see_who_is_online: !UserSetting?.see_who_is_online,
+                        }));
+                      }}
+                      IsSwitch={true}
+                    />
+                  </View>
                 </EditProfileBoxView>
               </GradientBorderView>
             </View>
