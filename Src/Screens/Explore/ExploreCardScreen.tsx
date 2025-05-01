@@ -7,6 +7,7 @@ import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react
 import {
   ActivityIndicator,
   Animated,
+  Button,
   Image,
   Platform,
   Pressable,
@@ -15,7 +16,16 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { AdEventType, AppOpenAd, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
+import MobileAds, {
+  AdEventType,
+  AppOpenAd,
+  BannerAd,
+  BannerAdSize,
+  GAMBannerAd,
+  InterstitialAd,
+  RewardedAd,
+  TestIds,
+} from 'react-native-google-mobile-ads';
 import { Easing } from 'react-native-reanimated';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
@@ -38,18 +48,22 @@ import { useCustomToast } from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
+import ApiConfig from '../../Config/ApiConfig';
 
-const appOpenAdUnitId = __DEV__ ? TestIds.APP_OPEN : TestIds.APP_OPEN;
-const interstitialAdUnitId = __DEV__ ? TestIds.INTERSTITIAL : TestIds.INTERSTITIAL;
+const appOpenAdUnitId = __DEV__ ? TestIds.APP_OPEN : ApiConfig.ANDROID_AD_ID;
+const interstitialAdUnitId = __DEV__ ? TestIds.INTERSTITIAL : ApiConfig.ANDROID_AD_ID;
+const adUnitId = __DEV__ ? TestIds.REWARDED_INTERSTITIAL : ApiConfig.ANDROID_AD_ID;
 
-// Create ads
 const appOpenAd = AppOpenAd.createForAdRequest(appOpenAdUnitId, {
   keywords: ['fashion', 'clothing', 'dating'],
 });
 
-// Create interstitial ad
 const interstitialAd = InterstitialAd.createForAdRequest(interstitialAdUnitId, {
   keywords: ['fashion', 'clothing', 'dating'],
+});
+
+const rewarded = RewardedAd.createForAdRequest(adUnitId, {
+  keywords: ['fashion', 'clothing'],
 });
 
 const ExploreCardScreen: FC = () => {
@@ -89,14 +103,9 @@ const ExploreCardScreen: FC = () => {
   useEffect(() => {
     const setupRemoteConfig = async () => {
       try {
-        // await remoteConfig().setDefaults({
-        //   swipe_add_count: 3,
-        // });
-
         await remoteConfig().fetchAndActivate();
 
         const thresholdValue = remoteConfig().getValue('swipe_add_count').asNumber();
-        console.log('Remote config swipe_add_count:', thresholdValue);
         setAdSwipeThreshold(3);
       } catch (error) {
         console.error('Remote config error:', error);
@@ -153,26 +162,6 @@ const ExploreCardScreen: FC = () => {
       unsubscribeInterstitialClosed();
     };
   }, []);
-
-  // useEffect(() => {
-  //   const checkAndShowAd = async () => {
-  //     if (swipeCount > 0 && swipeCount % adSwipeThreshold === 0) {
-  //       console.log(`Showing ad after ${adSwipeThreshold} swipes`);
-
-  //       if (interstitialAdLoaded) {
-  //         await interstitialAd.show();
-  //       } else if (appOpenAdLoaded) {
-  //         await appOpenAd.show();
-  //       } else {
-  //         console.log('No ads loaded yet, trying to load ads');
-  //         interstitialAd.load();
-  //         appOpenAd.load();
-  //       }
-  //     }
-  //   };
-
-  //   checkAndShowAd();
-  // }, [swipeCount, adSwipeThreshold, interstitialAdLoaded, appOpenAdLoaded]);
 
   const { startInterval, stopInterval, clearInterval } = useInterval(
     () => {
@@ -311,15 +300,14 @@ const ExploreCardScreen: FC = () => {
 
       if ((swipeCount + 1) % adSwipeThreshold === 0) {
         try {
-          if (interstitialAdLoaded) {
-            await interstitialAd.show();
-          } else if (appOpenAdLoaded) {
+          if (appOpenAdLoaded) {
             await appOpenAd.show();
+          } else if (interstitialAdLoaded) {
+            await interstitialAd.show();
           }
         } catch (error) {
           console.error('Failed to show ad:', error);
         } finally {
-          // Make sure we reload ads for next time
           interstitialAd.load();
           appOpenAd.load();
         }
@@ -362,7 +350,6 @@ const ExploreCardScreen: FC = () => {
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
-        console.log('DATA:', JSON.stringify(APIResponse, null, 2));
         if (APIResponse.data?.status === 'match') {
           setMatchedUserInfo(cardData);
           setIsMatchModalVisible(true);

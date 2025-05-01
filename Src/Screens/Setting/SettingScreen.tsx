@@ -642,7 +642,7 @@ Let's make every moment count together! #LoveConnects`,
                     <SettingFlexView
                       isActive={UserSetting?.see_who_is_online}
                       style={styles.PhoneNumberFlexStyle}
-                      Item={'Show my status'}
+                      Item={'See who is online'}
                       onPress={() => {}}
                       onSwitchPress={() => {
                         setUserSettingData((prevState) => ({

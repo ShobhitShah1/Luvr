@@ -506,8 +506,6 @@ const EditProfileScreen = () => {
         setting_show_people_with_range: profile?.setting_show_people_with_range || true,
       };
 
-      console.log('DataToSend:', JSON.stringify(DataToSend, null, 2));
-
       const APIResponse = await UserService.UserRegister(DataToSend);
 
       if (APIResponse.code === 200) {

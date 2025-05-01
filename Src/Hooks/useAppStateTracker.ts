@@ -29,7 +29,6 @@ const useAppStateTracker = (): AppStateStatus => {
     const now = Date.now();
 
     if (now - lastApiCallTimeRef.current < API_CALL_DEBOUNCE_MS) {
-      console.log('Debouncing API call');
       return;
     }
 
@@ -41,7 +40,6 @@ const useAppStateTracker = (): AppStateStatus => {
 
       lastApiCallTimeRef.current = now;
       await UserService.UserRegister(dataToSend);
-      console.log(`User online status updated: ${isOnline ? 'ONLINE' : 'OFFLINE'}`);
     } catch (error) {
       console.error('Failed to update online status:', error);
     }

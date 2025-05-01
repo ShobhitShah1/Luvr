@@ -11,6 +11,8 @@ const ApiConfig = {
   GOOGLE_WEB_CLIENT_ID: '126773940218-vqp2euiee90i9pecsh3gfdiaa19hj0rv.apps.googleusercontent.com',
   FACEBOOK_GRAPH_API: 'https://graph.facebook.com/v2.5/me?fields=email,name,picture,birthday,gender&access_token=',
 
+  ANDROID_AD_ID: 'ca-app-pub-7557128133141253~2454494674',
+
   PLAY_STORE: 'https://play.google.com/store/apps/details?id=com.luvr.dating',
   APP_STORE: '',
 
@@ -38,6 +40,11 @@ async function fetchRemoteConfigValues() {
     const SOCKET_BASE_URL_REMOTE = remoteConfig().getValue('SOCKET_BASE_URL').asString();
     if (SOCKET_BASE_URL_REMOTE) {
       ApiConfig.SOCKET_BASE_URL = SOCKET_BASE_URL_REMOTE;
+    }
+
+    const AD_MOB_ID = remoteConfig().getValue('AdMobID').asString();
+    if (SOCKET_BASE_URL_REMOTE) {
+      ApiConfig.ANDROID_AD_ID = AD_MOB_ID;
     }
   } catch (error) {
     console.error('Error fetching remote config:', error);
