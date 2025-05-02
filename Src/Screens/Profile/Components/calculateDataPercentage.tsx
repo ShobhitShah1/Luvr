@@ -1,5 +1,5 @@
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
-import { ProfileType } from '../../../Types/ProfileType';
+import UserDataType from '../../../Types/UserDataType';
 
 const excludeFields = [
   'socket_id',
@@ -36,7 +36,7 @@ const excludeFields = [
   LocalStorageFields.incognito_mode,
 ];
 
-const calculateDataPercentage = (userData: ProfileType): number => {
+const calculateDataPercentage = (userData: UserDataType): number => {
   const isFilled = (value: any): boolean => {
     if (value === null || value === 'null' || value === undefined || value === '') {
       return false;
@@ -56,44 +56,44 @@ const calculateDataPercentage = (userData: ProfileType): number => {
   let filledFieldsCount = 0;
   const missingFields: string[] = [];
 
-  console.info('------------------ Start ------------------------');
-  console.info('Total Fields:', totalFields);
+  // console.info('------------------ Start ------------------------');
+  // console.info('Total Fields:', totalFields);
 
   Object.entries(userData).forEach(([key, value]) => {
     if (!excludeFields.includes(key)) {
       if (isFilled(value)) {
         filledFieldsCount++;
-        console.info(`- ${key}: ${value}`);
+        // console.info(`- ${key}: ${value}`);
       } else if (typeof value === 'object' && !Array.isArray(value)) {
         // If the value is an object and not an array, recursively log its details
-        console.info(`- ${key}:`);
-        Object.entries(value as any).forEach(([nestedKey, nestedValue]) => {
-          console.info(`  - ${nestedKey}: ${nestedValue}`);
-        });
+        // console.info(`- ${key}:`);
+        // Object.entries(value as any).forEach(([nestedKey, nestedValue]) => {
+        //   console.info(`  - ${nestedKey}: ${nestedValue}`);
+        // });
       } else {
         missingFields.push(key);
       }
     }
   });
 
-  if (filledFieldsCount > 0) {
-    console.info('Filled Fields:', filledFieldsCount);
-  } else {
-    console.info('No fields are filled.');
-  }
+  // if (filledFieldsCount > 0) {
+  //   console.info('Filled Fields:', filledFieldsCount);
+  // } else {
+  //   console.info('No fields are filled.');
+  // }
 
-  if (missingFields.length > 0) {
-    console.info('Missing Fields:');
-    missingFields.forEach((field) => {
-      console.info(`  - ${field}`);
-    });
-  } else {
-    console.info('All fields are filled.');
-  }
+  // if (missingFields.length > 0) {
+  //   console.info('Missing Fields:');
+  //   missingFields.forEach((field) => {
+  //     console.info(`  - ${field}`);
+  //   });
+  // } else {
+  //   console.info('All fields are filled.');
+  // }
 
   const percentage = (filledFieldsCount / totalFields) * 100;
-  console.info('Percentage of filled data:', percentage + '%');
-  console.info('---------------------------------------------');
+  // console.info('Percentage of filled data:', percentage + '%');
+  // console.info('---------------------------------------------');
 
   return percentage;
 };

@@ -1,82 +1,44 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import NetInfo from '@react-native-community/netinfo';
 import { Skeleton } from 'moti/skeleton';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Dimensions, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import LinearGradient from 'react-native-linear-gradient';
-import { useSelector } from 'react-redux';
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
-import TextString from '../../Common/TextString';
 import { COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
 import { GradientBorderView } from '../../Components/GradientBorder';
 import ApiConfig from '../../Config/ApiConfig';
 import { DummyImage } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
+import { useUserData } from '../../Contexts/UserDataContext';
 import useCalculateAge from '../../Hooks/useCalculateAge';
 import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
-import UserService from '../../Services/AuthService';
-import { ProfileType } from '../../Types/ProfileType';
-import { useCustomToast } from '../../Utils/toastUtils';
+import { debouncedGetProfileData } from '../../Utils/profileUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import calculateDataPercentage from './Components/calculateDataPercentage';
 
 const ProfileScreen = () => {
+  const { userData } = useUserData();
   const { colors, isDark } = useTheme();
-  const { showToast } = useCustomToast();
-  const userData = useSelector((state: any) => state?.user);
-  const Age = useCalculateAge(userData?.birthdate);
   const navigation = useCustomNavigation();
 
+  const userAge = useCalculateAge(userData?.birthdate);
+
   const [isImageLoading, setIsImageLoading] = useState(false);
-  const [isLoading, setIsAPILoading] = useState(true);
-  const [profileData, setProfileData] = useState<ProfileType>(userData?.userData);
   const [percentage, setPercentage] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    if (!userData?.userData?.full_name || !userData?.full_name) {
-      setIsAPILoading(true);
-    }
-    fetchProfileData();
-  }, []);
+    setPercentage(calculateDataPercentage(userData));
+  }, [userData]);
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    fetchProfileData();
+    await debouncedGetProfileData(0);
+    setPercentage(calculateDataPercentage(userData));
+    setRefreshing(false);
   }, []);
-
-  const fetchProfileData = async () => {
-    const InInternetConnected = (await NetInfo.fetch()).isConnected;
-
-    if (!InInternetConnected) {
-      setIsAPILoading(false);
-      setRefreshing(false);
-      throw new Error(TextString.PleaseCheckYourInternetConnection);
-    }
-
-    try {
-      const userDataForApi = {
-        eventName: 'get_profile',
-      };
-
-      const APIResponse = await UserService.UserRegister(userDataForApi);
-      if (APIResponse?.code === 200) {
-        setProfileData(APIResponse.data);
-        const ProfilePercentage = calculateDataPercentage(APIResponse.data);
-        setPercentage(ProfilePercentage);
-      } else {
-        setProfileData({} as ProfileType);
-        throw new Error(APIResponse?.error || APIResponse?.message);
-      }
-    } catch (error: any) {
-      showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
-    } finally {
-      setIsAPILoading(false);
-      setRefreshing(false);
-    }
-  };
 
   return (
     <GradientView>
@@ -105,23 +67,21 @@ const ProfileScreen = () => {
               >
                 {() => (
                   <View style={styles.ImageContainerView}>
-                    <Skeleton show={isLoading || isImageLoading} colorMode="light" colors={colors.LoaderGradient}>
-                      {profileData?.recent_pik && profileData?.recent_pik?.length !== 0 ? (
+                    <Skeleton show={isImageLoading} colorMode="light" colors={colors.LoaderGradient}>
+                      {userData?.recent_pik && userData?.recent_pik?.length !== 0 ? (
                         <Image
                           style={styles.ProfileImage}
-                          source={{ uri: ApiConfig.IMAGE_BASE_URL + profileData?.recent_pik[0] }}
+                          source={{ uri: ApiConfig.IMAGE_BASE_URL + userData?.recent_pik[0] }}
                         />
                       ) : (
                         <View style={styles.LottieViewStyle}>
-                          {!isLoading && (
-                            <Image
-                              onLoadStart={() => setIsImageLoading(true)}
-                              onLoad={() => setIsImageLoading(false)}
-                              onLoadEnd={() => setIsImageLoading(false)}
-                              style={styles.ProfileImage}
-                              source={{ uri: DummyImage }}
-                            />
-                          )}
+                          <Image
+                            onLoadStart={() => setIsImageLoading(true)}
+                            onLoad={() => setIsImageLoading(false)}
+                            onLoadEnd={() => setIsImageLoading(false)}
+                            style={styles.ProfileImage}
+                            source={{ uri: DummyImage }}
+                          />
                         </View>
                       )}
                     </Skeleton>
@@ -132,21 +92,19 @@ const ProfileScreen = () => {
 
             <View style={styles.UserNameAndLocationView}>
               <View style={styles.NameAndBadgeContainer}>
-                <Skeleton show={isLoading} width={300} colorMode="light" colors={colors.LoaderGradient}>
+                <Skeleton show={false} width={300} colorMode="light" colors={colors.LoaderGradient}>
                   <View style={styles.NameAndBadgeView}>
                     <Text style={[styles.UserNameText, { color: colors.TextColor }]}>
-                      {!isLoading &&
-                        (profileData?.full_name || userData?.full_name) &&
-                        (profileData?.full_name || userData?.full_name) + (Age ? `, ${Age}` : '')}
+                      {userData?.full_name && userData?.full_name + (userAge ? `, ${userAge}` : '')}
                     </Text>
-                    {!isLoading && <Image source={CommonIcons.Verification_Icon} style={styles.VerifyIcon} />}
+                    <Image source={CommonIcons.Verification_Icon} style={styles.VerifyIcon} />
                   </View>
                 </Skeleton>
               </View>
               <View style={styles.NameAndBadgeContainer}>
-                <Skeleton show={isLoading} colorMode="light" width={250} colors={colors.LoaderGradient}>
+                <Skeleton show={false} colorMode="light" width={250} colors={colors.LoaderGradient}>
                   <Text style={[styles.UserCityText, { color: colors.TextColor }]}>
-                    {isLoading ? '' : profileData?.city || ''}
+                    {false ? '' : userData?.city || ''}
                   </Text>
                 </Skeleton>
               </View>
@@ -163,11 +121,11 @@ const ProfileScreen = () => {
                   <GradientBorderView
                     style={[styles.PercentageCountView, !isDark && { backgroundColor: colors.White }]}
                   >
-                    <Skeleton show={isLoading} colorMode="light" height={57} colors={colors.LoaderGradient}>
+                    <Skeleton show={false} colorMode="light" height={57} colors={colors.LoaderGradient}>
                       <View style={styles.PercentageTextFlexView}>
-                        <Text style={[styles.PercentageCountText, { color: colors.TextColor }]}>{`${
-                          isLoading ? '' : `${Math.floor(percentage)}%`
-                        }`}</Text>
+                        <Text
+                          style={[styles.PercentageCountText, { color: colors.TextColor }]}
+                        >{`${`${Math.floor(percentage)}%`}`}</Text>
                       </View>
                     </Skeleton>
                   </GradientBorderView>
