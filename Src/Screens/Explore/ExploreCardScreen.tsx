@@ -7,7 +7,6 @@ import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react
 import {
   ActivityIndicator,
   Animated,
-  Button,
   Image,
   Platform,
   Pressable,
@@ -16,16 +15,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import MobileAds, {
-  AdEventType,
-  AppOpenAd,
-  BannerAd,
-  BannerAdSize,
-  GAMBannerAd,
-  InterstitialAd,
-  RewardedAd,
-  TestIds,
-} from 'react-native-google-mobile-ads';
+import { AdEventType, AppOpenAd, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 import { Easing } from 'react-native-reanimated';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,24 +25,23 @@ import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
 import { BOTTOM_TAB_HEIGHT, COLORS, GROUP_FONT } from '../../Common/Theme';
 import GradientButton from '../../Components/AuthComponents/GradientButton';
+import ApiConfig from '../../Config/ApiConfig';
 import { CardDelay, CardLimit } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
+import { useUserData } from '../../Contexts/UserDataContext';
 import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import useInterval from '../../Hooks/useInterval';
 import { onSwipeLeft, onSwipeRight, resetSwipeCount } from '../../Redux/Action/actions';
 import { store } from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
 import { ProfileType } from '../../Types/ProfileType';
-import { SwiperCard } from '../../Types/SwiperCard';
 import { useCustomToast } from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
-import ApiConfig from '../../Config/ApiConfig';
 
 const appOpenAdUnitId = __DEV__ ? TestIds.APP_OPEN : ApiConfig.ANDROID_AD_ID;
 const interstitialAdUnitId = __DEV__ ? TestIds.INTERSTITIAL : ApiConfig.ANDROID_AD_ID;
-const adUnitId = __DEV__ ? TestIds.REWARDED_INTERSTITIAL : ApiConfig.ANDROID_AD_ID;
 
 const appOpenAd = AppOpenAd.createForAdRequest(appOpenAdUnitId, {
   keywords: ['fashion', 'clothing', 'dating'],
@@ -62,18 +51,18 @@ const interstitialAd = InterstitialAd.createForAdRequest(interstitialAdUnitId, {
   keywords: ['fashion', 'clothing', 'dating'],
 });
 
-const rewarded = RewardedAd.createForAdRequest(adUnitId, {
-  keywords: ['fashion', 'clothing'],
-});
-
 const ExploreCardScreen: FC = () => {
   const { colors, isDark } = useTheme();
   const { width } = useWindowDimensions();
   const dispatch = useDispatch();
+  const { subscription } = useUserData();
 
-  const swipeRef = useRef<Swiper<SwiperCard>>(null);
+  const swipeRef = useRef<any>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const slideDownAnimation = useRef(new Animated.Value(1)).current;
+
+  const currentSkipNumberRef = useRef(0);
+  const isRequestInProgressRef = useRef(false);
 
   const navigation = useCustomNavigation();
   const isScreenFocused = useIsFocused();
@@ -101,12 +90,16 @@ const ExploreCardScreen: FC = () => {
   const [interstitialAdLoaded, setInterstitialAdLoaded] = useState(false);
 
   useEffect(() => {
+    currentSkipNumberRef.current = cardToSkipNumber;
+  }, []);
+
+  useEffect(() => {
     const setupRemoteConfig = async () => {
       try {
         await remoteConfig().fetchAndActivate();
 
         const thresholdValue = remoteConfig().getValue('swipe_add_count').asNumber();
-        setAdSwipeThreshold(3);
+        setAdSwipeThreshold(thresholdValue || 3);
       } catch (error) {
         console.error('Remote config error:', error);
       }
@@ -115,7 +108,6 @@ const ExploreCardScreen: FC = () => {
     setupRemoteConfig();
   }, []);
 
-  // Set up app open ad event listeners
   useEffect(() => {
     const unsubscribeAppOpenLoaded = appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
       setAppOpenAdLoaded(true);
@@ -129,7 +121,6 @@ const ExploreCardScreen: FC = () => {
       appOpenAd.load();
     });
 
-    // Initial load of app open ad
     appOpenAd.load();
 
     return () => {
@@ -139,7 +130,6 @@ const ExploreCardScreen: FC = () => {
     };
   }, []);
 
-  // Set up interstitial ad event listeners
   useEffect(() => {
     const unsubscribeInterstitialLoaded = interstitialAd.addAdEventListener(AdEventType.LOADED, () => {
       setInterstitialAdLoaded(true);
@@ -153,7 +143,6 @@ const ExploreCardScreen: FC = () => {
       interstitialAd.load();
     });
 
-    // Initial load of interstitial ad
     interstitialAd.load();
 
     return () => {
@@ -198,9 +187,12 @@ const ExploreCardScreen: FC = () => {
   useEffect(() => {
     if (isScreenFocused) {
       startInterval();
+
       if (cards.length === 0) {
         setIsAPILoading(true);
       }
+
+      currentSkipNumberRef.current = 0;
       fetchAPIData(0);
       setCurrentCardIndex(0);
       setCurrentImageIndex(0);
@@ -208,6 +200,7 @@ const ExploreCardScreen: FC = () => {
       stopInterval();
       clearInterval();
     }
+
     setCardToSkipNumber(0);
   }, [isScreenFocused]);
 
@@ -229,26 +222,37 @@ const ExploreCardScreen: FC = () => {
         return;
       }
 
+      const skipValue = Number.isInteger(cardSkipValue) ? cardSkipValue : currentSkipNumberRef.current;
+
       setCurrentCardIndex(0);
+
       try {
         const userDataForApi = {
           limit: CardLimit,
           like: RightSwipedUserIds,
           unlike: LeftSwipedUserIds,
-          skip: cardSkipValue || cardToSkipNumber,
+          skip: skipValue,
           radius: userData.radius,
           eventName: 'list_neighbour',
           latitude: userData.latitude,
           longitude: userData.longitude,
         };
+
         const APIResponse = await UserService.UserRegister(userDataForApi);
 
         if (APIResponse?.code === 200 && Array.isArray(APIResponse.data)) {
           const filteredCards = await APIResponse.data.filter((card: any) => card?.name || card?.enable === 1);
 
-          setCards(filteredCards);
-          swipeRef.current?.forceUpdate();
-          startInterval();
+          if (filteredCards.length > 0) {
+            setCards(filteredCards);
+            if (swipeRef.current) {
+              swipeRef.current.forceUpdate();
+            }
+            startInterval();
+          } else {
+            console.log('No more cards available');
+            setCards([]);
+          }
         } else {
           showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Something went wrong', TextString.error);
           stopInterval();
@@ -298,37 +302,60 @@ const ExploreCardScreen: FC = () => {
       setCurrentImageIndex(0);
       setCurrentCardIndex(cardIndex + 1);
 
-      if ((swipeCount + 1) % adSwipeThreshold === 0) {
-        try {
-          if (appOpenAdLoaded) {
-            await appOpenAd.show();
-          } else if (interstitialAdLoaded) {
-            await interstitialAd.show();
+      if ((swipeCount + 1) % adSwipeThreshold === 0 && !subscription.isActive) {
+        setTimeout(async () => {
+          try {
+            if (appOpenAdLoaded) {
+              await appOpenAd.show();
+            } else if (interstitialAdLoaded) {
+              await interstitialAd.show();
+            }
+          } catch (error) {
+            console.error('Failed to show ad:', error);
+          } finally {
+            interstitialAd.load();
+            appOpenAd.load();
           }
-        } catch (error) {
-          console.error('Failed to show ad:', error);
-        } finally {
-          interstitialAd.load();
-          appOpenAd.load();
-        }
+        }, 1000);
       }
     } catch (error) {}
   };
 
-  const onSwipedAllCard = useCallback(() => {
+  const onSwipedAllCard = useCallback(async () => {
+    if (isRequestInProgressRef.current || IsAPILoading) {
+      return;
+    }
+
     try {
+      isRequestInProgressRef.current = true;
       setIsAPILoading(true);
-      swipeRef.current?.forceUpdate();
-      setCardToSkipNumber(cardToSkipNumber + CardLimit);
-      fetchAPIData(cardToSkipNumber + CardLimit);
+
+      const newSkipNumber = currentSkipNumberRef.current + CardLimit;
+
+      currentSkipNumberRef.current = newSkipNumber;
+
+      setCardToSkipNumber(newSkipNumber);
+
+      await fetchAPIData(newSkipNumber);
+
       dispatch(resetSwipeCount());
-    } catch (error) {}
-  }, [cardToSkipNumber, fetchAPIData]);
+
+      if (swipeRef.current) {
+        swipeRef.current.forceUpdate();
+      }
+    } catch (error: any) {
+      showToast(TextString.error.toUpperCase(), String(error?.message || error), TextString.error);
+    } finally {
+      isRequestInProgressRef.current = false;
+      setIsAPILoading(false);
+    }
+  }, [fetchAPIData, CardLimit, IsAPILoading, dispatch]);
 
   const SwipeLeft = async () => {
     if (isMatchModalVisible) {
       return;
     }
+
     swipeRef.current?.swipeLeft();
   };
 
@@ -336,6 +363,7 @@ const ExploreCardScreen: FC = () => {
     if (isMatchModalVisible) {
       return;
     }
+
     swipeRef.current?.swipeRight();
   };
 
@@ -346,24 +374,21 @@ const ExploreCardScreen: FC = () => {
     }
 
     try {
-      const userDataForApi = { eventName: 'like', like_to: id };
+      const APIResponse = await UserService.UserRegister({ eventName: 'like', like_to: id });
 
-      const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
         if (APIResponse.data?.status === 'match') {
           setMatchedUserInfo(cardData);
           setIsMatchModalVisible(true);
         }
-        swipeRef.current?.forceUpdate();
       } else {
         showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Please try again letter', TextString.error);
-        swipeRef.current?.swipeBack();
       }
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), String(error?.message || error), TextString.error);
-      swipeRef.current?.swipeBack();
     } finally {
       setIsAPILoading(false);
+      swipeRef.current?.forceUpdate();
     }
   };
 
