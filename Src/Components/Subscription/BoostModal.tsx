@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { Dimensions, Image, Platform, StyleSheet, Text, View } from 'react-native';
 import * as RNIap from 'react-native-iap';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 import CommonIcons from '../../Common/CommonIcons';
+import CommonImages from '../../Common/CommonImages';
 import TextString from '../../Common/TextString';
 import { FONTS } from '../../Common/Theme';
 import { boostSkus } from '../../Config/ApiConfig';
@@ -16,7 +17,6 @@ import { getProfileData } from '../../Utils/profileUtils';
 import { useCustomToast } from '../../Utils/toastUtils';
 import GradientButton from '../AuthComponents/GradientButton';
 import GradientBorder from '../GradientBorder/GradientBorder';
-import CommonImages from '../../Common/CommonImages';
 
 const { width } = Dimensions.get('window');
 
@@ -56,18 +56,16 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
   const { isBoostActive, timeRemaining } = useBoost();
 
   const [countdown, setCountdown] = useState<string>(formatTimeRemaining(timeRemaining * 60));
-  // Timer interval reference to clean up
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const secondsRemainingRef = useRef<number>(timeRemaining * 60);
 
   const [isPurchasing, setIsPurchasing] = useState(false);
-  const [isProductFetchLoading, setIsProductFetchLoading] = useState(true);
   const [subscriptionProducts, setSubscriptionProducts] = useState<Array<RNIap.Product>>([]);
   const [internalSelectedPlan, setInternalSelectedPlan] = useState<string>(subscriptionProducts[0]?.productId || '');
 
   useEffect(() => {
-    connectIAP();
-  }, []);
+    isVisible && connectIAP();
+  }, [isVisible]);
 
   useEffect(() => {
     if (isBoostActive && isVisible) {
@@ -120,8 +118,6 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
         error?.message?.toString() || error?.Error?.toString() || error?.error?.toString() || error?.toString(),
         TextString.error
       );
-    } finally {
-      setIsProductFetchLoading(false);
     }
   };
 
@@ -325,7 +321,7 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
   );
 };
 
-export default BoostModal;
+export default memo(BoostModal);
 
 const styles = StyleSheet.create({
   modal: {
