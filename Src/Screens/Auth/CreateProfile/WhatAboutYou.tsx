@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     width: hp('11%'),
     overflow: 'hidden',
     height: hp('6.8%'),
-    borderWidth: 0.5,
+    borderWidth: 2,
     justifyContent: 'center',
     marginVertical: hp('1%'),
     borderRadius: SIZES.radius,

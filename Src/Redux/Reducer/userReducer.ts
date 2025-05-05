@@ -9,18 +9,15 @@ import {
   UPDATE_FIELD,
   ADD_NOTIFICATION,
   CURRENT_SCREEN,
+  RESET_RIGHT_SWIPE,
+  SET_CARD_SKIP_NUMBER,
+  RESET_SWIPE_COUNT,
 } from '../Action/actions';
 
-const initialState: UserDataType & {
-  swipedLeftUserIds: string[];
-} & {
-  swipedRightUserIds: string[];
-} & {
+const initialState: UserDataType & { swipedLeftUserIds: string[] } & { swipedRightUserIds: string[] } & {
   userData: string[];
-} & {
-  notifications: string[];
-} & {
-  swipeCount: number;
+} & { notifications: string[] } & { swipeCount: number } & {
+  cardSkipNumber: number;
 } = {
   ...Object.keys(LocalStorageFields).reduce((acc, field) => ({ ...acc, [field]: '' }), {} as UserDataType),
   swipedLeftUserIds: [],
@@ -29,6 +26,7 @@ const initialState: UserDataType & {
   notifications: [],
   CurrentScreen: '',
   swipeCount: 0,
+  cardSkipNumber: 0,
 };
 
 const userReducer = (
@@ -73,6 +71,11 @@ const userReducer = (
         swipedRightUserIds: Array.from(uniqueUserIds),
         swipeCount: state.swipeCount + 1,
       };
+    case RESET_RIGHT_SWIPE:
+      return {
+        ...state,
+        swipedRightUserIds: [],
+      };
     case ADD_NOTIFICATION:
       return {
         ...state,
@@ -90,7 +93,12 @@ const userReducer = (
         ...state,
         CurrentScreen: action.value || action.payload,
       };
-    case 'RESET_SWIPE_COUNT':
+    case SET_CARD_SKIP_NUMBER:
+      return {
+        ...state,
+        cardSkipNumber: action.payload,
+      };
+    case RESET_SWIPE_COUNT:
       return {
         ...state,
         swipeCount: 0,

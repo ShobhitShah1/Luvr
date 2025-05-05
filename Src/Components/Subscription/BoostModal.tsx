@@ -17,13 +17,10 @@ import { getProfileData } from '../../Utils/profileUtils';
 import { useCustomToast } from '../../Utils/toastUtils';
 import GradientButton from '../AuthComponents/GradientButton';
 import GradientBorder from '../GradientBorder/GradientBorder';
+import { GradientBorderView } from '../GradientBorder';
+import { BlurView } from '@react-native-community/blur';
 
 const { width } = Dimensions.get('window');
-
-const benefits = [
-  'Your profile appears at the top of the stack for nearby users',
-  "You're highlighted for 30 minutes, increasing your chances of getting more matches",
-];
 
 export interface BoostModalProps {
   isVisible: boolean;
@@ -62,6 +59,11 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [subscriptionProducts, setSubscriptionProducts] = useState<Array<RNIap.Product>>([]);
   const [internalSelectedPlan, setInternalSelectedPlan] = useState<string>(subscriptionProducts[0]?.productId || '');
+
+  const benefits = [
+    'Your profile appears at the top of the stack for nearby users',
+    `${subscriptionProducts?.find((prod) => prod.productId === internalSelectedPlan)?.description}, increasing your chances of getting more matches`,
+  ];
 
   useEffect(() => {
     isVisible && connectIAP();
@@ -227,8 +229,35 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
       useNativeDriverForBackdrop
       hideModalContentWhileAnimating
       presentationStyle="overFullScreen"
+      backdropOpacity={1}
+      customBackdrop={
+        isDark ? (
+          <LinearGradient
+            colors={
+              isDark
+                ? [
+                    'rgba(22, 3, 42, 0.55)',
+                    'rgba(22, 3, 42, 0.66)',
+                    'rgba(22, 3, 42, 0.77)',
+                    'rgba(22, 3, 42, 0.88)',
+                    'rgba(22, 3, 42, 1)',
+                  ]
+                : ['white', 'white']
+            }
+            style={{ flex: 1, backgroundColor: isDark ? colors.Primary : 'transparent' }}
+          />
+        ) : (
+          <BlurView blurType="dark" blurAmount={5} style={{ flex: 1 }} />
+        )
+      }
     >
-      <View style={[styles.modalContainer, { backgroundColor: isDark ? 'rgba(18, 18, 19, 2)' : colors.White }]}>
+      <GradientBorderView
+        gradientProps={{ colors: colors.ButtonGradient }}
+        style={[
+          styles.modalContainer,
+          { backgroundColor: isDark ? 'rgba(18, 18, 19, 2)' : colors.White, shadowColor: colors.Primary },
+        ]}
+      >
         {isBoostActive ? (
           renderActiveBoost()
         ) : (
@@ -243,7 +272,13 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
                   return (
                     <View
                       key={index}
-                      style={[styles.boostCard, { backgroundColor: isDark ? 'rgba(60, 40, 90, 0.5)' : colors.White }]}
+                      style={[
+                        styles.boostCard,
+                        {
+                          backgroundColor: isDark ? 'rgba(60, 40, 90, 0.5)' : colors.White,
+                          shadowColor: isDark ? 'rgba(60, 40, 90, 0.5)' : colors.Primary,
+                        },
+                      ]}
                     >
                       <GradientBorder
                         borderWidth={1.5}
@@ -309,6 +344,13 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
             <View style={styles.buttonContainer}>
               <GradientButton
                 Title="Boost me"
+                icon={
+                  <Image
+                    tintColor={colors.White}
+                    source={CommonIcons.ic_rocket}
+                    style={[styles.rocket, { right: 5 }]}
+                  />
+                }
                 Navigation={handlePurchase}
                 isLoading={isPurchasing || isLoading}
                 Disabled={isPurchasing || isLoading}
@@ -316,7 +358,7 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
             </View>
           </>
         )}
-      </View>
+      </GradientBorderView>
     </Modal>
   );
 };
@@ -339,8 +381,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 10,
     overflow: 'visible',
+    borderWidth: 2,
   },
   imageContainer: {
     width: '100%',
@@ -367,8 +410,9 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 10,
   },
   boostText: {
     fontSize: 16,

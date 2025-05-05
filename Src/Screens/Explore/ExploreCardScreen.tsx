@@ -31,7 +31,13 @@ import { useTheme } from '../../Contexts/ThemeContext';
 import { useUserData } from '../../Contexts/UserDataContext';
 import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import useInterval from '../../Hooks/useInterval';
-import { onSwipeLeft, onSwipeRight, resetSwipeCount } from '../../Redux/Action/actions';
+import {
+  onSwipeLeft,
+  onSwipeRight,
+  resetRightSwipe,
+  resetSwipeCount,
+  setCardSkipNumber,
+} from '../../Redux/Action/actions';
 import { store } from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
 import { ProfileType } from '../../Types/ProfileType';
@@ -65,7 +71,7 @@ const ExploreCardScreen: FC = () => {
   const isRequestInProgressRef = useRef(false);
 
   const navigation = useCustomNavigation();
-  const isScreenFocused = useIsFocused();
+  const isFocused = useIsFocused();
 
   const userData = useSelector((state: any) => state?.user);
   const swipeCount = useSelector((state: any) => state?.user?.swipeCount || 0);
@@ -73,6 +79,7 @@ const ExploreCardScreen: FC = () => {
 
   const LeftSwipedUserIds = useSelector((state: any) => state?.user?.swipedLeftUserIds || []);
   const RightSwipedUserIds = useSelector((state: any) => state?.user?.swipedRightUserIds || []);
+  const storedSkipNumber = useSelector((state: any) => state?.user?.cardSkipNumber || 0);
 
   const [cards, setCards] = useState<ProfileType[]>([]);
   const [cardToSkipNumber, setCardToSkipNumber] = useState(0);
@@ -90,8 +97,8 @@ const ExploreCardScreen: FC = () => {
   const [interstitialAdLoaded, setInterstitialAdLoaded] = useState(false);
 
   useEffect(() => {
-    currentSkipNumberRef.current = cardToSkipNumber;
-  }, []);
+    currentSkipNumberRef.current = storedSkipNumber;
+  }, [storedSkipNumber]);
 
   useEffect(() => {
     const setupRemoteConfig = async () => {
@@ -121,16 +128,6 @@ const ExploreCardScreen: FC = () => {
       appOpenAd.load();
     });
 
-    appOpenAd.load();
-
-    return () => {
-      unsubscribeAppOpenLoaded();
-      unsubscribeAppOpenOpened();
-      unsubscribeAppOpenClosed();
-    };
-  }, []);
-
-  useEffect(() => {
     const unsubscribeInterstitialLoaded = interstitialAd.addAdEventListener(AdEventType.LOADED, () => {
       setInterstitialAdLoaded(true);
     });
@@ -145,7 +142,13 @@ const ExploreCardScreen: FC = () => {
 
     interstitialAd.load();
 
+    appOpenAd.load();
+
     return () => {
+      unsubscribeAppOpenLoaded();
+      unsubscribeAppOpenOpened();
+      unsubscribeAppOpenClosed();
+
       unsubscribeInterstitialLoaded();
       unsubscribeInterstitialOpened();
       unsubscribeInterstitialClosed();
@@ -154,7 +157,7 @@ const ExploreCardScreen: FC = () => {
 
   const { startInterval, stopInterval, clearInterval } = useInterval(
     () => {
-      if (cards && isScreenFocused) {
+      if (cards && isFocused) {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik?.length || 0);
         Animated.timing(animatedOpacity, {
           toValue: 1,
@@ -185,15 +188,15 @@ const ExploreCardScreen: FC = () => {
   }, [isMatchModalVisible]);
 
   useEffect(() => {
-    if (isScreenFocused) {
+    if (isFocused) {
       startInterval();
 
       if (cards.length === 0) {
         setIsAPILoading(true);
       }
 
-      currentSkipNumberRef.current = 0;
-      fetchAPIData(0);
+      currentSkipNumberRef.current = storedSkipNumber;
+      fetchAPIData(storedSkipNumber);
       setCurrentCardIndex(0);
       setCurrentImageIndex(0);
     } else {
@@ -201,8 +204,8 @@ const ExploreCardScreen: FC = () => {
       clearInterval();
     }
 
-    setCardToSkipNumber(0);
-  }, [isScreenFocused]);
+    // setCardToSkipNumber(0);
+  }, [isFocused, storedSkipNumber]);
 
   useEffect(() => {
     if (cards?.length === 0) {
@@ -214,6 +217,13 @@ const ExploreCardScreen: FC = () => {
     }
   }, [cards, slideDownAnimation]);
 
+  const resetCardSkip = () => {
+    currentSkipNumberRef.current = 0;
+    dispatch(setCardSkipNumber(0));
+    setCardToSkipNumber(0);
+    fetchAPIData(0);
+  };
+
   const fetchAPIData = useCallback(
     async (cardSkipValue: number | undefined) => {
       if (!IsNetConnected) {
@@ -222,7 +232,7 @@ const ExploreCardScreen: FC = () => {
         return;
       }
 
-      const skipValue = Number.isInteger(cardSkipValue) ? cardSkipValue : currentSkipNumberRef.current;
+      const skipValue = Number.isInteger(cardSkipValue) ? cardSkipValue || 0 : currentSkipNumberRef.current || 0;
 
       setCurrentCardIndex(0);
 
@@ -250,15 +260,23 @@ const ExploreCardScreen: FC = () => {
             }
             startInterval();
           } else {
-            console.log('No more cards available');
             setCards([]);
+            if (skipValue > 0) {
+              resetCardSkip();
+            }
           }
         } else {
           showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Something went wrong', TextString.error);
           stopInterval();
+          if (skipValue > CardLimit * 2) {
+            resetCardSkip();
+          }
         }
       } catch (error: any) {
         showToast('Error', String(error?.message || error), 'error');
+        if (skipValue > CardLimit * 2) {
+          resetCardSkip();
+        }
       } finally {
         setIsAPILoading(false);
       }
@@ -336,6 +354,8 @@ const ExploreCardScreen: FC = () => {
 
       setCardToSkipNumber(newSkipNumber);
 
+      dispatch(setCardSkipNumber(newSkipNumber));
+
       await fetchAPIData(newSkipNumber);
 
       dispatch(resetSwipeCount());
@@ -350,7 +370,6 @@ const ExploreCardScreen: FC = () => {
       setIsAPILoading(false);
     }
   }, [fetchAPIData, CardLimit, IsAPILoading, dispatch]);
-
   const SwipeLeft = async () => {
     if (isMatchModalVisible) {
       return;

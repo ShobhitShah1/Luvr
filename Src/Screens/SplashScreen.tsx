@@ -14,6 +14,8 @@ import { store } from '../Redux/Store/store';
 import { initGoogleSignIn } from '../Services/AuthService';
 import { LocalStorageFields } from '../Types/LocalStorageFields';
 import { useCustomToast } from '../Utils/toastUtils';
+import CommonIcons from '../Common/CommonIcons';
+import CommonLogos from '../Common/CommonLogos';
 
 interface SplashScreenProps {
   navigation: NavigationProp<any>;
@@ -198,9 +200,10 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       >
         <View style={styles.contentContainer}>
           <View style={styles.appIconContainer}>
-            <View style={[styles.appIcon, { backgroundColor: colors.White, shadowColor: colors.ShadowColor }]}>
+            <Image source={CommonLogos.AppIcon} style={styles.appIcon} />
+            {/* <View style={[styles.appIcon, { backgroundColor: colors.White, shadowColor: colors.ShadowColor }]}>
               <Text style={[styles.appIconText, { color: colors.Primary }]}>LUVR</Text>
-            </View>
+            </View> */}
           </View>
 
           <View style={styles.textContainer}>

@@ -10,6 +10,8 @@ export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 export const CURRENT_SCREEN = 'CURRENT_SCREEN';
 export const DONATION_PRODUCTS = 'DONATION_PRODUCTS';
 export const RESET_SWIPE_COUNT = 'RESET_SWIPE_COUNT';
+export const RESET_RIGHT_SWIPE = 'RESET_RIGHT_SWIPE';
+export const SET_CARD_SKIP_NUMBER = 'SET_CARD_SKIP_NUMBER';
 
 export type NotificationPayload = {
   title: string;
@@ -33,7 +35,9 @@ export type UserAction =
   | { type: typeof ADD_NOTIFICATION; payload: NotificationPayload }
   | { type: typeof SET_USER_DATA; payload: any }
   | { type: typeof CURRENT_SCREEN; payload: string }
-  | { type: typeof RESET_SWIPE_COUNT };
+  | { type: typeof RESET_SWIPE_COUNT }
+  | { type: typeof RESET_RIGHT_SWIPE }
+  | { type: typeof SET_CARD_SKIP_NUMBER; payload: number };
 
 // Action creators with proper typing
 export const updateField = (field: UserField, value: any, _id?: string): UserAction => ({
@@ -78,4 +82,13 @@ export const resetSwiperData = (): UserAction => ({
 
 export const resetSwipeCount = (): UserAction => ({
   type: RESET_SWIPE_COUNT,
+});
+
+export const resetRightSwipe = (): UserAction => ({
+  type: RESET_RIGHT_SWIPE,
+});
+
+export const setCardSkipNumber = (skipNumber: number): UserAction => ({
+  type: SET_CARD_SKIP_NUMBER,
+  payload: skipNumber,
 });

@@ -11,9 +11,10 @@ interface ButtonProps {
   Navigation: () => void;
   Disabled: boolean;
   isLoading: boolean;
+  icon?: React.ReactNode;
 }
 
-const GradientButton: FC<ButtonProps> = ({ Title, Navigation, Disabled, isLoading }) => {
+const GradientButton: FC<ButtonProps> = ({ Title, Navigation, Disabled, isLoading, icon }) => {
   const { colors, isDark } = useTheme();
 
   return (
@@ -28,7 +29,10 @@ const GradientButton: FC<ButtonProps> = ({ Title, Navigation, Disabled, isLoadin
           {isLoading ? (
             <ActivityIndicator color={colors.White} style={styles.LoaderView} size={25} />
           ) : (
-            <Text style={[styles.NewAccountText, { color: colors.ButtonText }]}>{Title}</Text>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              {icon}
+              <Text style={[styles.NewAccountText, { color: colors.ButtonText }]}>{Title}</Text>
+            </View>
           )}
         </View>
       </Pressable>
