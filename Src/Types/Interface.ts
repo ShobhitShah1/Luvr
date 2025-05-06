@@ -243,6 +243,8 @@ export interface HomeListProps {
     title: string;
     image: number;
   };
+  onCategoryPress: (item: { id: number; title: string; image: number }) => void;
+  selectedCategory?: string;
 }
 
 export interface BoostPaymentResponse {

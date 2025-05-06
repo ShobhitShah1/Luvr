@@ -4,35 +4,47 @@ import LinearGradient from 'react-native-linear-gradient';
 import CommonIcons from '../../../Common/CommonIcons';
 import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
+import { ProfileType } from '../../../Types/ProfileType';
+import ApiConfig from '../../../Config/ApiConfig';
+import { DummyImage } from '../../../Config/Setting';
+import CommonLogos from '../../../Common/CommonLogos';
 
 interface RenderLookingViewProps {
-  item: any;
+  item: ProfileType;
 }
 
 const RenderHomeNearby: FC<RenderLookingViewProps> = ({ item }) => {
+  const navigation = useCustomNavigation();
   const { colors } = useTheme();
 
-  const handlePress = () => {};
+  const handlePress = () => {
+    // navigation.navigate('CategoryDetailCards', { item });
+  };
 
   return (
     <Pressable style={styles.container} onPress={handlePress}>
       <View style={styles.cardContainer}>
-        <Image source={item.image} style={styles.backgroundImage} resizeMode="cover" />
+        <Image
+          source={item?.profile_image?.[0] ? { uri: item?.profile_image?.[0] } : CommonLogos.AppIcon}
+          style={styles.backgroundImage}
+          resizeMode="cover"
+        />
 
         <LinearGradient colors={colors.GradientViewForCards} style={styles.overlay} />
 
-        <View style={styles.likeContainer}>
+        {/* <View style={styles.likeContainer}>
           <Image source={CommonIcons.ic_red_heart} style={{ width: 20, height: 20 }} resizeMode="contain" />
-          <Text style={styles.likeCount}>{item.likes || 10}</Text>
-        </View>
+          <Text style={styles.likeCount}>{item?.likes_into?.length || 10}</Text>
+        </View> */}
 
         <View style={styles.infoContainer}>
-          <Text style={styles.nameText}>{item.name || 'Adan Smith'}</Text>
-          <Text style={styles.jobText}>{item.job || 'Engineer'}</Text>
+          <Text style={styles.nameText}>{item?.full_name?.trim()}</Text>
+          <Text style={styles.jobText}>{item?.education?.digree?.trim()}</Text>
         </View>
 
         <View style={styles.locationContainer}>
-          <Text style={styles.locationText}>{item.location || 'USA'}</Text>
+          <Text style={styles.locationText}>{item?.city?.trim()}</Text>
         </View>
       </View>
     </Pressable>

@@ -201,9 +201,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
         <View style={styles.contentContainer}>
           <View style={styles.appIconContainer}>
             <Image source={CommonLogos.AppIcon} style={styles.appIcon} />
-            {/* <View style={[styles.appIcon, { backgroundColor: colors.White, shadowColor: colors.ShadowColor }]}>
-              <Text style={[styles.appIconText, { color: colors.Primary }]}>LUVR</Text>
-            </View> */}
           </View>
 
           <View style={styles.textContainer}>

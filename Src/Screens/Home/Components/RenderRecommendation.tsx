@@ -15,7 +15,7 @@ const getRandomColor = () => {
   return color;
 };
 
-const RenderRecommendation: FC<HomeListProps> = ({ item }) => {
+const RenderRecommendation: FC<HomeListProps> = ({ item, onCategoryPress }) => {
   const { isDark, colors } = useTheme();
 
   return (

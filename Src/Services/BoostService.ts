@@ -77,7 +77,7 @@ export const scheduleBoostExpiryCheck = (boost: BoostData): void => {
 
   console.log(`Boost expiry in: ${Math.floor(timeUntilExpiry / (1000 * 60))} minutes`);
 
-  if (timeUntilExpiry <= 0) {
+  if (timeUntilExpiry <= 0 || timeUntilExpiry === 0) {
     debouncedGetBoost(0).then((refreshed) => {
       if (refreshed) {
         const state = store.getState();

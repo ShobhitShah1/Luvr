@@ -246,6 +246,7 @@ const ExploreCardScreen: FC = () => {
           eventName: 'list_neighbour',
           latitude: userData.latitude,
           longitude: userData.longitude,
+          is_online: false,
         };
 
         const APIResponse = await UserService.UserRegister(userDataForApi);

@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet } from 'react-native';
-import { BOTTOM_TAB_HEIGHT, COLORS, GROUP_FONT } from '../../Common/Theme';
+import { BOTTOM_TAB_HEIGHT, COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const { width } = Dimensions.get('screen');
@@ -10,7 +10,6 @@ const styles = StyleSheet.create({
   Container: {
     flex: 1,
   },
-
   container: {
     width: '47%',
     height: hp('23%'),
@@ -71,6 +70,19 @@ const styles = StyleSheet.create({
   },
   columWrapper: {
     justifyContent: 'space-between',
+  },
+  noDataFoundView: {
+    width: Dimensions.get('screen').width - 40,
+    height: 135,
+    justifyContent: 'center',
+    alignItems: 'center',
+    top: 10,
+  },
+  noDataFoundText: {
+    color: COLORS.Primary,
+    textAlign: 'center',
+    fontFamily: FONTS.SemiBold,
+    fontSize: 18,
   },
 });
 
