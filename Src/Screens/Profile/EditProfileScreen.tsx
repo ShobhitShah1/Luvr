@@ -175,7 +175,7 @@ const EditProfileScreen = () => {
         if (!localData || !localData?._id || !localData?.full_name) {
           setIsLoading(true);
           await fetchProfileData();
-          getProfileData();
+          await getProfileData();
         }
       }
     } catch (error: any) {
@@ -444,18 +444,21 @@ const EditProfileScreen = () => {
   };
 
   const onUpdateProfile = async () => {
-    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+    const isInternetConnected = (await NetInfo.fetch()).isConnected;
 
-    if (!InInternetConnected) {
+    if (!isInternetConnected) {
       showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
       setIsLoading(false);
 
       return;
     }
+
     setIsLoading(true);
+
     try {
       const age = calculateAge(`${BirthdateDay},${BirthdateMonth},${BirthdateYear}`);
       const isValid = isEligible(age);
+
       if (!isValid) {
         showToast(TextString.error.toUpperCase(), 'Please enter a valid age.', 'error');
         return;
@@ -509,20 +512,22 @@ const EditProfileScreen = () => {
       const APIResponse = await UserService.UserRegister(DataToSend);
 
       if (APIResponse.code === 200) {
+        showToast('Profile Updated', 'Your profile information has been successfully updated.', 'success');
+
         fetchProfileData();
         getProfileData();
 
-        showToast('Profile Updated', 'Your profile information has been successfully updated.', 'success');
+        setIsLoading(false);
       } else {
         showToast(
           'Error Updating Profile',
           'Oops! Something went wrong while trying to update your profile. Please try again later or contact support if the issue persists',
           'error'
         );
+        setIsLoading(false);
       }
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), String(error?.message), 'Error');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -1065,7 +1070,14 @@ const EditProfileScreen = () => {
                     <Pressable
                       style={{ flex: 1, justifyContent: 'center' }}
                       disabled={isLoading}
-                      onPress={() => onUpdateProfile()}
+                      onPress={() => {
+                        bottomSheetModalRef?.current && bottomSheetModalRef?.current?.close();
+                        setIsLoading(true);
+
+                        setTimeout(() => {
+                          onUpdateProfile();
+                        }, 100);
+                      }}
                       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
                       <Image

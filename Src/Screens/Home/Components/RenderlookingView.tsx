@@ -45,23 +45,16 @@ const styles = StyleSheet.create({
     flex: 1,
     flexGrow: 1,
     height: '100%',
+    width: '100%',
     overflow: 'hidden',
-    borderRadius: 15,
+    borderRadius: 18, // Reduced from parent's borderRadius
   },
   imageView: {
-    width: '99%',
-    height: '99%',
-    alignItems: 'center',
-    alignSelf: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-  imageStyle: {
     width: '100%',
     height: '100%',
     alignSelf: 'center',
     justifyContent: 'center',
+    borderRadius: 16, // Further reduced to show parent's border
   },
   gradient: {
     bottom: -5,

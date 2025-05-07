@@ -1,14 +1,12 @@
 import React, { FC, memo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import CommonIcons from '../../../Common/CommonIcons';
+import CommonLogos from '../../../Common/CommonLogos';
 import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
+import ApiConfig from '../../../Config/ApiConfig';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { ProfileType } from '../../../Types/ProfileType';
-import ApiConfig from '../../../Config/ApiConfig';
-import { DummyImage } from '../../../Config/Setting';
-import CommonLogos from '../../../Common/CommonLogos';
 
 interface RenderLookingViewProps {
   item: ProfileType;
@@ -19,14 +17,16 @@ const RenderHomeNearby: FC<RenderLookingViewProps> = ({ item }) => {
   const { colors } = useTheme();
 
   const handlePress = () => {
-    // navigation.navigate('CategoryDetailCards', { item });
+    navigation.navigate('ExploreCardDetail', { props: item });
   };
 
   return (
     <Pressable style={styles.container} onPress={handlePress}>
       <View style={styles.cardContainer}>
         <Image
-          source={item?.profile_image?.[0] ? { uri: item?.profile_image?.[0] } : CommonLogos.AppIcon}
+          source={
+            item?.recent_pik?.[0] ? { uri: ApiConfig.IMAGE_BASE_URL + item?.recent_pik?.[0] } : CommonLogos.AppIcon
+          }
           style={styles.backgroundImage}
           resizeMode="cover"
         />
@@ -39,8 +39,12 @@ const RenderHomeNearby: FC<RenderLookingViewProps> = ({ item }) => {
         </View> */}
 
         <View style={styles.infoContainer}>
-          <Text style={styles.nameText}>{item?.full_name?.trim()}</Text>
-          <Text style={styles.jobText}>{item?.education?.digree?.trim()}</Text>
+          {item?.full_name?.trim() && <Text style={styles.nameText}>{item?.full_name?.trim()}</Text>}
+          {item?.education?.digree?.trim() && (
+            <Text numberOfLines={1} style={styles.jobText}>
+              {item?.education?.digree?.trim()}
+            </Text>
+          )}
         </View>
 
         <View style={styles.locationContainer}>
@@ -97,7 +101,8 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     position: 'absolute',
-    bottom: 10,
+    bottom: 0,
+    paddingBottom: 32,
     left: 0,
     right: 0,
     justifyContent: 'center',
@@ -109,8 +114,11 @@ const styles = StyleSheet.create({
     color: COLORS.White,
     marginBottom: 4,
     textAlign: 'center',
+    width: '90%',
   },
   jobText: {
+    width: '90%',
+    fontSize: 14,
     color: COLORS.Primary,
     textAlign: 'center',
   },

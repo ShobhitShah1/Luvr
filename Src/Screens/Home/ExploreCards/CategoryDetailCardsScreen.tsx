@@ -24,16 +24,6 @@ type RootStackParamList = {
 
 interface CategoryDetailCardsInterface extends RouteProp<RootStackParamList, 'CategoryDetailCards'> {}
 
-const ListEmptyView = ({ categoryName }: { categoryName: string }) => {
-  return (
-    <View style={styles.EmptyListView}>
-      <Text style={styles.EmptyListText}>
-        Sorry! Unable to Find Card for <Text>"{categoryName}"</Text>
-      </Text>
-    </View>
-  );
-};
-
 const CategoryDetailCardsScreen: FC = () => {
   const { colors } = useTheme();
   const { showToast } = useCustomToast();
@@ -43,7 +33,7 @@ const CategoryDetailCardsScreen: FC = () => {
   const userData = useSelector((state: any) => state?.user);
 
   const [categoryData, setCategoryData] = useState<ProfileType[]>([]);
-  const [isAPILoading, setIsAPILoading] = useState(true);
+  const [isAPILoading, setIsAPILoading] = useState(false);
   const [ItsMatchModalView, setItsMatchModalView] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState<number>(-1);
 
@@ -79,6 +69,7 @@ const CategoryDetailCardsScreen: FC = () => {
         hoping: params?.item?.title,
         skip: 0,
         limit: 200,
+        is_online: false,
       };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);

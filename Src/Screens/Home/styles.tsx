@@ -73,16 +73,59 @@ const styles = StyleSheet.create({
   },
   noDataFoundView: {
     width: Dimensions.get('screen').width - 40,
-    height: 135,
+    height: 190,
     justifyContent: 'center',
     alignItems: 'center',
     top: 10,
   },
   noDataFoundText: {
-    color: COLORS.Primary,
     textAlign: 'center',
     fontFamily: FONTS.SemiBold,
     fontSize: 18,
+  },
+
+  cardContainer: {
+    width: '100%',
+    height: '100%',
+    // overflow: 'hidden',
+    // position: 'relative',
+    backgroundColor: 'rgba(157, 133, 240, 0.2)',
+    borderRadius: 8,
+  },
+  shimmerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    overflow: 'hidden',
+  },
+  shimmer: {
+    width: '50%',
+    height: '100%',
+    opacity: 0.7,
+    position: 'absolute',
+  },
+  overlay: {
+    position: 'absolute',
+    bottom: 10,
+    left: 0,
+    right: 0,
+    padding: 10,
+    zIndex: 2,
+  },
+  nameText: {
+    height: 20,
+    borderRadius: 4,
+    marginBottom: 8,
+    width: '80%',
+    alignSelf: 'center',
+  },
+  jobText: {
+    height: 16,
+    borderRadius: 4,
+    width: '60%',
+    alignSelf: 'center',
   },
 });
 

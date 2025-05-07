@@ -1,10 +1,12 @@
-import React, { FC, memo } from 'react';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import React, { memo } from 'react';
+import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import CommonLogos from '../../../Common/CommonLogos';
 import { COLORS, FONTS } from '../../../Common/Theme';
-import { gradientEnd, gradientStart } from '../../../Config/Setting';
+import ApiConfig from '../../../Config/ApiConfig';
 import { useTheme } from '../../../Contexts/ThemeContext';
-import { HomeListProps } from '../../../Types/Interface';
+import { ProfileType } from '../../../Types/ProfileType';
+import LinearGradient from 'react-native-linear-gradient';
+import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 
 const getRandomColor = () => {
   const letters = '0123456789ABCDEF';
@@ -15,13 +17,22 @@ const getRandomColor = () => {
   return color;
 };
 
-const RenderRecommendation: FC<HomeListProps> = ({ item, onCategoryPress }) => {
+const RenderRecommendation = ({ item }: { item: ProfileType }) => {
   const { isDark, colors } = useTheme();
+  const navigation = useCustomNavigation();
 
   return (
-    <View style={[styles.container, { borderColor: isDark ? colors.White : getRandomColor() }]}>
+    <Pressable
+      onPress={() => {
+        navigation.navigate('ExploreCardDetail', { props: item });
+      }}
+      style={[styles.container, { borderColor: isDark ? colors.White : getRandomColor() }]}
+    >
       <View style={{ flex: 1, justifyContent: 'center', overflow: 'hidden', borderRadius: 27 }}>
-        <ImageBackground source={item.image} style={styles.imageView}>
+        <ImageBackground
+          source={item.recent_pik?.[0] ? { uri: ApiConfig.IMAGE_BASE_URL + item.recent_pik[0] } : CommonLogos.AppIcon}
+          style={styles.imageView}
+        >
           <LinearGradient
             start={{ x: 0, y: 1 }}
             end={{ x: 0, y: 0 }}
@@ -40,7 +51,7 @@ const RenderRecommendation: FC<HomeListProps> = ({ item, onCategoryPress }) => {
           </LinearGradient>
         </ImageBackground>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
