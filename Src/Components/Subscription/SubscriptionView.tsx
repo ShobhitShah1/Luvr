@@ -373,10 +373,16 @@ const SubscriptionView = ({
                 <Image
                   source={
                     plan.key?.includes('platinum')
-                      ? CommonIcons.ic_platinum_heart
+                      ? isDark
+                        ? CommonIcons.ic_dark_heart_platinum
+                        : CommonIcons.ic_light_heart_platinum
                       : plan.key?.includes('gold')
-                        ? CommonIcons.ic_golden_heart
-                        : CommonIcons.ic_purple_heart
+                        ? isDark
+                          ? CommonIcons.ic_dark_heart_gold_focus
+                          : CommonIcons.ic_light_heart_gold_focus
+                        : isDark
+                          ? CommonIcons.ic_dark_heart_purple
+                          : CommonIcons.ic_light_heart_purple
                   }
                   style={{ width: 40, height: 40, position: 'absolute', top: -15, right: -15, zIndex: 9999 }}
                 />

@@ -252,7 +252,7 @@ const HomeScreen = () => {
     () => (
       <Animated.View style={styles.noDataFoundView} entering={FadeIn.duration(400)} exiting={FadeOut.duration(400)}>
         <Text style={[styles.noDataFoundText, { color: colors.TextColor }]}>
-          No nearby people found for <Text style={{ color: colors.Primary }}>{selectedCategory}</Text>.
+          No people found for <Text style={{ color: colors.Primary }}>{selectedCategory}</Text>.
         </Text>
       </Animated.View>
     ),

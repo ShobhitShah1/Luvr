@@ -63,9 +63,12 @@ const ic_share = require('../../Assets/Icons/ic_share.png');
 
 const ic_rocket = require('../../Assets/Icons/ic_rocket.png');
 
-const ic_golden_heart = require('../../Assets/Icons/ic_golden_heart.png');
-const ic_platinum_heart = require('../../Assets/Icons/ic_platinum_heart.png');
-const ic_purple_heart = require('../../Assets/Icons/ic_purple_heart.png');
+const ic_dark_heart_gold_focus = require('../../Assets/Icons/ic_dark_heart_gold_focus.png');
+const ic_dark_heart_platinum = require('../../Assets/Icons/ic_dark_heart_platinum.png');
+const ic_dark_heart_purple = require('../../Assets/Icons/ic_dark_heart_purple.png');
+const ic_light_heart_gold_focus = require('../../Assets/Icons/ic_light_heart_gold_focus.png');
+const ic_light_heart_platinum = require('../../Assets/Icons/ic_light_heart_platinum.png');
+const ic_light_heart_purple = require('../../Assets/Icons/ic_light_heart_purple.png');
 
 // Home
 const LightHomeTab = require('../../Assets/Icons/BottomTab/ic_light_home.png');
@@ -150,9 +153,12 @@ export default {
 
   ic_rocket,
 
-  ic_golden_heart,
-  ic_platinum_heart,
-  ic_purple_heart,
+  ic_dark_heart_gold_focus,
+  ic_dark_heart_platinum,
+  ic_dark_heart_purple,
+  ic_light_heart_gold_focus,
+  ic_light_heart_platinum,
+  ic_light_heart_purple,
 
   //* Home
   LightHomeTab,
