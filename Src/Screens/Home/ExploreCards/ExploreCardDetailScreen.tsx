@@ -4,12 +4,14 @@ import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Animated,
   Dimensions,
   Image,
   Platform,
   Pressable,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   View,
@@ -33,6 +35,7 @@ import { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import DetailCardHeader from './Components/DetailCardHeader';
 import RenderUserImagesView from './Components/RenderUserImagesView';
+import remoteConfig from '@react-native-firebase/remote-config';
 
 type DetailCardRouteParams = {
   props: ProfileType;
@@ -52,14 +55,15 @@ const ExploreCardDetailScreen = () => {
 
   const [cardData, setCardData] = useState<ProfileType>();
   const [isLoading, setIsAPILoading] = useState(true);
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [SelectedReportReason, setSelectedReportReason] = useState<string>('');
   const [showReportModalView, setShowReportModalView] = useState<boolean>(false);
+  const [RemoteConfigLinks, setRemoteConfigLinks] = useState<any>();
 
   useEffect(() => {
     if (isFocused) {
       setIsAPILoading(!cardData);
       getUserData();
+      getRemoteConfigValue();
     }
   }, [isFocused]);
 
@@ -85,12 +89,6 @@ const ExploreCardDetailScreen = () => {
     }
   };
 
-  const viewableItemsChanged = useRef(({ viewableItems }: any) => {
-    setCurrentIndex(viewableItems[0]?.index);
-  }).current;
-
-  const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
-
   const onLikePress = async () => {
     if (UserID) {
       const userDataForApi = {
@@ -101,8 +99,6 @@ const ExploreCardDetailScreen = () => {
       const APIResponse = await UserService.UserRegister(userDataForApi);
 
       if (APIResponse?.code === 200) {
-        // if (APIResponse.data?.status === 'match') {
-        // }
         store.dispatch(onSwipeRight(String(UserID)));
         showToast('Swipe Right Success', 'You swiped right! Waiting for the other user to match.', 'success');
         navigation.canGoBack() && navigation.goBack();
@@ -120,6 +116,34 @@ const ExploreCardDetailScreen = () => {
       navigation.canGoBack() && navigation.goBack();
     } else {
       showToast(TextString.error.toUpperCase(), "Can't find UserID please try again letter", TextString.error);
+    }
+  };
+
+  const getRemoteConfigValue = async () => {
+    await remoteConfig().fetch(100);
+    const GetRemoteConfigLinks = remoteConfig().getAll();
+    if (GetRemoteConfigLinks) {
+      setRemoteConfigLinks(GetRemoteConfigLinks);
+    }
+  };
+
+  const onSharePress = () => {
+    try {
+      Share.share({
+        message: `Unlock the door to endless possibilities 💖 Swipe, match, and let serendipity take the lead. Join our vibrant dating community today! ✨ #FindYourSpark
+
+Download now:
+
+${RemoteConfigLinks?.AppStore?.asString() && `📱 App Store: ${RemoteConfigLinks?.AppStore?.asString()}`}
+
+📱 Play Store: ${
+          RemoteConfigLinks?.PlayStore?.asString() || 'https://play.google.com/store/apps/details?id=com.luvr.dating'
+        }
+
+Let's make every moment count together! #LoveConnects`,
+      });
+    } catch (error: any) {
+      Alert.alert(error.message);
     }
   };
 
@@ -209,8 +233,6 @@ const ExploreCardDetailScreen = () => {
                     useNativeDriver: false,
                   })}
                   scrollEventThrottle={32}
-                  onViewableItemsChanged={viewableItemsChanged}
-                  viewabilityConfig={viewConfig}
                   keyExtractor={(item, index) => index.toString()}
                 />
               )}
@@ -452,9 +474,16 @@ const ExploreCardDetailScreen = () => {
                   <Image resizeMode="contain" style={styles.LikeButton} source={CommonIcons.like_button} />
                 </Pressable>
 
-                <Pressable onPress={onRejectPress} style={styles.LikeAndRejectButtonView}>
-                  <Image resizeMode="contain" style={styles.DislikeButton} source={CommonIcons.ic_message} />
-                </Pressable>
+                <LinearGradient
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  colors={isDark ? ['rgba(149, 119, 253, 1)', 'rgba(32, 20, 70, 1)'] : ['transparent', 'transparent']}
+                  style={styles.ShareButtonView}
+                >
+                  <Pressable onPress={onSharePress} style={styles.ShareButtonView}>
+                    <Image resizeMode="contain" style={styles.ShareIcon} source={CommonIcons.ic_share} />
+                  </Pressable>
+                </LinearGradient>
               </View>
             </View>
 
@@ -621,5 +650,20 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     position: 'absolute',
     justifyContent: 'center',
+  },
+  ShareButtonView: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    margin: hp('1.15%'),
+    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    borderRadius: 5000,
+    overflow: 'hidden',
+  },
+  ShareIcon: {
+    padding: 0,
+    width: hp('3.9%'),
+    height: hp('3.9%'),
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
 });

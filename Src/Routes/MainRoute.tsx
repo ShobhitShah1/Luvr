@@ -40,23 +40,6 @@ import { LocalStorageFields } from '../Types/LocalStorageFields';
 import BottomTab from './BottomTab';
 import { navigationRef } from './RootNavigation';
 
-const excludedRoutes = [
-  'Login',
-  'PhoneNumber',
-  'OTP',
-  'IdentifyYourSelf',
-  'SexualOrientationScreen',
-  'DistancePreference',
-  'HopingToFind',
-  'AddDailyHabits',
-  'YourEducation',
-  'WhatAboutYou',
-  'YourIntro',
-  'AddRecentPics',
-  'LocationPermission',
-  'AddEmail',
-];
-
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const NumberVerificationStack = () => {
@@ -116,43 +99,43 @@ export default function MainRoute() {
     );
   };
 
-  const stateChangesCall = useCallback((ref: any) => {
-    const currentRouteName = ref?.getCurrentRoute()?.name || '';
+  // const stateChangesCall = useCallback((ref: any) => {
+  //   const currentRouteName = ref?.getCurrentRoute()?.name || '';
 
-    if (currentRouteName && !excludedRoutes.some((route) => currentRouteName.includes(route))) {
-      return currentRouteName;
-    }
+  //   if (currentRouteName && !excludedRoutes.some((route) => currentRouteName.includes(route))) {
+  //     return currentRouteName;
+  //   }
 
-    return null;
-  }, []);
+  //   return null;
+  // }, []);
 
   return (
-    <NavigationContainer
-      ref={navigationRef}
-      onStateChange={() => {
-        const currentRouteName = stateChangesCall(navigationRef.current);
-        if (currentRouteName) {
-          store.dispatch(setCurrentScreenName(currentRouteName));
-        }
-      }}
-    >
-      <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios_from_right' }}>
-        <Stack.Screen name="SplashScreen" component={SplashScreen} />
-        <Stack.Screen name="NumberVerification" component={NumberVerificationStack} />
-        <Stack.Screen name="LocationStack" component={LocationStack} />
-        <Stack.Screen name="LoginStack" component={LoginStack} />
-        <Stack.Screen name="BottomTab" component={BottomTab} />
-        <Stack.Screen name="CategoryDetailCards" component={CategoryDetailCardsScreen} />
-        <Stack.Screen name="ExploreCardDetail" component={ExploreCardDetailScreen} />
-        <Stack.Screen name="Chat" component={ChatScreen} />
-        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-        <Stack.Screen name="Setting" component={SettingScreen} />
-        <Stack.Screen name="Notification" component={NotificationScreen} />
-        <Stack.Screen name="Donation" component={DonationScreen} />
-        <Stack.Screen name="QRCodeScreen" component={QRCodeScreen} />
-        <Stack.Screen name="RedeemReferralCode" component={RedeemReferralCode} />
-        <Stack.Screen name="IncognitoScreen" component={IncognitoScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    // <NavigationContainer
+    //   ref={navigationRef}
+    //   onStateChange={() => {
+    //     const currentRouteName = stateChangesCall(navigationRef.current);
+    //     if (currentRouteName) {
+    //       store.dispatch(setCurrentScreenName(currentRouteName));
+    //     }
+    //   }}
+    // >
+    <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios_from_right' }}>
+      <Stack.Screen name="SplashScreen" component={SplashScreen} />
+      <Stack.Screen name="NumberVerification" component={NumberVerificationStack} />
+      <Stack.Screen name="LocationStack" component={LocationStack} />
+      <Stack.Screen name="LoginStack" component={LoginStack} />
+      <Stack.Screen name="BottomTab" component={BottomTab} />
+      <Stack.Screen name="CategoryDetailCards" component={CategoryDetailCardsScreen} />
+      <Stack.Screen name="ExploreCardDetail" component={ExploreCardDetailScreen} />
+      <Stack.Screen name="Chat" component={ChatScreen} />
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+      <Stack.Screen name="Setting" component={SettingScreen} />
+      <Stack.Screen name="Notification" component={NotificationScreen} />
+      <Stack.Screen name="Donation" component={DonationScreen} />
+      <Stack.Screen name="QRCodeScreen" component={QRCodeScreen} />
+      <Stack.Screen name="RedeemReferralCode" component={RedeemReferralCode} />
+      <Stack.Screen name="IncognitoScreen" component={IncognitoScreen} />
+    </Stack.Navigator>
+    // </NavigationContainer>
   );
 }

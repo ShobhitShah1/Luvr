@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import notifee, { EventType } from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getProducts, initConnection } from 'react-native-iap';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -13,11 +13,30 @@ import { BoostModalProvider } from './Src/Contexts/BoostModalProvider';
 import BoostProvider from './Src/Contexts/BoostProvider';
 import { ThemeProvider } from './Src/Contexts/ThemeContext';
 import { UserDataProvider } from './Src/Contexts/UserDataContext';
-import { DONATION_PRODUCTS } from './Src/Redux/Action/actions';
+import { DONATION_PRODUCTS, setCurrentScreenName } from './Src/Redux/Action/actions';
 import { persistor, store } from './Src/Redux/Store/store';
 import MainRoute from './Src/Routes/MainRoute';
 import { navigationRef } from './Src/Routes/RootNavigation';
 import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
+import { SubscriptionModalProvider } from './Src/Contexts/SubscriptionModalContext';
+import { NavigationContainer } from '@react-navigation/native';
+
+const excludedRoutes = [
+  'Login',
+  'PhoneNumber',
+  'OTP',
+  'IdentifyYourSelf',
+  'SexualOrientationScreen',
+  'DistancePreference',
+  'HopingToFind',
+  'AddDailyHabits',
+  'YourEducation',
+  'WhatAboutYou',
+  'YourIntro',
+  'AddRecentPics',
+  'LocationPermission',
+  'AddEmail',
+];
 
 export default function App() {
   useEffect(() => {
@@ -53,6 +72,16 @@ export default function App() {
 
   useEffect(() => {
     fetchProducts();
+  }, []);
+
+  const stateChangesCall = useCallback((ref: any) => {
+    const currentRouteName = ref?.getCurrentRoute()?.name || '';
+
+    if (currentRouteName && !excludedRoutes.some((route) => currentRouteName.includes(route))) {
+      return currentRouteName;
+    }
+
+    return null;
   }, []);
 
   const fetchProducts = async () => {
@@ -91,9 +120,21 @@ export default function App() {
                     ),
                   }}
                 >
-                  <BoostModalProvider>
-                    <MainRoute />
-                  </BoostModalProvider>
+                  <NavigationContainer
+                    ref={navigationRef}
+                    onStateChange={() => {
+                      const currentRouteName = stateChangesCall(navigationRef.current);
+                      if (currentRouteName) {
+                        store.dispatch(setCurrentScreenName(currentRouteName));
+                      }
+                    }}
+                  >
+                    <SubscriptionModalProvider>
+                      <BoostModalProvider>
+                        <MainRoute />
+                      </BoostModalProvider>
+                    </SubscriptionModalProvider>
+                  </NavigationContainer>
                 </ToastProvider>
               </GestureHandlerRootView>
             </BoostProvider>

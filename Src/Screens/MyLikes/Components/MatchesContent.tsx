@@ -10,6 +10,7 @@ import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { ListDetailProps } from '../../../Types/Interface';
 import { useUserData } from '../../../Contexts/UserDataContext';
 import { useCustomToast } from '../../../Utils/toastUtils';
+import { useSubscriptionModal } from '../../../Contexts/SubscriptionModalContext';
 
 const NO_IMAGE_CONTAINER = 150;
 
@@ -19,6 +20,7 @@ const MatchesContent = ({ MatchData }: { MatchData: ListDetailProps }) => {
   const { showToast } = useCustomToast();
   const { subscription } = useUserData();
   const userData = useSelector((state: any) => state?.user?.userData || {});
+  const { showSubscriptionModal } = useSubscriptionModal();
 
   const matchData = MatchData?.user_details?.[0];
 
@@ -28,9 +30,10 @@ const MatchesContent = ({ MatchData }: { MatchData: ListDetailProps }) => {
 
   const handleChatClick = () => {
     if (!subscription.isActive) {
-      showToast('Alert', 'Please subscribe to chat with your matches.', 'error');
+      showSubscriptionModal();
       return;
     }
+
     navigation.navigate('Chat', { id: matchData?._id?.toString() || '' });
   };
 

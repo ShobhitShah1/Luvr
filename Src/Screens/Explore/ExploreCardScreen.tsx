@@ -515,6 +515,7 @@ const ExploreCardScreen: FC = () => {
             )
           )}
         </View>
+
         {cards?.length !== 0 && (
           <View style={styles.LikeAndRejectView}>
             <Pressable onPress={SwipeLeft} style={styles.LikeAndRejectButtonView}>
@@ -534,6 +535,7 @@ const ExploreCardScreen: FC = () => {
             </Pressable>
           </View>
         )}
+
         <ItsAMatch
           isVisible={!IsAPILoading && isMatchModalVisible}
           onClose={() => {

@@ -17,6 +17,7 @@ import { SubscriptionPlanProps } from '../../Types/Interface';
 import { getProfileData } from '../../Utils/profileUtils';
 import { useCustomToast } from '../../Utils/toastUtils';
 import OpenURL from '../OpenURL';
+import { useSubscriptionModal } from '../../Contexts/SubscriptionModalContext';
 
 const { width } = Dimensions.get('window');
 
@@ -31,6 +32,7 @@ const SubscriptionView = ({
 
   const { isDark, colors } = useTheme();
   const { showToast } = useCustomToast();
+  const { hideSubscriptionModal } = useSubscriptionModal();
 
   const [isProductFetchLoading, setIsProductFetchLoading] = useState(true);
   const [apiSubscriptionData, setApiSubscriptionData] = useState<SubscriptionPlanProps[]>([]);
@@ -192,7 +194,9 @@ const SubscriptionView = ({
           sku: product.productId,
         } as RNIap.RequestSubscriptionIOS);
 
-        if (response) callPurchaseAPI(Array.isArray(response) ? response[0] : response);
+        if (response) {
+          callPurchaseAPI(Array.isArray(response) ? response[0] : response);
+        }
       }
     } catch (error: any) {
       setIsPurchasing(false);
@@ -240,6 +244,7 @@ const SubscriptionView = ({
     } finally {
       setIsPurchasing(false);
       debouncedGetSubscription(1000);
+      hideSubscriptionModal();
     }
   };
 

@@ -52,6 +52,7 @@ export interface UserDataType {
   [LocalStorageFields.apple_id]: string;
   [LocalStorageFields.phoneNumberCountryCode]: string;
   [LocalStorageFields.phoneNumberWithoutCode]: string;
+  [LocalStorageFields.see_who_is_online]: string;
 }
 
 export default UserDataType;

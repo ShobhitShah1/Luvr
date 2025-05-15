@@ -20,7 +20,7 @@ import LikesContent from './Components/LikesContent';
 import MatchesContent from './Components/MatchesContent';
 import styles from './styles';
 
-type TabData = { title: string; index?: number };
+type TabData = { title: string; index?: number; count?: number };
 
 type RenderTopBarViewProps = {
   item: TabData;
@@ -90,23 +90,31 @@ const MyLikesScreen = () => {
             {item.title}
           </Text>
         </Pressable>
+
+        <View
+          style={{
+            position: 'absolute',
+            right: 12,
+            top: -7,
+            bottom: 0,
+            width: 25,
+            height: 25,
+            borderRadius: 5000,
+            backgroundColor: isSelected ? 'rgba(238, 219, 13, 1)' : 'rgba(206, 206, 206, 1)',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Text style={{ color: colors.Black, fontSize: 10, fontWeight: 'bold' }}>{item.count}</Text>
+        </View>
       </LinearGradient>
     );
   });
 
   const tabsData: TabData[] = [
-    {
-      title: matchAndLikeCount?.like > 0 ? `Likes: ${matchAndLikeCount?.like}` : 'Likes',
-      index: 0,
-    },
-    {
-      title: matchAndLikeCount?.match > 0 ? `Matches: ${matchAndLikeCount?.match}` : 'Matches',
-      index: 1,
-    },
-    {
-      title: matchAndLikeCount?.crush > 0 ? `Crush: ${matchAndLikeCount?.crush}` : 'Crush',
-      index: 2,
-    },
+    { title: 'Likes', index: 0, count: matchAndLikeCount?.like },
+    { title: 'Matches', index: 1, count: matchAndLikeCount?.match },
+    { title: 'Crush', index: 2, count: matchAndLikeCount?.crush },
   ];
 
   const ListEmptyLikeView = () => {

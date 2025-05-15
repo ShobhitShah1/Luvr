@@ -51,6 +51,7 @@ import { useUserData } from '../../Contexts/UserDataContext';
 import { setIncognitoMode } from '../../Redux/Action/IncognitoActions';
 import { AppDispatch } from '../../Redux/Action/Index';
 import { fetchBoostSuccess } from '../../Redux/Reducer/boostReducer';
+import { useSubscriptionModal } from '../../Contexts/SubscriptionModalContext';
 
 const ShowMeArray = ['Male', 'Female', 'Everyone'];
 const SOMETHING_WENT_WRONG =
@@ -64,6 +65,7 @@ const SettingScreen = () => {
   const { showToast } = useCustomToast();
   const { subscription } = useUserData();
   const userStoredData = useSelector((state: any) => state?.user);
+  const { showSubscriptionModal } = useSubscriptionModal();
 
   const [LogOutModalView, setLogOutModalView] = useState(false);
   const [DeleteAccountModalView, setDeleteAccountModalView] = useState(false);
@@ -190,10 +192,7 @@ const SettingScreen = () => {
     }
 
     try {
-      const userDataForApi = {
-        eventName: 'get_profile',
-      };
-      const APIResponse = await UserService.UserRegister(userDataForApi);
+      const APIResponse = await UserService.UserRegister({ eventName: 'get_profile' });
 
       if (APIResponse?.code === 200) {
         setUserSettingData({
@@ -236,9 +235,9 @@ const SettingScreen = () => {
     } catch (error) {}
   };
 
-  const onShare = async () => {
+  const onShare = () => {
     try {
-      const result = await Share.share({
+      Share.share({
         message: `Unlock the door to endless possibilities 💖 Swipe, match, and let serendipity take the lead. Join our vibrant dating community today! ✨ #FindYourSpark
 
 Download now:
@@ -251,9 +250,6 @@ ${RemoteConfigLinks?.AppStore?.asString() && `📱 App Store: ${RemoteConfigLink
 
 Let's make every moment count together! #LoveConnects`,
       });
-      if (result.action === Share.sharedAction) {
-      } else if (result.action === Share.dismissedAction) {
-      }
     } catch (error: any) {
       Alert.alert(error.message);
     }
@@ -269,10 +265,8 @@ Let's make every moment count together! #LoveConnects`,
     }
 
     try {
-      const userDataForApi = {
-        eventName: 'delete_profile',
-      };
-      const APIResponse = await UserService.UserRegister(userDataForApi);
+      const APIResponse = await UserService.UserRegister({ eventName: 'delete_profile' });
+
       if (APIResponse?.code === 200) {
         setDeleteAccountModalView(false);
       } else {
@@ -299,7 +293,7 @@ Let's make every moment count together! #LoveConnects`,
     setIsSettingLoading(true);
 
     try {
-      const DataToSend = {
+      const dataToSend = {
         eventName: 'update_profile',
         mobile_no: UserSetting?.mobile_no || '',
         about: UserSetting?.about || '',
@@ -345,7 +339,7 @@ Let's make every moment count together! #LoveConnects`,
         see_who_is_online: UserSetting?.see_who_is_online,
       };
 
-      const APIResponse = await UserService.UserRegister(DataToSend);
+      const APIResponse = await UserService.UserRegister(dataToSend);
 
       if (APIResponse.code === 200) {
         await getSetting();
@@ -645,6 +639,11 @@ Let's make every moment count together! #LoveConnects`,
                       Item={'See who is online'}
                       onPress={() => {}}
                       onSwitchPress={() => {
+                        if (!subscription.isActive) {
+                          showSubscriptionModal();
+                          return;
+                        }
+
                         setUserSettingData((prevState) => ({
                           ...prevState,
                           see_who_is_online: !UserSetting?.see_who_is_online,

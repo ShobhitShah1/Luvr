@@ -60,6 +60,7 @@ const ic_red_heart = require('../../Assets/Icons/ic_red_heart.png');
 const its_match_like = require('../../Assets/Icons/its_match_like.png');
 const ic_crown = require('../../Assets/Icons/ic_crown.png');
 const ic_share = require('../../Assets/Icons/ic_share.png');
+const ic_info = require('../../Assets/Icons/ic_info.png');
 
 const ic_rocket = require('../../Assets/Icons/ic_rocket.png');
 
@@ -150,6 +151,7 @@ export default {
   its_match_like,
   ic_crown,
   ic_share,
+  ic_info,
 
   ic_rocket,
 

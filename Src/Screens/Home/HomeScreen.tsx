@@ -58,15 +58,16 @@ const askNotificationPermission = async () => {
 
 const HomeScreen = () => {
   useAppStateTracker();
-  const { requestLocationPermission } = useLocationPermission();
-  const navigation = useCustomNavigation();
-  const { colors } = useTheme();
 
   const isFocus = useIsFocused();
-  const { isBoostActive } = useBoost();
-  const { showToast } = useCustomToast();
+  const { colors } = useTheme();
+  const navigation = useCustomNavigation();
+
   const { userData } = useUserData();
+  const { isBoostActive } = useBoost();
   const { showModal } = useBoostModal();
+  const { showToast } = useCustomToast();
+  const { requestLocationPermission } = useLocationPermission();
 
   const [selectedCategory, setSelectedCategory] = useState(HomeLookingForData[0]?.title || '');
   const [categoryData, setCategoryData] = useState<ProfileType[]>([]);
@@ -87,7 +88,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     fetchCategoryListData();
-  }, [selectedCategory]);
+  }, [selectedCategory, userData]);
 
   useFocusEffect(
     useCallback(() => {
@@ -133,7 +134,7 @@ const HomeScreen = () => {
       like: store.getState().user?.swipedRightUserIds,
       skip: 0,
       limit: 200,
-      is_online: true,
+      is_online: userData?.see_who_is_online || false,
     };
   }, [selectedCategory, userData, store]);
 
@@ -164,7 +165,7 @@ const HomeScreen = () => {
       const userDataForApi = {
         ...dataToSendInAPI,
         eventName: 'near_by_me',
-        is_online: true,
+        is_online: userData?.see_who_is_online || false,
         habits: {
           exercise: userData?.exercise || '',
           smoke: userData?.smoke || '',
