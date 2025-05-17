@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import messaging from '@react-native-firebase/messaging';
-import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { setCurrentScreenName, updateField } from '../Redux/Action/actions';
+import { updateField } from '../Redux/Action/actions';
 import { store } from '../Redux/Store/store';
 import {
   AddDailyHabits,
@@ -38,7 +37,6 @@ import { initGoogleSignIn } from '../Services/AuthService';
 import { RootStackParamList } from '../Types/Interface';
 import { LocalStorageFields } from '../Types/LocalStorageFields';
 import BottomTab from './BottomTab';
-import { navigationRef } from './RootNavigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -72,6 +70,7 @@ export default function MainRoute() {
 
     if (authStatus === 1) {
       const Token = await messaging().getToken();
+      console.log('Token:', Token);
       if (Token) {
         store.dispatch(updateField(LocalStorageFields.notification_token, Token));
       }
@@ -99,26 +98,7 @@ export default function MainRoute() {
     );
   };
 
-  // const stateChangesCall = useCallback((ref: any) => {
-  //   const currentRouteName = ref?.getCurrentRoute()?.name || '';
-
-  //   if (currentRouteName && !excludedRoutes.some((route) => currentRouteName.includes(route))) {
-  //     return currentRouteName;
-  //   }
-
-  //   return null;
-  // }, []);
-
   return (
-    // <NavigationContainer
-    //   ref={navigationRef}
-    //   onStateChange={() => {
-    //     const currentRouteName = stateChangesCall(navigationRef.current);
-    //     if (currentRouteName) {
-    //       store.dispatch(setCurrentScreenName(currentRouteName));
-    //     }
-    //   }}
-    // >
     <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios_from_right' }}>
       <Stack.Screen name="SplashScreen" component={SplashScreen} />
       <Stack.Screen name="NumberVerification" component={NumberVerificationStack} />
@@ -136,6 +116,5 @@ export default function MainRoute() {
       <Stack.Screen name="RedeemReferralCode" component={RedeemReferralCode} />
       <Stack.Screen name="IncognitoScreen" component={IncognitoScreen} />
     </Stack.Navigator>
-    // </NavigationContainer>
   );
 }

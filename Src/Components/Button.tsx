@@ -18,8 +18,14 @@ const Button: FC<ButtonProps> = ({ onPress, ButtonTitle, isLoading }) => {
       end={{ x: 0, y: 1 }}
       colors={colors.ButtonGradient}
       style={styles.LogoutButtonContainer}
+      accessibilityLabel="LinearGradient"
     >
-      <Pressable accessibilityLabel='button' disabled={isLoading} onPress={onPress} style={{ flex: 1, justifyContent: 'center' }}>
+      <Pressable
+        accessibilityLabel="button"
+        disabled={isLoading}
+        onPress={onPress}
+        style={{ flex: 1, justifyContent: 'center' }}
+      >
         {isLoading ? (
           <View style={styles.LoadingView}>
             <ActivityIndicator size={28} color={colors.Primary} />

@@ -17,7 +17,6 @@ const NO_IMAGE_CONTAINER = 150;
 const MatchesContent = ({ MatchData }: { MatchData: ListDetailProps }) => {
   const { colors, isDark } = useTheme();
   const navigation = useCustomNavigation();
-  const { showToast } = useCustomToast();
   const { subscription } = useUserData();
   const userData = useSelector((state: any) => state?.user?.userData || {});
   const { showSubscriptionModal } = useSubscriptionModal();
@@ -49,6 +48,7 @@ const MatchesContent = ({ MatchData }: { MatchData: ListDetailProps }) => {
   const userImageSource = {
     uri: ApiConfig.IMAGE_BASE_URL + userData.recent_pik[0] || userData?.userData?.recent_pik[0],
   };
+
   const matchImageSource = matchData?.recent_pik?.[0]
     ? { uri: ApiConfig.IMAGE_BASE_URL + matchData.recent_pik[0] }
     : { uri: ApiConfig.PLACEHOLDER_IMAGE };

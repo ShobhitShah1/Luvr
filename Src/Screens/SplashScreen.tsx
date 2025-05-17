@@ -1,7 +1,7 @@
 import messaging from '@react-native-firebase/messaging';
 import { NavigationProp } from '@react-navigation/native';
 import React, { memo, useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, Linking, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import CommonImages from '../Common/CommonImages';
@@ -63,6 +63,17 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
 
   useEffect(() => {
     initializeAppFlow();
+  }, []);
+
+  useEffect(() => {
+    const handleInitialUrl = async () => {
+      const initialUrl = await Linking.getInitialURL();
+      if (initialUrl) {
+        console.log('SPLASH: App opened with URL:', initialUrl);
+      }
+    };
+
+    handleInitialUrl();
   }, []);
 
   const handleNotificationPermission = async () => {

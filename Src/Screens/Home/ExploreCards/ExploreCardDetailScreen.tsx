@@ -50,8 +50,11 @@ const ExploreCardDetailScreen = () => {
 
   const cardDetail = useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
 
+  const route = useRoute();
+  const { id } = route.params;
+
   const scrollX = useRef(new Animated.Value(0)).current;
-  const UserID = cardDetail?.params?.props?._id || {};
+  const UserID = id || cardDetail?.params?.props?._id || {};
 
   const [cardData, setCardData] = useState<ProfileType>();
   const [isLoading, setIsAPILoading] = useState(true);
@@ -129,21 +132,28 @@ const ExploreCardDetailScreen = () => {
 
   const onSharePress = () => {
     try {
+      const userId = UserID || cardDetail?.params?.props?._id;
+
+      if (!userId) {
+        Alert.alert('Error', 'Unable to share profile - missing user ID');
+        return;
+      }
+
+      const deepLinkUrl = `https://nirvanatechlabs.in/app/profile/${userId}`;
+
+      const userName = cardDetail?.params?.props?.full_name || 'this profile';
+      const shareMessage = `Check out ${userName} on Luvr!\n${deepLinkUrl}`;
+
       Share.share({
-        message: `Unlock the door to endless possibilities 💖 Swipe, match, and let serendipity take the lead. Join our vibrant dating community today! ✨ #FindYourSpark
-
-Download now:
-
-${RemoteConfigLinks?.AppStore?.asString() && `📱 App Store: ${RemoteConfigLinks?.AppStore?.asString()}`}
-
-📱 Play Store: ${
-          RemoteConfigLinks?.PlayStore?.asString() || 'https://play.google.com/store/apps/details?id=com.luvr.dating'
-        }
-
-Let's make every moment count together! #LoveConnects`,
+        message: shareMessage,
+        url: deepLinkUrl, // For iOS
       });
-    } catch (error: any) {
-      Alert.alert(error.message);
+
+      // Optional: Analytics tracking
+      // analytics().logShare({ contentType: 'profile', itemId: userId });
+    } catch (error) {
+      console.error('Share error:', error);
+      Alert.alert('Error', 'Could not share this profile');
     }
   };
 
@@ -477,7 +487,7 @@ Let's make every moment count together! #LoveConnects`,
                 <LinearGradient
                   start={{ x: 0, y: 0 }}
                   end={{ x: 0, y: 1 }}
-                  colors={isDark ? ['rgba(149, 119, 253, 1)', 'rgba(32, 20, 70, 1)'] : ['transparent', 'transparent']}
+                  colors={isDark ? ['rgba(149, 119, 253, 1)', 'rgba(32, 20, 70, 1)'] : [colors.Primary, colors.Primary]}
                   style={styles.ShareButtonView}
                 >
                   <Pressable onPress={onSharePress} style={styles.ShareButtonView}>

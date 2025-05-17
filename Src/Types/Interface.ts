@@ -171,9 +171,7 @@ export interface RemoteConfigData {
   subscriptions: SubscriptionPlan[];
 }
 
-// LIKE MATCH AND CRUSH DATA WITH USER PROFILE PROPS
-
-export interface LikeMatchAndCrushAPIDataTypes {
+export interface MyLikeScreenListProps {
   match: ListDetailProps[];
   like: ListDetailProps[];
   crush: ListDetailProps[];

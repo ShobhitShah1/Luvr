@@ -14,7 +14,7 @@ type DetailCardRouteParams = {
 };
 
 const DetailCardHeader: FC<DetailCardRouteParams> = ({ props }) => {
-  const { goBack } = useCustomNavigation();
+  const navigation = useCustomNavigation();
   const { colors, isDark } = useTheme();
 
   const cardDetail = useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
@@ -38,7 +38,9 @@ const DetailCardHeader: FC<DetailCardRouteParams> = ({ props }) => {
       <SafeAreaView />
       <View style={styles.ContentView}>
         <Pressable
-          onPress={() => goBack()}
+          onPress={() =>
+            navigation.canGoBack() ? navigation.goBack() : navigation.replace('BottomTab', { screen: 'Home' })
+          }
           style={styles.BackIconView}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >

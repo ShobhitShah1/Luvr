@@ -41,7 +41,8 @@ const SubscriptionModalView = ({
       <Pressable onPress={hideSubscriptionModal} style={{ position: 'absolute', top: 50, right: 25, zIndex: 1000 }}>
         <Image source={CommonIcons.CloseModal} style={{ width: 30, height: 30 }} />
       </Pressable>
-      <LinearGradient colors={colors.BackgroundGradient} style={[styles.container, {}]}>
+
+      <LinearGradient colors={colors.BackgroundGradient} style={styles.container}>
         <SubscriptionView selectedPlan={selectedPlan} handlePlanSelection={handlePlanSelection} />
       </LinearGradient>
     </Modal>
@@ -63,7 +64,6 @@ const styles = StyleSheet.create({
     paddingTop: '30%',
     borderRadius: 20,
     overflow: 'hidden',
-    // alignItems: 'center',
     justifyContent: 'center',
   },
 });

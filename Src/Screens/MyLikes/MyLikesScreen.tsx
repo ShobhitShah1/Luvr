@@ -2,10 +2,9 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import NetInfo from '@react-native-community/netinfo';
-import React, { memo, useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
+import React, { memo, useCallback, useEffect, useReducer } from 'react';
+import { ActivityIndicator, FlatList, RefreshControl, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
 import { BOTTOM_TAB_HEIGHT } from '../../Common/Theme';
@@ -13,20 +12,17 @@ import SubscriptionView from '../../Components/Subscription/SubscriptionView';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { useUserData } from '../../Contexts/UserDataContext';
 import UserService from '../../Services/AuthService';
-import { LikeMatchAndCrushAPIDataTypes, ListDetailProps } from '../../Types/Interface';
+import { ListDetailProps, MyLikeScreenListProps } from '../../Types/Interface';
 import { useCustomToast } from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import LikesContent from './Components/LikesContent';
+import ListEmptyView from './Components/ListEmptyView';
 import MatchesContent from './Components/MatchesContent';
+import { RenderLikeScreenTopBar } from './Components/RenderLikeScreenTopBar';
 import styles from './styles';
+import { useFocusEffect } from '@react-navigation/native';
 
-type TabData = { title: string; index?: number; count?: number };
-
-type RenderTopBarViewProps = {
-  item: TabData;
-  onPress: () => void;
-  isSelected: boolean;
-};
+export type TabData = { title: string; index?: number; count?: number };
 
 interface LikeStateProps {
   like: number;
@@ -34,185 +30,147 @@ interface LikeStateProps {
   crush: number;
 }
 
+interface State {
+  selectedTab: TabData;
+  likesCount: LikeStateProps;
+  likesData: MyLikeScreenListProps;
+  refreshing: boolean;
+  isLoading: boolean;
+  selectedPlan: string;
+}
+
+type Action =
+  | { type: 'SET_SELECTED_TAB'; payload: TabData }
+  | { type: 'SET_LIKES_COUNT'; payload: LikeStateProps }
+  | { type: 'SET_LIKES_DATA'; payload: MyLikeScreenListProps }
+  | { type: 'SET_REFRESHING'; payload: boolean }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_SELECTED_PLAN'; payload: string }
+  | { type: 'RESET_STATE' };
+
+const initialState: State = {
+  selectedTab: { title: '', index: 0 },
+  likesCount: { like: 0, match: 0, crush: 0 },
+  likesData: { crush: [], like: [], match: [] },
+  refreshing: false,
+  isLoading: true,
+  selectedPlan: 'com.luvr.gold.monthly',
+};
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'SET_SELECTED_TAB':
+      return { ...state, selectedTab: action.payload };
+    case 'SET_LIKES_COUNT':
+      return { ...state, likesCount: action.payload };
+    case 'SET_LIKES_DATA':
+      return { ...state, likesData: action.payload };
+    case 'SET_REFRESHING':
+      return { ...state, refreshing: action.payload };
+    case 'SET_LOADING':
+      return { ...state, isLoading: action.payload };
+    case 'SET_SELECTED_PLAN':
+      return { ...state, selectedPlan: action.payload };
+    case 'RESET_STATE':
+      return initialState;
+    default:
+      return state;
+  }
+}
+
 const MyLikesScreen = () => {
   const { colors, isDark } = useTheme();
   const { showToast } = useCustomToast();
   const { subscription } = useUserData();
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  const [selectedTabIndex, setSelectedTabIndex] = useState<TabData>({
-    title: '',
-    index: 0,
-  });
+  const { selectedTab, likesCount, likesData, refreshing, isLoading, selectedPlan } = state;
 
-  const [matchAndLikeCount, setMatchAndLikeCount] = useState<LikeStateProps>({
-    like: 0,
-    match: 0,
-    crush: 0,
-  });
+  useFocusEffect(
+    React.useCallback(() => {
+      const canStartLoader =
+        likesData?.match?.length === 0 && likesData?.like?.length === 0 && likesData?.crush?.length === 0;
 
-  const [matchLikeAndCrushData, setMatchLikeAndCrushData] = useState<LikeMatchAndCrushAPIDataTypes>({
-    crush: [],
-    like: [],
-    match: [],
-  });
-
-  const [refreshing, setRefreshing] = useState(false);
-  const [isAPILoading, setIsAPILoading] = useState(true);
-
-  const [selectedPlan, setSelectedPlan] = useState('com.luvr.gold.monthly');
-
-  const RenderTopBarView = React.memo(({ item, onPress, isSelected }: RenderTopBarViewProps) => {
-    return (
-      <LinearGradient
-        start={{ x: 1, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        colors={
-          isSelected ? colors.ButtonGradient : !isDark ? [colors.White, colors.White] : ['transparent', 'transparent']
-        }
-        style={[
-          styles.TabBarButtonView,
-          {
-            width: `${100 / tabsData?.length - 2}%`,
-            borderColor: isSelected ? 'transparent' : 'rgba(255, 255, 255, 0.2)',
-            borderWidth: isSelected ? 0 : 0.5,
-          },
-        ]}
-      >
-        <Pressable key={item.index} onPress={onPress} style={{ flex: 1, justifyContent: 'center' }}>
-          <Text
-            style={[
-              styles.TabBarButtonText,
-              {
-                color: isSelected ? (isDark ? colors.TextColor : colors.White) : 'rgba(130, 130, 130, 1)',
-              },
-            ]}
-          >
-            {item.title}
-          </Text>
-        </Pressable>
-
-        <View
-          style={{
-            position: 'absolute',
-            right: 12,
-            top: -7,
-            bottom: 0,
-            width: 25,
-            height: 25,
-            borderRadius: 5000,
-            backgroundColor: isSelected ? 'rgba(238, 219, 13, 1)' : 'rgba(206, 206, 206, 1)',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Text style={{ color: colors.Black, fontSize: 10, fontWeight: 'bold' }}>{item.count}</Text>
-        </View>
-      </LinearGradient>
-    );
-  });
+      dispatch({ type: 'SET_LOADING', payload: canStartLoader });
+      fetchLikesAndMatchAPI();
+    }, [])
+  );
 
   const tabsData: TabData[] = [
-    { title: 'Likes', index: 0, count: matchAndLikeCount?.like },
-    { title: 'Matches', index: 1, count: matchAndLikeCount?.match },
-    { title: 'Crush', index: 2, count: matchAndLikeCount?.crush },
+    { title: 'Likes', index: 0, count: likesCount?.like },
+    { title: 'Matches', index: 1, count: likesCount?.match },
+    { title: 'Crush', index: 2, count: likesCount?.crush },
   ];
 
-  const ListEmptyLikeView = () => {
-    return (
-      <View style={styles.ListEmptyComponentView}>
-        <LinearGradient
-          start={{ x: 1, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          colors={isDark ? colors.ButtonGradient : [colors.White, colors.White]}
-          style={styles.NoLikeImageView}
-        >
-          <Image
-            tintColor={isDark ? colors.White : colors.Primary}
-            source={CommonIcons.NoLikes}
-            style={styles.NoLikeImage}
-          />
-        </LinearGradient>
-        <View style={styles.EmptyTextView}>
-          <Text style={[styles.NoLikeTitle, { color: colors.TitleText }]}>
-            No {selectedTabIndex.index === 0 ? 'Likes' : 'Matches'}
-          </Text>
-          <Text style={[styles.NoLikeDescription, { color: isDark ? 'rgba(255, 255, 255, 0.5)' : colors.TextColor }]}>
-            You have no {selectedTabIndex.index === 0 ? 'Likes' : 'Matches'} right now, when someone{' '}
-            {selectedTabIndex.index === 0 ? 'Likes' : 'Matches'} you they will appear here.
-          </Text>
-          <Pressable onPress={onRefresh} style={styles.RefreshButtonContainer}>
-            <Image source={CommonIcons.sync} tintColor={colors.TextColor} style={styles.RefreshButtonIcon} />
-            <Text style={[styles.RefreshButtonText, { color: colors.TextColor }]}>Refresh Page</Text>
-          </Pressable>
-        </View>
-      </View>
-    );
-  };
-
-  useEffect(() => {
-    fetchLikesAndMatchAPI();
-  }, []);
-
   const fetchLikesAndMatchAPI = useCallback(async () => {
-    const InInternetConnected = (await NetInfo.fetch()).isConnected;
+    const inInternet = (await NetInfo.fetch()).isConnected;
 
-    if (!InInternetConnected) {
+    if (!inInternet) {
       showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
-      setIsAPILoading(false);
+      dispatch({ type: 'SET_LOADING', payload: false });
       return;
     }
 
     try {
-      const userDataForApi = { eventName: 'likes_matchs' };
-      const APIResponse = await UserService.UserRegister(userDataForApi);
+      const APIResponse = await UserService.UserRegister({ eventName: 'likes_matchs' });
 
       if (APIResponse?.code === 200) {
         const data = APIResponse.data;
+        const { like = [], match = [], crush = [] } = data;
 
-        setMatchAndLikeCount({
-          like: data.like.length,
-          match: data.match.length,
-          crush: data.crush.length,
+        const filteredLike = like?.filter((item: any) => item?.user_details?.length > 0) || [];
+        const filteredMatch = match?.filter((item: any) => item?.user_details?.length > 0) || [];
+        const filteredCrush = crush?.filter((item: any) => item?.user_details?.length > 0) || [];
+
+        dispatch({
+          type: 'SET_LIKES_COUNT',
+          payload: {
+            like: filteredLike.length,
+            match: filteredMatch.length,
+            crush: filteredCrush.length,
+          },
         });
 
-        setMatchLikeAndCrushData({
-          crush: data.crush,
-          like: data.like,
-          match: data.match,
+        dispatch({
+          type: 'SET_LIKES_DATA',
+          payload: {
+            crush: filteredCrush,
+            like: filteredLike,
+            match: filteredMatch,
+          },
         });
       }
     } catch (error: any) {
       showToast('Error', String(error?.message || error), 'error');
     } finally {
-      setRefreshing(false);
-      setIsAPILoading(false);
+      dispatch({ type: 'SET_REFRESHING', payload: false });
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   }, []);
 
   const onPressTab = useCallback((item: TabData) => {
-    setSelectedTabIndex(item);
+    dispatch({ type: 'SET_SELECTED_TAB', payload: item });
   }, []);
 
   const onRefresh = useCallback(() => {
-    setRefreshing(true);
+    dispatch({ type: 'SET_REFRESHING', payload: true });
     fetchLikesAndMatchAPI();
   }, []);
 
   const RenderContent = useCallback(
     ({ item }: { item: ListDetailProps }) => {
-      switch (selectedTabIndex.index) {
+      switch (selectedTab.index) {
         case 0:
           return <LikesContent LikesData={item} />;
         case 1:
           return <MatchesContent MatchData={item} />;
         case 2:
           return <LikesContent LikesData={item} />;
-
         default:
-          return;
+          return null;
       }
     },
-    [selectedTabIndex, selectedPlan, setSelectedPlan]
+    [selectedTab.index]
   );
 
   return (
@@ -222,34 +180,34 @@ const MyLikesScreen = () => {
         <View style={styles.TopTabContainerView}>
           <View style={styles.FlatListContentContainerStyle}>
             {tabsData.map((item, index) => (
-              <RenderTopBarView
+              <RenderLikeScreenTopBar
                 key={index}
                 item={item}
                 onPress={() => onPressTab(item)}
-                isSelected={item.index === selectedTabIndex.index}
+                isSelected={item.index === selectedTab.index}
+                tabsData={tabsData}
               />
             ))}
           </View>
         </View>
 
         <View style={styles.ContentContainer}>
-          {isAPILoading ? (
+          {isLoading ? (
             <View style={styles.LoadingView}>
               <ActivityIndicator size={35} color={colors.Primary} />
             </View>
           ) : (
             <View style={{ flex: 1 }}>
-              {selectedTabIndex.index === 2 && !subscription.isActive ? (
+              {selectedTab.index === 2 && !subscription.isActive ? (
                 <View style={{ flex: 1, marginTop: 30 }}>
-                  <SubscriptionView selectedPlan={selectedPlan} handlePlanSelection={setSelectedPlan} />
+                  <SubscriptionView
+                    selectedPlan={selectedPlan}
+                    handlePlanSelection={(plan) => dispatch({ type: 'SET_SELECTED_PLAN', payload: plan })}
+                  />
                 </View>
               ) : (
                 <FlatList
-                  data={
-                    matchLikeAndCrushData[
-                      selectedTabIndex.index === 0 ? 'like' : selectedTabIndex.index === 1 ? 'match' : 'crush'
-                    ]
-                  }
+                  data={likesData[selectedTab.index === 0 ? 'like' : selectedTab.index === 1 ? 'match' : 'crush']}
                   nestedScrollEnabled
                   style={{ zIndex: 9999 }}
                   scrollEnabled
@@ -264,7 +222,7 @@ const MyLikesScreen = () => {
                   }
                   initialNumToRender={50}
                   maxToRenderPerBatch={50}
-                  ListEmptyComponent={<ListEmptyLikeView />}
+                  ListEmptyComponent={<ListEmptyView selectedTabIndex={selectedTab.index || 0} onRefresh={onRefresh} />}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item }) => <RenderContent item={item} />}
                 />

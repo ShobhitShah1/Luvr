@@ -164,6 +164,7 @@ const SubscriptionView = ({
 
     if (selectedPlan == 'Free') {
       navigation.navigate('QRCodeScreen');
+      hideSubscriptionModal();
       return;
     }
 

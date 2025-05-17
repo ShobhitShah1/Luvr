@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
-import notifee, { EventType } from '@notifee/react-native';
+import notifee, { AndroidImportance, AndroidVisibility, EventType } from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getProducts, initConnection } from 'react-native-iap';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -19,7 +19,8 @@ import MainRoute from './Src/Routes/MainRoute';
 import { navigationRef } from './Src/Routes/RootNavigation';
 import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
 import { SubscriptionModalProvider } from './Src/Contexts/SubscriptionModalContext';
-import { NavigationContainer } from '@react-navigation/native';
+import { getStateFromPath, NavigationContainer } from '@react-navigation/native';
+import { Linking } from 'react-native';
 
 const excludedRoutes = [
   'Login',
@@ -38,7 +39,34 @@ const excludedRoutes = [
   'AddEmail',
 ];
 
+const linking = {
+  prefixes: ['luvr://', 'https://nirvanatechlabs.in', 'https://nirvanatechlabs.in/app'],
+  config: {
+    initialRouteName: 'BottomTab',
+    screens: {
+      BottomTab: {
+        screens: {},
+      },
+      CategoryDetailCards: 'category/:id',
+      ExploreCardDetail: 'profile/:id',
+      Chat: 'chat/:id',
+    },
+  },
+  getStateFromPath: (path: any, config: any) => {
+    try {
+      return getStateFromPath(path, config);
+    } catch (error) {
+      console.error('Deep link parsing error:', error);
+      return {
+        routes: [{ name: 'BottomTab' }],
+      };
+    }
+  },
+};
+
 export default function App() {
+  const [lastHandledUrl, setLastHandledUrl] = useState<string | null>(null);
+
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async (remoteMessage) => {
       const ScreenName = store ? store.getState().user?.CurrentScreen : '';
@@ -69,6 +97,44 @@ export default function App() {
       }
     });
   }, []);
+
+  useEffect(() => {
+    const subscription = Linking.addEventListener('url', handleDeepLink);
+
+    async function getInitialURL() {
+      const initialURL = await Linking.getInitialURL();
+      if (initialURL) {
+        console.log('App opened with URL:', initialURL);
+        handleDeepLink({ url: initialURL });
+      }
+    }
+
+    getInitialURL();
+
+    return () => {
+      subscription.remove();
+      setLastHandledUrl(null);
+    };
+  }, []);
+
+  const handleDeepLink = ({ url }: { url: string }) => {
+    if (url === lastHandledUrl || !navigationRef?.current) return;
+    setLastHandledUrl(url);
+
+    if (url?.includes('app/profile')) {
+      const profileId = url.split('/').pop();
+      if (profileId) {
+        navigationRef.navigate('ExploreCardDetail', { id: profileId });
+      }
+    }
+
+    if (url?.includes('app/chat')) {
+      const profileId = url.split('/').pop();
+      if (profileId) {
+        navigationRef.navigate('Chat', { id: profileId });
+      }
+    }
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -122,6 +188,7 @@ export default function App() {
                 >
                   <NavigationContainer
                     ref={navigationRef}
+                    linking={linking}
                     onStateChange={() => {
                       const currentRouteName = stateChangesCall(navigationRef.current);
                       if (currentRouteName) {
