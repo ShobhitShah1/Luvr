@@ -11,10 +11,6 @@ import userReducer from '../Reducer/userReducer';
 import boostReducer from '../Reducer/boostReducer';
 import { BoostState } from '../../Types/Interface';
 
-interface UserState {}
-interface DonationState {}
-interface MembershipState {}
-
 export const rootReducer = combineReducers({
   user: userReducer,
   donation: donationReducer,
