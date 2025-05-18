@@ -63,8 +63,6 @@ async function makeRequest(
 ): Promise<any> {
   const token = getToken();
 
-  if (!token) return;
-
   handleLogs(url, params);
 
   const mergedConfig: AxiosRequestConfig = {
