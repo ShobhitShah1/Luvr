@@ -19,12 +19,11 @@ const LikesContent = ({ LikesData }: { LikesData: ListDetailProps }) => {
   const data: ProfileType = user_details?.[0] ?? null;
 
   const imageSource = useMemo(() => {
-    return {
-      uri:
-        data?.recent_pik && data?.recent_pik?.[0]
-          ? ApiConfig.IMAGE_BASE_URL + data?.recent_pik?.[0]
-          : ApiConfig.PLACEHOLDER_IMAGE,
-    };
+    return data?.recent_pik && data?.recent_pik?.[0]
+      ? {
+          uri: ApiConfig.IMAGE_BASE_URL + data?.recent_pik?.[0],
+        }
+      : null;
   }, [data]);
 
   if (status !== 'like') {
@@ -44,12 +43,14 @@ const LikesContent = ({ LikesData }: { LikesData: ListDetailProps }) => {
         ]}
       >
         <View style={styles.LikeImageView}>
-          <Image
-            source={imageSource}
-            style={styles.LikeImageProfile}
-            onLoad={() => setIsImageLoading(false)}
-            onLoadStart={() => setIsImageLoading(true)}
-          />
+          {imageSource && (
+            <Image
+              source={imageSource}
+              style={styles.LikeImageProfile}
+              onLoad={() => setIsImageLoading(false)}
+              onLoadStart={() => setIsImageLoading(true)}
+            />
+          )}
           {isImageLoading && (
             <View style={styles.ImageLoadingView}>
               <ActivityIndicator size={30} color={colors.Primary} />

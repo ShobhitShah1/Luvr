@@ -88,12 +88,14 @@ const MyLikesScreen = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      const canStartLoader =
-        likesData?.match?.length === 0 && likesData?.like?.length === 0 && likesData?.crush?.length === 0;
+      const selectedTabData =
+        selectedTab.index === 0 ? likesData.like : selectedTab.index === 1 ? likesData.match : likesData.crush;
 
-      dispatch({ type: 'SET_LOADING', payload: canStartLoader });
+      const shouldShowLoader = selectedTabData.length === 0;
+
+      dispatch({ type: 'SET_LOADING', payload: shouldShowLoader });
       fetchLikesAndMatchAPI();
-    }, [])
+    }, [selectedTab.index])
   );
 
   const tabsData: TabData[] = [
@@ -124,20 +126,12 @@ const MyLikesScreen = () => {
 
         dispatch({
           type: 'SET_LIKES_COUNT',
-          payload: {
-            like: filteredLike.length,
-            match: filteredMatch.length,
-            crush: filteredCrush.length,
-          },
+          payload: { like: filteredLike.length, match: filteredMatch.length, crush: filteredCrush.length },
         });
 
         dispatch({
           type: 'SET_LIKES_DATA',
-          payload: {
-            crush: filteredCrush,
-            like: filteredLike,
-            match: filteredMatch,
-          },
+          payload: { crush: filteredCrush, like: filteredLike, match: filteredMatch },
         });
       }
     } catch (error: any) {
@@ -220,8 +214,8 @@ const MyLikesScreen = () => {
                       colors={[colors.Primary]}
                     />
                   }
-                  initialNumToRender={50}
-                  maxToRenderPerBatch={50}
+                  initialNumToRender={80}
+                  maxToRenderPerBatch={80}
                   ListEmptyComponent={<ListEmptyView selectedTabIndex={selectedTab.index || 0} onRefresh={onRefresh} />}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item }) => <RenderContent item={item} />}

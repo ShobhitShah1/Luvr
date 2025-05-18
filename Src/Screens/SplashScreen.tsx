@@ -5,6 +5,7 @@ import { Image, Linking, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import CommonImages from '../Common/CommonImages';
+import CommonLogos from '../Common/CommonLogos';
 import { FONTS } from '../Common/Theme';
 import { gradientEnd, gradientStart } from '../Config/Setting';
 import { useTheme } from '../Contexts/ThemeContext';
@@ -14,8 +15,6 @@ import { store } from '../Redux/Store/store';
 import { initGoogleSignIn } from '../Services/AuthService';
 import { LocalStorageFields } from '../Types/LocalStorageFields';
 import { useCustomToast } from '../Utils/toastUtils';
-import CommonIcons from '../Common/CommonIcons';
-import CommonLogos from '../Common/CommonLogos';
 
 interface SplashScreenProps {
   navigation: NavigationProp<any>;

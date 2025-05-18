@@ -19,6 +19,14 @@ export const fetchWrapper: FetchWrapper = {
   uploadHandler,
 };
 
+export function getToken(): string {
+  const token = store.getState()?.user?.Token || '';
+  if (ApiConfig.DEBUG) {
+    console.log('Token:', token);
+  }
+  return token;
+}
+
 async function get(url: string, params?: Record<string, any>, config?: AxiosRequestConfig): Promise<any> {
   return makeRequest(url, 'get', params, config);
 }
@@ -54,6 +62,9 @@ async function makeRequest(
   config?: AxiosRequestConfig
 ): Promise<any> {
   const token = getToken();
+
+  if (!token) return;
+
   handleLogs(url, params);
 
   const mergedConfig: AxiosRequestConfig = {
@@ -73,14 +84,6 @@ async function makeRequest(
   } catch (error: AxiosError | any) {
     return handleError(error);
   }
-}
-
-function getToken(): string {
-  const token = store.getState()?.user?.Token || '';
-  if (ApiConfig.DEBUG) {
-    console.log('Token:', token);
-  }
-  return token;
 }
 
 function handleResponse(response: any) {

@@ -39,10 +39,10 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const labels = ['Home', 'Match', 'Likes', 'Chat', 'Profile'];
 
 const springConfig = {
-  damping: 15,
-  stiffness: 150,
-  mass: 0.6,
-  overshootClamping: false,
+  damping: 20,
+  stiffness: 300,
+  mass: 0.3,
+  overshootClamping: true,
   restDisplacementThreshold: 0.01,
   restSpeedThreshold: 0.01,
 };
@@ -50,7 +50,7 @@ const springConfig = {
 const TabItem: React.FC<TabItemProps> = ({ label, icon, isFocused, onPress }) => {
   const { isDark, colors } = useTheme();
 
-  const bubbleScale = useSharedValue(1);
+  const bubbleScale = useSharedValue(0);
   const bubbleOpacity = useSharedValue(0);
   const iconScale = useSharedValue(1);
   const iconTranslateY = useSharedValue(0);
@@ -58,36 +58,17 @@ const TabItem: React.FC<TabItemProps> = ({ label, icon, isFocused, onPress }) =>
 
   useEffect(() => {
     if (isFocused) {
-      bubbleScale.value = 1;
-      bubbleOpacity.value = 1;
-      iconScale.value = 1.1;
-      iconTranslateY.value = -15;
-      textOpacity.value = 1;
-    } else {
-      bubbleScale.value = 0;
-      bubbleOpacity.value = 0;
-      iconScale.value = 1;
-      iconTranslateY.value = 0;
-      textOpacity.value = 0;
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isFocused) {
-      bubbleOpacity.value = withTiming(1, { duration: 150 });
+      bubbleOpacity.value = withTiming(1, { duration: 50 });
       bubbleScale.value = withSpring(1, springConfig);
       iconScale.value = withSpring(1.1, springConfig);
       iconTranslateY.value = withSpring(-26, springConfig);
-
-      setTimeout(() => {
-        textOpacity.value = withTiming(1, { duration: 150 });
-      }, 50);
+      textOpacity.value = withTiming(1, { duration: 50 });
     } else {
-      textOpacity.value = withTiming(0, { duration: 100 });
-      iconTranslateY.value = withSpring(0, { ...springConfig, stiffness: 200 });
-      iconScale.value = withSpring(1, { ...springConfig, stiffness: 200 });
-      bubbleScale.value = withSpring(0, { ...springConfig, stiffness: 200 });
-      bubbleOpacity.value = withTiming(0, { duration: 150 });
+      textOpacity.value = withTiming(0, { duration: 30 });
+      iconTranslateY.value = withSpring(0, springConfig);
+      iconScale.value = withSpring(1, springConfig);
+      bubbleScale.value = withSpring(0, springConfig);
+      bubbleOpacity.value = withTiming(0, { duration: 50 });
     }
   }, [isFocused]);
 
@@ -226,6 +207,7 @@ const BottomTab: React.FC = () => {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
+        lazy: false,
       }}
     >
       {tabScreens.map((tab) => (

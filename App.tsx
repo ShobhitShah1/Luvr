@@ -1,7 +1,9 @@
 /* eslint-disable react-native/no-inline-styles */
-import notifee, { AndroidImportance, AndroidVisibility, EventType } from '@notifee/react-native';
+import notifee, { EventType } from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
-import React, { useCallback, useEffect, useState } from 'react';
+import { getStateFromPath, NavigationContainer } from '@react-navigation/native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Linking } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getProducts, initConnection } from 'react-native-iap';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -11,16 +13,20 @@ import { onDisplayNotification } from './Src/Components/onDisplayNotification';
 import { skus } from './Src/Config/ApiConfig';
 import { BoostModalProvider } from './Src/Contexts/BoostModalProvider';
 import BoostProvider from './Src/Contexts/BoostProvider';
+import { SubscriptionModalProvider } from './Src/Contexts/SubscriptionModalContext';
 import { ThemeProvider } from './Src/Contexts/ThemeContext';
 import { UserDataProvider } from './Src/Contexts/UserDataContext';
+import useAppStateTracker from './Src/Hooks/useAppStateTracker';
 import { DONATION_PRODUCTS, setCurrentScreenName } from './Src/Redux/Action/actions';
 import { persistor, store } from './Src/Redux/Store/store';
 import MainRoute from './Src/Routes/MainRoute';
 import { navigationRef } from './Src/Routes/RootNavigation';
 import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
-import { SubscriptionModalProvider } from './Src/Contexts/SubscriptionModalContext';
-import { getStateFromPath, NavigationContainer } from '@react-navigation/native';
-import { Linking } from 'react-native';
+import { getToken } from './Src/Services/fetch.service';
+
+interface DeepLinkEvent {
+  url: string;
+}
 
 const excludedRoutes = [
   'Login',
@@ -37,7 +43,7 @@ const excludedRoutes = [
   'AddRecentPics',
   'LocationPermission',
   'AddEmail',
-];
+] as const;
 
 const linking = {
   prefixes: ['luvr://', 'https://nirvanatechlabs.in', 'https://nirvanatechlabs.in/app'],
@@ -52,7 +58,7 @@ const linking = {
       Chat: 'chat/:id',
     },
   },
-  getStateFromPath: (path: any, config: any) => {
+  getStateFromPath: (path: string, config: any) => {
     try {
       return getStateFromPath(path, config);
     } catch (error) {
@@ -64,50 +70,85 @@ const linking = {
   },
 };
 
-export default function App() {
+const App: React.FC = () => {
+  useAppStateTracker();
   const [lastHandledUrl, setLastHandledUrl] = useState<string | null>(null);
 
-  useEffect(() => {
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-      const ScreenName = store ? store.getState().user?.CurrentScreen : '';
-      const title = remoteMessage.notification?.title || '';
-      const body = remoteMessage.notification?.body || '';
+  const handleNotification = useCallback(async (remoteMessage: any) => {
+    try {
+      const ScreenName = store?.getState().user?.CurrentScreen ?? '';
+      const title = remoteMessage.notification?.title;
+      const body = remoteMessage.notification?.body;
 
-      if (title && body && ScreenName !== 'ChatRoom' && ScreenName !== 'Chat') {
-        onDisplayNotification(title, body);
+      if (title && body && !['ChatRoom', 'Chat'].includes(ScreenName)) {
+        await onDisplayNotification(title, body);
       }
-    });
+    } catch (error) {
+      console.error('Error handling notification:', error);
+    }
+  }, []);
 
-    return unsubscribe;
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(handleNotification);
+    return () => unsubscribe();
+  }, [handleNotification]);
+
+  const handleNotificationPress = useCallback(() => {
+    if (!navigationRef.getCurrentRoute) return;
+
+    const token = getToken();
+    const targetScreen = token?.length ? 'BottomTab' : 'NumberVerification';
+    const params = token?.length ? { screen: 'ChatRoom' } : undefined;
+
+    navigationRef?.navigate(targetScreen, params);
   }, []);
 
   useEffect(() => {
     return notifee.onForegroundEvent(({ type }) => {
-      switch (type) {
-        case EventType.PRESS:
-          const Token = store ? store.getState().user?.Token : '';
-
-          if (Token?.length !== 0) {
-            navigationRef &&
-              navigationRef?.navigate('BottomTab', {
-                screen: 'ChatRoom',
-              });
-          }
-          break;
+      if (type === EventType.PRESS) {
+        handleNotificationPress();
       }
     });
-  }, []);
+  }, [handleNotificationPress]);
+
+  const handleDeepLink = useCallback(
+    ({ url }: DeepLinkEvent) => {
+      if (url === lastHandledUrl || !navigationRef?.current) return;
+      setLastHandledUrl(url);
+
+      try {
+        if (url?.includes('app/profile')) {
+          const profileId = url.split('/').pop();
+          if (profileId) {
+            navigationRef.navigate('ExploreCardDetail', { id: profileId });
+          }
+        } else if (url?.includes('app/chat')) {
+          const profileId = url.split('/').pop();
+          if (profileId) {
+            navigationRef.navigate('Chat', { id: profileId });
+          }
+        }
+      } catch (error) {
+        console.error('Error handling deep link:', error);
+      }
+    },
+    [lastHandledUrl]
+  );
 
   useEffect(() => {
     const subscription = Linking.addEventListener('url', handleDeepLink);
 
-    async function getInitialURL() {
-      const initialURL = await Linking.getInitialURL();
-      if (initialURL) {
-        console.log('App opened with URL:', initialURL);
-        handleDeepLink({ url: initialURL });
+    const getInitialURL = async () => {
+      try {
+        const initialURL = await Linking.getInitialURL();
+        if (initialURL) {
+          console.log('App opened with URL:', initialURL);
+          handleDeepLink({ url: initialURL });
+        }
+      } catch (error) {
+        console.error('Error getting initial URL:', error);
       }
-    }
+    };
 
     getInitialURL();
 
@@ -115,58 +156,54 @@ export default function App() {
       subscription.remove();
       setLastHandledUrl(null);
     };
-  }, []);
+  }, [handleDeepLink]);
 
-  const handleDeepLink = ({ url }: { url: string }) => {
-    if (url === lastHandledUrl || !navigationRef?.current) return;
-    setLastHandledUrl(url);
-
-    if (url?.includes('app/profile')) {
-      const profileId = url.split('/').pop();
-      if (profileId) {
-        navigationRef.navigate('ExploreCardDetail', { id: profileId });
-      }
-    }
-
-    if (url?.includes('app/chat')) {
-      const profileId = url.split('/').pop();
-      if (profileId) {
-        navigationRef.navigate('Chat', { id: profileId });
-      }
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const stateChangesCall = useCallback((ref: any) => {
-    const currentRouteName = ref?.getCurrentRoute()?.name || '';
-
-    if (currentRouteName && !excludedRoutes.some((route) => currentRouteName.includes(route))) {
-      return currentRouteName;
-    }
-
-    return null;
-  }, []);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const connected = await initConnection();
-      if (connected && skus && store) {
-        const products = await getProducts({ skus });
+      if (!connected || !skus || !store) return;
 
-        if (products) {
-          store.dispatch({
-            type: DONATION_PRODUCTS,
-            donationProducts: products,
-          });
-        }
+      const products = await getProducts({ skus });
+      if (products?.length) {
+        store.dispatch({
+          type: DONATION_PRODUCTS,
+          donationProducts: products,
+        });
       }
     } catch (error) {
       console.error('Error fetching products:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  const stateChangesCall = useCallback((ref: any) => {
+    try {
+      const currentRouteName = ref?.getCurrentRoute()?.name;
+      if (!currentRouteName) return null;
+
+      return excludedRoutes.some((route) => currentRouteName.includes(route)) ? null : currentRouteName;
+    } catch (error) {
+      console.error('Error in state changes:', error);
+      return null;
+    }
+  }, []);
+
+  const handleStateChange = useCallback(() => {
+    const currentRouteName = stateChangesCall(navigationRef.current);
+    if (currentRouteName) {
+      store.dispatch(setCurrentScreenName(currentRouteName));
+    }
+  }, [stateChangesCall]);
+
+  const toastConfig = useMemo(
+    () => ({
+      custom_toast: (toast: any) => <ToastStyle title={toast?.title} message={toast?.message} status={toast?.status} />,
+    }),
+    []
+  );
 
   return (
     <Provider store={store}>
@@ -180,22 +217,9 @@ export default function App() {
                   duration={4000}
                   offset={30}
                   animationType="zoom-in"
-                  renderType={{
-                    custom_toast: (toast: any) => (
-                      <ToastStyle title={toast?.title} message={toast?.message} status={toast?.status} />
-                    ),
-                  }}
+                  renderType={toastConfig}
                 >
-                  <NavigationContainer
-                    ref={navigationRef}
-                    linking={linking}
-                    onStateChange={() => {
-                      const currentRouteName = stateChangesCall(navigationRef.current);
-                      if (currentRouteName) {
-                        store.dispatch(setCurrentScreenName(currentRouteName));
-                      }
-                    }}
-                  >
+                  <NavigationContainer ref={navigationRef} linking={linking} onStateChange={handleStateChange}>
                     <SubscriptionModalProvider>
                       <BoostModalProvider>
                         <MainRoute />
@@ -210,4 +234,6 @@ export default function App() {
       </PersistGate>
     </Provider>
   );
-}
+};
+
+export default App;

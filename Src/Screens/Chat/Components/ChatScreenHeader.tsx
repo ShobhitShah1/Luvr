@@ -33,14 +33,14 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({ data, onRightIconPress }) => {
             />
           </Pressable>
           <View style={styles.ProfileImageView}>
-            <Image
-              style={styles.ProfileImage}
-              source={{
-                uri: data?.recent_pik?.[0]
-                  ? ApiConfig.IMAGE_BASE_URL + data?.recent_pik?.[0]
-                  : ApiConfig.PLACEHOLDER_IMAGE,
-              }}
-            />
+            {data?.recent_pik?.[0] && (
+              <Image
+                style={styles.ProfileImage}
+                source={{
+                  uri: ApiConfig.IMAGE_BASE_URL + data?.recent_pik?.[0],
+                }}
+              />
+            )}
           </View>
           <View style={[styles.UserInfoView, { flex: 1, justifyContent: 'center' }]}>
             {data?.full_name && (
@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
   },
   ProfileNameView: {
     width: '80%',
+    right: 3,
     alignItems: 'center',
     alignSelf: 'center',
     flexDirection: 'row',

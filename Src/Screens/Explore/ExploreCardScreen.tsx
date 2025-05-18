@@ -23,7 +23,7 @@ import Swiper from 'rn-swipe-deck';
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
-import { BOTTOM_TAB_HEIGHT, COLORS, GROUP_FONT } from '../../Common/Theme';
+import { BOTTOM_TAB_HEIGHT, COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
 import GradientButton from '../../Components/AuthComponents/GradientButton';
 import ApiConfig from '../../Config/ApiConfig';
 import { CardDelay, CardLimit } from '../../Config/Setting';
@@ -500,7 +500,7 @@ const ExploreCardScreen: FC = () => {
             !IsAPILoading && (
               <View style={styles.EmptyCardView}>
                 <Text style={[styles.EmptyCardText, { color: colors.TextColor }]}>
-                  Your dating compass needs a spin! Adjust your settings and let the matchmaking magic begin. 🧭✨
+                  Ready to find your match? Let's adjust your preferences to discover meaningful connections.
                 </Text>
 
                 <View style={{ marginTop: 15 }}>
@@ -652,9 +652,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   EmptyCardText: {
-    ...GROUP_FONT.h2,
+    fontSize: 20,
+    marginBottom: 5,
     textAlign: 'center',
     color: COLORS.Primary,
+    fontFamily: FONTS.Bold,
   },
   ChangeSettingButton: {
     marginTop: 20,
