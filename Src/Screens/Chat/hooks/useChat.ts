@@ -44,7 +44,6 @@ export const useChat = (
 
   const getOtherUserDataCall = async () => {
     try {
-      setIsLoading(true);
       const data = {
         eventName: 'get_other_profile',
         id: otherUserId,
@@ -60,8 +59,6 @@ export const useChat = (
       }
     } catch (error) {
       console.error('Error in getOtherUserDataCall:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -149,13 +146,13 @@ export const useChat = (
     socket.emit(LIST_EVENT, { id: currentUserId });
     socket.emit(READ_ALL, { to: otherUserProfileData?._id });
 
-    const handleListResponse = (data: { data: any }) => {
-      setIsLoading(true);
+    const handleListResponse = async (data: { data: any }) => {
       const giftedChatMessages = transformDataForGiftedChat(data.data);
       if (giftedChatMessages && giftedChatMessages.length !== 0) {
-        const uniqueMessages = removeDuplicates([...userMessage, ...giftedChatMessages]);
+        const uniqueMessages = await removeDuplicates([...userMessage, ...giftedChatMessages]);
         setUserMessages(uniqueMessages);
       }
+
       setIsLoading(false);
     };
 
