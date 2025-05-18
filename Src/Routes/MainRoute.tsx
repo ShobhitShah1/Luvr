@@ -70,7 +70,6 @@ export default function MainRoute() {
 
     if (authStatus === 1) {
       const Token = await messaging().getToken();
-      console.log('Token:', Token);
       if (Token) {
         store.dispatch(updateField(LocalStorageFields.notification_token, Token));
       }

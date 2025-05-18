@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Socket, io } from 'socket.io-client';
+import { useCallback, useEffect, useState } from 'react';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
+import { Socket, io } from 'socket.io-client';
+import TextString from '../../../Common/TextString';
 import ApiConfig from '../../../Config/ApiConfig';
 import {
   CHAT_EVENT,
@@ -10,12 +11,11 @@ import {
   MESSAGE_EVENT,
   READ_ALL,
 } from '../../../Config/Setting';
+import { useSubscriptionModal } from '../../../Contexts/SubscriptionModalContext';
+import { useUserData } from '../../../Contexts/UserDataContext';
 import UserService from '../../../Services/AuthService';
 import { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
-import { useUserData } from '../../../Contexts/UserDataContext';
-import { useSubscriptionModal } from '../../../Contexts/SubscriptionModalContext';
-import TextString from '../../../Common/TextString';
 
 const generateRandomId = () => {
   return Math.random().toString(36).substr(2, 9);
@@ -40,7 +40,7 @@ export const useChat = (
   const { subscription } = useUserData();
   const { showSubscriptionModal } = useSubscriptionModal();
 
-  const canSendMessage = subscription?.isActive || receivedMessageCount > 0;
+  const canSendMessage = subscription?.isActive ? true : receivedMessageCount !== 0;
 
   const getOtherUserDataCall = async () => {
     try {
@@ -68,14 +68,13 @@ export const useChat = (
     const filteredMessages = dataArray.filter((item) => {
       return item.to === currentUserId || item.to === otherUserId;
     });
+
     const allMessages = filteredMessages.reduce((accumulator, currentItem) => {
       return accumulator.concat(currentItem.chat);
     }, []);
 
-    // Count received messages
-    const receivedMessages = allMessages.filter(
-      (message: any) => message.id !== currentUserId && message.to === currentUserId
-    );
+    const receivedMessages = allMessages.filter((message: any) => message.id !== currentUserId);
+
     setReceivedMessageCount(receivedMessages.length);
 
     const giftedChatMessages = allMessages.map((message: any) => {
@@ -148,6 +147,7 @@ export const useChat = (
 
     const handleListResponse = async (data: { data: any }) => {
       const giftedChatMessages = transformDataForGiftedChat(data.data);
+
       if (giftedChatMessages && giftedChatMessages.length !== 0) {
         const uniqueMessages = await removeDuplicates([...userMessage, ...giftedChatMessages]);
         setUserMessages(uniqueMessages);
@@ -202,7 +202,9 @@ export const useChat = (
     async (messages: IMessage[]) => {
       if (!canSendMessage) {
         showToast(TextString.premiumFeatureAccessTitle, TextString.premiumFeatureAccessDescription, 'error');
-        showSubscriptionModal();
+        setTimeout(() => {
+          showSubscriptionModal();
+        }, 2000);
         return;
       }
 

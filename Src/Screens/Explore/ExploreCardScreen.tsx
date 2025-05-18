@@ -16,6 +16,7 @@ import {
   View,
 } from 'react-native';
 import { AdEventType, AppOpenAd, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
+import LinearGradient from 'react-native-linear-gradient';
 import { Easing } from 'react-native-reanimated';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,17 +28,12 @@ import { BOTTOM_TAB_HEIGHT, COLORS, FONTS, GROUP_FONT } from '../../Common/Theme
 import GradientButton from '../../Components/AuthComponents/GradientButton';
 import ApiConfig from '../../Config/ApiConfig';
 import { CardDelay, CardLimit } from '../../Config/Setting';
+import { useSubscriptionModal } from '../../Contexts/SubscriptionModalContext';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { useUserData } from '../../Contexts/UserDataContext';
 import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import useInterval from '../../Hooks/useInterval';
-import {
-  onSwipeLeft,
-  onSwipeRight,
-  resetRightSwipe,
-  resetSwipeCount,
-  setCardSkipNumber,
-} from '../../Redux/Action/actions';
+import { onSwipeLeft, onSwipeRight, resetSwipeCount, setCardSkipNumber } from '../../Redux/Action/actions';
 import { store } from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
 import { ProfileType } from '../../Types/ProfileType';
@@ -45,7 +41,6 @@ import { useCustomToast } from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
-import { useSubscriptionModal } from '../../Contexts/SubscriptionModalContext';
 
 const appOpenAdUnitId = __DEV__ ? TestIds.APP_OPEN : ApiConfig.ANDROID_AD_ID;
 const interstitialAdUnitId = __DEV__ ? TestIds.INTERSTITIAL : ApiConfig.ANDROID_AD_ID;
@@ -352,11 +347,9 @@ const ExploreCardScreen: FC = () => {
       setIsAPILoading(true);
 
       const newSkipNumber = currentSkipNumberRef.current + CardLimit;
-
       currentSkipNumberRef.current = newSkipNumber;
 
       setCardToSkipNumber(newSkipNumber);
-
       dispatch(setCardSkipNumber(newSkipNumber));
 
       await fetchAPIData(newSkipNumber);
@@ -373,6 +366,7 @@ const ExploreCardScreen: FC = () => {
       setIsAPILoading(false);
     }
   }, [fetchAPIData, CardLimit, IsAPILoading, dispatch]);
+
   const SwipeLeft = async () => {
     if (isMatchModalVisible) {
       return;
@@ -532,9 +526,17 @@ const ExploreCardScreen: FC = () => {
               <Image resizeMode="contain" style={styles.LikeButton} source={CommonIcons.like_button} />
             </Pressable>
 
-            <Pressable onPress={SwipeLeft} style={styles.LikeAndRejectButtonView}>
-              <Image resizeMode="contain" style={styles.DislikeButton} source={CommonIcons.ic_message} />
-            </Pressable>
+            <LinearGradient colors={['rgba(92, 196, 255, 1)', 'rgba(12, 145, 219, 1)']} style={styles.infoIconView}>
+              <Pressable
+                onPress={() => {
+                  cards?.[CurrentCardIndex] &&
+                    navigation.navigate('ExploreCardDetail', { props: cards?.[CurrentCardIndex] });
+                }}
+                style={styles.infoButton}
+              >
+                <Image resizeMode="contain" style={styles.infoIcon} source={CommonIcons.ic_info_shape} />
+              </Pressable>
+            </LinearGradient>
           </View>
         )}
 
@@ -629,6 +631,7 @@ const styles = StyleSheet.create({
   LikeAndRejectView: {
     flex: 0.15,
     width: '100%',
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
   },
@@ -693,6 +696,25 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 0,
     backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  infoIconView: {
+    marginHorizontal: hp('0.4%'),
+    width: 50,
+    height: 50,
+    marginLeft: 9,
+    borderRadius: 500,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+  },
+  infoIcon: {
+    width: '55%',
+    height: '55%',
   },
 });
 

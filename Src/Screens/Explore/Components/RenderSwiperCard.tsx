@@ -215,15 +215,6 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
                 )}
             </View>
           </View>
-
-          <Pressable
-            onPress={() => {
-              navigation.navigate('ExploreCardDetail', { props: cardData as any });
-            }}
-            style={styles.ViewProfileBTN}
-          >
-            <Image source={CommonIcons.ic_info} style={styles.ViewProfileIcon} />
-          </Pressable>
         </View>
 
         <LinearGradient

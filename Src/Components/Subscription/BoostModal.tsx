@@ -57,7 +57,7 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
   const secondsRemainingRef = useRef<number>(timeRemaining * 60);
 
   const [isPurchasing, setIsPurchasing] = useState(false);
-  const [subscriptionProducts, setSubscriptionProducts] = useState<Array<RNIap.Product>>([]);
+  const [subscriptionProducts, setSubscriptionProducts] = useState<Array<RNIap.Subscription>>([]);
   const [internalSelectedPlan, setInternalSelectedPlan] = useState<string>(subscriptionProducts[0]?.productId || '');
 
   const benefits = [
@@ -110,7 +110,7 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
       const connected = await RNIap.initConnection();
 
       if (connected && boostSkus) {
-        const products = await RNIap.getProducts({ skus: boostSkus });
+        const products = await RNIap.getSubscriptions({ skus: boostSkus });
         setInternalSelectedPlan(products[0]?.productId || '');
         setSubscriptionProducts(products);
       }
@@ -139,7 +139,16 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
       }
 
       if (Platform.OS === 'android') {
-        const response = await RNIap.requestPurchase({ skus: [product.productId] });
+        const androidProduct = product as RNIap.SubscriptionAndroid;
+
+        const response = await RNIap.requestSubscription({
+          subscriptionOffers: [
+            {
+              sku: product.productId,
+              offerToken: androidProduct?.subscriptionOfferDetails?.[0]?.offerToken || '',
+            },
+          ],
+        } as RNIap.RequestSubscriptionAndroid);
 
         if (response) callPurchaseAPI(Array.isArray(response) ? response[0] : response);
       } else {
@@ -298,9 +307,12 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
                         <Text style={[styles.boostText, { color: colors.White }]}>Boost</Text>
                       </LinearGradient>
                       <Text style={[styles.dayNumber, { color: isDark ? colors.White : colors.Primary }]}>1</Text>
-                      <Text style={[styles.dayText, { color: colors.TextColor }]}>{product.title?.slice(0, 8)}</Text>
+                      <Text style={[styles.dayText, { color: colors.TextColor }]}>{'Boost'}</Text>
                       <Text style={[styles.priceText, { color: isDark ? colors.White : colors.Primary }]}>
-                        {product.localizedPrice}
+                        {
+                          (product as any)?.subscriptionOfferDetails?.[0]?.pricingPhases?.pricingPhaseList?.[0]
+                            ?.formattedPrice
+                        }
                       </Text>
                     </View>
                   );

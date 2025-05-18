@@ -59,8 +59,12 @@ export const skus = Platform.select({
 });
 
 export const boostSkus = Platform.select({
-  android: ['com.boost.day'],
-  ios: ['com.boost.day'],
+  android: ['com.luvr.boost.day'],
+  ios: ['com.luvr.boost.day'],
 });
+// export const boostSkus = Platform.select({
+//   android: ['com.boost.day'],
+//   ios: ['com.boost.day'],
+// });
 
 export default ApiConfig;

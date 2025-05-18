@@ -541,7 +541,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   featureText: {
-    fontSize: 12,
+    fontSize: 11.4,
     maxWidth: '90%',
     fontFamily: FONTS.SemiBold,
   },

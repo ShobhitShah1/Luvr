@@ -64,17 +64,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     initializeAppFlow();
   }, []);
 
-  useEffect(() => {
-    const handleInitialUrl = async () => {
-      const initialUrl = await Linking.getInitialURL();
-      if (initialUrl) {
-        console.log('SPLASH: App opened with URL:', initialUrl);
-      }
-    };
-
-    handleInitialUrl();
-  }, []);
-
   const handleNotificationPermission = async () => {
     try {
       const authStatus = await messaging().requestPermission();

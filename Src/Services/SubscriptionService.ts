@@ -75,8 +75,6 @@ export const scheduleSubscriptionExpiryCheck = (subscription: SubscriptionData):
     return;
   }
 
-  const purchaseId = subscription._id;
-
   if (!subscription.payment_response.autoRenewing || subscription.payment_response.purchaseState !== 1) {
     console.log('Subscription not active or not auto-renewing, skipping expiry check');
     return;

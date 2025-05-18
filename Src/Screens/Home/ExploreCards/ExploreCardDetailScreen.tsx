@@ -35,7 +35,7 @@ import { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import DetailCardHeader from './Components/DetailCardHeader';
 import RenderUserImagesView from './Components/RenderUserImagesView';
-import remoteConfig from '@react-native-firebase/remote-config';
+import { useSubscriptionModal } from '../../../Contexts/SubscriptionModalContext';
 
 type DetailCardRouteParams = {
   props: ProfileType;
@@ -47,26 +47,25 @@ const ExploreCardDetailScreen = () => {
   const navigation = useCustomNavigation();
   const { showToast } = useCustomToast();
   const { subscription } = useUserData();
+  const { showSubscriptionModal } = useSubscriptionModal();
 
   const cardDetail = useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
 
   const route = useRoute();
-  const { id } = route.params;
+  const { id } = route.params as any;
 
   const scrollX = useRef(new Animated.Value(0)).current;
-  const UserID = id || cardDetail?.params?.props?._id || {};
+  const userId = id || cardDetail?.params?.props?._id || {};
 
   const [cardData, setCardData] = useState<ProfileType>();
   const [isLoading, setIsAPILoading] = useState(true);
   const [SelectedReportReason, setSelectedReportReason] = useState<string>('');
   const [showReportModalView, setShowReportModalView] = useState<boolean>(false);
-  const [RemoteConfigLinks, setRemoteConfigLinks] = useState<any>();
 
   useEffect(() => {
     if (isFocused) {
       setIsAPILoading(!cardData);
       getUserData();
-      getRemoteConfigValue();
     }
   }, [isFocused]);
 
@@ -74,7 +73,7 @@ const ExploreCardDetailScreen = () => {
     try {
       const userDataForApi = {
         eventName: 'get_other_profile',
-        id: UserID,
+        id: userId,
       };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
@@ -93,53 +92,65 @@ const ExploreCardDetailScreen = () => {
   };
 
   const onLikePress = async () => {
-    if (UserID) {
-      const userDataForApi = {
-        eventName: 'like',
-        like_to: UserID,
-      };
+    try {
+      if (userId) {
+        const userDataForApi = {
+          eventName: 'like',
+          like_to: userId,
+        };
 
-      const APIResponse = await UserService.UserRegister(userDataForApi);
+        const APIResponse = await UserService.UserRegister(userDataForApi);
 
-      if (APIResponse?.code === 200) {
-        store.dispatch(onSwipeRight(String(UserID)));
-        showToast('Swipe Right Success', 'You swiped right! Waiting for the other user to match.', 'success');
-        navigation.canGoBack() && navigation.goBack();
+        if (APIResponse?.code === 200) {
+          store.dispatch(onSwipeRight(String(userId)));
+          showToast('Swipe Right Success', 'You swiped right! Waiting for the other user to match.', 'success');
+          navigation.canGoBack() && navigation.goBack();
+        } else {
+          showToast(
+            TextString.error.toUpperCase(),
+            APIResponse?.message || 'Please try again letter',
+            TextString.error
+          );
+        }
       } else {
-        showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Please try again letter', TextString.error);
+        showToast(TextString.error.toUpperCase(), "Can't find user, please try again letter", TextString.error);
       }
-    } else {
-      showToast(TextString.error.toUpperCase(), "Can't find UserID please try again letter", TextString.error);
+    } catch (error: any) {
+      showToast('Error', error?.message?.toString(), 'error');
     }
   };
 
   const onRejectPress = async () => {
-    if (UserID) {
-      store.dispatch(onSwipeLeft(String(UserID)));
-      navigation.canGoBack() && navigation.goBack();
-    } else {
-      showToast(TextString.error.toUpperCase(), "Can't find UserID please try again letter", TextString.error);
-    }
-  };
-
-  const getRemoteConfigValue = async () => {
-    await remoteConfig().fetch(100);
-    const GetRemoteConfigLinks = remoteConfig().getAll();
-    if (GetRemoteConfigLinks) {
-      setRemoteConfigLinks(GetRemoteConfigLinks);
+    try {
+      if (userId) {
+        store.dispatch(onSwipeLeft(String(userId)));
+        navigation.canGoBack() && navigation.goBack();
+      } else {
+        showToast(TextString.error.toUpperCase(), "Can't find user please try again letter", TextString.error);
+      }
+    } catch (error: any) {
+      showToast('Error', error?.message?.toString(), 'error');
     }
   };
 
   const onSharePress = () => {
     try {
-      const userId = UserID || cardDetail?.params?.props?._id;
-
-      if (!userId) {
-        Alert.alert('Error', 'Unable to share profile - missing user ID');
+      if (!subscription.isActive) {
+        showToast(TextString.premiumFeatureAccessTitle, TextString.premiumFeatureAccessDescription, 'error');
+        setTimeout(() => {
+          showSubscriptionModal();
+        }, 2000);
         return;
       }
 
-      const deepLinkUrl = `https://nirvanatechlabs.in/app/profile/${userId}`;
+      const id = userId || cardDetail?.params?.props?._id;
+
+      if (!id) {
+        showToast('Error', 'Unable to share profile - missing user ID', 'error');
+        return;
+      }
+
+      const deepLinkUrl = `https://nirvanatechlabs.in/app/profile/${id}`;
 
       const userName = cardDetail?.params?.props?.full_name || 'this profile';
       const shareMessage = `Check out ${userName} on Luvr!\n${deepLinkUrl}`;
@@ -148,62 +159,74 @@ const ExploreCardDetailScreen = () => {
         message: shareMessage,
         url: deepLinkUrl, // For iOS
       });
-
-      // Optional: Analytics tracking
-      // analytics().logShare({ contentType: 'profile', itemId: userId });
-    } catch (error) {
-      console.error('Share error:', error);
-      Alert.alert('Error', 'Could not share this profile');
+    } catch (error: any) {
+      showToast('Error', error?.message?.toString(), 'error');
     }
   };
 
   const onBlockProfileClick = async () => {
-    const BlockData = {
-      eventName: ApiConfig.BlockProfile,
-      blocked_to: UserID,
-    };
-    const APIResponse = await UserService.UserRegister(BlockData);
+    try {
+      if (!subscription.isActive) {
+        showToast(TextString.premiumFeatureAccessTitle, TextString.premiumFeatureAccessDescription, 'error');
+        setTimeout(() => {
+          showSubscriptionModal();
+        }, 2000);
+        return;
+      }
 
-    if (APIResponse && APIResponse?.code === 200) {
-      store.dispatch(onSwipeLeft(String(UserID)));
-      showToast(
-        'User Blocked',
-        `Your request to block ${cardDetail.params?.props?.full_name} is successfully send`,
-        'success'
-      );
-      navigation.canGoBack() && navigation.goBack();
-    } else {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(APIResponse?.message) || 'Something went wrong',
-        TextString.error
-      );
+      const BlockData = {
+        eventName: ApiConfig.BlockProfile,
+        blocked_to: userId,
+      };
+      const APIResponse = await UserService.UserRegister(BlockData);
+
+      if (APIResponse && APIResponse?.code === 200) {
+        store.dispatch(onSwipeLeft(String(userId)));
+        showToast(
+          'User Blocked',
+          `Your request to block ${cardDetail.params?.props?.full_name} is successfully send`,
+          'success'
+        );
+        navigation.canGoBack() && navigation.goBack();
+      } else {
+        showToast(
+          TextString.error.toUpperCase(),
+          String(APIResponse?.message) || 'Something went wrong',
+          TextString.error
+        );
+      }
+    } catch (error: any) {
+      showToast('Error', error?.message?.toString(), 'error');
     }
   };
 
   const onReportProfileClick = async () => {
-    setShowReportModalView(false);
-    const BlockData = {
-      eventName: ApiConfig.ReportProfile,
-      blocked_to: UserID,
-      reason: SelectedReportReason,
-    };
-    const APIResponse = await UserService.UserRegister(BlockData);
+    try {
+      setShowReportModalView(false);
+      const BlockData = {
+        eventName: ApiConfig.ReportProfile,
+        blocked_to: userId,
+        reason: SelectedReportReason,
+      };
+      const APIResponse = await UserService.UserRegister(BlockData);
 
-    if (APIResponse && APIResponse?.code === 200) {
-      store.dispatch(onSwipeLeft(String(UserID)));
-      showToast(
-        'Success!',
-        `Your report against ${cardDetail.params?.props?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${SelectedReportReason}`,
-        'success'
-      );
-      navigation.canGoBack() && navigation.goBack();
-    } else {
-      showToast(
-        TextString.error.toUpperCase(),
-        String(APIResponse?.message) || 'Something went wrong',
-        TextString.error
-      );
+      if (APIResponse && APIResponse?.code === 200) {
+        store.dispatch(onSwipeLeft(String(userId)));
+        showToast(
+          'Success!',
+          `Your report against ${cardDetail.params?.props?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${SelectedReportReason}`,
+          'success'
+        );
+        navigation.canGoBack() && navigation.goBack();
+      } else {
+        showToast(
+          TextString.error.toUpperCase(),
+          String(APIResponse?.message) || 'Something went wrong',
+          TextString.error
+        );
+      }
+    } catch (error: any) {
+      showToast('Error', error?.message?.toString(), 'error');
     }
   };
 
@@ -435,7 +458,6 @@ const ExploreCardDetailScreen = () => {
 
               <View style={styles.BlockAndReportProfileView}>
                 <Pressable
-                  disabled={!subscription.isActive}
                   onPress={onBlockProfileClick}
                   style={[
                     styles.BlockAndReportButtonView,
@@ -487,10 +509,14 @@ const ExploreCardDetailScreen = () => {
                 <LinearGradient
                   start={{ x: 0, y: 0 }}
                   end={{ x: 0, y: 1 }}
-                  colors={isDark ? ['rgba(149, 119, 253, 1)', 'rgba(32, 20, 70, 1)'] : [colors.Primary, colors.Primary]}
-                  style={styles.ShareButtonView}
+                  colors={
+                    isDark
+                      ? ['rgba(149, 119, 253, 1)', 'rgba(32, 20, 70, 1)']
+                      : ['rgba(175, 152, 255, 1)', 'rgba(94, 74, 162, 1)']
+                  }
+                  style={[styles.ShareButtonView, { opacity: !subscription.isActive ? 0.5 : 1 }]}
                 >
-                  <Pressable onPress={onSharePress} style={styles.ShareButtonView}>
+                  <Pressable onPress={onSharePress} style={[styles.ShareButtonView, {}]}>
                     <Image resizeMode="contain" style={styles.ShareIcon} source={CommonIcons.ic_share} />
                   </Pressable>
                 </LinearGradient>
@@ -664,15 +690,15 @@ const styles = StyleSheet.create({
   ShareButtonView: {
     justifyContent: 'center',
     alignSelf: 'center',
-    margin: hp('1.15%'),
+    margin: hp('1.25%'),
     paddingBottom: Platform.OS === 'ios' ? 30 : 0,
     borderRadius: 5000,
     overflow: 'hidden',
   },
   ShareIcon: {
     padding: 0,
-    width: hp('3.9%'),
-    height: hp('3.9%'),
+    width: hp('3.5%'),
+    height: hp('3.5%'),
     justifyContent: 'center',
     alignSelf: 'center',
   },

@@ -93,23 +93,15 @@ const ChatRoomScreen = () => {
               const filteredData = data.data.filter(
                 (item: MessageItem | null) => item !== null && item?.to !== currentLoginUserId
               );
-              // const filteredData = data.data.filter(
-              //   (item: MessageItem) => item?.to !== currentLoginUserId,
-              // );
 
               if (filteredData && filteredData?.length !== 0) {
                 const usersWithFirstChat =
                   filteredData &&
                   filteredData.map((message) => {
-                    const otherUserChats = message?.chat?.filter((chat) => chat?.id !== currentLoginUserId);
+                    const otherUserChats = message?.chat?.filter(
+                      (chat: any) => (chat?.id || chat?.senderId) !== currentLoginUserId
+                    );
 
-                    //* With Both Side Chat
-                    // const firstChat =
-                    //   message.chat.length > 0
-                    //     ? message.chat[message.chat.length - 1]
-                    //     : null;
-
-                    //* Only Other User Chat
                     const firstChat = otherUserChats?.length > 0 ? otherUserChats[otherUserChats?.length - 1] : null;
 
                     return {
@@ -174,7 +166,7 @@ const ChatRoomScreen = () => {
     );
   };
 
-  if (isSocketLoading && subscription.isActive) {
+  if (isSocketLoading) {
     return (
       <GradientView>
         <SafeAreaView
@@ -217,27 +209,27 @@ const ChatRoomScreen = () => {
         </SafeAreaView>
 
         <View style={styles.ListChatView}>
-          {!subscription.isActive ? (
+          {/* {!subscription.isActive ? (
             <View style={{ flex: 1, marginTop: 30 }}>
               <SubscriptionView selectedPlan={''} handlePlanSelection={() => {}} />
             </View>
           ) : (
-            !isSocketLoading && (
-              <FlatList
-                data={messages}
-                contentContainerStyle={{
-                  flexGrow: messages?.length === 0 ? 1 : undefined,
-                  paddingBottom: BOTTOM_TAB_HEIGHT,
-                  justifyContent: messages.length === 0 ? 'center' : undefined,
-                }}
-                maxToRenderPerBatch={10}
-                renderItem={({ item, index }) => {
-                  return <RenderChatRoomList item={item} index={index} />;
-                }}
-                ListEmptyComponent={<ListEmptyView />}
-              />
-            )
-          )}
+            !isSocketLoading && ( */}
+          <FlatList
+            data={messages}
+            contentContainerStyle={{
+              flexGrow: messages?.length === 0 ? 1 : undefined,
+              paddingBottom: BOTTOM_TAB_HEIGHT,
+              justifyContent: messages.length === 0 ? 'center' : undefined,
+            }}
+            maxToRenderPerBatch={10}
+            renderItem={({ item, index }) => {
+              return <RenderChatRoomList item={item} />;
+            }}
+            ListEmptyComponent={<ListEmptyView />}
+          />
+          {/* )
+          )} */}
         </View>
       </View>
     </GradientView>

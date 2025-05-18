@@ -207,7 +207,7 @@ const HomeScreen = () => {
 
   const renderLookingItem = useCallback(
     ({ item, index }: { item: HomeListProps['item']; index: number }) => (
-      <Animated.View entering={SlideInRight.delay(index * 100)} layout={LinearTransition.springify()}>
+      <Animated.View entering={SlideInRight.delay(index)} layout={LinearTransition.springify()}>
         <RenderLookingView
           item={item}
           selectedCategory={selectedCategory}
@@ -221,7 +221,7 @@ const HomeScreen = () => {
   const renderHomeNearbyItem = useCallback(
     ({ item, index }: { item: ProfileType; index: number }) => (
       <Animated.View
-        entering={FadeIn.delay(index * 50).duration(300)}
+        entering={FadeIn.delay(index).duration(300)}
         exiting={FadeOut.duration(200)}
         layout={LinearTransition.springify()}
       >
@@ -233,7 +233,7 @@ const HomeScreen = () => {
 
   const renderRecommendationItem = useCallback(
     ({ item, index }: { item: ProfileType; index: number }) => (
-      <Animated.View entering={FadeIn.delay(index * 100)} layout={LinearTransition.springify()}>
+      <Animated.View entering={FadeIn.delay(index)} layout={LinearTransition.springify()}>
         <RenderRecommendation item={item} />
       </Animated.View>
     ),

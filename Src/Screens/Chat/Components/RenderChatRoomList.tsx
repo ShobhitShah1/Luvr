@@ -1,6 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import FastImage from '@d11/react-native-fast-image';
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import CommonIcons from '../../../Common/CommonIcons';
 import { GROUP_FONT } from '../../../Common/Theme';
@@ -9,46 +8,58 @@ import { useTheme } from '../../../Contexts/ThemeContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { ChatRoomProps } from '../../../Types/Interface';
 
-const RenderChatRoomList = ({ item, index }: ChatRoomProps) => {
+const RenderChatRoomList = ({ item }: ChatRoomProps) => {
   const { colors, isDark } = useTheme();
   const navigation = useCustomNavigation();
 
-  if (!item || !item.chat || !Array.isArray(item.chat)) {
+  if (!item) {
     return null;
   }
 
-  const sortedChat = item.chat.slice().sort((a, b) => b.time - a.time);
-  const latestMessage = sortedChat[0];
+  const { latestMessage, formattedTime, profileImageUrl } = useMemo(() => {
+    const sortedChat = [...item?.chat].sort((a, b) => +b.time - +a.time);
+    const latest = sortedChat?.[0];
 
-  const formattedTime =
-    latestMessage &&
-    new Date(latestMessage.time).toLocaleTimeString([], {
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true,
-    });
+    return {
+      latestMessage: latest,
+      formattedTime: latest
+        ? new Date(latest.time).toLocaleTimeString([], {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+          })
+        : '',
+      profileImageUrl: item?.profile ? `${ApiConfig.IMAGE_BASE_URL}${item.profile}` : null,
+    };
+  }, [item.chat, item.profile]);
+
+  const handlePress = () => {
+    navigation.navigate('Chat', { id: item.to });
+  };
+
+  const containerStyle = [
+    styles.chatRoomContainerView,
+    {
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White,
+    },
+  ];
+
+  const messageTextStyle = [
+    styles.lastMessageText,
+    { color: isDark ? 'rgba(198, 198, 198, 1)' : 'rgba(18, 18, 19, 1)' },
+  ];
 
   return (
     <Pressable
-      key={index}
-      onPress={() => navigation.navigate('Chat', { id: item.to })}
-      style={[
-        styles.chatRoomContainerView,
-        {
-          borderWidth: 1,
-          borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
-          backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White,
-        },
-      ]}
+      key={item.to}
+      onPress={handlePress}
+      style={containerStyle}
+      android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }}
     >
       <View style={styles.profilePicView}>
-        <FastImage
-          resizeMode="cover"
-          style={styles.profilePic}
-          source={
-            item?.profile ? { uri: ApiConfig.IMAGE_BASE_URL + item?.profile } : { uri: ApiConfig.PLACEHOLDER_IMAGE }
-          }
-        />
+        {profileImageUrl && <Image resizeMode="cover" style={styles.profilePic} source={{ uri: profileImageUrl }} />}
       </View>
       <View style={styles.nameAndMessageView}>
         <View style={styles.nameAndIconView}>
@@ -57,15 +68,7 @@ const RenderChatRoomList = ({ item, index }: ChatRoomProps) => {
           </Text>
           <Image source={CommonIcons.Verification_Icon} style={styles.verifyIcon} />
         </View>
-        <Text
-          numberOfLines={2}
-          style={[
-            styles.lastMessageText,
-            {
-              color: isDark ? 'rgba(198, 198, 198, 1)' : 'rgba(18, 18, 19, 1))',
-            },
-          ]}
-        >
+        <Text numberOfLines={2} style={messageTextStyle}>
           {latestMessage?.message}
         </Text>
       </View>
@@ -111,6 +114,7 @@ const styles = StyleSheet.create({
   nameAndIconView: {
     width: '90%',
     flexDirection: 'row',
+    alignItems: 'center',
   },
   nameText: {
     ...GROUP_FONT.h3,
@@ -119,8 +123,6 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     marginLeft: 5,
-    alignSelf: 'center',
-    justifyContent: 'center',
   },
   lastMessageText: {
     ...GROUP_FONT.body4,

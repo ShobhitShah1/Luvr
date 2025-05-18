@@ -111,29 +111,25 @@ const App: React.FC = () => {
     });
   }, [handleNotificationPress]);
 
-  const handleDeepLink = useCallback(
-    ({ url }: DeepLinkEvent) => {
-      if (url === lastHandledUrl || !navigationRef?.current) return;
-      setLastHandledUrl(url);
+  const handleDeepLink = useCallback(({ url }: DeepLinkEvent) => {
+    if (!navigationRef?.current) return;
 
-      try {
-        if (url?.includes('app/profile')) {
-          const profileId = url.split('/').pop();
-          if (profileId) {
-            navigationRef.navigate('ExploreCardDetail', { id: profileId });
-          }
-        } else if (url?.includes('app/chat')) {
-          const profileId = url.split('/').pop();
-          if (profileId) {
-            navigationRef.navigate('Chat', { id: profileId });
-          }
+    try {
+      if (url?.includes('app/profile')) {
+        const profileId = url.split('/').pop();
+        if (profileId) {
+          navigationRef.navigate('ExploreCardDetail', { id: profileId });
         }
-      } catch (error) {
-        console.error('Error handling deep link:', error);
+      } else if (url?.includes('app/chat')) {
+        const profileId = url.split('/').pop();
+        if (profileId) {
+          navigationRef.navigate('Chat', { id: profileId });
+        }
       }
-    },
-    [lastHandledUrl]
-  );
+    } catch (error) {
+      console.error('Error handling deep link:', error);
+    }
+  }, []);
 
   useEffect(() => {
     const subscription = Linking.addEventListener('url', handleDeepLink);
@@ -142,7 +138,6 @@ const App: React.FC = () => {
       try {
         const initialURL = await Linking.getInitialURL();
         if (initialURL) {
-          console.log('App opened with URL:', initialURL);
           handleDeepLink({ url: initialURL });
         }
       } catch (error) {
@@ -214,7 +209,7 @@ const App: React.FC = () => {
               <GestureHandlerRootView style={{ flex: 1 }}>
                 <ToastProvider
                   placement="top"
-                  duration={4000}
+                  duration={2000}
                   offset={30}
                   animationType="zoom-in"
                   renderType={toastConfig}

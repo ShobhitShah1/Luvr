@@ -3,25 +3,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ParamListBase, RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { memo, useState } from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, View, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, SafeAreaView, View } from 'react-native';
 import { GiftedChat, IMessage, MessageText, MessageTextProps } from 'react-native-gifted-chat';
-import { store } from '../../Redux/Store/store';
+import GradientView from '../../Common/GradientView';
+import ReportUserModalView from '../../Components/ReportUserModalView';
+import ApiConfig from '../../Config/ApiConfig';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import { onSwipeLeft } from '../../Redux/Action/actions';
+import { store } from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
-import ApiConfig from '../../Config/ApiConfig';
 import { useCustomToast } from '../../Utils/toastUtils';
-import GradientView from '../../Common/GradientView';
-import { styles } from './styles';
+import ChatBubble from './Components/ChatBubble';
 import ChatHeader from './Components/ChatHeader';
 import ChatInput from './Components/ChatInput';
-import ChatBubble from './Components/ChatBubble';
 import ReportOrBlockModal from './Components/ReportOrBlockModal';
-import ReportUserModalView from '../../Components/ReportUserModalView';
 import { useChat } from './hooks/useChat';
-import { useSubscriptionModal } from '../../Contexts/SubscriptionModalContext';
-import { useUserData } from '../../Contexts/UserDataContext';
+import { styles } from './styles';
 
 interface ChatData {
   params: {
@@ -48,10 +46,6 @@ const ChatScreen = () => {
   const [showReportModalView, setShowReportModalView] = useState<boolean>(false);
   const [reportAndBlockModal, setReportAndBlockModal] = useState(false);
 
-  const { subscription } = useUserData();
-
-  console.log('subscription:', subscription);
-
   const { userMessage, otherUserProfileData, avatarUrl, onSend, isLoading, canSendMessage } = useChat(
     currentLoginUserId,
     currentUserImage,
@@ -68,7 +62,8 @@ const ChatScreen = () => {
 
     const apiResponse = await UserService.UserRegister(blockData);
     if (apiResponse && apiResponse?.code === 200) {
-      await store.dispatch(onSwipeLeft(String(params?.id)));
+      store.dispatch(onSwipeLeft(String(params?.id)));
+
       showToast(
         'User Blocked',
         `Your request to block ${otherUserProfileData?.full_name} is successfully send`,
@@ -92,7 +87,7 @@ const ChatScreen = () => {
 
     const apiResponse = await UserService.UserRegister(blockData);
     if (apiResponse && apiResponse?.code === 200) {
-      await store.dispatch(onSwipeLeft(String(params?.id)));
+      store.dispatch(onSwipeLeft(String(params?.id)));
       showToast(
         'Success!',
         `Your report against ${otherUserProfileData?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${selectedReportReason}`,

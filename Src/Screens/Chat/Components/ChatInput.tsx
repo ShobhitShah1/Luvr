@@ -62,7 +62,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage
         zIndex: 9999,
         opacity: canSendMessage ? 1 : 0.5,
       }}
-      disabled={!canSendMessage}
     >
       <View
         style={{

@@ -115,8 +115,7 @@ export interface ReportOrBlockInterface {
 }
 
 export interface ChatRoomProps {
-  item: ChatRoomDataType;
-  index?: number;
+  item: MessageItem;
 }
 
 interface MessageType {
@@ -140,6 +139,7 @@ interface ChatMessage {
   senderId: string;
   message: string;
   timestamp: number;
+  time: string;
 }
 
 export interface MessageItem {
