@@ -45,6 +45,7 @@ import { useCustomToast } from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
+import { useSubscriptionModal } from '../../Contexts/SubscriptionModalContext';
 
 const appOpenAdUnitId = __DEV__ ? TestIds.APP_OPEN : ApiConfig.ANDROID_AD_ID;
 const interstitialAdUnitId = __DEV__ ? TestIds.INTERSTITIAL : ApiConfig.ANDROID_AD_ID;
@@ -62,6 +63,7 @@ const ExploreCardScreen: FC = () => {
   const { width } = useWindowDimensions();
   const dispatch = useDispatch();
   const { subscription } = useUserData();
+  const { showSubscriptionModal } = useSubscriptionModal();
 
   const swipeRef = useRef<any>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
@@ -544,6 +546,12 @@ const ExploreCardScreen: FC = () => {
           }}
           user={MatchedUserInfo}
           onSayHiClick={() => {
+            if (!subscription.isActive) {
+              showToast(TextString.premiumFeatureAccessTitle, TextString.premiumFeatureAccessDescription, 'error');
+              showSubscriptionModal();
+              return;
+            }
+
             setIsMatchModalVisible(false);
             navigation.navigate('Chat', {
               id: MatchedUserInfo?._id?.toString(),

@@ -15,6 +15,7 @@ import { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import { useUserData } from '../../../Contexts/UserDataContext';
 import { useSubscriptionModal } from '../../../Contexts/SubscriptionModalContext';
+import TextString from '../../../Common/TextString';
 
 const generateRandomId = () => {
   return Math.random().toString(36).substr(2, 9);
@@ -203,12 +204,7 @@ export const useChat = (
   const onSend = useCallback(
     async (messages: IMessage[]) => {
       if (!canSendMessage) {
-        showToast(
-          'Premium Feature',
-          'You need a Gold membership or to receive a message first to send messages.',
-          'error'
-        );
-
+        showToast(TextString.premiumFeatureAccessTitle, TextString.premiumFeatureAccessDescription, 'error');
         showSubscriptionModal();
         return;
       }
