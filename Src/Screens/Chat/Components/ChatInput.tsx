@@ -84,8 +84,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage
       {...inputToolbarProps}
       containerStyle={{
         marginVertical: 10,
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
         marginBottom: 8,
+        left: 8,
         flex: 1,
         flexGrow: 1,
         justifyContent: 'center',

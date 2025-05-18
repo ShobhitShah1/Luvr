@@ -44,7 +44,7 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({ data, onRightIconPress }) => {
           </View>
           <View style={[styles.UserInfoView, { flex: 1, justifyContent: 'center' }]}>
             {data?.full_name && (
-              <View style={[styles.ProfileNameView, { alignSelf: 'center', justifyContent: 'center' }]}>
+              <View style={styles.ProfileNameView}>
                 <Text
                   numberOfLines={1}
                   style={[styles.ProfileNameText, { color: colors.TitleText, textAlign: 'center' }]}
