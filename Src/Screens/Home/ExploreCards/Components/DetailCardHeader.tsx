@@ -1,6 +1,6 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { FC } from 'react';
-import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
 import { COLORS, FONTS } from '../../../../Common/Theme';
@@ -8,6 +8,7 @@ import { useTheme } from '../../../../Contexts/ThemeContext';
 import useCalculateAge from '../../../../Hooks/useCalculateAge';
 import { useCustomNavigation } from '../../../../Hooks/useCustomNavigation';
 import { ProfileType } from '../../../../Types/ProfileType';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type DetailCardRouteParams = {
   props: ProfileType | undefined;
@@ -71,8 +72,10 @@ export default DetailCardHeader;
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+    alignItems: 'center',
     justifyContent: 'center',
-    height: Platform.OS === 'ios' ? hp('12.5%') : hp('7%'),
+    backgroundColor: 'red',
+    height: Platform.OS === 'ios' ? hp('11%') : hp('7%'),
   },
   ContentView: {
     width: '90%',

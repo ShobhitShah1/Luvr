@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
   },
   nameText: {
     ...GROUP_FONT.h3,
+    fontSize: 16,
   },
   verifyIcon: {
     width: 16,
@@ -126,6 +127,8 @@ const styles = StyleSheet.create({
   },
   lastMessageText: {
     ...GROUP_FONT.body4,
+    fontSize: 14,
+    marginTop: 5,
     color: 'rgba(108, 108, 108, 1)',
   },
   timeView: {

@@ -660,12 +660,12 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
+    marginBottom: Platform.OS === 'ios' ? 30 : 0,
   },
   LikeAndRejectButtonView: {
     justifyContent: 'center',
     alignSelf: 'center',
     marginHorizontal: hp('0.4%'),
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
   },
   DislikeButton: {
     padding: 0,
@@ -691,7 +691,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     margin: hp('1.25%'),
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    // paddingBottom: Platform.OS === 'ios' ? 30 : 0,
     borderRadius: 5000,
     overflow: 'hidden',
   },

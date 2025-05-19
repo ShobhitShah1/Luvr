@@ -699,8 +699,8 @@ const styles = StyleSheet.create({
   },
   infoIconView: {
     marginHorizontal: hp('0.4%'),
-    width: 50,
-    height: 50,
+    width: Platform.OS === 'ios' ? 43 : 50,
+    height: Platform.OS === 'ios' ? 43 : 50,
     marginLeft: 9,
     borderRadius: 500,
     alignItems: 'center',
@@ -713,8 +713,8 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   infoIcon: {
-    width: '55%',
-    height: '55%',
+    width: Platform.OS === 'ios' ? '53%' : '55%',
+    height: Platform.OS === 'ios' ? '53%' : '55%',
   },
 });
 
