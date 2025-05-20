@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   ContentView: {
-    marginTop: Platform.select({ ios: 30, android: 95 }),
+    marginTop: Platform.select({ ios: 60, android: 95 }),
   },
   ProfileImageView: {
     alignItems: 'center',

@@ -36,7 +36,7 @@ const DetailCardHeader: FC<DetailCardRouteParams> = ({ props }) => {
         },
       ]}
     >
-      <SafeAreaView />
+      {Platform.OS === 'android' && <SafeAreaView />}
       <View style={styles.ContentView}>
         <Pressable
           onPress={() =>
@@ -74,11 +74,13 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'red',
-    height: Platform.OS === 'ios' ? hp('11%') : hp('7%'),
+    height: Platform.OS === 'ios' ? hp('13%') : hp('7%'),
   },
   ContentView: {
+    flex: 1,
+    height: '100%',
     width: '90%',
+    marginTop: Platform.OS === 'ios' ? hp('5%') : hp('0%'),
     alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'center',

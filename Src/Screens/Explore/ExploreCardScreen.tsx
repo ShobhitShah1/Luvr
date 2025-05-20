@@ -699,9 +699,10 @@ const styles = StyleSheet.create({
   },
   infoIconView: {
     marginHorizontal: hp('0.4%'),
-    width: Platform.OS === 'ios' ? 43 : 50,
-    height: Platform.OS === 'ios' ? 43 : 50,
-    marginLeft: 9,
+    width: 50,
+    height: 50,
+    bottom: Platform.OS === 'ios' ? 2.5 : 0,
+    marginLeft: 10,
     borderRadius: 500,
     alignItems: 'center',
     justifyContent: 'center',
@@ -713,8 +714,8 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   infoIcon: {
-    width: Platform.OS === 'ios' ? '53%' : '55%',
-    height: Platform.OS === 'ios' ? '53%' : '55%',
+    width: Platform.OS === 'ios' ? '48%' : '55%',
+    height: Platform.OS === 'ios' ? '48%' : '55%',
   },
 });
 
