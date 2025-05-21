@@ -133,7 +133,7 @@ const ExploreCardDetailScreen = () => {
     }
   };
 
-  const onSharePress = () => {
+  const onSharePress = async () => {
     try {
       if (!subscription.isActive) {
         showToast(TextString.premiumFeatureAccessTitle, TextString.premiumFeatureAccessDescription, 'error');
@@ -153,14 +153,24 @@ const ExploreCardDetailScreen = () => {
       const deepLinkUrl = `https://nirvanatechlabs.in/app/profile/${id}`;
 
       const userName = cardDetail?.params?.props?.full_name || 'this profile';
-      const shareMessage = `Check out ${userName} on Luvr!\n${deepLinkUrl}`;
+      const userBio = cardDetail?.params?.props?.about || 'Check out this amazing profile';
 
-      Share.share({
+      const shareMessage = `✨ I found ${userName} on Luvr! ${userBio.substring(0, 50)}${userBio.length > 50 ? '...' : ''}\n\n👉 Connect on Luvr: ${deepLinkUrl}\n\n#Luvr #MeetNewPeople`;
+
+      const shareOptions = {
         message: shareMessage,
-        url: deepLinkUrl, // For iOS
+        title: `${userName} on Luvr`,
+      } as const;
+
+      Object.keys(shareOptions).forEach((key) => {
+        if (shareOptions[key as keyof typeof shareOptions] === undefined) {
+          delete shareOptions[key as keyof typeof shareOptions];
+        }
       });
+
+      await Share.share(shareOptions);
     } catch (error: any) {
-      showToast('Error', error?.message?.toString(), 'error');
+      showToast('Error', error?.message?.toString() || 'Failed to share profile', 'error');
     }
   };
 
