@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     paddingVertical: 3,
     paddingHorizontal: 20,
+    minHeight: 50,
   },
   AboutMeTextViewStyle: {
     ...GROUP_FONT.body4,

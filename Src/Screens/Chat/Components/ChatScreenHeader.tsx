@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
   },
   ProfileNameText: {
     ...GROUP_FONT.h3,
+    fontSize: 16,
     color: COLORS.Primary,
     fontFamily: FONTS.Bold,
   },

@@ -128,12 +128,15 @@ const HopingToFind: FC = () => {
             </Text>
           </View>
 
-          <FlatList
-            data={LookingFor}
-            renderItem={renderItem}
-            contentContainerStyle={styles.FlatListContainer}
-            keyExtractor={(item, index) => index.toString()}
-          />
+          <View style={{ height: '70%' }}>
+            <FlatList
+              data={LookingFor}
+              renderItem={renderItem}
+              style={{ paddingBottom: hp('10%') }}
+              contentContainerStyle={styles.FlatListContainer}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </View>
         </View>
 
         <View style={CreateProfileStyles.BottomButton}>
@@ -168,9 +171,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.Bold,
   },
   FlatListContainer: {
-    justifyContent: 'center',
-    alignSelf: 'center',
-    marginTop: hp('5%'),
+    flexGrow: 1,
   },
   SelectedLookingForListView: {
     width: '31%',

@@ -1,6 +1,6 @@
 import messaging from '@react-native-firebase/messaging';
 import { NavigationProp } from '@react-navigation/native';
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Image, Linking, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
@@ -10,11 +10,13 @@ import { FONTS } from '../Common/Theme';
 import { gradientEnd, gradientStart } from '../Config/Setting';
 import { useTheme } from '../Contexts/ThemeContext';
 import { useLocationPermission } from '../Hooks/useLocationPermission';
-import { updateField } from '../Redux/Action/actions';
+import { updateField, setDeepLinkUrl } from '../Redux/Action/actions';
 import { store } from '../Redux/Store/store';
 import { initGoogleSignIn } from '../Services/AuthService';
 import { LocalStorageFields } from '../Types/LocalStorageFields';
 import { useCustomToast } from '../Utils/toastUtils';
+import { navigationRef } from '../Routes/RootNavigation';
+import { DeepLinkEvent } from '../../App';
 
 interface SplashScreenProps {
   navigation: NavigationProp<any>;
@@ -63,6 +65,77 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   useEffect(() => {
     initializeAppFlow();
   }, []);
+
+  const handleDeepLinkNavigation = useCallback((url: string) => {
+    if (!navigationRef?.current) return;
+
+    try {
+      // Validate URL format
+      if (!url || typeof url !== 'string') {
+        console.error('Invalid deep link URL');
+        return;
+      }
+
+      // Extract and validate profile ID
+      const profileId = url.split('/').pop();
+      if (!profileId) {
+        console.error('Invalid profile ID in deep link');
+        return;
+      }
+
+      // Create navigation state with proper history
+      const navigationState = {
+        index: 1,
+        routes: [
+          { name: 'BottomTab' },
+          {
+            name: url.includes('app/profile') ? 'ExploreCardDetail' : 'Chat',
+            params: { id: profileId },
+          },
+        ],
+      };
+
+      // Apply navigation state
+      navigationRef.reset(navigationState);
+    } catch (error) {
+      console.error('Error handling deep link navigation:', error);
+      // Fallback to BottomTab if navigation fails
+      navigationRef.reset({
+        index: 0,
+        routes: [{ name: 'BottomTab' }],
+      });
+    }
+  }, []);
+
+  const navigateToDestination = (destination: NavigationDestination, params?: object) => {
+    console.log(`[SplashScreen] Navigating to ${destination}`, params || '');
+
+    // Check if we have a deep link URL to handle
+    const deepLinkUrl = store.getState().user?.deepLinkUrl;
+
+    if (deepLinkUrl && destination === NavigationDestination.BOTTOM_TAB) {
+      // Clear the deep link URL from Redux
+      store.dispatch(setDeepLinkUrl(null));
+
+      // Validate user state before deep link navigation
+      if (!userStoreData?.isVerified || !userStoreData?.mobile_no) {
+        console.log('User not verified or missing phone number, skipping deep link');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: destination, ...(params && { params }) }],
+        });
+        return;
+      }
+
+      // Navigate to the deep link destination
+      handleDeepLinkNavigation(deepLinkUrl);
+    } else {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: destination, ...(params && { params }) }],
+      });
+    }
+  };
 
   const handleNotificationPermission = async () => {
     try {
@@ -128,14 +201,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       (userStoreData?.userData?.recent_pik && userStoreData?.userData?.recent_pik?.length !== 0);
     logInitializationState(InitializationStep.PROFILE_IMAGE, hasImage);
     return hasImage;
-  };
-
-  const navigateToDestination = (destination: NavigationDestination, params?: object) => {
-    console.log(`[SplashScreen] Navigating to ${destination}`, params || '');
-    navigation.reset({
-      index: 0,
-      routes: [{ name: destination, ...(params && { params }) }],
-    });
   };
 
   const initializeAppFlow = async () => {

@@ -178,7 +178,7 @@ const ChatRoomScreen = () => {
           }}
         >
           <View style={styles.contentView}>
-            <View style={styles.titleTextView}>
+            <View style={[styles.titleTextView, Platform.OS === 'ios' ? { height: 40 } : {}]}>
               <Text style={[styles.titleText, { color: colors.TitleText }]}>{APP_NAME?.toUpperCase()}</Text>
             </View>
           </View>
@@ -202,7 +202,7 @@ const ChatRoomScreen = () => {
           }}
         >
           <View style={styles.contentView}>
-            <View style={styles.titleTextView}>
+            <View style={[styles.titleTextView, Platform.OS === 'ios' ? { height: 40 } : {}]}>
               <Text style={[styles.titleText, { color: colors.TitleText }]}>{APP_NAME?.toUpperCase()}</Text>
             </View>
           </View>
@@ -292,13 +292,14 @@ const styles = StyleSheet.create({
   },
   titleTextView: {
     top: 2,
+
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,
   },
   titleText: {
     fontFamily: FONTS.Bold,
-    fontSize: hp('2.2%'),
+    fontSize: 20,
     color: COLORS.Primary,
   },
 });

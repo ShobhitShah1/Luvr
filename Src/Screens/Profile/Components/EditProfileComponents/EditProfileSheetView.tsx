@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import React, { FC, memo, useCallback, useMemo } from 'react';
-import { FlatList, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
@@ -433,7 +433,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
               style={[
                 styles.GenderView,
                 {
-                  width: hp('12%'),
+                  width: `${100 / 3.2}%`,
                   borderWidth: 1,
                   borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White,
                 },
@@ -811,8 +811,8 @@ const styles = StyleSheet.create({
     marginBottom: hp('1.5%'),
   },
   MultiSelectButtonView: {
-    width: hp('12%'),
-    height: hp('6.8%'),
+    width: `${100 / 3.2}%`,
+    height: Platform.OS === 'ios' ? hp('7.8%') : hp('6.8%'),
     justifyContent: 'center',
     borderRadius: SIZES.radius,
     marginVertical: hp('0.7%'),

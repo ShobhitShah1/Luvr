@@ -123,6 +123,7 @@ export default memo(BottomTabHeader);
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+    zIndex: 99999,
     justifyContent: 'center',
     height: Platform.OS === 'ios' ? hp('12.5%') : hp('7%'),
   },

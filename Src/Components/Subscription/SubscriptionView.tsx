@@ -265,15 +265,19 @@ const SubscriptionView = ({
     if (!productId) return '';
 
     const product = subscriptionProducts.find((p) => p.productId === productId);
-
-    if (product) {
-      if (product.platform === RNIap.SubscriptionPlatform.ios) {
-        return (product as RNIap.SubscriptionIOS).localizedPrice || '';
-      }
+    if (!product) {
+      return apiSubscriptionData.find((p) => p.key === productId)?.price || '';
     }
 
-    const plan = apiSubscriptionData.find((p) => p.key === productId);
-    return plan?.price || '';
+    if (product.platform === RNIap.SubscriptionPlatform.ios) {
+      return (product as RNIap.SubscriptionIOS).localizedPrice || '';
+    }
+
+    const androidProduct = product as RNIap.SubscriptionAndroid;
+    const offerDetails = androidProduct.subscriptionOfferDetails?.[0];
+    const pricingPhase = offerDetails?.pricingPhases?.pricingPhaseList?.[0];
+
+    return pricingPhase?.formattedPrice || '';
   };
 
   return isProductFetchLoading ? (
@@ -423,7 +427,7 @@ const SubscriptionView = ({
                     ? 'Share'
                     : purchaseProcessed
                       ? 'Subscribed'
-                      : `Buy now ${getSelectedPlan?.()?.price || ''}`?.trim()}
+                      : `Buy now ${getProductPrice(getSelectedPlan?.()?.key || '') || ''}`?.trim()}
                 </Text>
               )}
             </Pressable>
@@ -595,7 +599,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   priceText: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: FONTS.Bold,
   },
   buyButtonContainer: {

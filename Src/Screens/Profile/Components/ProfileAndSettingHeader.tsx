@@ -135,8 +135,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.Primary,
   },
   ModalSubmitIcon: {
-    width: 13,
-    height: 13,
+    width: 15,
+    height: 15,
     alignSelf: 'center',
+    resizeMode: 'contain',
   },
 });

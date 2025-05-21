@@ -131,6 +131,6 @@ const styles = StyleSheet.create({
   },
   skipButton: {
     justifyContent: 'center',
-    marginRight: hp('1%'),
+    marginRight: Platform.OS === 'ios' ? hp('2.5%') : hp('1%'),
   },
 });

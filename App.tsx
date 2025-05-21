@@ -17,14 +17,14 @@ import { SubscriptionModalProvider } from './Src/Contexts/SubscriptionModalConte
 import { ThemeProvider } from './Src/Contexts/ThemeContext';
 import { UserDataProvider } from './Src/Contexts/UserDataContext';
 import useAppStateTracker from './Src/Hooks/useAppStateTracker';
-import { DONATION_PRODUCTS, setCurrentScreenName } from './Src/Redux/Action/actions';
+import { DONATION_PRODUCTS, setCurrentScreenName, setDeepLinkUrl } from './Src/Redux/Action/actions';
 import { persistor, store } from './Src/Redux/Store/store';
 import MainRoute from './Src/Routes/MainRoute';
 import { navigationRef } from './Src/Routes/RootNavigation';
 import ToastStyle from './Src/Screens/Auth/CreateProfile/Components/ToastStyle';
 import { getToken } from './Src/Services/fetch.service';
 
-interface DeepLinkEvent {
+export interface DeepLinkEvent {
   url: string;
 }
 
@@ -115,15 +115,23 @@ const App: React.FC = () => {
     if (!navigationRef?.current) return;
 
     try {
+      store.dispatch(setDeepLinkUrl(url));
+
       if (url?.includes('app/profile')) {
         const profileId = url.split('/').pop();
         if (profileId) {
-          navigationRef.navigate('ExploreCardDetail', { id: profileId });
+          navigationRef.reset({
+            index: 0,
+            routes: [{ name: 'ExploreCardDetail', params: { id: profileId } }],
+          });
         }
       } else if (url?.includes('app/chat')) {
         const profileId = url.split('/').pop();
         if (profileId) {
-          navigationRef.navigate('Chat', { id: profileId });
+          navigationRef.reset({
+            index: 0,
+            routes: [{ name: 'Chat', params: { id: profileId } }],
+          });
         }
       }
     } catch (error) {
@@ -137,6 +145,7 @@ const App: React.FC = () => {
     const getInitialURL = async () => {
       try {
         const initialURL = await Linking.getInitialURL();
+        console.log('initialURL APP:', initialURL);
         if (initialURL) {
           handleDeepLink({ url: initialURL });
         }

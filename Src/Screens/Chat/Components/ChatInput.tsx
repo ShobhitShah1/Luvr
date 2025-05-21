@@ -17,21 +17,20 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage
     <View
       style={{
         height: 59,
-        alignSelf: 'center',
         width: '90%',
         overflow: 'hidden',
         backgroundColor: isDark ? 'rgba(255, 255, 255, 0.3))' : colors.White,
         borderRadius: 25,
         marginRight: 5,
         flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
+        paddingHorizontal: 10,
+        paddingBottom: 5,
         borderWidth: 0.5,
         borderColor: isDark ? colors.White : 'transparent',
         opacity: canSendMessage ? 1 : 0.5,
       }}
     >
-      <View style={{ width: '88%', top: 2.5 }}>
+      <View style={{ width: '88%', alignSelf: 'flex-start', top: 2.5, justifyContent: 'center' }}>
         <Composer
           {...composerProps}
           textInputStyle={{
@@ -42,6 +41,11 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage
             flex: 1,
             fontFamily: FONTS.Medium,
           }}
+          textInputProps={{
+            textAlignVertical: 'center',
+            verticalAlign: 'center',
+          }}
+          composerHeight={59}
           placeholder={canSendMessage ? 'Write your message here' : 'Wait for a message or upgrade to Gold'}
           placeholderTextColor={isDark ? 'rgba(255, 255, 255, 1)' : 'rgba(130, 130, 130, 1)'}
           editable={canSendMessage}
