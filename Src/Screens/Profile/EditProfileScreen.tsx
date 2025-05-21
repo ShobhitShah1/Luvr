@@ -614,6 +614,8 @@ const EditProfileScreen = () => {
                       }}
                       maxLength={2}
                       placeholder="DD"
+                      textAlign="center"
+                      textAlignVertical="center"
                       style={[
                         styles.birthDateInputStyle,
                         { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(240, 236, 255, 1)' },
@@ -699,7 +701,7 @@ const EditProfileScreen = () => {
                   onChangeText={setBio}
                   maxLength={500}
                   IsViewLoading={isLoading}
-                  TextInputStyle={styles.textInputTextStyle}
+                  TextInputStyle={[styles.textInputTextStyle, { minHeight: 80 }]}
                   TextInputChildren={<Text style={styles.TotalWordCount}>{`${bio?.length}/500`}</Text>}
                   PlaceholderText="Write something about you..."
                 />
@@ -858,7 +860,7 @@ const EditProfileScreen = () => {
                           defaultValue={collegeName}
                           onChangeText={setCollegeName}
                           placeholder="Enter your education degree"
-                          style={styles.YourEducationTextStyle}
+                          style={[styles.YourEducationTextStyle, { minHeight: 45 }]}
                           placeholderTextColor={colors.Gray}
                         />
                       </GradientBorderView>
@@ -883,7 +885,7 @@ const EditProfileScreen = () => {
                           cursorColor={colors.Primary}
                           onChangeText={setEducationDegree}
                           placeholder="Enter your college name"
-                          style={styles.YourEducationTextStyle}
+                          style={[styles.YourEducationTextStyle, { minHeight: 45 }]}
                           placeholderTextColor={colors.Gray}
                         />
                       </GradientBorderView>
@@ -1068,7 +1070,12 @@ const EditProfileScreen = () => {
                     <ActivityIndicator size={17} color={colors.Primary} />
                   ) : (
                     <Pressable
-                      style={{ flex: 1, justifyContent: 'center' }}
+                      style={{
+                        flex: 1,
+                        width: '100%',
+                        height: '100%',
+                        justifyContent: 'center',
+                      }}
                       disabled={isLoading}
                       onPress={() => {
                         bottomSheetModalRef?.current && bottomSheetModalRef?.current?.close();
@@ -1145,11 +1152,10 @@ const styles = StyleSheet.create({
   },
   birthDateInputStyle: {
     width: '30%',
-    paddingVertical: 13,
+    height: 50,
     borderRadius: 20,
     paddingHorizontal: 25,
     textAlign: 'center',
-    ...GROUP_FONT.body3,
   },
   AboutMeCustomView: {
     borderRadius: 25,
@@ -1216,5 +1222,6 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     alignSelf: 'center',
+    resizeMode: 'contain',
   },
 });

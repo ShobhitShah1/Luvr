@@ -16,12 +16,9 @@ export const RenderLikeScreenTopBar = React.memo(
   ({ item, onPress, isSelected, tabsData }: RenderLikeScreenTopBarProps) => {
     const { colors, isDark } = useTheme();
     return (
-      <LinearGradient
-        start={{ x: 1, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        colors={
-          isSelected ? colors.ButtonGradient : !isDark ? [colors.White, colors.White] : ['transparent', 'transparent']
-        }
+      <Pressable
+        key={item.index}
+        onPress={onPress}
         style={[
           styles.TabBarButtonView,
           {
@@ -31,7 +28,18 @@ export const RenderLikeScreenTopBar = React.memo(
           },
         ]}
       >
-        <Pressable key={item.index} onPress={onPress} style={{ flex: 1, justifyContent: 'center' }}>
+        <LinearGradient
+          start={{ x: 1, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          colors={
+            isSelected ? colors.ButtonGradient : !isDark ? [colors.White, colors.White] : ['transparent', 'transparent']
+          }
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            borderRadius: 60,
+          }}
+        >
           <Text
             style={[
               styles.TabBarButtonText,
@@ -42,7 +50,7 @@ export const RenderLikeScreenTopBar = React.memo(
           >
             {item.title}
           </Text>
-        </Pressable>
+        </LinearGradient>
 
         <View
           style={{
@@ -60,7 +68,7 @@ export const RenderLikeScreenTopBar = React.memo(
         >
           <Text style={{ color: colors.Black, fontSize: 10, fontWeight: 'bold' }}>{item.count}</Text>
         </View>
-      </LinearGradient>
+      </Pressable>
     );
   }
 );

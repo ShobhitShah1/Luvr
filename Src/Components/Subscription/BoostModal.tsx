@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
-import { Dimensions, Image, Platform, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import * as RNIap from 'react-native-iap';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
@@ -240,24 +240,26 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
       presentationStyle="overFullScreen"
       backdropOpacity={1}
       customBackdrop={
-        isDark ? (
-          <LinearGradient
-            colors={
-              isDark
-                ? [
-                    'rgba(22, 3, 42, 0.55)',
-                    'rgba(22, 3, 42, 0.66)',
-                    'rgba(22, 3, 42, 0.77)',
-                    'rgba(22, 3, 42, 0.88)',
-                    'rgba(22, 3, 42, 1)',
-                  ]
-                : ['white', 'white']
-            }
-            style={{ flex: 1, backgroundColor: isDark ? colors.Primary : 'transparent' }}
-          />
-        ) : (
-          <BlurView blurType="dark" blurAmount={5} style={{ flex: 1 }} />
-        )
+        <Pressable onPress={onClose} style={{ flex: 1 }}>
+          {isDark ? (
+            <LinearGradient
+              colors={
+                isDark
+                  ? [
+                      'rgba(22, 3, 42, 0.55)',
+                      'rgba(22, 3, 42, 0.66)',
+                      'rgba(22, 3, 42, 0.77)',
+                      'rgba(22, 3, 42, 0.88)',
+                      'rgba(22, 3, 42, 1)',
+                    ]
+                  : ['white', 'white']
+              }
+              style={{ flex: 1, backgroundColor: isDark ? colors.Primary : 'transparent' }}
+            />
+          ) : (
+            <BlurView blurType="dark" blurAmount={5} style={{ flex: 1 }} />
+          )}
+        </Pressable>
       }
     >
       <GradientBorderView

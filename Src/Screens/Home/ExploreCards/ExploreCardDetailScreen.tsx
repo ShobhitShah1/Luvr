@@ -516,7 +516,7 @@ const ExploreCardDetailScreen = () => {
                   }
                   style={[styles.ShareButtonView, { opacity: !subscription.isActive ? 0.5 : 1 }]}
                 >
-                  <Pressable onPress={onSharePress} style={[styles.ShareButtonView, {}]}>
+                  <Pressable onPress={onSharePress} style={styles.shareButton}>
                     <Image resizeMode="contain" style={styles.ShareIcon} source={CommonIcons.ic_share} />
                   </Pressable>
                 </LinearGradient>
@@ -660,12 +660,12 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
+    marginBottom: Platform.OS === 'ios' ? 30 : 0,
   },
   LikeAndRejectButtonView: {
     justifyContent: 'center',
     alignSelf: 'center',
     marginHorizontal: hp('0.4%'),
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
   },
   DislikeButton: {
     padding: 0,
@@ -691,14 +691,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     margin: hp('1.25%'),
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    height: 50,
+    width: 50,
+    backgroundColor: 'yellow',
     borderRadius: 5000,
-    overflow: 'hidden',
+  },
+  shareButton: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   ShareIcon: {
-    padding: 0,
-    width: hp('3.5%'),
-    height: hp('3.5%'),
+    width: hp('3.2%'),
+    height: hp('3.2%'),
     justifyContent: 'center',
     alignSelf: 'center',
   },
