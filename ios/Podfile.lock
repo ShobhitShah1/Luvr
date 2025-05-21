@@ -1532,7 +1532,51 @@ PODS:
     - React-Core
   - RNPermissions (3.10.1):
     - React-Core
-  - RNReanimated (3.6.1):
+  - RNReanimated (3.15.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNReanimated/reanimated (= 3.15.0)
+    - RNReanimated/worklets (= 3.15.0)
+    - Yoga
+  - RNReanimated/reanimated (3.15.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - RNReanimated/worklets (3.15.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1997,7 +2041,7 @@ SPEC CHECKSUMS:
   RNInAppBrowser: 6d3eb68d471b9834335c664704719b8be1bfdb20
   RNNotifee: 8768d065bf1e2f9f8f347b4bd79147431c7eacd6
   RNPermissions: d8daf18505ce9894045ab345e11506b8901bc5dc
-  RNReanimated: ec959e5fdd3f43d934f0240b75a3c45c915a0beb
+  RNReanimated: bd8e5335a5b35fab464c8a1317a1884ecce455e6
   RNScreens: 9d13d2a199becf7cefbf56c33185e822495b609a
   RNSVG: ff728783849deecdeb6a270ab35e9cb1db3cbe0f
   SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
@@ -2007,6 +2051,6 @@ SPEC CHECKSUMS:
   VisionCamera: f56eaedde0d3fa095143b78374d29e89e71735f9
   Yoga: 6986e115ef4e300f1f5b4910d5eef51c711c8747
 
-PODFILE CHECKSUM: c3e46f0940d9a26e6158a3a5a39b502f3f40f985
+PODFILE CHECKSUM: 03f8603e2de5dc3805af0f31201ecf4e82b2b923
 
 COCOAPODS: 1.14.3
