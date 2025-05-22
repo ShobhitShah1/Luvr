@@ -53,7 +53,13 @@ const ProfileScreen = () => {
   return (
     <GradientView>
       <View style={styles.container}>
-        <BottomTabHeader hideSettingAndNotification={true} hideDonation={true} showTitle={true} showSetting={true} />
+        <BottomTabHeader
+          isShare={true}
+          hideSettingAndNotification={true}
+          hideDonation={true}
+          showTitle={true}
+          showSetting={true}
+        />
         <ScrollView
           refreshControl={
             <RefreshControl

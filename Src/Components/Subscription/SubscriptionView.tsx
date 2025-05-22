@@ -1,7 +1,7 @@
 import { BlurView } from '@react-native-community/blur';
 import remoteConfig from '@react-native-firebase/remote-config';
 import React, { memo, useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Dimensions, Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import * as RNIap from 'react-native-iap';
 import LinearGradient from 'react-native-linear-gradient';
 import CommonIcons from '../../Common/CommonIcons';
@@ -113,6 +113,7 @@ const SubscriptionView = ({
             await RNIap.acknowledgePurchaseAndroid({ token: purchase.purchaseToken });
           }
 
+          // For iOS, we don't need to acknowledge, but we should finish the transaction
           await RNIap.finishTransaction({ purchase, isConsumable: false });
 
           setPurchaseProcessed(true);
@@ -177,7 +178,7 @@ const SubscriptionView = ({
         throw new Error('Selected product not found');
       }
 
-      if (product.platform === RNIap.SubscriptionPlatform.android) {
+      if (Platform.OS === 'android') {
         const androidProduct = product as RNIap.SubscriptionAndroid;
 
         const response = await RNIap.requestSubscription({
@@ -191,6 +192,7 @@ const SubscriptionView = ({
 
         if (response) callPurchaseAPI(Array.isArray(response) ? response[0] : response);
       } else {
+        // iOS
         const response = await RNIap.requestSubscription({
           sku: product.productId,
         } as RNIap.RequestSubscriptionIOS);
@@ -214,24 +216,60 @@ const SubscriptionView = ({
         return;
       }
 
-      const payment_response = {
-        platform: Platform.OS?.toLowerCase(),
-        productId: purchaseResponse.productId,
-        productIds: purchaseResponse.productIds || [],
-        purchaseToken: purchaseResponse.purchaseToken,
-        transactionId: purchaseResponse.transactionId,
-        transactionDate: purchaseResponse.transactionDate,
-        autoRenewing: purchaseResponse.autoRenewingAndroid,
-        isAcknowledged: purchaseResponse.isAcknowledgedAndroid,
-        purchaseState: purchaseResponse.purchaseStateAndroid,
-        packageName: purchaseResponse.packageNameAndroid,
-        signature: purchaseResponse.signatureAndroid,
-        developerPayload: purchaseResponse.developerPayloadAndroid || '',
-        obfuscatedAccountId: purchaseResponse.obfuscatedAccountIdAndroid || '',
-        obfuscatedProfileId: purchaseResponse.obfuscatedProfileIdAndroid || '',
-        transactionReceipt: JSON.parse(purchaseResponse.transactionReceipt || '{}'),
-        dataAndroid: JSON.parse(purchaseResponse.dataAndroid || '{}'),
-      };
+      Alert.alert('Subscription Data:', JSON.stringify(purchaseResponse, null, 2));
+
+      let payment_response;
+
+      if (Platform.OS === 'android') {
+        payment_response = {
+          platform: 'android',
+          productId: purchaseResponse.productId,
+          productIds: purchaseResponse.productIds || [],
+          purchaseToken: purchaseResponse.purchaseToken,
+          transactionId: purchaseResponse.transactionId,
+          transactionDate: purchaseResponse.transactionDate,
+          autoRenewing: purchaseResponse.autoRenewingAndroid,
+          isAcknowledged: purchaseResponse.isAcknowledgedAndroid,
+          purchaseState: purchaseResponse.purchaseStateAndroid,
+          packageName: purchaseResponse.packageNameAndroid,
+          signature: purchaseResponse.signatureAndroid,
+          developerPayload: purchaseResponse.developerPayloadAndroid || '',
+          obfuscatedAccountId: purchaseResponse.obfuscatedAccountIdAndroid || '',
+          obfuscatedProfileId: purchaseResponse.obfuscatedProfileIdAndroid || '',
+          transactionReceipt: JSON.parse(purchaseResponse.transactionReceipt || '{}'),
+          dataAndroid: JSON.parse(purchaseResponse.dataAndroid || '{}'),
+        };
+      } else {
+        // iOS payment response
+        const transactionReceipt = JSON.parse(purchaseResponse.transactionReceipt || '{}');
+
+        payment_response = {
+          platform: 'ios',
+          productId: purchaseResponse.productId,
+          productIds: purchaseResponse.productIds || [],
+          transactionId: purchaseResponse.transactionId,
+          transactionDate: purchaseResponse.transactionDate,
+          originalTransactionDate: purchaseResponse.originalTransactionDateIOS,
+          originalTransactionIdentifier: purchaseResponse.originalTransactionIdentifierIOS,
+          transactionReceipt: transactionReceipt,
+          // iOS specific fields
+          appAccountToken: purchaseResponse.appAccountToken || '',
+          // Receipt validation data
+          receiptData: purchaseResponse.transactionReceipt,
+          // Auto-renewal info (extracted from receipt if needed)
+          autoRenewing: true, // Default for subscriptions, can be updated based on receipt validation
+          purchaseState: 1, // Active state for iOS
+          // Additional iOS fields
+          webOrderLineItemId: transactionReceipt.web_order_line_item_id || '',
+          subscriptionGroupIdentifier: transactionReceipt.subscription_group_identifier || '',
+          isInIntroOfferPeriod: transactionReceipt.is_in_intro_offer_period === 'true',
+          isTrialPeriod: transactionReceipt.is_trial_period === 'true',
+          expiresDate: transactionReceipt.expires_date_ms ? parseInt(transactionReceipt.expires_date_ms) : null,
+          gracePeriodExpiresDate: transactionReceipt.grace_period_expires_date_ms
+            ? parseInt(transactionReceipt.grace_period_expires_date_ms)
+            : null,
+        };
+      }
 
       const dataToSend = { eventName: 'purchase', payment_response };
       const APIResponse = await UserService.UserRegister(dataToSend);
@@ -265,14 +303,16 @@ const SubscriptionView = ({
     if (!productId) return '';
 
     const product = subscriptionProducts.find((p) => p.productId === productId);
+
     if (!product) {
       return apiSubscriptionData.find((p) => p.key === productId)?.price || '';
     }
 
-    if (product.platform === RNIap.SubscriptionPlatform.ios) {
+    if (Platform.OS === 'ios') {
       return (product as RNIap.SubscriptionIOS).localizedPrice || '';
     }
 
+    // Android
     const androidProduct = product as RNIap.SubscriptionAndroid;
     const offerDetails = androidProduct.subscriptionOfferDetails?.[0];
     const pricingPhase = offerDetails?.pricingPhases?.pricingPhaseList?.[0];

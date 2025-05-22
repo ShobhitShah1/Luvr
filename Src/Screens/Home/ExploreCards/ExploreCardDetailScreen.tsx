@@ -4,7 +4,6 @@ import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Animated,
   Dimensions,
   Image,
@@ -25,6 +24,7 @@ import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import Paginator from '../../../Components/Paginator';
 import ReportUserModalView from '../../../Components/ReportUserModalView';
 import ApiConfig from '../../../Config/ApiConfig';
+import { useSubscriptionModal } from '../../../Contexts/SubscriptionModalContext';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { useUserData } from '../../../Contexts/UserDataContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
@@ -35,7 +35,7 @@ import { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import DetailCardHeader from './Components/DetailCardHeader';
 import RenderUserImagesView from './Components/RenderUserImagesView';
-import { useSubscriptionModal } from '../../../Contexts/SubscriptionModalContext';
+import { useShareProfile } from '../../../Hooks/useShareProfile';
 
 type DetailCardRouteParams = {
   props: ProfileType;
@@ -48,6 +48,7 @@ const ExploreCardDetailScreen = () => {
   const { showToast } = useCustomToast();
   const { subscription } = useUserData();
   const { showSubscriptionModal } = useSubscriptionModal();
+  const shareProfile = useShareProfile();
 
   const cardDetail = useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
 
@@ -135,40 +136,7 @@ const ExploreCardDetailScreen = () => {
 
   const onSharePress = async () => {
     try {
-      if (!subscription.isActive) {
-        showToast(TextString.premiumFeatureAccessTitle, TextString.premiumFeatureAccessDescription, 'error');
-        setTimeout(() => {
-          showSubscriptionModal();
-        }, 2000);
-        return;
-      }
-
-      const id = userId || cardDetail?.params?.props?._id;
-
-      if (!id) {
-        showToast('Error', 'Unable to share profile - missing user ID', 'error');
-        return;
-      }
-
-      const deepLinkUrl = `https://nirvanatechlabs.in/app/profile/${id}`;
-
-      const userName = cardDetail?.params?.props?.full_name || 'this profile';
-      const userBio = cardDetail?.params?.props?.about || 'Check out this amazing profile';
-
-      const shareMessage = `✨ I found ${userName} on Luvr! ${userBio.substring(0, 50)}${userBio.length > 50 ? '...' : ''}\n\n👉 Connect on Luvr: ${deepLinkUrl}\n\n#Luvr #MeetNewPeople`;
-
-      const shareOptions = {
-        message: shareMessage,
-        title: `${userName} on Luvr`,
-      } as const;
-
-      Object.keys(shareOptions).forEach((key) => {
-        if (shareOptions[key as keyof typeof shareOptions] === undefined) {
-          delete shareOptions[key as keyof typeof shareOptions];
-        }
-      });
-
-      await Share.share(shareOptions);
+      await shareProfile(cardDetail);
     } catch (error: any) {
       showToast('Error', error?.message?.toString() || 'Failed to share profile', 'error');
     }

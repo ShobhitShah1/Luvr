@@ -2,12 +2,22 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import NetInfo from '@react-native-community/netinfo';
-import React, { memo, useCallback, useEffect, useReducer } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, View } from 'react-native';
+import React, { memo, useCallback, useEffect, useReducer, useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+  Modal,
+  TouchableOpacity,
+  Pressable,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
-import { BOTTOM_TAB_HEIGHT } from '../../Common/Theme';
+import { BOTTOM_TAB_HEIGHT, FONTS } from '../../Common/Theme';
 import SubscriptionView from '../../Components/Subscription/SubscriptionView';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { useUserData } from '../../Contexts/UserDataContext';
@@ -21,6 +31,7 @@ import MatchesContent from './Components/MatchesContent';
 import { RenderLikeScreenTopBar } from './Components/RenderLikeScreenTopBar';
 import styles from './styles';
 import { useFocusEffect } from '@react-navigation/native';
+import { getDetailedSubscriptionStatus } from '../../Services/SubscriptionService';
 
 export type TabData = { title: string; index?: number; count?: number };
 
@@ -79,12 +90,24 @@ function reducer(state: State, action: Action): State {
 }
 
 const MyLikesScreen = () => {
+  // const [sub, setSub] = useState<any>(null);
   const { colors, isDark } = useTheme();
   const { showToast } = useCustomToast();
   const { subscription } = useUserData();
   const [state, dispatch] = useReducer(reducer, initialState);
+  // const [showSubModal, setShowSubModal] = useState(false);
 
   const { selectedTab, likesCount, likesData, refreshing, isLoading, selectedPlan } = state;
+
+  // useEffect(() => {
+  //   let isMounted = true;
+  //   getDetailedSubscriptionStatus().then((result) => {
+  //     if (isMounted) setSub(result);
+  //   });
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, []);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -193,7 +216,7 @@ const MyLikesScreen = () => {
           ) : (
             <View style={{ flex: 1 }}>
               {selectedTab.index === 2 && !subscription.isActive ? (
-                <View style={{ flex: 1, marginTop: 30 }}>
+                <View style={{ flex: 1, marginTop: 35 }}>
                   <SubscriptionView
                     selectedPlan={selectedPlan}
                     handlePlanSelection={(plan) => dispatch({ type: 'SET_SELECTED_PLAN', payload: plan })}
@@ -225,6 +248,41 @@ const MyLikesScreen = () => {
           )}
         </View>
       </View>
+
+      {/* {sub && (
+        <Pressable
+          style={{
+            position: 'absolute',
+            bottom: 100,
+            right: 20,
+            backgroundColor: colors.Primary,
+            padding: 10,
+            borderRadius: 8,
+          }}
+          onPress={() => setShowSubModal(true)}
+        >
+          <Text style={{ color: '#fff', fontFamily: FONTS.SemiBold }}>Show Subscription Debug</Text>
+        </Pressable>
+      )}
+
+      <Modal visible={showSubModal} transparent animationType="slide" onRequestClose={() => setShowSubModal(false)}>
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{ backgroundColor: colors.Primary, borderRadius: 12, padding: 24, width: '85%' }}>
+            <Text style={{ fontSize: 18, fontFamily: FONTS.Bold, marginBottom: 12, color: colors.TitleText }}>
+              Subscription Details
+            </Text>
+            {sub &&
+              Object.entries(sub).map(([key, value]) => (
+                <Text key={key} style={{ fontSize: 15, marginBottom: 6, color: colors.TitleText }}>
+                  <Text style={{ fontFamily: FONTS.SemiBold }}>{key}:</Text> {String(value)}
+                </Text>
+              ))}
+            <Pressable style={{ marginTop: 18, alignSelf: 'flex-end' }} onPress={() => setShowSubModal(false)}>
+              <Text style={{ color: colors.TextColor, fontFamily: FONTS.Bold }}>Close</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal> */}
 
       {isDark && (
         <LinearGradient

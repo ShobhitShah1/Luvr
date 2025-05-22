@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 25,
     overflow: 'visible',
+    zIndex: 99999999,
     justifyContent: 'center',
   },
   TabBarButtonText: {
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
   },
   FlatListContentContainerStyle: {
     flexDirection: 'row',
-    zIndex: 999999,
+    zIndex: 9999,
     overflow: 'visible',
     justifyContent: 'space-between',
   },
