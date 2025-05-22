@@ -311,10 +311,10 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
                       <Text style={[styles.dayNumber, { color: isDark ? colors.White : colors.Primary }]}>1</Text>
                       <Text style={[styles.dayText, { color: colors.TextColor }]}>{'Boost'}</Text>
                       <Text style={[styles.priceText, { color: isDark ? colors.White : colors.Primary }]}>
-                        {
-                          (product as any)?.subscriptionOfferDetails?.[0]?.pricingPhases?.pricingPhaseList?.[0]
-                            ?.formattedPrice
-                        }
+                        {Platform.OS === 'android'
+                          ? (product as RNIap.SubscriptionAndroid)?.subscriptionOfferDetails?.[0]?.pricingPhases
+                              ?.pricingPhaseList?.[0]?.formattedPrice
+                          : (product as RNIap.SubscriptionIOS)?.localizedPrice}
                       </Text>
                     </View>
                   );

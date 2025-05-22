@@ -1,4 +1,4 @@
-import { Dimensions, Image, Pressable, StatusBar, StyleSheet, View } from 'react-native';
+import { Dimensions, Image, Platform, Pressable, StatusBar, StyleSheet, View } from 'react-native';
 import React, { memo } from 'react';
 import Modal from 'react-native-modal';
 import SubscriptionView from './SubscriptionView';
@@ -38,7 +38,10 @@ const SubscriptionModalView = ({
       hideModalContentWhileAnimating
       deviceHeight={Dimensions.get('window').height + (StatusBar.currentHeight || 20)}
     >
-      <Pressable onPress={hideSubscriptionModal} style={{ position: 'absolute', top: 50, right: 25, zIndex: 1000 }}>
+      <Pressable
+        onPress={hideSubscriptionModal}
+        style={{ position: 'absolute', top: Platform.OS === 'ios' ? 75 : 50, right: 25, zIndex: 1000 }}
+      >
         <Image source={CommonIcons.CloseModal} style={{ width: 30, height: 30 }} />
       </Pressable>
 
@@ -61,7 +64,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
-    paddingTop: '30%',
+    paddingTop: Platform.OS === 'ios' ? '40%' : '30%',
     borderRadius: 20,
     overflow: 'hidden',
     justifyContent: 'center',

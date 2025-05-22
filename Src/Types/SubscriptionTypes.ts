@@ -4,7 +4,7 @@ export interface SubscriptionData {
   payment_response: {
     autoRenewing: boolean;
     productId: string;
-    purchaseState: number;
+    purchaseState: number | string;
     transactionDate: number;
     transactionId: string;
     [key: string]: any;
@@ -18,4 +18,15 @@ export interface MembershipState {
   isSubscriptionActive: boolean;
   isLoading: boolean;
   error: string | null;
+  lastExpiredSubscriptionId?: string;
+  lastCancelledSubscription?: {
+    subscriptionId: string;
+    cancelledAt: number;
+    reason: string;
+  };
+  validationStatus?: {
+    isValid: boolean;
+    lastValidated: number;
+    validationError?: string;
+  };
 }
