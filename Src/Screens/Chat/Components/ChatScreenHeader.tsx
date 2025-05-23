@@ -1,12 +1,14 @@
-import React, { FC, memo } from 'react';
+import React, { memo } from 'react';
+import type { FC } from 'react';
 import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import CommonIcons from '../../../Common/CommonIcons';
 import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
-import { ProfileType } from '../../../Types/ProfileType';
+import type { ProfileType } from '../../../Types/ProfileType';
 
 interface ChatHeaderProps {
   data: ProfileType | null;
@@ -61,7 +63,11 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({ data, onRightIconPress }) => {
           style={styles.RemoveChatView}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Image tintColor={colors.TextColor} style={styles.RemoveChatIcon} source={CommonIcons.more_option} />
+          <Image
+            tintColor={colors.TextColor}
+            style={styles.RemoveChatIcon}
+            source={CommonIcons.more_option}
+          />
         </Pressable>
       </View>
     </SafeAreaView>
@@ -71,71 +77,71 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({ data, onRightIconPress }) => {
 export default memo(ChatScreenHeader);
 
 const styles = StyleSheet.create({
+  BackAndProfileInfoView: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: '90%',
+  },
   Container: {
-    width: '100%',
     height: Platform.OS === 'ios' ? hp('12.5%') : hp('8%'),
     justifyContent: 'center',
     paddingHorizontal: 7,
+    width: '100%',
   },
   ContentView: {
-    width: '90%',
     alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  BackAndProfileInfoView: {
     width: '90%',
-    flexDirection: 'row',
-    alignItems: 'center',
   },
-  TinderBackIcon: {
-    width: 24,
-    height: 24,
-  },
-  UserInfoView: {
-    marginRight: 15,
-    alignItems: 'center',
-    flexDirection: 'row',
+  ProfileImage: {
+    borderRadius: 50,
+    height: 33,
+    width: 33,
   },
   ProfileImageView: {
     alignSelf: 'center',
-    paddingHorizontal: 5,
     justifyContent: 'center',
+    paddingHorizontal: 5,
   },
-  ProfileImage: {
-    width: 33,
-    height: 33,
-    borderRadius: 50,
+  ProfileNameText: {
+    ...GROUP_FONT.h3,
+    color: COLORS.Primary,
+    fontFamily: FONTS.Bold,
+    fontSize: 16,
   },
   ProfileNameView: {
-    width: '80%',
-    right: 3,
     alignItems: 'center',
     alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-  },
-  ProfileNameText: {
-    ...GROUP_FONT.h3,
-    fontSize: 16,
-    color: COLORS.Primary,
-    fontFamily: FONTS.Bold,
-  },
-  RemoveChatView: {
-    top: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
+    right: 3,
+    width: '80%',
   },
   RemoveChatIcon: {
-    width: 20,
     height: 20,
     resizeMode: 'contain',
+    width: 20,
+  },
+  RemoveChatView: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    top: 5,
+  },
+  TinderBackIcon: {
+    height: 24,
+    width: 24,
+  },
+  UserInfoView: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginRight: 15,
   },
   VerifyIconView: {
-    width: 15,
-    height: 15,
-    marginLeft: 5,
     alignSelf: 'center',
+    height: 15,
     justifyContent: 'center',
+    marginLeft: 5,
+    width: 15,
   },
 });

@@ -1,7 +1,8 @@
+import NetInfo from '@react-native-community/netinfo';
+
 import { onSwipeRight } from '../Redux/Action/actions';
 import { store } from '../Redux/Store/store';
 import UserService from '../Services/AuthService';
-import NetInfo from '@react-native-community/netinfo';
 
 export const getMyLikes = async () => {
   const internetConnected = (await NetInfo.fetch()).isConnected;

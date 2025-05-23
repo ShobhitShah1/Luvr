@@ -1,5 +1,6 @@
 import UserService from '../../Services/AuthService';
-import { AppDispatch, AppThunk } from './Index';
+
+import type { AppDispatch, AppThunk } from './Index';
 
 export const SHOW_BOOST_MODAL = 'SHOW_BOOST_MODAL';
 export const HIDE_BOOST_MODAL = 'HIDE_BOOST_MODAL';

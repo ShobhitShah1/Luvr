@@ -1,4 +1,5 @@
-import { Contact } from 'react-native-contacts/type';
+import type { Contact } from 'react-native-contacts/type';
+
 import {
   SET_INCOGNITO_MODE,
   SET_CONTACTS,
@@ -6,9 +7,8 @@ import {
   SET_LOADING,
   SET_ERROR,
   CLEAR_ERROR,
-  IncognitoActionTypes,
-  EmailItem,
 } from '../Action/IncognitoActions';
+import type { IncognitoActionTypes, EmailItem } from '../Action/IncognitoActions';
 
 export interface IncognitoState {
   isIncognitoEnabled: boolean;

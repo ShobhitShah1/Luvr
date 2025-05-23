@@ -1,29 +1,23 @@
 import { StyleSheet } from 'react-native';
+
 import { FONTS, GROUP_FONT } from '../../Common/Theme';
 
 export const styles = StyleSheet.create({
-  Container: {
-    flex: 1,
-  },
-  messagesContainer: {
-    paddingBottom: 70,
-    height: '100%',
-  },
   ChatContainer: {
     flex: 1,
     height: '100%',
   },
-  loadingContainer: {
+  Container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  },
+  TimeStyle: {
+    fontFamily: FONTS.SemiBold,
+    fontSize: 11.5,
+    top: 5,
   },
   composerTextInput: {
     ...GROUP_FONT.h3,
     fontFamily: FONTS.SemiBold,
-  },
-  inputToolbarPrimary: {
-    justifyContent: 'center',
   },
   inputToolbarAccessory: {
     width: '10%',
@@ -31,9 +25,16 @@ export const styles = StyleSheet.create({
   inputToolbarContainer: {
     padding: 0,
   },
-  TimeStyle: {
-    top: 5,
-    fontSize: 11.5,
-    fontFamily: FONTS.SemiBold,
+  inputToolbarPrimary: {
+    justifyContent: 'center',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  messagesContainer: {
+    height: '100%',
+    paddingBottom: 70,
   },
 });

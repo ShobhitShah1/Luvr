@@ -1,6 +1,8 @@
-import React, { FC, memo } from 'react';
+import React, { memo } from 'react';
+import type { FC } from 'react';
 import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import CommonIcons from '../../../../Common/CommonIcons';
 import { COLORS, GROUP_FONT, SIZES } from '../../../../Common/Theme';
 import { useTheme } from '../../../../Contexts/ThemeContext';
@@ -41,33 +43,33 @@ const CategoryDetailHeader: FC<CategoryHeaderProps> = ({ item }) => {
 export default memo(CategoryDetailHeader);
 
 const styles = StyleSheet.create({
-  Container: {
-    width: '100%',
-    height: Platform.OS === 'ios' ? hp('12.5%') : hp('8%'),
-    justifyContent: 'center',
-  },
-  ContentView: {
-    width: '90%',
-    flexDirection: 'row',
-    alignSelf: 'center',
-    justifyContent: 'space-between',
+  BackIcon: {
+    height: hp('3.5%'),
+    width: hp('3.5%'),
   },
   BackIconView: {
     justifyContent: 'center',
   },
-  BackIcon: {
-    width: hp('3.5%'),
-    height: hp('3.5%'),
-  },
-  CategoryNameView: {
-    justifyContent: 'center',
-    padding: hp('1.2%'),
-    right: hp('1%'),
-    paddingHorizontal: hp('1.9%'),
-    borderRadius: SIZES.radius,
-    backgroundColor: COLORS.White,
-  },
   CategoryNameText: {
     ...GROUP_FONT.h3,
+  },
+  CategoryNameView: {
+    backgroundColor: COLORS.White,
+    borderRadius: SIZES.radius,
+    justifyContent: 'center',
+    padding: hp('1.2%'),
+    paddingHorizontal: hp('1.9%'),
+    right: hp('1%'),
+  },
+  Container: {
+    height: Platform.OS === 'ios' ? hp('12.5%') : hp('8%'),
+    justifyContent: 'center',
+    width: '100%',
+  },
+  ContentView: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '90%',
   },
 });

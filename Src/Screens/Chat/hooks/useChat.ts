@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { GiftedChat, IMessage } from 'react-native-gifted-chat';
-import { Socket, io } from 'socket.io-client';
+import { GiftedChat } from 'react-native-gifted-chat';
+import type { IMessage } from 'react-native-gifted-chat';
+import { io } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
+
 import TextString from '../../../Common/TextString';
 import ApiConfig from '../../../Config/ApiConfig';
 import {
@@ -14,7 +17,7 @@ import {
 import { useSubscriptionModal } from '../../../Contexts/SubscriptionModalContext';
 import { useUserData } from '../../../Contexts/UserDataContext';
 import UserService from '../../../Services/AuthService';
-import { ProfileType } from '../../../Types/ProfileType';
+import type { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
 
 const generateRandomId = () => {
@@ -26,7 +29,7 @@ export const useChat = (
   currentUserImage: string[],
   currentUserFullName: string,
   otherUserId: string | number | undefined,
-  isFocused: boolean
+  isFocused: boolean,
 ) => {
   const [userMessage, setUserMessages] = useState<IMessage[]>([]);
   const [countMessage, setCountMessage] = useState(0);
@@ -63,9 +66,9 @@ export const useChat = (
   };
 
   const transformDataForGiftedChat = (apiData: any) => {
-    let dataArray = Array.isArray(apiData) ? apiData : [apiData];
+    const dataArray = Array.isArray(apiData) ? apiData : [apiData];
 
-    const filteredMessages = dataArray.filter((item) => {
+    const filteredMessages = dataArray.filter(item => {
       return item.to === currentUserId || item.to === otherUserId;
     });
 
@@ -90,7 +93,9 @@ export const useChat = (
       };
     });
 
-    return giftedChatMessages.sort((a: any, b: any) => b.createdAt.getTime() - a.createdAt.getTime());
+    return giftedChatMessages.sort(
+      (a: any, b: any) => b.createdAt.getTime() - a.createdAt.getTime(),
+    );
   };
 
   const storeSingleChatFormat = (message: any) => {
@@ -116,6 +121,7 @@ export const useChat = (
       if (!existingMessage) {
         unique.push(message);
       }
+
       return unique;
     }, []);
   };
@@ -134,7 +140,9 @@ export const useChat = (
   }, [isFocused]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) {
+      return;
+    }
 
     socket.emit(JOIN_EVENT, {
       id: currentUserId,
@@ -160,6 +168,7 @@ export const useChat = (
       if (!otherUserProfileData) {
         await getOtherUserDataCall();
       }
+
       const giftedChatMessages = storeSingleChatFormat(chat);
       if (giftedChatMessages) {
         socket.emit(READ_ALL, { to: otherUserProfileData?._id });
@@ -167,7 +176,10 @@ export const useChat = (
           ...message,
           user: { ...message.user, avatar: avatarUrl },
         }));
-        setUserMessages((previousMessages) => GiftedChat.append(previousMessages, updatedMessages.flat()));
+
+        setUserMessages(previousMessages =>
+          GiftedChat.append(previousMessages, updatedMessages.flat()),
+        );
       }
     };
 
@@ -201,10 +213,16 @@ export const useChat = (
   const onSend = useCallback(
     async (messages: IMessage[]) => {
       if (!canSendMessage) {
-        showToast(TextString.premiumFeatureAccessTitle, TextString.premiumFeatureAccessDescription, 'error');
+        showToast(
+          TextString.premiumFeatureAccessTitle,
+          TextString.premiumFeatureAccessDescription,
+          'error',
+        );
+
         setTimeout(() => {
           showSubscriptionModal();
         }, 2000);
+
         return;
       }
 
@@ -224,7 +242,8 @@ export const useChat = (
           to_profile: otherUserProfileData?.recent_pik[0],
           from_profile: currentUserImage[0],
         };
-        setUserMessages((previousMessages) => GiftedChat.append(previousMessages, messages));
+
+        setUserMessages(previousMessages => GiftedChat.append(previousMessages, messages));
 
         socket.emit(READ_ALL, { to: otherUserProfileData?._id });
         socket.emit(CHAT_EVENT, chatData, (error: any) => {
@@ -243,7 +262,7 @@ export const useChat = (
       countMessage,
       userMessage,
       canSendMessage,
-    ]
+    ],
   );
 
   return {

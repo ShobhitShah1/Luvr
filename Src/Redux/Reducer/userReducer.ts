@@ -1,5 +1,5 @@
 import { LocalStorageFields } from '../../Types/LocalStorageFields';
-import UserDataType from '../../Types/UserDataType';
+import type UserDataType from '../../Types/UserDataType';
 import {
   ON_SWIPE_LEFT,
   ON_SWIPE_RIGHT,
@@ -15,12 +15,17 @@ import {
   SET_DEEP_LINK_URL,
 } from '../Action/actions';
 
-const initialState: UserDataType & { swipedLeftUserIds: string[] } & { swipedRightUserIds: string[] } & {
+const initialState: UserDataType & { swipedLeftUserIds: string[] } & {
+  swipedRightUserIds: string[];
+} & {
   userData: string[];
 } & { notifications: string[] } & { swipeCount: number } & {
   cardSkipNumber: number;
 } & { deepLinkUrl: string | null } = {
-  ...Object.keys(LocalStorageFields).reduce((acc, field) => ({ ...acc, [field]: '' }), {} as UserDataType),
+  ...Object.keys(LocalStorageFields).reduce(
+    (acc, field) => ({ ...acc, [field]: '' }),
+    {} as UserDataType,
+  ),
   swipedLeftUserIds: [],
   swipedRightUserIds: [],
   userData: [],
@@ -47,7 +52,7 @@ const userReducer = (
   } & {
     deepLinkUrl: string | null;
   } = initialState,
-  action: any
+  action: any,
 ) => {
   switch (action.type) {
     case SET_USER_DATA:

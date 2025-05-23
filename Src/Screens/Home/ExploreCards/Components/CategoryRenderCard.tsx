@@ -1,9 +1,11 @@
 import FastImage from '@d11/react-native-fast-image';
 import NetInfo from '@react-native-community/netinfo';
-import React, { FC, memo, useState } from 'react';
+import React, { memo, useState } from 'react';
+import type { FC } from 'react';
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import CommonIcons from '../../../../Common/CommonIcons';
 import CommonImages from '../../../../Common/CommonImages';
 import TextString from '../../../../Common/TextString';
@@ -15,7 +17,7 @@ import { useCustomNavigation } from '../../../../Hooks/useCustomNavigation';
 import { onSwipeRight } from '../../../../Redux/Action/actions';
 import { store } from '../../../../Redux/Store/store';
 import UserService from '../../../../Services/AuthService';
-import { ProfileType } from '../../../../Types/ProfileType';
+import type { ProfileType } from '../../../../Types/ProfileType';
 import { useCustomToast } from '../../../../Utils/toastUtils';
 
 interface RenderLookingViewProps {
@@ -60,7 +62,12 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
     setCurrentCardIndex(index);
 
     if ((await NetInfo.fetch()).isConnected) {
-      showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+
       return;
     }
 
@@ -73,10 +80,16 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
         if (APIResponse.data?.status === 'match') {
           setItsMatchModalView(true);
         }
+
         store.dispatch(onSwipeRight(String(item._id)));
         FetchAPIData();
       } else {
-        showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Please try again letter', TextString.error);
+        showToast(
+          TextString.error.toUpperCase(),
+          APIResponse?.message || 'Please try again letter',
+          TextString.error,
+        );
+
         setItsMatchModalView(false);
         setIsAPILoading(false);
       }
@@ -149,47 +162,57 @@ const CategoryRenderCard: FC<RenderLookingViewProps> = ({
 export default memo(CategoryRenderCard);
 
 const styles = StyleSheet.create({
-  container: {
-    width: '48%',
-    height: hp('25%'),
-    overflow: 'hidden',
-    marginVertical: '1%',
-    marginBottom: '2%',
-    borderRadius: hp('3%'),
-  },
-  imageView: {
+  DetailContainerView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: hp('1.5%'),
     width: '100%',
-    height: '100%',
+  },
+  ImageLoaderView: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    position: 'absolute',
+    top: 0,
+    zIndex: 999,
+  },
+  IsActiveIndicator: {
+    alignSelf: 'center',
+    backgroundColor: 'rgba(0, 255, 71, 1)',
+    borderColor: COLORS.White,
+    borderRadius: 500,
+    borderWidth: 1.5,
+    height: 14,
+    justifyContent: 'center',
+    width: 14,
+  },
+  LikeCard: {
+    alignSelf: 'flex-start',
+    height: hp('4.6%'),
+    width: hp('4.6%'),
+  },
+  LikeCardView: {
+    // right: 1,
+    width: '28%',
+    overflow: 'hidden',
     justifyContent: 'flex-end',
   },
-  imageStyle: {
-    width: '100%',
-    height: '100%',
+  Loader: {
+    alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
   },
-  gradient: {
-    flex: 0.5,
-    justifyContent: 'flex-end',
+  LocationIcon: {
+    height: hp('2%'),
+    width: hp('2%'),
   },
-  DetailContainerView: {
-    width: '100%',
-    flexDirection: 'row',
-    marginBottom: hp('1.5%'),
-    justifyContent: 'space-between',
-  },
-  UserInfoView: {
-    width: '72%',
-    overflow: 'hidden',
-    justifyContent: 'center',
-  },
-  TitleText: {
-    fontFamily: FONTS.Bold,
-    fontSize: hp('2.3%'),
-    lineHeight: hp('3.5%'),
+  LocationText: {
     color: COLORS.White,
-    marginHorizontal: hp('2%'),
-    marginBottom: hp('0.5%'),
+    fontFamily: FONTS.Medium,
+    fontSize: hp('1.5%'),
+    marginLeft: hp('0.5%'),
+    width: '80%',
   },
   LocationView: {
     width: '85%',
@@ -199,50 +222,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: hp('2%'),
   },
-  LocationIcon: {
-    width: hp('2%'),
-    height: hp('2%'),
-  },
-  LocationText: {
-    width: '80%',
+  TitleText: {
     color: COLORS.White,
-    fontSize: hp('1.5%'),
-    marginLeft: hp('0.5%'),
-    fontFamily: FONTS.Medium,
+    fontFamily: FONTS.Bold,
+    fontSize: hp('2.3%'),
+    lineHeight: hp('3.5%'),
+    marginBottom: hp('0.5%'),
+    marginHorizontal: hp('2%'),
   },
-  LikeCardView: {
-    // right: 1,
-    width: '28%',
+  UserInfoView: {
+    justifyContent: 'center',
     overflow: 'hidden',
+    width: '72%',
+  },
+  container: {
+    borderRadius: hp('3%'),
+    height: hp('25%'),
+    marginBottom: '2%',
+    marginVertical: '1%',
+    overflow: 'hidden',
+    width: '48%',
+  },
+  gradient: {
+    flex: 0.5,
     justifyContent: 'flex-end',
   },
-  LikeCard: {
-    alignSelf: 'flex-start',
-    width: hp('4.6%'),
-    height: hp('4.6%'),
-  },
-  ImageLoaderView: {
-    zIndex: 999,
-    top: 0,
-    bottom: 0,
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
+  imageStyle: {
     alignSelf: 'center',
-  },
-  Loader: {
+    height: '100%',
     justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
+    width: '100%',
   },
-  IsActiveIndicator: {
-    width: 14,
-    height: 14,
-    borderWidth: 1.5,
-    borderRadius: 500,
-    justifyContent: 'center',
-    alignSelf: 'center',
-    borderColor: COLORS.White,
-    backgroundColor: 'rgba(0, 255, 71, 1)',
+  imageView: {
+    height: '100%',
+    justifyContent: 'flex-end',
+    width: '100%',
   },
 });

@@ -1,18 +1,28 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useEffect } from 'react';
 import { Dimensions, Image, Pressable, StyleSheet, View } from 'react-native';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import LinearGradient from 'react-native-linear-gradient';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
+
 import CommonIcons from '../Common/CommonIcons';
+import { FONTS } from '../Common/Theme';
+import { GradientBorderView } from '../Components/GradientBorder';
 import { useTheme } from '../Contexts/ThemeContext';
 import ChatRoomScreen from '../Screens/Chat/ChatRoomScreen';
 import ExploreCardScreen from '../Screens/Explore/ExploreCardScreen';
 import { HomeScreen } from '../Screens/Home/index';
 import MyLikesScreen from '../Screens/MyLikes/MyLikesScreen';
 import ProfileScreen from '../Screens/Profile/ProfileScreen';
-import { GradientBorderView } from '../Components/GradientBorder';
-import { FONTS } from '../Common/Theme';
-import LinearGradient from 'react-native-linear-gradient';
 
 interface TabScreen {
   name: string;
@@ -99,12 +109,26 @@ const TabItem: React.FC<TabItemProps> = ({ label, icon, isFocused, onPress }) =>
       <Animated.View style={[styles.iconContainer, iconStyle]}>
         <Image
           source={icon}
-          style={[styles.tabIcon, { width: isFocused ? 22 : 25, height: isFocused ? 22 : 25 }, isFocused && { top: 2 }]}
-          tintColor={isDark ? (isFocused ? colors.White : undefined) : isFocused ? colors.Background : colors.White}
+          style={[
+            styles.tabIcon,
+            { width: isFocused ? 22 : 25, height: isFocused ? 22 : 25 },
+            isFocused && { top: 2 },
+          ]}
+          tintColor={
+            isDark
+              ? isFocused
+                ? colors.White
+                : undefined
+              : isFocused
+              ? colors.Background
+              : colors.White
+          }
         />
       </Animated.View>
 
-      <Animated.Text style={[styles.tabLabel, textStyle, { color: colors.White }]}>{label}</Animated.Text>
+      <Animated.Text style={[styles.tabLabel, textStyle, { color: colors.White }]}>
+        {label}
+      </Animated.Text>
     </Pressable>
   );
 };
@@ -203,14 +227,14 @@ const BottomTab: React.FC = () => {
 
   return (
     <Tab.Navigator
-      tabBar={(props) => <FloatingTabBar {...props} />}
+      tabBar={props => <FloatingTabBar {...props} />}
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
         lazy: false,
       }}
     >
-      {tabScreens.map((tab) => (
+      {tabScreens.map(tab => (
         <Tab.Screen
           key={tab.name}
           name={tab.name}
@@ -227,73 +251,73 @@ const BottomTab: React.FC = () => {
 export default BottomTab;
 
 const styles = StyleSheet.create({
-  tabBarContainer: {
+  bubbleBackground: {
+    borderRadius: 25,
+    elevation: 5,
+    height: 50,
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 999,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    top: -18,
+    width: 50,
+    zIndex: 0,
   },
   floatingBar: {
-    flexDirection: 'row',
+    alignItems: 'center',
     borderRadius: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 0,
-
-    elevation: 30,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    marginBottom: 10,
-
     borderWidth: 1,
-  },
-  tabItemContainer: {
-    height: 60,
-    alignItems: 'center',
-    position: 'relative',
-    justifyContent: 'center',
-    width: (SCREEN_WIDTH * 0.8) / 4.8,
-  },
-  bubbleBackground: {
-    position: 'absolute',
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    top: -18,
-    zIndex: 0,
+    elevation: 30,
+    flexDirection: 'row',
 
-    elevation: 5,
+    gap: 0,
+    justifyContent: 'center',
+    marginBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
+
     shadowRadius: 5,
-  },
-  iconContainer: {
-    zIndex: 999999,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tabIcon: {
-    width: 25,
-    height: 25,
-    resizeMode: 'contain',
-  },
-  tabLabel: {
-    zIndex: 1,
-    bottom: 8,
-    marginTop: 1.5,
-    fontSize: wp(3),
-    position: 'absolute',
-    fontFamily: FONTS.Bold,
   },
   gradientBubble: {
-    width: '100%',
-    height: '100%',
     borderRadius: 25,
+    height: '100%',
+    width: '100%',
+  },
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 999999,
+  },
+  tabBarContainer: {
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    zIndex: 999,
+  },
+  tabIcon: {
+    height: 25,
+    resizeMode: 'contain',
+    width: 25,
+  },
+  tabItemContainer: {
+    alignItems: 'center',
+    height: 60,
+    justifyContent: 'center',
+    position: 'relative',
+    width: (SCREEN_WIDTH * 0.8) / 4.8,
+  },
+  tabLabel: {
+    bottom: 8,
+    fontFamily: FONTS.Bold,
+    fontSize: wp(3),
+    marginTop: 1.5,
+    position: 'absolute',
+    zIndex: 1,
   },
 });

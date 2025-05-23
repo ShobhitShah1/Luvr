@@ -3,17 +3,18 @@ import React, { memo, useState } from 'react';
 import { Image, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import QRCode from 'react-native-qrcode-svg';
+
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
 import { FONTS } from '../../Common/Theme';
 import { GradientBorderView } from '../../Components/GradientBorder';
+import ApiConfig from '../../Config/ApiConfig';
 import { APP_NAME } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { useUserData } from '../../Contexts/UserDataContext';
 import { useCustomToast } from '../../Utils/toastUtils';
-import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
-import ApiConfig from '../../Config/ApiConfig';
+import ProfileAndSettingHeader from '../Profile/Components/profile-and-setting-header';
 
 const whatUserGet = [
   'Like and dislike',
@@ -21,7 +22,7 @@ const whatUserGet = [
   'This is a free version which should include profile creation',
 ];
 
-const QRCodeScreen = () => {
+function QRCodeScreen() {
   const { isDark, colors } = useTheme();
   const { showToast } = useCustomToast();
   const { userData } = useUserData();
@@ -74,7 +75,10 @@ const QRCodeScreen = () => {
           >
             <Text style={[styles.referralLabel, { color: colors.TextColor }]}>Referral Code</Text>
             <View
-              style={[styles.referralCodeBox, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White }]}
+              style={[
+                styles.referralCodeBox,
+                { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White },
+              ]}
             >
               <Text style={[styles.referralCode, { color: colors.TextColor }]}>{referralCode}</Text>
               <Pressable onPress={handleCopy}>
@@ -84,10 +88,19 @@ const QRCodeScreen = () => {
           </GradientBorderView>
 
           <View style={{ alignSelf: 'flex-start', gap: 15, marginBottom: 30, marginHorizontal: 5 }}>
-            {whatUserGet.map((res) => (
-              <View key={res?.toString()} style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
-                <Image source={CommonIcons.Check} style={{ width: 10, height: 10 }} tintColor={colors.Primary} />
-                <Text style={[styles.descriptionText, { color: colors.TextColor }]}>{res?.toString()}</Text>
+            {whatUserGet.map(res => (
+              <View
+                key={res?.toString()}
+                style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}
+              >
+                <Image
+                  source={CommonIcons.Check}
+                  style={{ width: 10, height: 10 }}
+                  tintColor={colors.Primary}
+                />
+                <Text style={[styles.descriptionText, { color: colors.TextColor }]}>
+                  {res?.toString()}
+                </Text>
               </View>
             ))}
           </View>
@@ -107,37 +120,57 @@ const QRCodeScreen = () => {
       </View>
     </GradientView>
   );
-};
+}
 
 export default memo(QRCodeScreen);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
     height: '100%',
+    width: '100%',
   },
   contentContainer: {
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 10,
   },
-  headerText: {
-    width: '85%',
-    lineHeight: 23,
-    alignSelf: 'center',
-    textAlign: 'center',
-    marginBottom: 20,
+  copyText: {
+    fontFamily: FONTS.Bold,
     fontSize: 14,
+  },
+  descriptionText: {
+    fontFamily: FONTS.SemiBold,
+    fontSize: 13,
+  },
+  headerText: {
+    alignSelf: 'center',
     fontFamily: FONTS.Medium,
+    fontSize: 14,
+    lineHeight: 23,
+    marginBottom: 20,
+    textAlign: 'center',
+    width: '85%',
+  },
+  pressableButton: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  qrCodeWrapper: {
+    alignItems: 'center',
+    borderRadius: 22,
+    flex: 1,
+    justifyContent: 'center',
   },
   qrContainer: {
-    width: 200,
-    height: 195,
-    borderWidth: 13,
     borderRadius: 38,
-    overflow: 'hidden',
+    borderWidth: 13,
+    elevation: 10,
+    height: 195,
     marginBottom: 30,
+    overflow: 'hidden',
 
     shadowOffset: {
       width: 0,
@@ -145,70 +178,50 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.85,
     shadowRadius: 3.84,
-    elevation: 10,
+    width: 200,
   },
-  qrCodeWrapper: {
-    flex: 1,
-    justifyContent: 'center',
+  referralCode: {
+    fontFamily: FONTS.SemiBold,
+    fontSize: 16,
+  },
+  referralCodeBox: {
     alignItems: 'center',
-    borderRadius: 22,
+    borderRadius: 10,
+    flexDirection: 'row',
+    height: 50,
+    justifyContent: 'space-between',
+    marginTop: 3,
+    paddingHorizontal: 15,
   },
   referralContainer: {
-    width: '95%',
-    borderWidth: 1,
-    padding: 17,
     borderRadius: 20,
+    borderWidth: 1,
     marginBottom: 25,
     marginTop: 5,
     overflow: 'hidden',
+    padding: 17,
+    width: '95%',
   },
   referralLabel: {
+    fontFamily: FONTS.SemiBold,
+    fontSize: 14,
     marginBottom: 8,
     paddingLeft: 5,
-    fontSize: 14,
-    fontFamily: FONTS.SemiBold,
-  },
-  referralCodeBox: {
-    marginTop: 3,
-    borderRadius: 10,
-    height: 50,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 15,
-  },
-  referralCode: {
-    fontSize: 16,
-    fontFamily: FONTS.SemiBold,
-  },
-  copyText: {
-    fontSize: 14,
-    fontFamily: FONTS.Bold,
-  },
-  descriptionText: {
-    fontSize: 13,
-    fontFamily: FONTS.SemiBold,
   },
   shareButton: {
-    height: 53,
-    width: '45%',
     borderRadius: 25,
+    height: 53,
     marginBottom: 20,
-  },
-  pressableButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: '45%',
   },
   shareIcon: {
-    width: 18,
     height: 18,
     marginRight: 5,
     resizeMode: 'contain',
+    width: 18,
   },
   shareText: {
-    fontSize: 16.5,
     fontFamily: FONTS.SemiBold,
+    fontSize: 16.5,
   },
 });

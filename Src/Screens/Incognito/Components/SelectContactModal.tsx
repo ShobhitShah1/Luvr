@@ -1,4 +1,5 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import type { FC } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -12,13 +13,14 @@ import {
   View,
 } from 'react-native';
 import Contacts from 'react-native-contacts';
-import { Contact } from 'react-native-contacts/type';
+import type { Contact } from 'react-native-contacts/type';
+import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
+
+import CommonIcons from '../../../Common/CommonIcons';
 import { FONTS, SIZES } from '../../../Common/Theme';
 import { GradientBorderView } from '../../../Components/GradientBorder';
 import { useTheme } from '../../../Contexts/ThemeContext';
-import LinearGradient from 'react-native-linear-gradient';
-import CommonIcons from '../../../Common/CommonIcons';
 
 interface SelectContactModalProps {
   isVisible: boolean;
@@ -45,11 +47,12 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
   useEffect(() => {
     if (isVisible && selectedContacts.length > 0) {
       const newSelectedIds: Record<string, boolean> = {};
-      selectedContacts.forEach((contact) => {
+      selectedContacts.forEach(contact => {
         if (contact.recordID) {
           newSelectedIds[contact.recordID] = true;
         }
       });
+
       setSelectedContactIds(newSelectedIds);
     } else if (isVisible && selectedContacts.length === 0) {
       setSelectedContactIds({});
@@ -67,12 +70,13 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
       setFilteredContacts(contacts);
     } else {
       const filtered = contacts.filter(
-        (contact) =>
+        contact =>
           contact.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           contact.givenName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           contact.familyName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (contact.phoneNumbers[0]?.number && contact.phoneNumbers[0].number.includes(searchQuery))
+          (contact.phoneNumbers[0]?.number && contact.phoneNumbers[0].number.includes(searchQuery)),
       );
+
       setFilteredContacts(filtered);
     }
   }, [searchQuery, contacts]);
@@ -81,13 +85,17 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
     try {
       setLoading(contacts.length === 0);
       if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
-          title: 'Contacts Permission',
-          message: 'This app needs access to your contacts',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        });
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+          {
+            title: 'Contacts Permission',
+            message: 'This app needs access to your contacts',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           loadContacts();
         } else {
@@ -108,17 +116,19 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
 
   const loadContacts = () => {
     Contacts.getAll()
-      .then((contactsResult) => {
+      .then(contactsResult => {
         const formattedContacts = contactsResult.filter(
-          (contact) =>
-            (contact.givenName || contact.familyName) && contact.phoneNumbers && contact.phoneNumbers.length > 0
+          contact =>
+            (contact.givenName || contact.familyName) &&
+            contact.phoneNumbers &&
+            contact.phoneNumbers.length > 0,
         );
 
         setContacts(formattedContacts);
         setFilteredContacts(formattedContacts);
         setLoading(false);
       })
-      .catch((error) => {
+      .catch(error => {
         setLoading(false);
       });
   };
@@ -129,7 +139,7 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
       newSelectedIds[id] = true;
       setSelectedContactIds(newSelectedIds);
     } else {
-      setSelectedContactIds((prev) => ({
+      setSelectedContactIds(prev => ({
         ...prev,
         [id]: !prev[id],
       }));
@@ -141,7 +151,7 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
   };
 
   const handleDone = () => {
-    const selectedContacts = contacts.filter((contact) => isContactSelected(contact.recordID));
+    const selectedContacts = contacts.filter(contact => isContactSelected(contact.recordID));
     onSelectContacts(selectedContacts);
     onClose();
   };
@@ -151,6 +161,7 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
     if (cleaned.length >= 10) {
       return `+${cleaned.substring(0, 2)} ${cleaned.substring(2, 7)} ${cleaned.substring(7)}`;
     }
+
     return phoneNumber;
   };
 
@@ -158,11 +169,12 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
     if (contact.phoneNumbers && contact.phoneNumbers.length > 0) {
       return formatPhoneNumber(contact.phoneNumbers[0].number);
     }
+
     return '';
   };
 
   const getSelectedContactsCount = (): number => {
-    return Object.values(selectedContactIds).filter((selected) => selected).length;
+    return Object.values(selectedContactIds).filter(selected => selected).length;
   };
 
   return (
@@ -174,7 +186,9 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
       useNativeDriverForBackdrop
       backdropOpacity={0.8}
       customBackdrop={
-        <View style={{ flex: 1, backgroundColor: isDark ? 'rgba(13, 1, 38, 1)' : 'rgba(0, 0, 0, 0.5)' }} />
+        <View
+          style={{ flex: 1, backgroundColor: isDark ? 'rgba(13, 1, 38, 1)' : 'rgba(0, 0, 0, 0.5)' }}
+        />
       }
       onBackdropPress={onClose}
     >
@@ -234,7 +248,9 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
           {loading ? (
             <View style={styles.loaderContainer}>
               <ActivityIndicator size="large" color={colors.Primary} />
-              <Text style={[styles.loaderText, { color: isDark ? colors.White : colors.TextColor }]}>
+              <Text
+                style={[styles.loaderText, { color: isDark ? colors.White : colors.TextColor }]}
+              >
                 Loading contacts...
               </Text>
             </View>
@@ -246,12 +262,17 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
             >
               {filteredContacts.length === 0 ? (
                 <View style={styles.noContactsContainer}>
-                  <Text style={[styles.noContactsText, { color: isDark ? colors.White : colors.TextColor }]}>
+                  <Text
+                    style={[
+                      styles.noContactsText,
+                      { color: isDark ? colors.White : colors.TextColor },
+                    ]}
+                  >
                     {searchQuery ? 'No contacts match your search' : 'No contacts found'}
                   </Text>
                 </View>
               ) : (
-                filteredContacts.map((contact) => (
+                filteredContacts.map(contact => (
                   <Pressable
                     key={contact.recordID}
                     style={[
@@ -292,11 +313,20 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
                       style={[
                         styles.checkCircle,
                         isContactSelected(contact.recordID)
-                          ? { backgroundColor: isDark ? colors.Primary : colors.Primary, borderColor: 'transparent' }
-                          : { borderColor: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.2)' },
+                          ? {
+                              backgroundColor: isDark ? colors.Primary : colors.Primary,
+                              borderColor: 'transparent',
+                            }
+                          : {
+                              borderColor: isDark
+                                ? 'rgba(255, 255, 255, 0.4)'
+                                : 'rgba(0, 0, 0, 0.2)',
+                            },
                       ]}
                     >
-                      {isContactSelected(contact.recordID) && <Text style={styles.checkmark}>✓</Text>}
+                      {isContactSelected(contact.recordID) && (
+                        <Text style={styles.checkmark}>✓</Text>
+                      )}
                     </View>
                   </Pressable>
                 ))
@@ -323,127 +353,127 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
 export default SelectContactModal;
 
 const styles = StyleSheet.create({
-  container: {
-    margin: 0,
-    justifyContent: 'center',
+  addButton: {
     alignItems: 'center',
+    borderRadius: SIZES.radius,
+    height: 55,
+    justifyContent: 'center',
+    marginTop: SIZES.base * 2,
+    width: '100%',
   },
-  modalContent: {
-    flex: 1,
-    padding: 10,
+  bottomPadding: {
+    height: 20,
   },
-  header: {
-    alignItems: 'flex-end',
-    marginBottom: SIZES.base,
+  checkCircle: {
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 2,
+    height: 24,
+    justifyContent: 'center',
+    width: 24,
+  },
+  checkmark: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   closeButton: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 15,
+    height: 30,
+    justifyContent: 'center',
+    width: 30,
   },
   closeButtonText: {
     fontSize: 20,
     fontWeight: 'bold',
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: SIZES.base,
-    borderRadius: SIZES.radius,
-    marginBottom: 10,
-  },
-  searchIcon: {
-    marginRight: SIZES.base,
-    fontSize: 16,
-  },
-  searchInput: {
+  contactInfo: {
     flex: 1,
-    height: 40,
-    padding: 0,
-    fontSize: 16,
+  },
+  contactItem: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: 30,
+    flexDirection: 'row',
+    marginBottom: 13,
+    padding: SIZES.base * 2,
+    paddingVertical: 13,
+    width: '95%',
+  },
+  contactName: {
     fontFamily: FONTS.SemiBold,
+    fontSize: 16,
+    marginBottom: 4,
+  },
+  contactPhone: {
+    fontFamily: FONTS.SemiBold,
+    fontSize: 14,
   },
   contactsList: {
     flex: 1,
   },
-  contactItem: {
-    width: '95%',
-    alignSelf: 'center',
-    flexDirection: 'row',
+  container: {
     alignItems: 'center',
-    padding: SIZES.base * 2,
-    paddingVertical: 13,
-    borderRadius: 30,
-    marginBottom: 13,
-  },
-  contactInfo: {
-    flex: 1,
-  },
-  contactName: {
-    fontSize: 16,
-    marginBottom: 4,
-    fontFamily: FONTS.SemiBold,
-  },
-  contactPhone: {
-    fontSize: 14,
-    fontFamily: FONTS.SemiBold,
-  },
-  checkCircle: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
     justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkmark: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  addButton: {
-    width: '100%',
-    height: 55,
-    borderRadius: SIZES.radius,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: SIZES.base * 2,
+    margin: 0,
   },
   doneButton: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    padding: SIZES.base * 2,
-    justifyContent: 'center',
     alignItems: 'center',
+    flex: 1,
+    height: '100%',
+    justifyContent: 'center',
+    padding: SIZES.base * 2,
+    width: '100%',
   },
   doneButtonText: {
-    fontSize: 16,
     fontFamily: FONTS.SemiBold,
+    fontSize: 16,
+  },
+  header: {
+    alignItems: 'flex-end',
+    marginBottom: SIZES.base,
   },
   loaderContainer: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   loaderText: {
-    marginTop: SIZES.base * 2,
-    fontSize: 16,
     fontFamily: FONTS.SemiBold,
+    fontSize: 16,
+    marginTop: SIZES.base * 2,
+  },
+  modalContent: {
+    flex: 1,
+    padding: 10,
   },
   noContactsContainer: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     paddingVertical: SIZES.padding * 2,
   },
   noContactsText: {
-    fontSize: 16,
     fontFamily: FONTS.SemiBold,
+    fontSize: 16,
   },
-  bottomPadding: {
-    height: 20,
+  searchContainer: {
+    alignItems: 'center',
+    borderRadius: SIZES.radius,
+    flexDirection: 'row',
+    marginBottom: 10,
+    padding: SIZES.base,
+  },
+  searchIcon: {
+    fontSize: 16,
+    marginRight: SIZES.base,
+  },
+  searchInput: {
+    flex: 1,
+    fontFamily: FONTS.SemiBold,
+    fontSize: 16,
+    height: 40,
+    padding: 0,
   },
 });

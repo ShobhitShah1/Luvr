@@ -1,7 +1,8 @@
-/* eslint-disable react-native/no-inline-styles */
-import React, { FC, memo } from 'react';
+import React, { memo } from 'react';
+import type { FC } from 'react';
 import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import CommonIcons from '../../../Common/CommonIcons';
 import { COLORS, GROUP_FONT } from '../../../Common/Theme';
 import { useTheme } from '../../../Contexts/ThemeContext';
@@ -71,73 +72,73 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({
 export default memo(ProfileAndSettingHeader);
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    height: Platform.OS === 'ios' ? hp('12%') : hp('6.5%'),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ContentView: {
-    width: '90%',
-    top: Platform.OS === 'ios' ? 5 : 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  ViewStyle: {
-    width: '10%',
-    justifyContent: 'center',
-  },
-  BackIcon: {
-    width: 28,
-    height: 28,
-  },
-  TitleView: {
-    width: '75%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  Title: {
-    ...GROUP_FONT.h3,
-    fontSize: 16.5,
-    lineHeight: 25,
-  },
-  AddIconAndOption: {
-    width: '10%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
   AddIcon: {
-    width: hp('2.75%'),
     height: hp('2.75%'),
     right: hp('1.5%'),
+    width: hp('2.75%'),
+  },
+  AddIconAndOption: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '10%',
+  },
+  BackIcon: {
+    height: 28,
+    width: 28,
+  },
+  ContentView: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    top: Platform.OS === 'ios' ? 5 : 1,
+    width: '90%',
+  },
+  ModalSubmitButton: {
+    alignSelf: 'center',
+    backgroundColor: COLORS.Primary,
+    borderRadius: 500,
+    height: 25,
+    justifyContent: 'center',
+    width: 25,
+  },
+  ModalSubmitIcon: {
+    alignSelf: 'center',
+    height: 15,
+    resizeMode: 'contain',
+    width: 15,
   },
   MoreOptionIcon: {
-    width: hp('2.6%'),
     height: hp('2.6%'),
-  },
-  SettingView: {
-    justifyContent: 'center',
-    alignSelf: 'center',
+    width: hp('2.6%'),
   },
   SettingText: {
     ...GROUP_FONT.h4,
     color: COLORS.Primary,
     textAlign: 'center',
   },
-  ModalSubmitButton: {
-    width: 25,
-    height: 25,
-    borderRadius: 500,
+  SettingView: {
     alignSelf: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.Primary,
   },
-  ModalSubmitIcon: {
-    width: 15,
-    height: 15,
-    alignSelf: 'center',
-    resizeMode: 'contain',
+  Title: {
+    ...GROUP_FONT.h3,
+    fontSize: 16.5,
+    lineHeight: 25,
+  },
+  TitleView: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '75%',
+  },
+  ViewStyle: {
+    justifyContent: 'center',
+    width: '10%',
+  },
+  container: {
+    alignItems: 'center',
+    height: Platform.OS === 'ios' ? hp('12%') : hp('6.5%'),
+    justifyContent: 'center',
+    width: '100%',
   },
 });

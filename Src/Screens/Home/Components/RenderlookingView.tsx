@@ -1,10 +1,12 @@
-import React, { FC, memo } from 'react';
+import React, { memo } from 'react';
+import type { FC } from 'react';
 import { Image, Pressable, StyleSheet, Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+
 import { COLORS, GROUP_FONT } from '../../../Common/Theme';
 import { GradientBorderView } from '../../../Components/GradientBorder';
 import { useTheme } from '../../../Contexts/ThemeContext';
-import { HomeListProps } from '../../../Types/Interface';
+import type { HomeListProps } from '../../../Types/Interface';
 
 const RenderLookingView: FC<HomeListProps> = ({ item, onCategoryPress, selectedCategory }) => {
   const { isDark, colors } = useTheme();
@@ -33,48 +35,48 @@ const RenderLookingView: FC<HomeListProps> = ({ item, onCategoryPress, selectedC
 export default memo(RenderLookingView);
 
 const styles = StyleSheet.create({
-  container: {
-    width: 128,
-    height: 128,
-    overflow: 'hidden',
-    marginVertical: 5,
-    borderRadius: 20,
-    borderWidth: 2,
-  },
-  pressable: {
-    flex: 1,
-    flexGrow: 1,
-    height: '100%',
-    width: '100%',
-    overflow: 'hidden',
-    borderRadius: 18, // Reduced from parent's borderRadius
-  },
-  imageView: {
-    width: '100%',
-    height: '100%',
-    alignSelf: 'center',
-    justifyContent: 'center',
-    borderRadius: 16, // Further reduced to show parent's border
-  },
-  gradient: {
-    bottom: -5,
-    left: 0,
-    right: 0,
-    width: '100%',
-    height: '70%',
-    overflow: 'hidden',
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
   TitleText: {
     width: '88%',
     ...GROUP_FONT.h2,
+    alignSelf: 'center',
+    bottom: 10,
+    color: COLORS.White,
     fontSize: 16,
     lineHeight: 20,
     textAlign: 'center',
-    color: COLORS.White,
+  },
+  container: {
+    borderRadius: 20,
+    borderWidth: 2,
+    height: 128,
+    marginVertical: 5,
+    overflow: 'hidden',
+    width: 128,
+  },
+  gradient: {
+    alignItems: 'center',
+    bottom: -5,
+    height: '70%',
+    justifyContent: 'flex-end',
+    left: 0,
+    overflow: 'hidden',
+    position: 'absolute',
+    right: 0,
+    width: '100%',
+  },
+  imageView: {
     alignSelf: 'center',
-    bottom: 10,
+    borderRadius: 16,
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%', // Further reduced to show parent's border
+  },
+  pressable: {
+    borderRadius: 18,
+    flex: 1,
+    flexGrow: 1,
+    height: '100%',
+    overflow: 'hidden',
+    width: '100%', // Reduced from parent's borderRadius
   },
 });

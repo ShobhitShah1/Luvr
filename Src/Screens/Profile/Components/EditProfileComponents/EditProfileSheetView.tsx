@@ -1,9 +1,23 @@
 /* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable react-native/no-inline-styles */
-import React, { FC, memo, useCallback, useMemo } from 'react';
-import { FlatList, Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import React, { memo, useCallback, useMemo } from 'react';
+import type { FC } from 'react';
+import {
+  FlatList,
+  Image,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
+
 import CommonIcons from '../../../../Common/CommonIcons';
 import { COLORS, FONTS, GROUP_FONT, SIZES } from '../../../../Common/Theme';
 import {
@@ -19,8 +33,14 @@ import {
   YourIntoData,
 } from '../../../../Components/Data';
 import { useTheme } from '../../../../Contexts/ThemeContext';
-import { EducationType, HabitsType, LocationType, MagicalPersonType, ProfileType } from '../../../../Types/ProfileType';
-import { ViewPositionsProps } from '../../EditProfileScreen';
+import type {
+  EducationType,
+  HabitsType,
+  LocationType,
+  MagicalPersonType,
+  ProfileType,
+} from '../../../../Types/ProfileType';
+import type { ViewPositionsProps } from '../../EditProfileScreen';
 
 interface EditProfileDataProps {
   profile: ProfileType;
@@ -29,7 +49,12 @@ interface EditProfileDataProps {
   viewPositions: ViewPositionsProps;
 }
 
-const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, storeViewPosition, viewPositions }) => {
+const EditProfileSheetView: FC<EditProfileDataProps> = ({
+  profile,
+  setProfile,
+  storeViewPosition,
+  viewPositions,
+}) => {
   const { colors, isDark } = useTheme();
 
   const StoreViewPosition = (viewName: string, position: number) => {
@@ -54,18 +79,18 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
     (item: any) => {
       const isSelected = profile?.hoping === item?.Title;
       if (isSelected) {
-        setProfile((prevState) => ({
+        setProfile(prevState => ({
           ...prevState,
           hoping: [],
         }));
       } else {
-        setProfile((prevState) => ({
+        setProfile(prevState => ({
           ...prevState,
           hoping: [item],
         }));
       }
     },
-    [profile?.hoping, setProfile]
+    [profile?.hoping, setProfile],
   );
 
   const renderHopingView = ({ item, index }: { item: any; index: number }) => {
@@ -79,8 +104,8 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
           selectedOption
             ? colors.ButtonGradient
             : isDark
-              ? ['transparent', 'transparent']
-              : [colors.White, colors.White]
+            ? ['transparent', 'transparent']
+            : [colors.White, colors.White]
         }
         style={[
           styles.LookingForListView,
@@ -130,13 +155,13 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
 
   const onPressIntrusted = useCallback(
     (data: any) => {
-      setProfile((prevSelection) => {
+      setProfile(prevSelection => {
         const currentIntrustedIn = prevSelection.orientation || [];
 
         if (currentIntrustedIn.includes(data)) {
           return {
             ...prevSelection,
-            orientation: currentIntrustedIn.filter((item) => item !== data),
+            orientation: currentIntrustedIn.filter(item => item !== data),
           };
         }
 
@@ -150,12 +175,14 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
         };
       });
     },
-    [profile?.orientation, setProfile]
+    [profile?.orientation, setProfile],
   );
 
   const renderInterested = ({ item, index }: { item: any; index: number }) => {
     const selectedOption =
-      profile?.orientation && profile?.orientation?.length !== 0 ? profile?.orientation?.includes(item.name) : false;
+      profile?.orientation && profile?.orientation?.length !== 0
+        ? profile?.orientation?.includes(item.name)
+        : false;
 
     return (
       <LinearGradient
@@ -165,8 +192,8 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
           selectedOption
             ? colors.ButtonGradient
             : isDark
-              ? ['transparent', 'transparent']
-              : [colors.White, colors.White]
+            ? ['transparent', 'transparent']
+            : [colors.White, colors.White]
         }
         style={[
           styles.LookingForListView,
@@ -216,13 +243,13 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
 
   const handleOptionPress = useCallback(
     (YourIntoID: number, name: string) => {
-      setProfile((prevSelection) => {
+      setProfile(prevSelection => {
         const currentLikesInto = prevSelection.likes_into || [];
 
         if (currentLikesInto.includes(name)) {
           return {
             ...prevSelection,
-            likes_into: currentLikesInto.filter((item) => item !== name),
+            likes_into: currentLikesInto.filter(item => item !== name),
           };
         }
 
@@ -236,14 +263,17 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
         };
       });
     },
-    [setProfile]
+    [setProfile],
   );
 
   const renderImIntoList = useMemo(
     () =>
       ({ item }: { item: { id: number; name: string } }) => {
         const selectedOption =
-          profile?.likes_into && profile?.likes_into?.length !== 0 ? profile?.likes_into?.includes(item.name) : false;
+          profile?.likes_into && profile?.likes_into?.length !== 0
+            ? profile?.likes_into?.includes(item.name)
+            : false;
+
         return (
           <LinearGradient
             start={{ x: 1, y: 0 }}
@@ -252,8 +282,8 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
               selectedOption
                 ? colors.ButtonGradient
                 : isDark
-                  ? ['transparent', 'transparent']
-                  : [colors.White, colors.White]
+                ? ['transparent', 'transparent']
+                : [colors.White, colors.White]
             }
             style={[
               styles.MultiSelectButtonView,
@@ -286,12 +316,15 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
           </LinearGradient>
         );
       },
-    [profile?.likes_into, handleOptionPress]
+    [profile?.likes_into, handleOptionPress],
   );
 
   const onClickChange = useCallback(
-    (name: string, value: keyof (ProfileType & MagicalPersonType & EducationType & HabitsType & LocationType)) => {
-      setProfile((prevProfile) => {
+    (
+      name: string,
+      value: keyof (ProfileType & MagicalPersonType & EducationType & HabitsType & LocationType),
+    ) => {
+      setProfile(prevProfile => {
         if ('magical_person' in prevProfile && value in prevProfile?.magical_person) {
           return {
             ...prevProfile,
@@ -332,7 +365,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
         }
       });
     },
-    [setProfile]
+    [setProfile],
   );
 
   const RenderSingleSelectionView = useMemo(
@@ -371,8 +404,8 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
               selectedOption
                 ? colors.ButtonGradient
                 : isDark
-                  ? ['transparent', 'transparent']
-                  : [colors.White, colors.White]
+                ? ['transparent', 'transparent']
+                : [colors.White, colors.White]
             }
             style={[
               styles.MultiSelectButtonView,
@@ -382,7 +415,10 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
               },
             ]}
           >
-            <Pressable style={{ flex: 1, justifyContent: 'center' }} onPress={() => onClickChange(item, value)}>
+            <Pressable
+              style={{ flex: 1, justifyContent: 'center' }}
+              onPress={() => onClickChange(item, value)}
+            >
               <Text
                 numberOfLines={2}
                 style={[
@@ -397,13 +433,13 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
           </LinearGradient>
         );
       },
-    [profile, onClickChange]
+    [profile, onClickChange],
   );
 
   return (
     <ScrollView style={styles.bottomSheetContainerView}>
       <View
-        onLayout={(event) => {
+        onLayout={event => {
           StoreViewPosition('Gender', event.nativeEvent.layout.y);
         }}
         style={styles.TextViewForSpace}
@@ -426,8 +462,8 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
                 profile?.gender === gender
                   ? colors.ButtonGradient
                   : isDark
-                    ? ['transparent', 'transparent']
-                    : [colors.White, colors.White]
+                  ? ['transparent', 'transparent']
+                  : [colors.White, colors.White]
               }
               key={index}
               style={[
@@ -441,9 +477,15 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
             >
               <Pressable
                 onPress={() => {
-                  setProfile((prevState) => ({ ...prevState, gender: gender }));
+                  setProfile(prevState => ({ ...prevState, gender }));
                 }}
-                style={{ flex: 1, width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}
+                style={{
+                  flex: 1,
+                  width: '100%',
+                  height: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
               >
                 <Text
                   style={[
@@ -463,7 +505,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
 
       <View
         style={styles.TextViewForSpace}
-        onLayout={(event) => {
+        onLayout={event => {
           StoreViewPosition('ImInto', event.nativeEvent.layout.y);
         }}
       >
@@ -478,7 +520,9 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
             <Text style={[styles.NameText, { color: colors.TextColor }]}>I'm Into</Text>
           </View>
           <Text style={[styles.NameText, { color: colors.TextColor }]}>{`(${
-            profile?.likes_into !== undefined && profile?.likes_into?.length !== 0 ? profile?.likes_into?.length : 0
+            profile?.likes_into !== undefined && profile?.likes_into?.length !== 0
+              ? profile?.likes_into?.length
+              : 0
           }/5)`}</Text>
         </View>
         <View style={styles.BirthdayInputView}>
@@ -499,7 +543,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
 
       <View
         style={styles.TextViewForSpace}
-        onLayout={(event) => {
+        onLayout={event => {
           StoreViewPosition('LookingFor', event.nativeEvent.layout.y);
         }}
       >
@@ -513,13 +557,17 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
           <Text style={[styles.NameText, { color: colors.TextColor }]}>Looking For</Text>
         </View>
         <View>
-          <FlatList data={LookingFor} renderItem={renderHopingView} keyExtractor={(item, index) => index.toString()} />
+          <FlatList
+            data={LookingFor}
+            renderItem={renderHopingView}
+            keyExtractor={(item, index) => index.toString()}
+          />
         </View>
       </View>
 
       <View
         style={styles.TextViewForSpace}
-        onLayout={(event) => {
+        onLayout={event => {
           StoreViewPosition('IntrustedIn', event.nativeEvent.layout.y);
         }}
       >
@@ -534,17 +582,23 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
             <Text style={[styles.NameText, { color: colors.TextColor }]}>Interested in</Text>
           </View>
           <Text style={[styles.NameText, { color: colors.TextColor }]}>{`(${
-            profile?.orientation !== undefined && profile?.orientation?.length !== 0 ? profile?.orientation?.length : 0
+            profile?.orientation !== undefined && profile?.orientation?.length !== 0
+              ? profile?.orientation?.length
+              : 0
           }/3)`}</Text>
         </View>
         <View>
-          <FlatList data={GendersData} renderItem={renderInterested} keyExtractor={(item, index) => index.toString()} />
+          <FlatList
+            data={GendersData}
+            renderItem={renderInterested}
+            keyExtractor={(item, index) => index.toString()}
+          />
         </View>
       </View>
 
       <View
         style={styles.TextViewForSpace}
-        onLayout={(event) => {
+        onLayout={event => {
           StoreViewPosition('ZodiacSign', event.nativeEvent.layout.y);
         }}
       >
@@ -565,7 +619,12 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
             nestedScrollEnabled={false}
             removeClippedSubviews={true}
             renderItem={({ item }) => {
-              return <RenderSingleSelectionView item={item} value={'star_sign' as keyof MagicalPersonType} />;
+              return (
+                <RenderSingleSelectionView
+                  item={item}
+                  value={'star_sign' as keyof MagicalPersonType}
+                />
+              );
             }}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => index.toString()}
@@ -577,7 +636,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
 
       <View
         style={styles.TextViewForSpace}
-        onLayout={(event) => {
+        onLayout={event => {
           StoreViewPosition('CommunicationStyle', event.nativeEvent.layout.y);
         }}
       >
@@ -610,7 +669,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
 
       <View
         style={styles.TextViewForSpace}
-        onLayout={(event) => {
+        onLayout={event => {
           StoreViewPosition('Exercise', event.nativeEvent.layout.y);
         }}
       >
@@ -631,7 +690,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
             nestedScrollEnabled={false}
             removeClippedSubviews={true}
             renderItem={({ item }) => {
-              return <RenderSingleSelectionView item={item} value={'exercise'} />;
+              return <RenderSingleSelectionView item={item} value="exercise" />;
             }}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => index.toString()}
@@ -643,7 +702,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
 
       <View
         style={styles.TextViewForSpace}
-        onLayout={(event) => {
+        onLayout={event => {
           StoreViewPosition('SmokeAndDrink', event.nativeEvent.layout.y);
         }}
       >
@@ -664,7 +723,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
             nestedScrollEnabled={false}
             removeClippedSubviews={true}
             renderItem={({ item }) => {
-              return <RenderSingleSelectionView item={item} value={'smoke'} />;
+              return <RenderSingleSelectionView item={item} value="smoke" />;
             }}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => index.toString()}
@@ -676,7 +735,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
 
       <View
         style={styles.TextViewForSpace}
-        onLayout={(event) => {
+        onLayout={event => {
           StoreViewPosition('Movie', event.nativeEvent.layout.y);
         }}
       >
@@ -697,7 +756,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
             nestedScrollEnabled={false}
             removeClippedSubviews={true}
             renderItem={({ item }) => {
-              return <RenderSingleSelectionView item={item} value={'movies'} />;
+              return <RenderSingleSelectionView item={item} value="movies" />;
             }}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => index.toString()}
@@ -709,7 +768,7 @@ const EditProfileSheetView: FC<EditProfileDataProps> = ({ profile, setProfile, s
 
       <View
         style={styles.TextViewForSpace}
-        onLayout={(event) => {
+        onLayout={event => {
           StoreViewPosition('Drink', event.nativeEvent.layout.y);
         }}
       >
@@ -747,55 +806,42 @@ export default memo(EditProfileSheetView);
 
 const styles = StyleSheet.create({
   bottomSheetContainerView: {
-    width: '90%',
-    marginVertical: 10,
     alignSelf: 'center',
-  },
-  TextViewForSpace: {
-    alignContent: 'center',
-    marginBottom: hp('1.5%'),
+    marginVertical: 10,
+    width: '90%',
   },
   NameText: {
-    fontSize: hp('1.8%'),
     fontFamily: FONTS.Bold,
+    fontSize: hp('1.8%'),
   },
   TitleFlexView: {
-    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: hp('2%'),
+    flexDirection: 'row',
     marginBottom: hp('1.5%'),
+    marginTop: hp('2%'),
   },
   TitleIcon: {
-    width: 16,
-    height: 16,
-    marginHorizontal: 5,
     alignItems: 'center',
+    height: 16,
     justifyContent: 'center',
+    marginHorizontal: 5,
+    width: 16,
   },
   BirthdayInputView: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     width: '100%',
-  },
-  subTitleText: {
-    fontSize: hp('1.6%'),
-    fontFamily: FONTS.SemiBold,
-    marginTop: hp(1),
-  },
-  AllInputContainerView: {
-    width: '100%',
-    marginTop: hp('2%'),
   },
   GenderView: {
-    padding: 0,
-    height: hp('6.8%'),
-    width: wp('85%'),
-    borderRadius: SIZES.radius,
     alignItems: 'center',
-    textAlign: 'center',
+    borderRadius: SIZES.radius,
     borderWidth: 1,
+    height: hp('6.8%'),
     justifyContent: 'center',
+    padding: 0,
+    textAlign: 'center',
+    width: wp('85%'),
   },
   GenderText: {
     fontFamily: FONTS.Medium,
@@ -803,34 +849,20 @@ const styles = StyleSheet.create({
   },
 
   //* Im Into View || MultiSelect Style 3 Row Button
-  MultiSelectOptionContainer: {},
   ImIntoTitleFlexView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: hp('2%'),
     marginBottom: hp('1.5%'),
+    marginTop: hp('2%'),
   },
   MultiSelectButtonView: {
-    width: `${100 / 3.2}%`,
+    borderRadius: SIZES.radius,
+    borderWidth: 1,
     height: Platform.OS === 'ios' ? hp('7.8%') : hp('6.8%'),
     justifyContent: 'center',
-    borderRadius: SIZES.radius,
     marginVertical: hp('0.7%'),
-    borderWidth: 1,
     overflow: 'hidden',
-  },
-  selectedOption: {
-    borderWidth: 2,
-  },
-  MultiSelectCategoryText: {
-    width: '85%',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    ...GROUP_FONT.body4,
-    fontSize: hp('1.5%'),
-    color: 'rgba(130, 130, 130, 1)',
-    fontFamily: FONTS.SemiBold,
-    textAlign: 'center',
+    width: `${100 / 3.2}%`,
   },
   SelectedCategoriesText: {
     color: COLORS.White,
@@ -841,31 +873,22 @@ const styles = StyleSheet.create({
 
   //* Hoping (Looking For)
   LookingForListView: {
-    height: hp('6.5%'),
-    width: '100%',
-    borderWidth: 1,
-    marginVertical: hp('0.7%'),
-    alignSelf: 'center',
-
-    borderRadius: SIZES.radius,
-    justifyContent: 'center',
     alignContent: 'center',
+    alignSelf: 'center',
+    borderRadius: SIZES.radius,
+    borderWidth: 1,
+    height: hp('6.5%'),
+
+    justifyContent: 'center',
+    marginVertical: hp('0.7%'),
+    width: '100%',
   },
   TextView: {
-    width: '90%',
+    alignSelf: 'center',
     flexDirection: 'row',
-    marginHorizontal: hp('2.8%'),
     justifyContent: 'space-between',
-    alignSelf: 'center',
-  },
-  EmojiText: {
-    ...GROUP_FONT.h1,
-    textAlign: 'center',
-    marginVertical: hp('0.5%'),
-  },
-  FlatListContainer: {
-    justifyContent: 'center',
-    alignSelf: 'center',
+    marginHorizontal: hp('2.8%'),
+    width: '90%',
   },
   LookingForText: {
     ...GROUP_FONT.h3,

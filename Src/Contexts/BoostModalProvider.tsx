@@ -1,9 +1,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+
 import BoostModal from '../Components/Subscription/BoostModal';
 import { hideBoostModal, purchaseBoost } from '../Redux/Action/BoostModalActions';
-import { RootState } from '../Redux/Store/store';
-import { AppDispatch } from '../Redux/Action/Index';
+import type { AppDispatch } from '../Redux/Action/Index';
+import type { RootState } from '../Redux/Store/store';
 
 interface BoostModalProviderProps {
   children: React.ReactNode;
@@ -12,7 +13,7 @@ interface BoostModalProviderProps {
 export const BoostModalProvider: React.FC<BoostModalProviderProps> = ({ children }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { isVisible, isLoading } = useSelector(
-    (state: RootState) => state.boostModal || { isVisible: false, isLoading: false }
+    (state: RootState) => state.boostModal || { isVisible: false, isLoading: false },
   );
 
   const handleClose = () => {
@@ -26,7 +27,12 @@ export const BoostModalProvider: React.FC<BoostModalProviderProps> = ({ children
   return (
     <>
       {children}
-      <BoostModal isVisible={isVisible} onClose={handleClose} isLoading={isLoading} onBoostMe={handleBoostMe} />
+      <BoostModal
+        isVisible={isVisible}
+        onClose={handleClose}
+        isLoading={isLoading}
+        onBoostMe={handleBoostMe}
+      />
     </>
   );
 };

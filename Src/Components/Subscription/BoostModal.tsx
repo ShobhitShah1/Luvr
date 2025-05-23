@@ -1,8 +1,10 @@
+import { BlurView } from '@react-native-community/blur';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { Dimensions, Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import * as RNIap from 'react-native-iap';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
+
 import CommonIcons from '../../Common/CommonIcons';
 import CommonImages from '../../Common/CommonImages';
 import TextString from '../../Common/TextString';
@@ -16,9 +18,8 @@ import { debouncedGetBoost } from '../../Services/BoostService';
 import { getProfileData } from '../../Utils/profileUtils';
 import { useCustomToast } from '../../Utils/toastUtils';
 import GradientButton from '../AuthComponents/GradientButton';
-import GradientBorder from '../GradientBorder/GradientBorder';
 import { GradientBorderView } from '../GradientBorder';
-import { BlurView } from '@react-native-community/blur';
+import GradientBorder from '../GradientBorder/GradientBorder';
 
 const { width } = Dimensions.get('window');
 
@@ -30,7 +31,9 @@ export interface BoostModalProps {
 }
 
 const formatTimeRemaining = (totalSeconds: number): string => {
-  if (totalSeconds <= 0) return '0:00';
+  if (totalSeconds <= 0) {
+    return '0:00';
+  }
 
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -46,7 +49,7 @@ const formatTimeRemaining = (totalSeconds: number): string => {
   }
 };
 
-const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostModalProps) => {
+function BoostModal({ isVisible, onClose, isLoading = false, onBoostMe }: BoostModalProps) {
   const { colors, isDark } = useTheme();
   const { showToast } = useCustomToast();
   const { userData } = useUserData();
@@ -57,12 +60,16 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
   const secondsRemainingRef = useRef<number>(timeRemaining * 60);
 
   const [isPurchasing, setIsPurchasing] = useState(false);
-  const [subscriptionProducts, setSubscriptionProducts] = useState<Array<RNIap.Subscription>>([]);
-  const [internalSelectedPlan, setInternalSelectedPlan] = useState<string>(subscriptionProducts[0]?.productId || '');
+  const [subscriptionProducts, setSubscriptionProducts] = useState<RNIap.Subscription[]>([]);
+  const [internalSelectedPlan, setInternalSelectedPlan] = useState<string>(
+    subscriptionProducts[0]?.productId || '',
+  );
 
   const benefits = [
     'Your profile appears at the top of the stack for nearby users',
-    `${subscriptionProducts?.find((prod) => prod.productId === internalSelectedPlan)?.description}, increasing your chances of getting more matches`,
+    `${
+      subscriptionProducts?.find(prod => prod.productId === internalSelectedPlan)?.description
+    }, increasing your chances of getting more matches`,
   ];
 
   useEffect(() => {
@@ -83,6 +90,7 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
             clearInterval(timerRef.current);
             timerRef.current = null;
           }
+
           debouncedGetBoost(0);
         }
 
@@ -117,8 +125,11 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
     } catch (error: any) {
       showToast(
         TextString.error?.toUpperCase(),
-        error?.message?.toString() || error?.Error?.toString() || error?.error?.toString() || error?.toString(),
-        TextString.error
+        error?.message?.toString() ||
+          error?.Error?.toString() ||
+          error?.error?.toString() ||
+          error?.toString(),
+        TextString.error,
       );
     }
   };
@@ -126,13 +137,14 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
   const handlePurchase = async () => {
     if (!internalSelectedPlan) {
       showToast('Alert', 'Please select a subscription plan first.', 'error');
+
       return;
     }
 
     try {
       setIsPurchasing(true);
 
-      const product = subscriptionProducts.find((prod) => prod.productId === internalSelectedPlan);
+      const product = subscriptionProducts.find(prod => prod.productId === internalSelectedPlan);
 
       if (!product) {
         throw new Error('Selected product not found');
@@ -150,19 +162,27 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
           ],
         } as RNIap.RequestSubscriptionAndroid);
 
-        if (response) callPurchaseAPI(Array.isArray(response) ? response[0] : response);
+        if (response) {
+          callPurchaseAPI(Array.isArray(response) ? response[0] : response);
+        }
       } else {
         const response = await RNIap.requestSubscription({
           sku: product.productId,
         } as RNIap.RequestSubscriptionIOS);
 
-        if (response) callPurchaseAPI(Array.isArray(response) ? response[0] : response);
+        if (response) {
+          callPurchaseAPI(Array.isArray(response) ? response[0] : response);
+        }
       }
     } catch (error: any) {
       setIsPurchasing(false);
 
       if (error?.code !== 'E_USER_CANCELLED') {
-        showToast('Error', error?.message || 'Failed to initiate purchase. Please try again later.', 'error');
+        showToast(
+          'Error',
+          error?.message || 'Failed to initiate purchase. Please try again later.',
+          'error',
+        );
       }
     }
   };
@@ -216,7 +236,9 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
           <Text style={[styles.activeBoostText, { color: isDark ? colors.White : colors.Gray }]}>
             Your profile is currently boosted for the next
           </Text>
-          <Text style={[styles.countdownText, { color: isDark ? colors.Primary : colors.Primary }]}>{countdown}</Text>
+          <Text style={[styles.countdownText, { color: isDark ? colors.Primary : colors.Primary }]}>
+            {countdown}
+          </Text>
         </View>
         <View style={styles.buttonContainer}>
           <GradientButton Disabled={false} Title="Close" Navigation={onClose} isLoading={false} />
@@ -266,7 +288,10 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
         gradientProps={{ colors: colors.ButtonGradient }}
         style={[
           styles.modalContainer,
-          { backgroundColor: isDark ? 'rgba(18, 18, 19, 2)' : colors.White, shadowColor: colors.Primary },
+          {
+            backgroundColor: isDark ? 'rgba(18, 18, 19, 2)' : colors.White,
+            shadowColor: colors.Primary,
+          },
         ]}
       >
         {isBoostActive ? (
@@ -274,7 +299,10 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
         ) : (
           <>
             <View style={styles.imageContainer}>
-              <Image style={styles.boostImage} source={isDark ? CommonImages.boost_dark : CommonImages.boost_light} />
+              <Image
+                style={styles.boostImage}
+                source={isDark ? CommonImages.boost_dark : CommonImages.boost_light}
+              />
             </View>
 
             <View style={styles.boostCardContainer}>
@@ -304,27 +332,50 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
                         colors={colors.ButtonGradient}
-                        style={{ width: '100%', height: 30, justifyContent: 'center', alignItems: 'center' }}
+                        style={{
+                          width: '100%',
+                          height: 30,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
                       >
                         <Text style={[styles.boostText, { color: colors.White }]}>Boost</Text>
                       </LinearGradient>
-                      <Text style={[styles.dayNumber, { color: isDark ? colors.White : colors.Primary }]}>1</Text>
-                      <Text style={[styles.dayText, { color: colors.TextColor }]}>{'Boost'}</Text>
-                      <Text style={[styles.priceText, { color: isDark ? colors.White : colors.Primary }]}>
+                      <Text
+                        style={[
+                          styles.dayNumber,
+                          { color: isDark ? colors.White : colors.Primary },
+                        ]}
+                      >
+                        1
+                      </Text>
+                      <Text style={[styles.dayText, { color: colors.TextColor }]}>Boost</Text>
+                      <Text
+                        style={[
+                          styles.priceText,
+                          { color: isDark ? colors.White : colors.Primary },
+                        ]}
+                      >
                         {Platform.OS === 'android'
-                          ? (product as RNIap.SubscriptionAndroid)?.subscriptionOfferDetails?.[0]?.pricingPhases
-                              ?.pricingPhaseList?.[0]?.formattedPrice
+                          ? (product as RNIap.SubscriptionAndroid)?.subscriptionOfferDetails?.[0]
+                              ?.pricingPhases?.pricingPhaseList?.[0]?.formattedPrice
                           : (product as RNIap.SubscriptionIOS)?.localizedPrice}
                       </Text>
                     </View>
                   );
                 })
               ) : (
-                <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 20 }}>
+                <View
+                  style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 20 }}
+                >
                   <Text
                     style={[
                       styles.boostText,
-                      { color: isDark ? colors.White : colors.Primary, fontFamily: FONTS.Bold, fontSize: 20 },
+                      {
+                        color: isDark ? colors.White : colors.Primary,
+                        fontFamily: FONTS.Bold,
+                        fontSize: 20,
+                      },
                     ]}
                   >
                     No Boosts Available
@@ -338,7 +389,10 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
                 Benefits of using Boosts
               </Text>
               <View
-                style={[styles.divider, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.LightGray }]}
+                style={[
+                  styles.divider,
+                  { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.LightGray },
+                ]}
               />
 
               {benefits.map((benefit, index) => (
@@ -350,7 +404,11 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
                       style={styles.rocket}
                     />
                   </View>
-                  <Text style={[styles.benefitText, { color: isDark ? colors.White : colors.Black }]}>{benefit}</Text>
+                  <Text
+                    style={[styles.benefitText, { color: isDark ? colors.White : colors.Black }]}
+                  >
+                    {benefit}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -375,152 +433,152 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
       </GradientBorderView>
     </Modal>
   );
-};
+}
 
 export default memo(BoostModal);
 
 const styles = StyleSheet.create({
-  modal: {
-    flex: 1,
-    margin: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modalContainer: {
-    width: width * 0.85,
-    borderRadius: 25,
-    alignItems: 'center',
-    paddingBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 10,
-    overflow: 'visible',
-    borderWidth: 2,
-  },
-  imageContainer: {
-    width: '100%',
-    height: 280,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'visible',
-  },
-  boostImage: {
-    width: '105%',
-    height: '105%',
-    resizeMode: 'contain',
-  },
-  boostCardContainer: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  boostCard: {
-    width: 110,
-    height: 135,
-    borderRadius: 20,
-    overflow: 'hidden',
-    alignItems: 'center',
-    paddingBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 10,
-  },
-  boostText: {
-    fontSize: 16,
-    fontFamily: FONTS.SemiBold,
-  },
-  dayNumber: {
-    fontSize: 32,
-    fontFamily: FONTS.SemiBold,
-  },
-  dayText: {
-    marginBottom: 4,
-    fontSize: 15,
-    fontFamily: FONTS.Medium,
-  },
-  priceText: {
-    fontSize: 16,
-    fontFamily: FONTS.Medium,
-  },
-  benefitsContainer: {
-    width: '100%',
-    paddingHorizontal: 25,
-    marginBottom: 20,
-  },
-  benefitsTitle: {
-    marginBottom: 8,
-  },
-  divider: {
-    width: '100%',
-    height: 1,
-    marginBottom: 16,
-  },
-  benefitRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  bulletPointContainer: {
-    marginRight: 12,
-  },
-  bulletPoint: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  bulletIcon: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  benefitText: {
-    flex: 1,
-  },
-  buttonContainer: {
-    width: '100%',
-    paddingHorizontal: 25,
-    marginTop: 15,
-  },
-  rocket: {
-    width: 20,
-    height: 20,
-  },
   activeBoostContainer: {
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 20,
   },
   activeBoostImage: {
-    width: 100,
     height: 100,
     marginBottom: 20,
-  },
-  activeBoostTitle: {
-    fontSize: 22,
-    fontFamily: FONTS.Bold,
-    marginBottom: 10,
+    width: 100,
   },
   activeBoostText: {
-    fontSize: 16,
     fontFamily: FONTS.SemiBold,
+    fontSize: 16,
     textAlign: 'center',
+  },
+  activeBoostTitle: {
+    fontFamily: FONTS.Bold,
+    fontSize: 22,
+    marginBottom: 10,
+  },
+  benefitRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: 14,
+  },
+  benefitText: {
+    flex: 1,
+  },
+  benefitsContainer: {
+    marginBottom: 20,
+    paddingHorizontal: 25,
+    width: '100%',
+  },
+  benefitsTitle: {
+    marginBottom: 8,
+  },
+  boostCard: {
+    alignItems: 'center',
+    borderRadius: 20,
+    elevation: 10,
+    height: 135,
+    overflow: 'hidden',
+    paddingBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    width: 110,
+  },
+  boostCardContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  boostImage: {
+    height: '105%',
+    resizeMode: 'contain',
+    width: '105%',
+  },
+  boostText: {
+    fontFamily: FONTS.SemiBold,
+    fontSize: 16,
+  },
+  bulletIcon: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  bulletPoint: {
+    alignItems: 'center',
+    borderRadius: 12,
+    height: 24,
+    justifyContent: 'center',
+    width: 24,
+  },
+  bulletPointContainer: {
+    marginRight: 12,
+  },
+  buttonContainer: {
+    marginTop: 15,
+    paddingHorizontal: 25,
+    width: '100%',
   },
   countdownContainer: {
     alignItems: 'center',
     marginTop: 10,
   },
+  countdownLabel: {
+    fontFamily: FONTS.Regular,
+    fontSize: 14,
+  },
   countdownText: {
-    fontSize: 28,
     fontFamily: FONTS.Bold,
+    fontSize: 28,
     marginVertical: 5,
   },
-  countdownLabel: {
-    fontSize: 14,
-    fontFamily: FONTS.Regular,
+  dayNumber: {
+    fontFamily: FONTS.SemiBold,
+    fontSize: 32,
+  },
+  dayText: {
+    fontFamily: FONTS.Medium,
+    fontSize: 15,
+    marginBottom: 4,
+  },
+  divider: {
+    height: 1,
+    marginBottom: 16,
+    width: '100%',
+  },
+  imageContainer: {
+    alignItems: 'center',
+    height: 280,
+    justifyContent: 'center',
+    overflow: 'visible',
+    width: '100%',
+  },
+  modal: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    margin: 0,
+  },
+  modalContainer: {
+    alignItems: 'center',
+    borderRadius: 25,
+    borderWidth: 2,
+    elevation: 10,
+    overflow: 'visible',
+    paddingBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    width: width * 0.85,
+  },
+  priceText: {
+    fontFamily: FONTS.Medium,
+    fontSize: 16,
+  },
+  rocket: {
+    height: 20,
+    width: 20,
   },
 });

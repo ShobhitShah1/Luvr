@@ -1,7 +1,9 @@
-import React, { FC, memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
+import type { FC } from 'react';
 import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
+
 import CommonIcons from '../../../Common/CommonIcons';
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
@@ -14,6 +16,7 @@ import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { updateField } from '../../../Redux/Action/actions';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
+
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
@@ -29,7 +32,7 @@ const HopingToFind: FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [SelectedLookingForIndex, setSelectedLookingForIndex] = useState<string>(
-    userData.hoping ? userData.hoping : {}
+    userData.hoping ? userData.hoping : {},
   );
 
   const onPressLookingFor = useCallback(
@@ -42,7 +45,7 @@ const HopingToFind: FC = () => {
         setSelectedLookingForIndex(item);
       }
     },
-    [SelectedLookingForIndex]
+    [SelectedLookingForIndex],
   );
 
   const renderItem = ({ item, index }: { item: any; index: number }) => {
@@ -52,7 +55,10 @@ const HopingToFind: FC = () => {
       <GradientBorderView
         style={[
           styles.LookingForListView,
-          { borderWidth: selected ? 2 : 0.5, backgroundColor: isDark ? 'transparent' : colors.White },
+          {
+            borderWidth: selected ? 2 : 0.5,
+            backgroundColor: isDark ? 'transparent' : colors.White,
+          },
         ]}
         gradientProps={{
           colors: selected
@@ -60,8 +66,8 @@ const HopingToFind: FC = () => {
               ? colors.ButtonGradient
               : ['transparent', 'transparent']
             : isDark
-              ? colors.UnselectedGradient
-              : ['transparent', 'transparent'],
+            ? colors.UnselectedGradient
+            : ['transparent', 'transparent'],
         }}
       >
         <Pressable style={styles.buttonView} onPress={() => onPressLookingFor(item)} key={index}>
@@ -122,7 +128,9 @@ const HopingToFind: FC = () => {
 
         <View style={styles.DataViewContainer}>
           <View style={CreateProfileStyles.ContentView}>
-            <Text style={[styles.TitleText, { color: colors.TitleText }]}>What’s your hoping {'\n'}to find?</Text>
+            <Text style={[styles.TitleText, { color: colors.TitleText }]}>
+              What’s your hoping {'\n'}to find?
+            </Text>
             <Text style={[styles.CompatibilityText, { color: colors.TextColor }]}>
               Honesty helps you and everyone on find what you're looking for.
             </Text>
@@ -142,7 +150,7 @@ const HopingToFind: FC = () => {
         <View style={CreateProfileStyles.BottomButton}>
           <GradientButton
             isLoading={isLoading}
-            Title={'Continue'}
+            Title="Continue"
             Disabled={!SelectedLookingForIndex || isLoading}
             Navigation={() => onPressNext()}
           />
@@ -158,70 +166,70 @@ const styles = StyleSheet.create({
   CompatibilityText: {
     width: '90%',
     ...GROUP_FONT.h3,
-    marginVertical: hp('1%'),
     fontFamily: FONTS.Medium,
+    marginVertical: hp('1%'),
   },
   DataViewContainer: {
     marginHorizontal: hp('1.2%'),
     marginTop: hp('1%'),
   },
-  TitleText: {
-    color: COLORS.Primary,
-    fontSize: hp('3.3%'),
-    fontFamily: FONTS.Bold,
+  EmojiText: {
+    ...GROUP_FONT.h1,
+    marginVertical: hp('0.5%'),
+    textAlign: 'center',
   },
   FlatListContainer: {
     flexGrow: 1,
   },
-  SelectedLookingForListView: {
-    width: '31%',
-    left: hp('0.5%'),
-    alignContent: 'center',
-    marginHorizontal: hp('0.4%'),
-    justifyContent: 'center',
-    alignSelf: 'center',
-    height: hp('15%'),
-    borderRadius: hp('1%'),
-    marginVertical: hp('0.5%'),
-    overflow: 'hidden',
-    borderWidth: hp('0.2%'),
-    borderColor: COLORS.Primary,
-  },
-  LookingForListView: {
-    height: hp('6.5%'),
-    width: width - hp('8%'),
-    marginVertical: hp('0.5%'),
-    alignSelf: 'center',
-    borderWidth: 1,
-    borderRadius: SIZES.radius,
-    justifyContent: 'center',
-    alignContent: 'center',
-  },
   GenderFlexView: {
     flexDirection: 'row',
-    marginHorizontal: hp('2.8%'),
     justifyContent: 'space-between',
+    marginHorizontal: hp('2.8%'),
   },
-  TextView: {
-    flexDirection: 'row',
-    marginHorizontal: hp('2.8%'),
-    justifyContent: 'space-between',
+  LookingForListView: {
+    alignContent: 'center',
     alignSelf: 'center',
-    width: '85%',
-  },
-  EmojiText: {
-    ...GROUP_FONT.h1,
-    textAlign: 'center',
+    borderRadius: SIZES.radius,
+    borderWidth: 1,
+    height: hp('6.5%'),
+    justifyContent: 'center',
     marginVertical: hp('0.5%'),
+    width: width - hp('8%'),
   },
   LookingForText: {
     ...GROUP_FONT.h3,
   },
-  buttonView: {
-    flex: 1,
+  SelectedLookingForListView: {
+    alignContent: 'center',
+    alignSelf: 'center',
+    borderColor: COLORS.Primary,
+    borderRadius: hp('1%'),
+    borderWidth: hp('0.2%'),
+    height: hp('15%'),
     justifyContent: 'center',
+    left: hp('0.5%'),
+    marginHorizontal: hp('0.4%'),
+    marginVertical: hp('0.5%'),
+    overflow: 'hidden',
+    width: '31%',
+  },
+  TextView: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: hp('2.8%'),
+    width: '85%',
+  },
+  TitleText: {
+    color: COLORS.Primary,
+    fontFamily: FONTS.Bold,
+    fontSize: hp('3.3%'),
+  },
+  buttonView: {
     alignItems: 'center',
-    width: '100%',
+    flex: 1,
     height: '100%',
+    justifyContent: 'center',
+    width: '100%',
   },
 });

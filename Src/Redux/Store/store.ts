@@ -1,15 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { applyMiddleware, combineReducers, createStore, Reducer } from 'redux';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
+import type { Reducer } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
-
 import { thunk } from 'redux-thunk';
-import boostModalReducer, { BoostModalState } from '../Reducer/BoostModalReducer';
+
+import type { BoostState } from '../../Types/Interface';
+import boostModalReducer from '../Reducer/BoostModalReducer';
+import type { BoostModalState } from '../Reducer/BoostModalReducer';
+import boostReducer from '../Reducer/boostReducer';
 import donationReducer from '../Reducer/donationReducer';
-import incognitoReducer, { IncognitoState } from '../Reducer/IncognitoReducer';
+import incognitoReducer from '../Reducer/IncognitoReducer';
+import type { IncognitoState } from '../Reducer/IncognitoReducer';
 import membershipReducer from '../Reducer/membershipReducer';
 import userReducer from '../Reducer/userReducer';
-import boostReducer from '../Reducer/boostReducer';
-import { BoostState } from '../../Types/Interface';
 
 export const rootReducer = combineReducers({
   user: userReducer,

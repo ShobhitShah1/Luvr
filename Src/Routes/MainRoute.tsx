@@ -1,9 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import messaging from '@react-native-firebase/messaging';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+
 import { updateField } from '../Redux/Action/actions';
 import { store } from '../Redux/Store/store';
 import {
@@ -34,13 +34,14 @@ import EditProfileScreen from '../Screens/Profile/EditProfileScreen';
 import SettingScreen from '../Screens/Setting/SettingScreen';
 import SplashScreen from '../Screens/SplashScreen';
 import { initGoogleSignIn } from '../Services/AuthService';
-import { RootStackParamList } from '../Types/Interface';
+import type { RootStackParamList } from '../Types/Interface';
 import { LocalStorageFields } from '../Types/LocalStorageFields';
+
 import BottomTab from './BottomTab';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const NumberVerificationStack = () => {
+function NumberVerificationStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios_from_right' }}>
       <Stack.Screen component={LoginScreen} name="Login" />
@@ -48,15 +49,15 @@ const NumberVerificationStack = () => {
       <Stack.Screen component={OTPScreen} name="OTP" />
     </Stack.Navigator>
   );
-};
+}
 
-const LocationStack = () => {
+function LocationStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios_from_right' }}>
       <Stack.Screen component={LocationPermission} name="LocationPermission" />
     </Stack.Navigator>
   );
-};
+}
 
 export default function MainRoute() {
   const storedData = useSelector((state: any) => state.user);
@@ -76,26 +77,25 @@ export default function MainRoute() {
     }
   };
 
-  const LoginStack = () => {
-    const userIdentityExists = storedData?.identity?.length === 0 && store.getState().user?.identity?.length === 0;
+  function LoginStack() {
+    const userIdentityExists =
+      storedData?.identity?.length === 0 && store.getState().user?.identity?.length === 0;
 
     return (
-      <>
-        <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios_from_right' }}>
-          {userIdentityExists && <Stack.Screen component={AddEmail} name="AddEmail" />}
-          <Stack.Screen component={IdentifyYourSelf} name="IdentifyYourSelf" />
-          <Stack.Screen component={SexualOrientation} name="SexualOrientationScreen" />
-          <Stack.Screen component={HopingToFind} name="HopingToFind" />
-          <Stack.Screen component={DistancePreference} name="DistancePreference" />
-          <Stack.Screen component={YourEducation} name="YourEducation" />
-          <Stack.Screen component={AddDailyHabits} name="AddDailyHabits" />
-          <Stack.Screen component={WhatAboutYou} name="WhatAboutYou" />
-          <Stack.Screen component={YourIntro} name="YourIntro" />
-          <Stack.Screen component={AddRecentPics} name="AddRecentPics" />
-        </Stack.Navigator>
-      </>
+      <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios_from_right' }}>
+        {userIdentityExists && <Stack.Screen component={AddEmail} name="AddEmail" />}
+        <Stack.Screen component={IdentifyYourSelf} name="IdentifyYourSelf" />
+        <Stack.Screen component={SexualOrientation} name="SexualOrientationScreen" />
+        <Stack.Screen component={HopingToFind} name="HopingToFind" />
+        <Stack.Screen component={DistancePreference} name="DistancePreference" />
+        <Stack.Screen component={YourEducation} name="YourEducation" />
+        <Stack.Screen component={AddDailyHabits} name="AddDailyHabits" />
+        <Stack.Screen component={WhatAboutYou} name="WhatAboutYou" />
+        <Stack.Screen component={YourIntro} name="YourIntro" />
+        <Stack.Screen component={AddRecentPics} name="AddRecentPics" />
+      </Stack.Navigator>
     );
-  };
+  }
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false, animation: 'ios_from_right' }}>

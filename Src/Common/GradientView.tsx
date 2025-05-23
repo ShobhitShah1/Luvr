@@ -2,14 +2,18 @@ import React, { memo } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTheme } from '../Contexts/ThemeContext';
-import { gradientEnd, gradientStart } from '../Config/Setting';
 
-const GradientView = ({ children }: { children: React.ReactNode }) => {
+import { gradientEnd, gradientStart } from '../Config/Setting';
+import { useTheme } from '../Contexts/ThemeContext';
+
+function GradientView({ children }: { children: React.ReactNode }) {
   const { colors } = useTheme();
 
   return (
-    <SafeAreaView style={styles.container} edges={Platform.OS === 'android' ? ['top', 'left', 'right', 'bottom'] : []}>
+    <SafeAreaView
+      style={styles.container}
+      edges={Platform.OS === 'android' ? ['top', 'left', 'right', 'bottom'] : []}
+    >
       <LinearGradient
         start={gradientStart}
         end={gradientEnd}
@@ -20,7 +24,7 @@ const GradientView = ({ children }: { children: React.ReactNode }) => {
       </LinearGradient>
     </SafeAreaView>
   );
-};
+}
 
 export default memo(GradientView);
 

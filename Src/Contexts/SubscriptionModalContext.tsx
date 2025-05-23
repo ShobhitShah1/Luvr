@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
+
 import SubscriptionModalView from '../Components/Subscription/SubscriptionModalView';
 
 interface SubscriptionModalContextType {
@@ -16,18 +17,24 @@ interface ShowSubscriptionModalOptions {
 
 const SubscriptionModalContext = createContext<SubscriptionModalContextType | undefined>(undefined);
 
-export const SubscriptionModalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SubscriptionModalProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [isVisible, setIsVisible] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string>();
-  const [handlePlanSelection, setHandlePlanSelection] = useState<((key: string) => void) | undefined>();
+  const [handlePlanSelection, setHandlePlanSelection] = useState<
+    ((key: string) => void) | undefined
+  >();
 
   const showSubscriptionModal = useCallback((options?: ShowSubscriptionModalOptions) => {
     if (options?.selectedPlan) {
       setSelectedPlan(options.selectedPlan);
     }
+
     if (options?.handlePlanSelection) {
       setHandlePlanSelection(() => options.handlePlanSelection);
     }
+
     setIsVisible(true);
   }, []);
 
@@ -63,5 +70,6 @@ export const useSubscriptionModal = () => {
   if (context === undefined) {
     throw new Error('useSubscriptionModal must be used within a SubscriptionModalProvider');
   }
+
   return context;
 };

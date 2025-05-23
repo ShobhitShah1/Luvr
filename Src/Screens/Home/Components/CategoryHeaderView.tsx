@@ -1,7 +1,10 @@
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
-import React, { FC } from 'react';
-import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
+import React from 'react';
+import type { FC } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
+import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import { useTheme } from '../../../Contexts/ThemeContext';
 
 interface CategoryHeaderViewProps {
@@ -29,14 +32,14 @@ const styles = StyleSheet.create({
     marginBottom: hp('1%'),
     marginTop: hp('1.5%'),
   },
-  titleText: {
-    color: COLORS.Black,
-    fontSize: hp('2%'),
-    fontFamily: FONTS.Bold,
-  },
   descriptionText: {
     ...GROUP_FONT.body2,
-    fontSize: hp('1.8%'),
     color: COLORS.Black,
+    fontSize: hp('1.8%'),
+  },
+  titleText: {
+    color: COLORS.Black,
+    fontFamily: FONTS.Bold,
+    fontSize: hp('2%'),
   },
 });

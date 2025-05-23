@@ -1,4 +1,4 @@
-import { SubscriptionData, MembershipState } from '../../Types/SubscriptionTypes';
+import type { SubscriptionData, MembershipState } from '../../Types/SubscriptionTypes';
 
 export const FETCH_SUBSCRIPTION_REQUEST = 'FETCH_SUBSCRIPTION_REQUEST';
 export const FETCH_SUBSCRIPTION_SUCCESS = 'FETCH_SUBSCRIPTION_SUCCESS';
@@ -13,7 +13,11 @@ export const setSubscriptionExpired = (payload: { subscriptionId: string; expire
   payload,
 });
 
-export const setSubscriptionCancelled = (payload: { subscriptionId: string; cancelledAt: number; reason: string }) => ({
+export const setSubscriptionCancelled = (payload: {
+  subscriptionId: string;
+  cancelledAt: number;
+  reason: string;
+}) => ({
   type: SET_SUBSCRIPTION_CANCELLED,
   payload,
 });
@@ -60,23 +64,32 @@ const initialState: MembershipState = {
 };
 
 const checkSubscriptionActive = (subscription: SubscriptionData | null): boolean => {
-  if (!subscription?.payment_response) return false;
+  if (!subscription?.payment_response) {
+    return false;
+  }
 
   const { payment_response } = subscription;
   const currentTime = Date.now();
 
   // Check basic purchase state
-  const isValidState = payment_response.purchaseState === 1 || payment_response.purchaseState === 'purchased';
+  const isValidState =
+    payment_response.purchaseState === 1 || payment_response.purchaseState === 'purchased';
 
-  if (!isValidState) return false;
+  if (!isValidState) {
+    return false;
+  }
 
   // Check expiry for iOS
   if (payment_response.platform === 'ios') {
     if (payment_response.expiresDate && payment_response.expiresDate <= currentTime) {
       // Check grace period
-      if (payment_response.gracePeriodExpiresDate && payment_response.gracePeriodExpiresDate > currentTime) {
+      if (
+        payment_response.gracePeriodExpiresDate &&
+        payment_response.gracePeriodExpiresDate > currentTime
+      ) {
         return true; // Still in grace period
       }
+
       return false; // Expired
     }
   }
@@ -117,6 +130,7 @@ const checkSubscriptionActive = (subscription: SubscriptionData | null): boolean
       }
 
       const expiryTime = transactionDate + periodInDays * 24 * 60 * 60 * 1000;
+
       return expiryTime > currentTime;
     }
   }
@@ -157,9 +171,12 @@ const membershipReducer = (state = initialState, action: any): MembershipState =
     case SET_SUBSCRIPTION_EXPIRED:
       return {
         ...state,
-        subscription: state.subscription?._id === action.payload.subscriptionId ? null : state.subscription,
+        subscription:
+          state.subscription?._id === action.payload.subscriptionId ? null : state.subscription,
         isSubscriptionActive:
-          state.subscription?._id === action.payload.subscriptionId ? false : state.isSubscriptionActive,
+          state.subscription?._id === action.payload.subscriptionId
+            ? false
+            : state.isSubscriptionActive,
         lastExpiredSubscriptionId: action.payload.subscriptionId,
         error: `Subscription expired at ${new Date(action.payload.expiredAt).toLocaleString()}`,
       };
@@ -167,9 +184,12 @@ const membershipReducer = (state = initialState, action: any): MembershipState =
     case SET_SUBSCRIPTION_CANCELLED:
       return {
         ...state,
-        subscription: state.subscription?._id === action.payload.subscriptionId ? null : state.subscription,
+        subscription:
+          state.subscription?._id === action.payload.subscriptionId ? null : state.subscription,
         isSubscriptionActive:
-          state.subscription?._id === action.payload.subscriptionId ? false : state.isSubscriptionActive,
+          state.subscription?._id === action.payload.subscriptionId
+            ? false
+            : state.isSubscriptionActive,
         lastCancelledSubscription: action.payload,
         error: `Subscription cancelled: ${action.payload.reason}`,
       };

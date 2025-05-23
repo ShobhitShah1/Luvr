@@ -1,9 +1,11 @@
-import { Contact } from 'react-native-contacts/type';
-import UserService from '../../Services/AuthService';
-import { ThunkAction, ThunkDispatch } from 'redux-thunk';
+import type { Contact } from 'react-native-contacts/type';
 import { Action } from 'redux';
+import { ThunkAction, ThunkDispatch } from 'redux-thunk';
+
+import UserService from '../../Services/AuthService';
 import { rootReducer, RootState } from '../Store/store';
-import { AppDispatch, AppThunk } from './Index';
+
+import type { AppDispatch, AppThunk } from './Index';
 
 export const SET_INCOGNITO_MODE = 'SET_INCOGNITO_MODE';
 export const SET_CONTACTS = 'SET_CONTACTS';
@@ -109,8 +111,8 @@ export const saveContactsToApi = (contacts: Contact[]): AppThunk => {
 
     try {
       const phoneNumbers = contacts
-        .filter((contact) => contact.phoneNumbers?.[0]?.number)
-        .map((contact) => contact.phoneNumbers?.[0]?.number);
+        .filter(contact => contact.phoneNumbers?.[0]?.number)
+        .map(contact => contact.phoneNumbers?.[0]?.number);
 
       const dataToSend = {
         eventName: 'incognito_mobile',
@@ -138,7 +140,7 @@ export const saveEmailsToApi = (emails: EmailItem[]): AppThunk => {
     dispatch(clearError());
 
     try {
-      const emailAddresses = emails.map((item) => item.email);
+      const emailAddresses = emails.map(item => item.email);
 
       const dataToSend = {
         eventName: 'incognito_identity',

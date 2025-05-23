@@ -1,8 +1,10 @@
-/* eslint-disable @typescript-eslint/no-shadow */
-import React, { FC, memo, useCallback } from 'react';
+import React, { memo, useCallback } from 'react';
+import type { FC } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
+
 import { addUrlToItem, sortByUrl } from '../../../../Utils/ImagePickerUtils';
+
 import EditProfileRenderImageBox from './EditProfileRenderImageBox';
 
 interface EditProfileAllImageViewProps {
@@ -13,11 +15,11 @@ interface EditProfileAllImageViewProps {
     url: string;
   };
   setUserPicks: any;
-  UserPicks: {
+  UserPicks: Array<{
     name: string;
     type: string;
     url: string;
-  }[];
+  }>;
   OnToggleModal: () => void;
   isLoading: boolean;
 }
@@ -35,11 +37,15 @@ const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
         OnToggleModal();
       }
     },
-    [OnToggleModal]
+    [OnToggleModal],
   );
 
   return (
-    <Pressable disabled={isLoading} onPress={() => handleOnImagePress(item)} style={styles.AddUserPhotoView}>
+    <Pressable
+      disabled={isLoading}
+      onPress={() => handleOnImagePress(item)}
+      style={styles.AddUserPhotoView}
+    >
       <EditProfileRenderImageBox
         onDelete={() => {}}
         onAdd={() => {
@@ -57,8 +63,8 @@ export default memo(EditProfileAllImageView);
 
 const styles = StyleSheet.create({
   AddUserPhotoView: {
-    flex: 1,
     alignItems: 'center',
+    flex: 1,
     justifyContent: 'space-between',
     marginVertical: heightPercentageToDP('0.5%'),
   },

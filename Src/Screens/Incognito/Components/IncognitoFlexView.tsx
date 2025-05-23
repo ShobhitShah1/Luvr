@@ -1,9 +1,12 @@
-import React, { FC, memo } from 'react';
-import { Image, ImageStyle, Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import React, { memo } from 'react';
+import type { FC } from 'react';
+import { Image, ImageStyle, Pressable, StyleSheet, Text, View } from 'react-native';
+import type { TextStyle, ViewStyle } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+
 import CommonIcons from '../../../Common/CommonIcons';
 import { FONTS, GROUP_FONT } from '../../../Common/Theme';
 import { useTheme } from '../../../Contexts/ThemeContext';
-import LinearGradient from 'react-native-linear-gradient';
 
 interface IncognitoFlexViewProps {
   title: string;
@@ -13,7 +16,13 @@ interface IncognitoFlexViewProps {
   disabled?: boolean;
 }
 
-const IncognitoFlexView: FC<IncognitoFlexViewProps> = ({ title, onPress, style, itemStyle, disabled }) => {
+const IncognitoFlexView: FC<IncognitoFlexViewProps> = ({
+  title,
+  onPress,
+  style,
+  itemStyle,
+  disabled,
+}) => {
   const { colors } = useTheme();
 
   return (
@@ -36,36 +45,37 @@ const IncognitoFlexView: FC<IncognitoFlexViewProps> = ({ title, onPress, style, 
     </Pressable>
   );
 };
+
 export default memo(IncognitoFlexView);
 
 const styles = StyleSheet.create({
-  settingView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  rightIconView: {
-    width: 70,
-    height: 35,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 100,
-  },
-  rightArrowIcon: {
-    width: 13,
-    height: 13,
-    alignItems: 'center',
-    alignSelf: 'center',
-    justifyContent: 'center',
+  addText: {
+    fontFamily: FONTS.SemiBold,
+    fontSize: 14.5,
   },
   itemTextStyle: {
     ...GROUP_FONT.body3,
-    fontSize: 14.5,
     fontFamily: FONTS.Medium,
+    fontSize: 14.5,
+  },
+  rightArrowIcon: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    height: 13,
+    justifyContent: 'center',
+    width: 13,
+  },
+  rightIconView: {
+    alignItems: 'center',
+    borderRadius: 100,
+    height: 35,
+    justifyContent: 'center',
+    width: 70,
   },
 
-  addText: {
-    fontSize: 14.5,
-    fontFamily: FONTS.SemiBold,
+  settingView: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });

@@ -1,10 +1,18 @@
 /* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react-hooks/exhaustive-deps */
-import { ParamListBase, RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
+
+import { useIsFocused, useRoute } from '@react-navigation/native';
+import type { ParamListBase, RouteProp } from '@react-navigation/native';
 import React, { memo, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, SafeAreaView, View } from 'react-native';
-import { GiftedChat, IMessage, MessageText, MessageTextProps } from 'react-native-gifted-chat';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  View,
+} from 'react-native';
+import { GiftedChat, MessageText } from 'react-native-gifted-chat';
+import type { IMessage, MessageTextProps } from 'react-native-gifted-chat';
+
 import GradientView from '../../Common/GradientView';
 import ReportUserModalView from '../../Components/ReportUserModalView';
 import ApiConfig from '../../Config/ApiConfig';
@@ -14,6 +22,7 @@ import { onSwipeLeft } from '../../Redux/Action/actions';
 import { store } from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
 import { useCustomToast } from '../../Utils/toastUtils';
+
 import ChatBubble from './Components/ChatBubble';
 import ChatHeader from './Components/ChatHeader';
 import ChatInput from './Components/ChatInput';
@@ -30,7 +39,7 @@ interface ChatData {
 
 type ChatScreenRouteProp = RouteProp<ParamListBase, 'ChatScreen'> & ChatData;
 
-const ChatScreen = () => {
+function ChatScreen() {
   const { colors, isDark } = useTheme();
   const isFocused = useIsFocused();
   const navigation = useCustomNavigation();
@@ -46,13 +55,8 @@ const ChatScreen = () => {
   const [showReportModalView, setShowReportModalView] = useState<boolean>(false);
   const [reportAndBlockModal, setReportAndBlockModal] = useState(false);
 
-  const { userMessage, otherUserProfileData, avatarUrl, onSend, isLoading, canSendMessage } = useChat(
-    currentLoginUserId,
-    currentUserImage,
-    currentLoginUserFullName,
-    params?.id,
-    isFocused
-  );
+  const { userMessage, otherUserProfileData, avatarUrl, onSend, isLoading, canSendMessage } =
+    useChat(currentLoginUserId, currentUserImage, currentLoginUserFullName, params?.id, isFocused);
 
   const onBlockProfileClick = async () => {
     const blockData = {
@@ -67,7 +71,7 @@ const ChatScreen = () => {
       showToast(
         'User Blocked',
         `Your request to block ${otherUserProfileData?.full_name} is successfully send`,
-        'success'
+        'success',
       );
 
       navigation.canGoBack() && navigation.goBack();
@@ -91,15 +95,16 @@ const ChatScreen = () => {
       showToast(
         'Success!',
         `Your report against ${otherUserProfileData?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${selectedReportReason}`,
-        'success'
+        'success',
       );
+
       navigation.canGoBack() && navigation.goBack();
     } else {
       showToast('Error', 'Something went wrong', 'error');
     }
   };
 
-  const CustomMessageText: React.FC<MessageTextProps<IMessage>> = (props) => {
+  const CustomMessageText: React.FC<MessageTextProps<IMessage>> = props => {
     return (
       <MessageText
         {...props}
@@ -114,7 +119,10 @@ const ChatScreen = () => {
   return (
     <GradientView>
       <View style={styles.Container}>
-        <ChatHeader data={otherUserProfileData} onRightIconPress={() => setReportAndBlockModal(true)} />
+        <ChatHeader
+          data={otherUserProfileData}
+          onRightIconPress={() => setReportAndBlockModal(true)}
+        />
         <View style={styles.ChatContainer}>
           {isLoading ? (
             <View style={styles.loadingContainer}>
@@ -125,12 +133,14 @@ const ChatScreen = () => {
               alignTop
               keyboardShouldPersistTaps="handled"
               messages={userMessage}
-              onSend={(messages) => onSend(messages)}
+              onSend={messages => onSend(messages)}
               user={{ _id: 1, avatar: avatarUrl }}
               isTyping={false}
               messagesContainerStyle={styles.messagesContainer}
               maxComposerHeight={100}
-              renderInputToolbar={(props) => <ChatInput inputToolbarProps={props} canSendMessage={canSendMessage} />}
+              renderInputToolbar={props => (
+                <ChatInput inputToolbarProps={props} canSendMessage={canSendMessage} />
+              )}
               timeTextStyle={{
                 left: { color: colors.White },
                 right: { color: isDark ? colors.White : colors.Black },
@@ -138,7 +148,7 @@ const ChatScreen = () => {
               imageStyle={{ left: 28 }}
               onLongPress={() => {}}
               renderMessageText={CustomMessageText}
-              renderBubble={(props) => <ChatBubble {...props} />}
+              renderBubble={props => <ChatBubble {...props} />}
             />
           )}
         </View>
@@ -163,6 +173,6 @@ const ChatScreen = () => {
       </View>
     </GradientView>
   );
-};
+}
 
 export default memo(ChatScreen);

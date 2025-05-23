@@ -1,6 +1,6 @@
-import {useState} from 'react';
-import {Platform, Linking, Alert} from 'react-native';
-import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import { useState } from 'react';
+import { Platform, Linking, Alert } from 'react-native';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 export const useGalleryPermission = () => {
   const [galleryPermission, setGalleryPermission] = useState(false);
@@ -15,6 +15,7 @@ export const useGalleryPermission = () => {
       const result = await check(permission);
       if (Platform.OS === 'ios' ? result === RESULTS.GRANTED : true) {
         setGalleryPermission(true);
+
         return true;
       } else {
         const requestPermission = await request(permission);
@@ -49,5 +50,5 @@ export const useGalleryPermission = () => {
     );
   };
 
-  return {galleryPermission, requestGalleryPermission};
+  return { galleryPermission, requestGalleryPermission };
 };

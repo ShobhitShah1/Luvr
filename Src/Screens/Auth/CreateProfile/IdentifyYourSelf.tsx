@@ -1,8 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, memo, useCallback, useRef, useState } from 'react';
-import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import React, { memo, useCallback, useRef, useState } from 'react';
+import type { FC } from 'react';
+import { Keyboard, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import type { TextInput } from 'react-native';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
+
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
 import { COLORS, FONTS, SIZES } from '../../../Common/Theme';
@@ -17,6 +23,7 @@ import { updateField } from '../../../Redux/Action/actions';
 import { store } from '../../../Redux/Store/store';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
+
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
@@ -36,14 +43,17 @@ const IdentifyYourSelf: FC = () => {
 
   const [FirstName, setFirstName] = useState<string>(userData.full_name);
   const [BirthDateDD, setBirthDateDD] = useState<string>(
-    userData.birthdate ? String(userData.birthdate).split('/')[0] : ''
+    userData.birthdate ? String(userData.birthdate).split('/')[0] : '',
   );
+
   const [BirthDateMM, setBirthDateMM] = useState<string>(
-    userData.birthdate ? String(userData.birthdate).split('/')[1] : ''
+    userData.birthdate ? String(userData.birthdate).split('/')[1] : '',
   );
+
   const [BirthDateYYYY, setBirthDateYYYY] = useState<string>(
-    userData.birthdate ? String(userData.birthdate).split('/')[2] : ''
+    userData.birthdate ? String(userData.birthdate).split('/')[2] : '',
   );
+
   const [CityName, setCityName] = useState<string>(userData.city);
   const [selectedGender, setSelectedGender] = useState<string>(userData.gender);
 
@@ -67,6 +77,7 @@ const IdentifyYourSelf: FC = () => {
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
+
     return age;
   };
 
@@ -79,8 +90,16 @@ const IdentifyYourSelf: FC = () => {
       setIsLoading(true);
       Keyboard.dismiss();
 
-      if (!FirstName || !BirthDateDD || !BirthDateMM || !BirthDateYYYY || !selectedGender || !CityName) {
+      if (
+        !FirstName ||
+        !BirthDateDD ||
+        !BirthDateMM ||
+        !BirthDateYYYY ||
+        !selectedGender ||
+        !CityName
+      ) {
         showToast('Incomplete Information', 'Please fill in all required fields.', 'error');
+
         return;
       }
 
@@ -88,12 +107,18 @@ const IdentifyYourSelf: FC = () => {
 
       if (!isEligible(age)) {
         showToast(TextString.error.toUpperCase(), 'Please enter a valid age.', 'Error');
+
         return;
       }
 
       await Promise.all([
         dispatch(updateField(LocalStorageFields.full_name, FirstName)),
-        dispatch(updateField(LocalStorageFields.birthdate, `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`)),
+        dispatch(
+          updateField(
+            LocalStorageFields.birthdate,
+            `${BirthDateDD}/${BirthDateMM}/${BirthDateYYYY}`,
+          ),
+        ),
         dispatch(updateField(LocalStorageFields.gender, selectedGender)),
         dispatch(updateField(LocalStorageFields.city, CityName)),
       ]);
@@ -137,10 +162,12 @@ const IdentifyYourSelf: FC = () => {
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
           automaticallyAdjustKeyboardInsets
-          style={[styles.ContentView]}
+          style={styles.ContentView}
           showsVerticalScrollIndicator={false}
         >
-          <Text style={[styles.TitleText, { color: colors.TitleText }]}>Identify your{'\n'}real self</Text>
+          <Text style={[styles.TitleText, { color: colors.TitleText }]}>
+            Identify your{'\n'}real self
+          </Text>
           <Text style={[styles.subTitleText, { color: colors.TextColor }]}>
             Introduce yourself fill out the details{'\n'}so people know about you.
           </Text>
@@ -218,12 +245,17 @@ const IdentifyYourSelf: FC = () => {
                   <View key={index}>
                     {selectedGender === gender ? (
                       <GradientBorderView
-                        gradientProps={{ colors: isDark ? colors.ButtonGradient : ['transparent', 'transparent'] }}
+                        gradientProps={{
+                          colors: isDark ? colors.ButtonGradient : ['transparent', 'transparent'],
+                        }}
                         style={[
                           styles.GenderView,
                           {
                             width: hp('11%'),
-                            backgroundColor: !isDark && selectedGender === gender ? COLORS.Background : 'transparent',
+                            backgroundColor:
+                              !isDark && selectedGender === gender
+                                ? COLORS.Background
+                                : 'transparent',
                           },
                         ]}
                       >
@@ -299,7 +331,7 @@ const IdentifyYourSelf: FC = () => {
           <View style={styles.BottomButton}>
             <GradientButton
               isLoading={isLoading}
-              Title={'Continue'}
+              Title="Continue"
               Disabled={
                 !FirstName ||
                 !BirthDateDD ||
@@ -321,82 +353,82 @@ const IdentifyYourSelf: FC = () => {
 export default memo(IdentifyYourSelf);
 
 const styles = StyleSheet.create({
-  ContentView: {
+  AllInputContainerView: {
+    marginTop: hp('2%'),
     width: '100%',
-    paddingTop: hp('0.5%'),
-    paddingBottom: hp('13%'),
-    paddingHorizontal: hp('4.2%'),
   },
-  TitleText: {
-    color: COLORS.Primary,
-    fontSize: hp('3.3%'),
-    fontFamily: FONTS.Bold,
-  },
-  TextInputViewStyle: {
-    padding: 0,
-    borderWidth: 1,
-    justifyContent: 'center',
-    height: hp('6.8%'),
-    borderRadius: SIZES.radius,
-  },
-  regularBorder: {
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  textInputStyle: {
-    color: COLORS.Black,
-    fontSize: hp('1.7%'),
-    fontFamily: FONTS.SemiBold,
-    textAlign: 'center',
-  },
-  GenderView: {
-    padding: 0,
-    borderWidth: 2.5,
-    height: hp('6.8%'),
-    width: wp('85%'),
-    borderRadius: SIZES.radius,
+  BirthdayInputView: {
     alignItems: 'center',
-    textAlign: 'center',
-    justifyContent: 'center',
-  },
-  GenderText: {
-    fontFamily: FONTS.Medium,
-    color: COLORS.Gray,
-    fontSize: hp('1.7%'),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   BottomButton: {
-    width: '90%',
     alignSelf: 'center',
-    position: 'absolute',
     bottom: hp('2%'),
-    overflow: 'hidden',
     justifyContent: 'center',
+    overflow: 'hidden',
+    position: 'absolute',
+    width: '90%',
+  },
+  ContentView: {
+    paddingBottom: hp('13%'),
+    paddingHorizontal: hp('4.2%'),
+    paddingTop: hp('0.5%'),
+    width: '100%',
+  },
+  GenderText: {
+    color: COLORS.Gray,
+    fontFamily: FONTS.Medium,
+    fontSize: hp('1.7%'),
+  },
+  GenderView: {
+    alignItems: 'center',
+    borderRadius: SIZES.radius,
+    borderWidth: 2.5,
+    height: hp('6.8%'),
+    justifyContent: 'center',
+    padding: 0,
+    textAlign: 'center',
+    width: wp('85%'),
+  },
+  NameText: {
+    color: COLORS.Primary,
+    fontFamily: FONTS.Bold,
+    fontSize: hp('1.8%'),
+    marginBottom: hp('1.5%'),
+    marginTop: hp('2%'),
+  },
+  TextInputViewStyle: {
+    borderRadius: SIZES.radius,
+    borderWidth: 1,
+    height: hp('6.8%'),
+    justifyContent: 'center',
+    padding: 0,
   },
   TextViewForSpace: {
     alignContent: 'center',
     marginBottom: hp('1.5%'),
   },
-  NameText: {
-    marginTop: hp('2%'),
-    marginBottom: hp('1.5%'),
-    fontSize: hp('1.8%'),
+  TitleText: {
     color: COLORS.Primary,
     fontFamily: FONTS.Bold,
+    fontSize: hp('3.3%'),
   },
-  BirthdayInputView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
+  regularBorder: {
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderWidth: 1,
   },
   subTitleText: {
-    fontSize: hp('1.6%'),
-    fontFamily: FONTS.SemiBold,
     color: COLORS.Black,
+    fontFamily: FONTS.SemiBold,
+    fontSize: hp('1.6%'),
     marginTop: hp(1),
   },
-  AllInputContainerView: {
-    width: '100%',
-    marginTop: hp('2%'),
+  textInputStyle: {
+    color: COLORS.Black,
+    fontFamily: FONTS.SemiBold,
+    fontSize: hp('1.7%'),
+    textAlign: 'center',
   },
 });

@@ -1,7 +1,7 @@
-import { GROUP_FONT } from './../../../Common/Theme';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import { CommonSize } from '../../../Common/CommonSize';
-import { FONTS, SIZES } from '../../../Common/Theme';
+import { FONTS, SIZES, GROUP_FONT } from '../../../Common/Theme';
 import createThemedStyles from '../../../Hooks/createThemedStyles';
 
 const styles = createThemedStyles((colors, isDark) => ({

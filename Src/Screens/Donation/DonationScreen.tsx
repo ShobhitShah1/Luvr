@@ -1,9 +1,13 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, { memo, useEffect, useState } from 'react';
 import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { flushFailedPurchasesCachedAsPendingAndroid, initConnection, requestPurchase } from 'react-native-iap';
+import {
+  flushFailedPurchasesCachedAsPendingAndroid,
+  initConnection,
+  requestPurchase,
+} from 'react-native-iap';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
+
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
@@ -17,7 +21,7 @@ import { useCustomToast } from '../../Utils/toastUtils';
 
 const BackgroundImageSize = 150;
 
-const DonationScreen = () => {
+function DonationScreen() {
   const navigation = useCustomNavigation();
 
   const { isDark, colors } = useTheme();
@@ -42,10 +46,15 @@ const DonationScreen = () => {
         if (Platform.OS === 'android') {
           await flushFailedPurchasesCachedAsPendingAndroid();
         }
+
         return;
       }
 
-      showToast(TextString.error.toUpperCase(), 'Failed to connect to the store.', TextString.error);
+      showToast(
+        TextString.error.toUpperCase(),
+        'Failed to connect to the store.',
+        TextString.error,
+      );
     } catch (error) {
       setPaymentLoader(false);
     } finally {
@@ -66,6 +75,7 @@ const DonationScreen = () => {
       if (error?.message?.incudes('Cancelled')) {
         return;
       }
+
       showToast('Error', String(error?.message || error), 'error');
     } finally {
       setPaymentLoader(false);
@@ -131,7 +141,12 @@ const DonationScreen = () => {
                 {isPaymentSuccess ? 'Thanks for yo support' : 'Help us'}
               </Text>
 
-              <Text style={[styles.DonateDescription, { color: isDark ? 'rgba(198, 198, 198, 1)' : colors.TextColor }]}>
+              <Text
+                style={[
+                  styles.DonateDescription,
+                  { color: isDark ? 'rgba(198, 198, 198, 1)' : colors.TextColor },
+                ]}
+              >
                 {isPaymentSuccess
                   ? `Your donation of ${donationAmount} will help us a lot, It will make a big difference.`
                   : 'Donate us something to make this app more better!'}
@@ -143,7 +158,9 @@ const DonationScreen = () => {
             <GradientButton
               Title={isPaymentSuccess ? 'Make another donation' : `Donate now ${donationAmount}`}
               isLoading={isPaymentLoading}
-              Navigation={() => requestDonationPurchase({ id: [donationStore?.donationProducts?.[1]?.productId] })}
+              Navigation={() =>
+                requestDonationPurchase({ id: [donationStore?.donationProducts?.[1]?.productId] })
+              }
               Disabled={false}
             />
             {!isPaymentSuccess && (
@@ -159,68 +176,68 @@ const DonationScreen = () => {
       </View>
     </GradientView>
   );
-};
+}
 
 export default memo(DonationScreen);
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
+  DonateButtonContainer: {
+    alignItems: 'center',
+    bottom: 15,
     justifyContent: 'center',
-  },
-  ItemContainerView: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  TitleAndImageView: {
-    flex: 0.6,
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  DonateIconView: {
-    width: BackgroundImageSize,
-    height: BackgroundImageSize,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 500,
-  },
-  DonateIcon: {
-    width: BackgroundImageSize / 1.8,
-    height: BackgroundImageSize / 1.8,
-    alignSelf: 'center',
-  },
-  DonationTextView: {
-    width: '100%',
-    marginVertical: 35,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  DonateTitle: {
-    ...GROUP_FONT.h2,
-    marginVertical: 5,
-    fontSize: 25,
-    textAlign: 'center',
+    position: 'absolute',
   },
   DonateDescription: {
-    width: '75%',
     marginTop: 8,
+    width: '75%',
     ...GROUP_FONT.body3,
     textAlign: 'center',
   },
-  DonateButtonContainer: {
-    position: 'absolute',
-    bottom: 15,
+  DonateIcon: {
+    alignSelf: 'center',
+    height: BackgroundImageSize / 1.8,
+    width: BackgroundImageSize / 1.8,
+  },
+  DonateIconView: {
+    alignItems: 'center',
+    borderRadius: 500,
+    height: BackgroundImageSize,
+    justifyContent: 'center',
+    width: BackgroundImageSize,
+  },
+  DonateTitle: {
+    ...GROUP_FONT.h2,
+    fontSize: 25,
+    marginVertical: 5,
+    textAlign: 'center',
+  },
+  DonationTextView: {
     alignItems: 'center',
     justifyContent: 'center',
+    marginVertical: 35,
+    width: '100%',
+  },
+  ItemContainerView: {
+    alignItems: 'center',
+    flex: 1,
   },
   MayBeLaterButton: {
-    marginVertical: 8,
-    fontSize: 15.5,
     fontFamily: FONTS.SemiBold,
+    fontSize: 15.5,
+    marginVertical: 8,
     textAlign: 'center',
+  },
+  TitleAndImageView: {
+    alignItems: 'center',
+    flex: 0.6,
+    height: '100%',
+    justifyContent: 'flex-end',
+    width: '100%',
+  },
+  container: {
+    flex: 1,
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%',
   },
 });

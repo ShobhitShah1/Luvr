@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-native/no-inline-styles */
-import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
+
+import { useIsFocused, useRoute } from '@react-navigation/native';
+import type { RouteProp } from '@react-navigation/native';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -17,6 +18,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import CommonIcons from '../../../Common/CommonIcons';
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
@@ -28,20 +30,21 @@ import { useSubscriptionModal } from '../../../Contexts/SubscriptionModalContext
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { useUserData } from '../../../Contexts/UserDataContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
+import { useShareProfile } from '../../../Hooks/useShareProfile';
 import { onSwipeLeft, onSwipeRight } from '../../../Redux/Action/actions';
 import { store } from '../../../Redux/Store/store';
 import UserService from '../../../Services/AuthService';
-import { ProfileType } from '../../../Types/ProfileType';
+import type { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
+
 import DetailCardHeader from './Components/DetailCardHeader';
 import RenderUserImagesView from './Components/RenderUserImagesView';
-import { useShareProfile } from '../../../Hooks/useShareProfile';
 
 type DetailCardRouteParams = {
   props: ProfileType;
 };
 
-const ExploreCardDetailScreen = () => {
+function ExploreCardDetailScreen() {
   const { colors, isDark } = useTheme();
   const isFocused = useIsFocused();
   const navigation = useCustomNavigation();
@@ -104,17 +107,26 @@ const ExploreCardDetailScreen = () => {
 
         if (APIResponse?.code === 200) {
           store.dispatch(onSwipeRight(String(userId)));
-          showToast('Swipe Right Success', 'You swiped right! Waiting for the other user to match.', 'success');
+          showToast(
+            'Swipe Right Success',
+            'You swiped right! Waiting for the other user to match.',
+            'success',
+          );
+
           navigation.canGoBack() && navigation.goBack();
         } else {
           showToast(
             TextString.error.toUpperCase(),
             APIResponse?.message || 'Please try again letter',
-            TextString.error
+            TextString.error,
           );
         }
       } else {
-        showToast(TextString.error.toUpperCase(), "Can't find user, please try again letter", TextString.error);
+        showToast(
+          TextString.error.toUpperCase(),
+          "Can't find user, please try again letter",
+          TextString.error,
+        );
       }
     } catch (error: any) {
       showToast('Error', error?.message?.toString(), 'error');
@@ -127,7 +139,11 @@ const ExploreCardDetailScreen = () => {
         store.dispatch(onSwipeLeft(String(userId)));
         navigation.canGoBack() && navigation.goBack();
       } else {
-        showToast(TextString.error.toUpperCase(), "Can't find user please try again letter", TextString.error);
+        showToast(
+          TextString.error.toUpperCase(),
+          "Can't find user please try again letter",
+          TextString.error,
+        );
       }
     } catch (error: any) {
       showToast('Error', error?.message?.toString(), 'error');
@@ -145,10 +161,16 @@ const ExploreCardDetailScreen = () => {
   const onBlockProfileClick = async () => {
     try {
       if (!subscription.isActive) {
-        showToast(TextString.premiumFeatureAccessTitle, TextString.premiumFeatureAccessDescription, 'error');
+        showToast(
+          TextString.premiumFeatureAccessTitle,
+          TextString.premiumFeatureAccessDescription,
+          'error',
+        );
+
         setTimeout(() => {
           showSubscriptionModal();
         }, 2000);
+
         return;
       }
 
@@ -156,6 +178,7 @@ const ExploreCardDetailScreen = () => {
         eventName: ApiConfig.BlockProfile,
         blocked_to: userId,
       };
+
       const APIResponse = await UserService.UserRegister(BlockData);
 
       if (APIResponse && APIResponse?.code === 200) {
@@ -163,14 +186,15 @@ const ExploreCardDetailScreen = () => {
         showToast(
           'User Blocked',
           `Your request to block ${cardDetail.params?.props?.full_name} is successfully send`,
-          'success'
+          'success',
         );
+
         navigation.canGoBack() && navigation.goBack();
       } else {
         showToast(
           TextString.error.toUpperCase(),
           String(APIResponse?.message) || 'Something went wrong',
-          TextString.error
+          TextString.error,
         );
       }
     } catch (error: any) {
@@ -186,6 +210,7 @@ const ExploreCardDetailScreen = () => {
         blocked_to: userId,
         reason: SelectedReportReason,
       };
+
       const APIResponse = await UserService.UserRegister(BlockData);
 
       if (APIResponse && APIResponse?.code === 200) {
@@ -193,14 +218,15 @@ const ExploreCardDetailScreen = () => {
         showToast(
           'Success!',
           `Your report against ${cardDetail.params?.props?.full_name} has been submitted. We appreciate your vigilance in maintaining a positive community.\nReason: ${SelectedReportReason}`,
-          'success'
+          'success',
         );
+
         navigation.canGoBack() && navigation.goBack();
       } else {
         showToast(
           TextString.error.toUpperCase(),
           String(APIResponse?.message) || 'Something went wrong',
-          TextString.error
+          TextString.error,
         );
       }
     } catch (error: any) {
@@ -213,7 +239,7 @@ const ExploreCardDetailScreen = () => {
       <GradientView>
         <DetailCardHeader props={cardData} />
         <View style={[styles.Container, styles.LoaderContainer]}>
-          <ActivityIndicator size={'large'} color={colors.Primary} />
+          <ActivityIndicator size="large" color={colors.Primary} />
         </View>
       </GradientView>
     );
@@ -255,7 +281,12 @@ const ExploreCardDetailScreen = () => {
             <View style={styles.UserInfoContainerView}>
               {/* About Me */}
               {cardData?.about && (
-                <View style={[styles.DetailBoxContainerView, { backgroundColor: colors.lightBackground }]}>
+                <View
+                  style={[
+                    styles.DetailBoxContainerView,
+                    { backgroundColor: colors.lightBackground },
+                  ]}
+                >
                   <View style={styles.TitleAndIconView}>
                     <Image
                       style={styles.DetailIconsView}
@@ -264,18 +295,28 @@ const ExploreCardDetailScreen = () => {
                       source={CommonIcons.about_me_icon}
                     />
                     <Text
-                      style={[styles.TitleText, { color: isDark ? colors.TextColor : colors.TitleText }]}
+                      style={[
+                        styles.TitleText,
+                        { color: isDark ? colors.TextColor : colors.TitleText },
+                      ]}
                       numberOfLines={1}
                     >
                       About me
                     </Text>
                   </View>
-                  <Text style={[styles.DetailText, { color: colors.TextColor }]}>{cardData?.about || ''}</Text>
+                  <Text style={[styles.DetailText, { color: colors.TextColor }]}>
+                    {cardData?.about || ''}
+                  </Text>
                 </View>
               )}
 
               {cardData?.birthdate && (
-                <View style={[styles.DetailBoxContainerView, { backgroundColor: colors.lightBackground }]}>
+                <View
+                  style={[
+                    styles.DetailBoxContainerView,
+                    { backgroundColor: colors.lightBackground },
+                  ]}
+                >
                   <View style={styles.TitleAndIconView}>
                     <Image
                       style={styles.DetailIconsView}
@@ -284,38 +325,60 @@ const ExploreCardDetailScreen = () => {
                       source={CommonIcons.birthday_icon}
                     />
                     <Text
-                      style={[styles.TitleText, { color: isDark ? colors.TextColor : colors.TitleText }]}
+                      style={[
+                        styles.TitleText,
+                        { color: isDark ? colors.TextColor : colors.TitleText },
+                      ]}
                       numberOfLines={1}
                     >
                       Birthday
                     </Text>
                   </View>
-                  <Text style={[styles.DetailText, { color: colors.TextColor }]}>{cardData?.birthdate || 0}</Text>
+                  <Text style={[styles.DetailText, { color: colors.TextColor }]}>
+                    {cardData?.birthdate || 0}
+                  </Text>
                 </View>
               )}
 
-              {cardData?.hoping && cardData?.hoping?.length !== 0 && cardData?.hoping?.length !== undefined && (
-                <View style={[styles.DetailBoxContainerView, { backgroundColor: colors.lightBackground }]}>
-                  <View style={styles.TitleAndIconView}>
-                    <Image
-                      style={styles.DetailIconsView}
-                      tintColor={isDark ? colors.TextColor : colors.TitleText}
-                      resizeMode="contain"
-                      source={CommonIcons.looking_for_icon}
-                    />
-                    <Text
-                      style={[styles.TitleText, { color: isDark ? colors.TextColor : colors.TitleText }]}
-                      numberOfLines={1}
-                    >
-                      Looking for
+              {cardData?.hoping &&
+                cardData?.hoping?.length !== 0 &&
+                cardData?.hoping?.length !== undefined && (
+                  <View
+                    style={[
+                      styles.DetailBoxContainerView,
+                      { backgroundColor: colors.lightBackground },
+                    ]}
+                  >
+                    <View style={styles.TitleAndIconView}>
+                      <Image
+                        style={styles.DetailIconsView}
+                        tintColor={isDark ? colors.TextColor : colors.TitleText}
+                        resizeMode="contain"
+                        source={CommonIcons.looking_for_icon}
+                      />
+                      <Text
+                        style={[
+                          styles.TitleText,
+                          { color: isDark ? colors.TextColor : colors.TitleText },
+                        ]}
+                        numberOfLines={1}
+                      >
+                        Looking for
+                      </Text>
+                    </View>
+                    <Text style={[styles.DetailText, { color: colors.TextColor }]}>
+                      {cardData?.hoping}
                     </Text>
                   </View>
-                  <Text style={[styles.DetailText, { color: colors.TextColor }]}>{cardData?.hoping}</Text>
-                </View>
-              )}
+                )}
 
               {cardData?.orientation !== undefined && cardData?.orientation?.length !== 0 && (
-                <View style={[styles.DetailBoxContainerView, { backgroundColor: colors.lightBackground }]}>
+                <View
+                  style={[
+                    styles.DetailBoxContainerView,
+                    { backgroundColor: colors.lightBackground },
+                  ]}
+                >
                   <View style={styles.TitleAndIconView}>
                     <Image
                       style={styles.DetailIconsView}
@@ -324,7 +387,10 @@ const ExploreCardDetailScreen = () => {
                       source={CommonIcons.interested_in_icon}
                     />
                     <Text
-                      style={[styles.TitleText, { color: isDark ? colors.TextColor : colors.TitleText }]}
+                      style={[
+                        styles.TitleText,
+                        { color: isDark ? colors.TextColor : colors.TitleText },
+                      ]}
                       numberOfLines={1}
                     >
                       Interested in
@@ -339,10 +405,16 @@ const ExploreCardDetailScreen = () => {
                             end={{ x: 0, y: 1 }}
                             colors={isDark ? colors.ButtonGradient : ['transparent', 'transparent']}
                             key={index}
-                            style={[styles.MultipleBoxView, !isDark && { borderWidth: 1, borderColor: colors.Black }]}
+                            style={[
+                              styles.MultipleBoxView,
+                              !isDark && { borderWidth: 1, borderColor: colors.Black },
+                            ]}
                           >
                             <View style={{ flex: 1, justifyContent: 'center' }}>
-                              <Text style={[styles.MultipleDetailText, { color: colors.TextColor }]} key={index}>
+                              <Text
+                                style={[styles.MultipleDetailText, { color: colors.TextColor }]}
+                                key={index}
+                              >
                                 {`${orientation}` || ''}
                               </Text>
                             </View>
@@ -354,7 +426,12 @@ const ExploreCardDetailScreen = () => {
               )}
 
               {cardData?.city && (
-                <View style={[styles.DetailBoxContainerView, { backgroundColor: colors.lightBackground }]}>
+                <View
+                  style={[
+                    styles.DetailBoxContainerView,
+                    { backgroundColor: colors.lightBackground },
+                  ]}
+                >
                   <View style={styles.TitleAndIconView}>
                     <Image
                       style={styles.DetailIconsView}
@@ -363,18 +440,28 @@ const ExploreCardDetailScreen = () => {
                       source={CommonIcons.location_icon}
                     />
                     <Text
-                      style={[styles.TitleText, { color: isDark ? colors.TextColor : colors.TitleText }]}
+                      style={[
+                        styles.TitleText,
+                        { color: isDark ? colors.TextColor : colors.TitleText },
+                      ]}
                       numberOfLines={1}
                     >
                       Location
                     </Text>
                   </View>
-                  <Text style={[styles.DetailText, { color: colors.TextColor }]}>{cardData?.city || 'City'}</Text>
+                  <Text style={[styles.DetailText, { color: colors.TextColor }]}>
+                    {cardData?.city || 'City'}
+                  </Text>
                 </View>
               )}
 
               {cardData?.education?.college_name && cardData?.education?.college_name && (
-                <View style={[styles.DetailBoxContainerView, { backgroundColor: colors.lightBackground }]}>
+                <View
+                  style={[
+                    styles.DetailBoxContainerView,
+                    { backgroundColor: colors.lightBackground },
+                  ]}
+                >
                   <View style={styles.TitleAndIconView}>
                     <Image
                       style={styles.DetailIconsView}
@@ -383,7 +470,10 @@ const ExploreCardDetailScreen = () => {
                       source={CommonIcons.education_icon}
                     />
                     <Text
-                      style={[styles.TitleText, { color: isDark ? colors.TextColor : colors.TitleText }]}
+                      style={[
+                        styles.TitleText,
+                        { color: isDark ? colors.TextColor : colors.TitleText },
+                      ]}
                       numberOfLines={1}
                     >
                       Education
@@ -399,7 +489,12 @@ const ExploreCardDetailScreen = () => {
                 Array.isArray(cardData?.likes_into) &&
                 cardData?.likes_into[0] !== '' &&
                 cardData?.likes_into[0]?.length > 0 && (
-                  <View style={[styles.DetailBoxContainerView, { backgroundColor: colors.lightBackground }]}>
+                  <View
+                    style={[
+                      styles.DetailBoxContainerView,
+                      { backgroundColor: colors.lightBackground },
+                    ]}
+                  >
                     <View style={styles.TitleAndIconView}>
                       <Image
                         style={styles.DetailIconsView}
@@ -408,7 +503,10 @@ const ExploreCardDetailScreen = () => {
                         source={CommonIcons.i_like_icon}
                       />
                       <Text
-                        style={[styles.TitleText, { color: isDark ? colors.TextColor : colors.TitleText }]}
+                        style={[
+                          styles.TitleText,
+                          { color: isDark ? colors.TextColor : colors.TitleText },
+                        ]}
                         numberOfLines={1}
                       >
                         I like
@@ -421,7 +519,10 @@ const ExploreCardDetailScreen = () => {
                           end={{ x: 0, y: 1 }}
                           colors={isDark ? colors.ButtonGradient : ['transparent', 'transparent']}
                           key={index}
-                          style={[styles.MultipleBoxView, !isDark && { borderWidth: 1, borderColor: colors.Black }]}
+                          style={[
+                            styles.MultipleBoxView,
+                            !isDark && { borderWidth: 1, borderColor: colors.Black },
+                          ]}
                         >
                           <View style={{ flex: 1, justifyContent: 'center' }}>
                             <Text style={[styles.MultipleDetailText, { color: colors.TextColor }]}>
@@ -452,7 +553,9 @@ const ExploreCardDetailScreen = () => {
                     style={styles.BlockAndReportIcon}
                     source={CommonIcons.block_profile_icon}
                   />
-                  <Text style={[styles.BlockAndReportText, { color: colors.TextColor }]}>Block Profile</Text>
+                  <Text style={[styles.BlockAndReportText, { color: colors.TextColor }]}>
+                    Block Profile
+                  </Text>
                 </Pressable>
 
                 <Pressable
@@ -471,17 +574,27 @@ const ExploreCardDetailScreen = () => {
                     style={styles.BlockAndReportIcon}
                     source={CommonIcons.report_profile_icon}
                   />
-                  <Text style={[styles.BlockAndReportText, { color: colors.TextColor }]}>Report Profile</Text>
+                  <Text style={[styles.BlockAndReportText, { color: colors.TextColor }]}>
+                    Report Profile
+                  </Text>
                 </Pressable>
               </View>
 
               <View style={styles.LikeAndRejectView}>
-                <Pressable onPress={onRejectPress} style={[styles.LikeAndRejectButtonView]}>
-                  <Image resizeMode="contain" style={styles.DislikeButton} source={CommonIcons.dislike_button} />
+                <Pressable onPress={onRejectPress} style={styles.LikeAndRejectButtonView}>
+                  <Image
+                    resizeMode="contain"
+                    style={styles.DislikeButton}
+                    source={CommonIcons.dislike_button}
+                  />
                 </Pressable>
 
                 <Pressable onPress={onLikePress} style={styles.LikeAndRejectButtonView}>
-                  <Image resizeMode="contain" style={styles.LikeButton} source={CommonIcons.like_button} />
+                  <Image
+                    resizeMode="contain"
+                    style={styles.LikeButton}
+                    source={CommonIcons.like_button}
+                  />
                 </Pressable>
 
                 <LinearGradient
@@ -495,7 +608,11 @@ const ExploreCardDetailScreen = () => {
                   style={[styles.ShareButtonView, { opacity: !subscription.isActive ? 0.5 : 1 }]}
                 >
                   <Pressable onPress={onSharePress} style={styles.shareButton}>
-                    <Image resizeMode="contain" style={styles.ShareIcon} source={CommonIcons.ic_share} />
+                    <Image
+                      resizeMode="contain"
+                      style={styles.ShareIcon}
+                      source={CommonIcons.ic_share}
+                    />
                   </Pressable>
                 </LinearGradient>
               </View>
@@ -513,16 +630,71 @@ const ExploreCardDetailScreen = () => {
       </View>
     </GradientView>
   );
-};
+}
 
 export default memo(ExploreCardDetailScreen);
 
 const styles = StyleSheet.create({
+  BlockAndReportButtonView: {
+    alignItems: 'center',
+    borderRadius: hp('5%'),
+    borderWidth: 1,
+    flexDirection: 'row',
+    height: hp('6.8%'),
+    justifyContent: 'center',
+    marginHorizontal: hp('0.5%'),
+    marginVertical: hp('2%'),
+    overflow: 'hidden',
+    paddingHorizontal: hp('1%'),
+    width: '47%',
+  },
+  BlockAndReportIcon: {
+    height: hp('2.4%'),
+    width: hp('2.4%'),
+  },
+  BlockAndReportProfileView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  BlockAndReportText: {
+    color: COLORS.Black,
+    fontFamily: FONTS.Bold,
+    fontSize: hp('1.8%'),
+    marginHorizontal: hp('0.5%'),
+  },
   Container: {
     flex: 1,
   },
-  LoaderContainer: {
+  ContentView: {
+    alignSelf: 'center',
+    paddingVertical: 10,
+    width: '100%',
+  },
+  DetailBoxContainerView: {
+    borderRadius: hp('4%'),
+    marginVertical: hp('1%'),
+    paddingHorizontal: hp('2%'),
+    paddingVertical: hp('1.5%'),
+  },
+  DetailIconsView: {
+    height: hp('2.4%'),
+    width: hp('2.4%'),
+  },
+  DetailText: {
+    alignSelf: 'flex-end',
+    fontFamily: FONTS.Regular,
+    fontSize: hp('1.8%'),
     justifyContent: 'center',
+    paddingVertical: hp('0.8%'),
+    width: '91.5%',
+  },
+  DislikeButton: {
+    alignSelf: 'center',
+    height: hp('7.2%'),
+    justifyContent: 'center',
+    padding: 0,
+    width: hp('7.2%'),
   },
   ImageCarousel: {
     alignSelf: 'center',
@@ -530,161 +702,106 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: hp('2%'),
   },
-  UserInfoContainerView: {
-    width: '90%',
+  ImageLoaderView: {
     alignSelf: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    zIndex: 9999,
   },
-  ContentView: {
-    width: '100%',
+  LikeAndRejectButtonView: {
     alignSelf: 'center',
-    paddingVertical: 10,
+    justifyContent: 'center',
+    marginHorizontal: hp('0.4%'),
   },
-  ScrollViewContentContainerStyle: {
+  LikeAndRejectView: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: Platform.OS === 'ios' ? 30 : 0,
+    marginTop: hp('3%'),
     width: '100%',
+  },
+  LikeButton: {
     alignSelf: 'center',
-    paddingBottom: hp('10%'),
+    height: hp('9%'),
+    justifyContent: 'center',
+    padding: 0,
+    width: hp('9%'),
+  },
+  LoaderContainer: {
+    justifyContent: 'center',
+  },
+  MultipleBoxFlexView: {
+    alignSelf: 'flex-end',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginVertical: 5,
+    width: '92%',
+  },
+  MultipleBoxView: {
+    borderRadius: hp('2%'),
+    marginRight: hp('1%'),
+    marginTop: hp('1%'),
+    overflow: 'hidden',
+    paddingHorizontal: hp('1.5%'),
+  },
+  MultipleDetailText: {
+    alignSelf: 'flex-end',
+    color: 'rgba(108, 108, 108, 1)',
+    fontFamily: FONTS.Regular,
+    fontSize: hp('1.8%'),
+    justifyContent: 'center',
+    paddingVertical: hp('0.8%'),
   },
   ProfileImageView: {
-    height: 430,
-    width: '100%',
-    borderRadius: 20,
-    overflow: 'hidden',
     alignSelf: 'center',
+    borderRadius: 20,
+    height: 430,
+    overflow: 'hidden',
+    width: '100%',
   },
-  DetailBoxContainerView: {
-    borderRadius: hp('4%'),
-    marginVertical: hp('1%'),
-    paddingVertical: hp('1.5%'),
-    paddingHorizontal: hp('2%'),
+  ScrollViewContentContainerStyle: {
+    alignSelf: 'center',
+    paddingBottom: hp('10%'),
+    width: '100%',
+  },
+  ShareButtonView: {
+    alignSelf: 'center',
+    backgroundColor: 'yellow',
+    borderRadius: 5000,
+    height: 50,
+    justifyContent: 'center',
+    margin: hp('1.25%'),
+    width: 50,
+  },
+  ShareIcon: {
+    alignSelf: 'center',
+    height: hp('3.2%'),
+    justifyContent: 'center',
+    width: hp('3.2%'),
   },
   TitleAndIconView: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     marginTop: hp('0.5%'),
-  },
-  DetailIconsView: {
-    width: hp('2.4%'),
-    height: hp('2.4%'),
   },
   TitleText: {
     ...GROUP_FONT.h3,
     justifyContent: 'center',
     paddingHorizontal: hp('0.7%'),
   },
-  DetailText: {
-    fontFamily: FONTS.Regular,
-    fontSize: hp('1.8%'),
-    width: '91.5%',
-    alignSelf: 'flex-end',
-    justifyContent: 'center',
-    paddingVertical: hp('0.8%'),
-  },
-  MultipleBoxFlexView: {
-    flexDirection: 'row',
-    width: '92%',
-    flexWrap: 'wrap',
-    alignSelf: 'flex-end',
-    marginVertical: 5,
-  },
-  MultipleBoxView: {
-    marginTop: hp('1%'),
-    borderRadius: hp('2%'),
-    overflow: 'hidden',
-    paddingHorizontal: hp('1.5%'),
-    marginRight: hp('1%'),
-  },
-  MultipleDetailText: {
-    fontFamily: FONTS.Regular,
-    fontSize: hp('1.8%'),
-    alignSelf: 'flex-end',
-    justifyContent: 'center',
-    paddingVertical: hp('0.8%'),
-    color: 'rgba(108, 108, 108, 1)',
+  UserInfoContainerView: {
+    alignSelf: 'center',
+    width: '90%',
   },
   UserProfileImages: {
     height: 350,
     width: Dimensions.get('screen').width,
   },
-  BlockAndReportProfileView: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  BlockAndReportButtonView: {
-    width: '47%',
-    overflow: 'hidden',
-    height: hp('6.8%'),
-    marginVertical: hp('2%'),
-    borderRadius: hp('5%'),
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: hp('1%'),
-    marginHorizontal: hp('0.5%'),
-    borderWidth: 1,
-  },
-  BlockAndReportIcon: {
-    width: hp('2.4%'),
-    height: hp('2.4%'),
-  },
-  BlockAndReportText: {
-    fontFamily: FONTS.Bold,
-    color: COLORS.Black,
-    fontSize: hp('1.8%'),
-    marginHorizontal: hp('0.5%'),
-  },
-  LikeAndRejectView: {
-    marginTop: hp('3%'),
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: Platform.OS === 'ios' ? 30 : 0,
-  },
-  LikeAndRejectButtonView: {
-    justifyContent: 'center',
-    alignSelf: 'center',
-    marginHorizontal: hp('0.4%'),
-  },
-  DislikeButton: {
-    padding: 0,
-    width: hp('7.2%'),
-    height: hp('7.2%'),
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  LikeButton: {
-    padding: 0,
-    width: hp('9%'),
-    height: hp('9%'),
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  ImageLoaderView: {
-    zIndex: 9999,
-    alignSelf: 'center',
-    position: 'absolute',
-    justifyContent: 'center',
-  },
-  ShareButtonView: {
-    justifyContent: 'center',
-    alignSelf: 'center',
-    margin: hp('1.25%'),
-    height: 50,
-    width: 50,
-    backgroundColor: 'yellow',
-    borderRadius: 5000,
-  },
   shareButton: {
+    alignItems: 'center',
     flex: 1,
-    width: '100%',
     height: '100%',
     justifyContent: 'center',
-    alignItems: 'center',
-  },
-  ShareIcon: {
-    width: hp('3.2%'),
-    height: hp('3.2%'),
-    justifyContent: 'center',
-    alignSelf: 'center',
+    width: '100%',
   },
 });

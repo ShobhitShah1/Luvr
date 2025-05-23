@@ -1,14 +1,16 @@
-import React, {FC, memo} from 'react';
-import {Animated, StyleSheet, View, useWindowDimensions} from 'react-native';
-import {COLORS} from '../Common/Theme';
+import React, { memo } from 'react';
+import type { FC } from 'react';
+import { Animated, StyleSheet, View, useWindowDimensions } from 'react-native';
+
+import { COLORS } from '../Common/Theme';
 
 interface PaginatorProps {
   data: any[];
   scrollX: any;
 }
 
-const Paginator: FC<PaginatorProps> = ({data, scrollX}) => {
-  const {width} = useWindowDimensions();
+const Paginator: FC<PaginatorProps> = ({ data, scrollX }) => {
+  const { width } = useWindowDimensions();
 
   return (
     <View style={styles.container}>
@@ -22,12 +24,7 @@ const Paginator: FC<PaginatorProps> = ({data, scrollX}) => {
           useNativeDriver: true,
         });
 
-        return (
-          <Animated.View
-            style={[styles.dot, {width: dotWidth}]}
-            key={i.toString()}
-          />
-        );
+        return <Animated.View style={[styles.dot, { width: dotWidth }]} key={i.toString()} />;
       })}
     </View>
   );
@@ -37,18 +34,18 @@ export default memo(Paginator);
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
     flexDirection: 'row',
-    position: 'absolute',
-    top: 10,
+    justifyContent: 'center',
     left: 0,
+    position: 'absolute',
     right: 0,
+    top: 10,
     zIndex: 9999,
   },
   dot: {
-    height: 8,
-    borderRadius: 50,
-    marginHorizontal: 4,
     backgroundColor: COLORS.White,
+    borderRadius: 50,
+    height: 8,
+    marginHorizontal: 4,
   },
 });

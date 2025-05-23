@@ -1,6 +1,8 @@
-import React, { FC, memo } from 'react';
+import React, { memo } from 'react';
+import type { FC } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+
 import { COLORS, FONTS } from '../Common/Theme';
 import { useTheme } from '../Contexts/ThemeContext';
 
@@ -12,6 +14,7 @@ interface ButtonProps {
 
 const Button: FC<ButtonProps> = ({ onPress, ButtonTitle, isLoading }) => {
   const { colors } = useTheme();
+
   return (
     <LinearGradient
       start={{ x: 1, y: 0 }}
@@ -44,22 +47,22 @@ const styles = StyleSheet.create({
   ButtonContainer: {
     marginVertical: 10,
   },
-  LogoutButtonContainer: {
-    width: 220,
-    height: 55,
-    justifyContent: 'center',
-    alignSelf: 'center',
-    borderRadius: 20,
-    backgroundColor: COLORS.Primary,
-  },
   LoadingView: {
     alignSelf: 'center',
     justifyContent: 'center',
   },
+  LogoutButtonContainer: {
+    alignSelf: 'center',
+    backgroundColor: COLORS.Primary,
+    borderRadius: 20,
+    height: 55,
+    justifyContent: 'center',
+    width: 220,
+  },
   LogoutButtonText: {
-    fontSize: 15,
     color: COLORS.White,
-    textAlign: 'center',
     fontFamily: FONTS.SemiBold,
+    fontSize: 15,
+    textAlign: 'center',
   },
 });

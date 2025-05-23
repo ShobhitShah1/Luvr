@@ -9,7 +9,8 @@ const ApiConfig = {
   IMAGE_BASE_URL: 'https://nirvanatechlabs.in/DATING_IMAGES/profile_images/',
   SOCKET_BASE_URL: 'http://nirvanatechlabs.in:1111/',
   GOOGLE_WEB_CLIENT_ID: '126773940218-vqp2euiee90i9pecsh3gfdiaa19hj0rv.apps.googleusercontent.com',
-  FACEBOOK_GRAPH_API: 'https://graph.facebook.com/v2.5/me?fields=email,name,picture,birthday,gender&access_token=',
+  FACEBOOK_GRAPH_API:
+    'https://graph.facebook.com/v2.5/me?fields=email,name,picture,birthday,gender&access_token=',
 
   SHARE_BASE: 'https://nirvanatechlabs.in/app',
 

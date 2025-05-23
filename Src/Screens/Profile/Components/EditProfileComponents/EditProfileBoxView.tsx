@@ -1,6 +1,9 @@
 import { Skeleton } from 'moti/skeleton';
-import React, { FC, memo } from 'react';
-import { LayoutChangeEvent, StyleProp, StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
+import React, { memo } from 'react';
+import type { FC } from 'react';
+import { StyleSheet, TextInput, View } from 'react-native';
+import type { LayoutChangeEvent, StyleProp, TextStyle, ViewStyle } from 'react-native';
+
 import { FONTS, GROUP_FONT } from '../../../../Common/Theme';
 import { useTheme } from '../../../../Contexts/ThemeContext';
 
@@ -32,6 +35,7 @@ const EditProfileBoxView: FC<EditProfileBoxViewProps> = ({
   PlaceholderText,
 }) => {
   const { colors, isDark } = useTheme();
+
   return IsViewLoading ? (
     <Skeleton colors={colors.LoaderGradient} show={true}>
       <View style={styles.LoadingView} />
@@ -46,7 +50,11 @@ const EditProfileBoxView: FC<EditProfileBoxViewProps> = ({
         defaultValue={value}
         cursorColor={colors.Primary}
         onChangeText={onChangeText}
-        style={[styles.AboutMeTextViewStyle, { color: isDark ? colors.White : 'rgba(0,0,0,1)' }, TextInputStyle]}
+        style={[
+          styles.AboutMeTextViewStyle,
+          { color: isDark ? colors.White : 'rgba(0,0,0,1)' },
+          TextInputStyle,
+        ]}
         placeholderTextColor={colors.Placeholder}
         placeholder={PlaceholderText}
       />
@@ -62,32 +70,32 @@ const EditProfileBoxView: FC<EditProfileBoxViewProps> = ({
 export default memo(EditProfileBoxView);
 
 const styles = StyleSheet.create({
-  container: {
-    borderRadius: 25,
-    marginVertical: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 20,
-    alignContent: 'center',
-    justifyContent: 'center',
-  },
-  LoadingView: {
-    borderRadius: 25,
-    marginVertical: 10,
-    paddingVertical: 30,
-    paddingHorizontal: 20,
-    alignContent: 'center',
-    justifyContent: 'center',
-  },
   AboutMeCustomView: {
     borderRadius: 25,
     marginVertical: 5,
-    paddingVertical: 3,
-    paddingHorizontal: 20,
     minHeight: 50,
+    paddingHorizontal: 20,
+    paddingVertical: 3,
   },
   AboutMeTextViewStyle: {
     ...GROUP_FONT.body4,
-    fontSize: 14,
     fontFamily: FONTS.Medium,
+    fontSize: 14,
+  },
+  LoadingView: {
+    alignContent: 'center',
+    borderRadius: 25,
+    justifyContent: 'center',
+    marginVertical: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 30,
+  },
+  container: {
+    alignContent: 'center',
+    borderRadius: 25,
+    justifyContent: 'center',
+    marginVertical: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 5,
   },
 });

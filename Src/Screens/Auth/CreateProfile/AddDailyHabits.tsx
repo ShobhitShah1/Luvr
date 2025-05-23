@@ -1,8 +1,8 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
+
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
 import { COLORS, FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
@@ -14,12 +14,13 @@ import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { updateField } from '../../../Redux/Action/actions';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
+
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
 const requiredHabits = ['drink', 'exercise', 'movies', 'smoke'];
 
-const AddDailyHabits = () => {
+function AddDailyHabits() {
   const { colors, isDark } = useTheme();
   const dispatch = useDispatch();
   const { showToast } = useCustomToast();
@@ -30,22 +31,24 @@ const AddDailyHabits = () => {
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>(
     requiredHabits.reduce((acc, habit) => {
       acc[habit] = userData?.[LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}`]] || '';
+
       return acc;
-    }, {})
+    }, {}),
   );
 
   useEffect(() => {
-    setSelectedItems((prevSelectedItems) => ({
+    setSelectedItems(prevSelectedItems => ({
       ...prevSelectedItems,
       ...requiredHabits.reduce((acc, habit) => {
         acc[habit] = userData?.[LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}`]] || '';
+
         return acc;
       }, {}),
     }));
   }, [userData]);
 
   const handleOptionPress = useCallback((habitName: string, option: string) => {
-    setSelectedItems((prevSelection) => {
+    setSelectedItems(prevSelection => {
       const newSelection = { ...prevSelection };
 
       if (newSelection[habitName.toString()] === option) {
@@ -53,9 +56,9 @@ const AddDailyHabits = () => {
       } else {
         newSelection[habitName.toString()] = option;
 
-        LifestyleData.forEach((item) => {
+        LifestyleData.forEach(item => {
           if (item.habit === habitName) {
-            item.options.forEach((res) => {
+            item.options.forEach(res => {
               if (res !== option) {
                 delete newSelection[`${habitName}_${res}`];
               }
@@ -90,18 +93,25 @@ const AddDailyHabits = () => {
                       ? colors.ButtonGradient
                       : ['transparent', 'transparent']
                     : isDark
-                      ? colors.UnselectedGradient
-                      : ['transparent', 'transparent'],
+                    ? colors.UnselectedGradient
+                    : ['transparent', 'transparent'],
                 }}
                 style={[
                   styles.HabitOptionView,
                   {
-                    backgroundColor: isDark ? 'transparent' : selected ? colors.Primary : colors.White,
+                    backgroundColor: isDark
+                      ? 'transparent'
+                      : selected
+                      ? colors.Primary
+                      : colors.White,
                     borderWidth: selected ? 2 : 0.5,
                   },
                 ]}
               >
-                <Pressable style={{ flex: 1, justifyContent: 'center' }} onPress={() => handleOptionPress(key, res)}>
+                <Pressable
+                  style={{ flex: 1, justifyContent: 'center' }}
+                  onPress={() => handleOptionPress(key, res)}
+                >
                   <Text
                     style={[
                       styles.HabitOptionText,
@@ -125,16 +135,18 @@ const AddDailyHabits = () => {
     setIsSendRequestLoading(true);
 
     try {
-      const allHabitsSelected = requiredHabits.every((habit) => selectedItems.hasOwnProperty(habit));
+      const allHabitsSelected = requiredHabits.every(habit => selectedItems.hasOwnProperty(habit));
 
       if (allHabitsSelected) {
         await Promise.all([
-          requiredHabits.forEach((habit) => {
+          requiredHabits.forEach(habit => {
             dispatch(
               updateField(
-                LocalStorageFields[`${habit.charAt(0) + habit.slice(1)}` as keyof typeof LocalStorageFields],
-                selectedItems[habit]
-              )
+                LocalStorageFields[
+                  `${habit.charAt(0) + habit.slice(1)}` as keyof typeof LocalStorageFields
+                ],
+                selectedItems[habit],
+              ),
             );
           }),
         ]);
@@ -168,8 +180,10 @@ const AddDailyHabits = () => {
         />
 
         <View style={styles.DataViewContainer}>
-          <View style={[styles.ContentView]}>
-            <Text style={[styles.TitleText, { color: colors.TitleText }]}>Let’s talk about your daily habits!</Text>
+          <View style={styles.ContentView}>
+            <Text style={[styles.TitleText, { color: colors.TitleText }]}>
+              Let’s talk about your daily habits!
+            </Text>
             <Text style={[styles.HabitsMatchText, { color: colors.TextColor }]}>
               Share your daily lifestyle habits that best represent you.
             </Text>
@@ -190,7 +204,7 @@ const AddDailyHabits = () => {
 
         <View style={CreateProfileStyles.BottomButton}>
           <GradientButton
-            Title={'Continue'}
+            Title="Continue"
             Disabled={false}
             isLoading={isSendRequestLoading}
             Navigation={() => onPressNext()}
@@ -199,128 +213,128 @@ const AddDailyHabits = () => {
       </View>
     </GradientView>
   );
-};
+}
 
 export default memo(AddDailyHabits);
 
 const styles = StyleSheet.create({
-  DataViewContainer: {
-    marginHorizontal: hp('1.2%'),
-    marginTop: hp('1%'),
-  },
-  TitleText: {
-    color: COLORS.Primary,
-    fontSize: hp('3.3%'),
-    fontFamily: FONTS.Bold,
-  },
-  HabitsMatchText: {
-    ...GROUP_FONT.h3,
-    marginTop: hp('1%'),
-    fontFamily: FONTS.Regular,
-  },
-  optionsContainer: {
-    flexDirection: 'row',
+  BottomButtonWidth: {
+    bottom: hp('1.5%'),
+    overflow: 'hidden',
+    paddingTop: hp('1.5%'),
+    position: 'absolute',
     width: '100%',
   },
-  ContentView: {
-    paddingHorizontal: hp('2.8%'),
-  },
-
-  habitContainer: {
-    marginHorizontal: hp('1.9%'),
-  },
   BottomLine: {
-    width: '90%',
     alignSelf: 'center',
-    marginVertical: hp('0.5%'),
-    marginBottom: hp('2%'),
-    justifyContent: 'center',
-    marginHorizontal: hp('1.9%'),
-    borderBottomWidth: hp('0.05%'),
     borderBottomColor: COLORS.Gray,
+    borderBottomWidth: hp('0.05%'),
+    justifyContent: 'center',
+    marginBottom: hp('2%'),
+    marginHorizontal: hp('1.9%'),
+    marginVertical: hp('0.5%'),
+    width: '90%',
   },
-  habitTitle: {
-    ...GROUP_FONT.h3,
-  },
-  optionButton: {
-    borderRadius: hp('2%'),
-    marginRight: hp('0.8%'),
-    borderWidth: hp('0.09%'),
-    borderColor: COLORS.Gray,
-    marginVertical: hp('1%'),
-    paddingHorizontal: hp('1%'),
-    paddingVertical: hp('0.5%'),
-    marginHorizontal: hp('0.5%'),
-  },
-  selectedOption: {
-    borderColor: COLORS.Primary,
+  ButtonContainer: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    width: '90%',
   },
   CategoriesText: {
     textAlign: 'center',
     ...GROUP_FONT.h4,
     color: COLORS.Gray,
   },
-  SelectedCategoriesText: {
-    ...GROUP_FONT.h4,
-    color: COLORS.Gray,
+  ContentView: {
+    paddingHorizontal: hp('2.8%'),
   },
-  checkMissingCategories: {
-    marginTop: 16,
-  },
-  missingCategoriesText: {
-    ...GROUP_FONT.h3,
-    color: COLORS.White,
-  },
-  ButtonContainer: {
-    width: '90%',
-    alignSelf: 'center',
-    overflow: 'hidden',
-    justifyContent: 'center',
-  },
-  BottomButtonWidth: {
-    width: '100%',
-    position: 'absolute',
-    bottom: hp('1.5%'),
-    overflow: 'hidden',
-    paddingTop: hp('1.5%'),
-  },
-  OptionScrollViewContainer: {
-    flexDirection: 'row',
-    maxWidth: '100%',
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  FlatListView: {
-    height: '70%',
+
+  DataViewContainer: {
+    marginHorizontal: hp('1.2%'),
+    marginTop: hp('1%'),
   },
   FlatList: {
     height: '100%',
     paddingTop: hp('1%'),
   },
-  HabitsContainerView: {
-    paddingHorizontal: hp('2.8%'),
-    paddingVertical: hp('1.5%'),
-  },
-
-  HabitTitle: {
-    marginBottom: hp('1.5%'),
-    fontSize: hp('1.8%'),
-    color: COLORS.Primary,
-    fontFamily: FONTS.Bold,
+  FlatListView: {
+    height: '70%',
   },
   HabitOptionContainerView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  HabitOptionView: {
-    width: hp('11%'),
-    height: hp('6.5%'),
-    justifyContent: 'center',
-    borderRadius: SIZES.radius,
-  },
   HabitOptionText: {
     ...GROUP_FONT.body4,
     fontFamily: FONTS.SemiBold,
     textAlign: 'center',
+  },
+  HabitOptionView: {
+    borderRadius: SIZES.radius,
+    height: hp('6.5%'),
+    justifyContent: 'center',
+    width: hp('11%'),
+  },
+  HabitTitle: {
+    color: COLORS.Primary,
+    fontFamily: FONTS.Bold,
+    fontSize: hp('1.8%'),
+    marginBottom: hp('1.5%'),
+  },
+  HabitsContainerView: {
+    paddingHorizontal: hp('2.8%'),
+    paddingVertical: hp('1.5%'),
+  },
+  HabitsMatchText: {
+    ...GROUP_FONT.h3,
+    fontFamily: FONTS.Regular,
+    marginTop: hp('1%'),
+  },
+  OptionScrollViewContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    maxWidth: '100%',
+  },
+  SelectedCategoriesText: {
+    ...GROUP_FONT.h4,
+    color: COLORS.Gray,
+  },
+  TitleText: {
+    color: COLORS.Primary,
+    fontFamily: FONTS.Bold,
+    fontSize: hp('3.3%'),
+  },
+  checkMissingCategories: {
+    marginTop: 16,
+  },
+  habitContainer: {
+    marginHorizontal: hp('1.9%'),
+  },
+  habitTitle: {
+    ...GROUP_FONT.h3,
+  },
+
+  missingCategoriesText: {
+    ...GROUP_FONT.h3,
+    color: COLORS.White,
+  },
+  optionButton: {
+    borderColor: COLORS.Gray,
+    borderRadius: hp('2%'),
+    borderWidth: hp('0.09%'),
+    marginHorizontal: hp('0.5%'),
+    marginRight: hp('0.8%'),
+    marginVertical: hp('1%'),
+    paddingHorizontal: hp('1%'),
+    paddingVertical: hp('0.5%'),
+  },
+  optionsContainer: {
+    flexDirection: 'row',
+    width: '100%',
+  },
+  selectedOption: {
+    borderColor: COLORS.Primary,
   },
 });

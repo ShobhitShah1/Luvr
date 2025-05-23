@@ -1,9 +1,7 @@
-import {LocalStorageFields} from '../Types/LocalStorageFields';
-import {UserDataType} from '../Types/UserDataType';
+import { LocalStorageFields } from '../Types/LocalStorageFields';
+import type { UserDataType } from '../Types/UserDataType';
 
-const transformUserDataForApi = (
-  userData: UserDataType,
-): Record<string, any> => {
+const transformUserDataForApi = (userData: UserDataType): Record<string, any> => {
   return {
     eventName: userData[LocalStorageFields.eventName] || 'app_user_register',
     login_type: userData[LocalStorageFields.login_type] || '',
@@ -17,8 +15,7 @@ const transformUserDataForApi = (
     gender: userData[LocalStorageFields.gender] || '',
     city: userData[LocalStorageFields.city] || '',
     orientation: userData[LocalStorageFields.orientation] || [],
-    is_orientation_visible:
-      userData[LocalStorageFields.is_orientation_visible] || false,
+    is_orientation_visible: userData[LocalStorageFields.is_orientation_visible] || false,
     hoping: userData[LocalStorageFields.hoping] || '',
     education: {
       digree: userData[LocalStorageFields.digree] || '',
@@ -47,4 +44,4 @@ const transformUserDataForApi = (
   };
 };
 
-export {transformUserDataForApi};
+export { transformUserDataForApi };

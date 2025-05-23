@@ -4,6 +4,7 @@
 
 import messaging from '@react-native-firebase/messaging';
 import { AppRegistry, LogBox, Text } from 'react-native';
+
 import 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import App from './App';
@@ -19,7 +20,7 @@ if (!__DEV__) {
 
 LogBox.ignoreAllLogs();
 
-messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+messaging().setBackgroundMessageHandler(async remoteMessage => {
   const title = remoteMessage.notification?.title || '';
   const body = remoteMessage.notification?.body || '';
   if (title && body) {

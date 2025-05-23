@@ -2,6 +2,7 @@ import React, { memo, useCallback, useState } from 'react';
 import { Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
+
 import CommonIcons from '../../../Common/CommonIcons';
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
@@ -15,46 +16,49 @@ import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { updateField } from '../../../Redux/Action/actions';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
+
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
 const { width } = Dimensions.get('window');
 
-const ListEmptyComponent = () => {
+function ListEmptyComponent() {
   return (
     <View style={styles.EmptyViewStyle}>
       <Text style={styles.EmptyViewText}>We Don't Have Any Genders, Sorry</Text>
     </View>
   );
-};
+}
 
-const SexualOrientation = () => {
+function SexualOrientation() {
   const { colors, isDark } = useTheme();
   const navigation = useCustomNavigation();
   const userData = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
   const { showToast } = useCustomToast();
 
-  const initialSexualOrientation: string[] = userData.orientation.length !== 0 ? userData.orientation : [];
+  const initialSexualOrientation: string[] =
+    userData.orientation.length !== 0 ? userData.orientation : [];
 
   const [isLoading, setIsLoading] = useState(false);
   const [showOnProfile, setShowOnProfile] = useState<boolean>(userData.is_orientation_visible);
-  const [selectedGenderIndex, setSelectedGenderIndex] = useState<string[]>(initialSexualOrientation);
+  const [selectedGenderIndex, setSelectedGenderIndex] =
+    useState<string[]>(initialSexualOrientation);
 
   const toggleCheckMark = useCallback(() => {
-    setShowOnProfile((prev) => !prev);
+    setShowOnProfile(prev => !prev);
   }, []);
 
   const onPressGenders = useCallback(
     (item: { id: number; name: string }) => {
       const { name } = item;
       if (selectedGenderIndex.includes(name)) {
-        setSelectedGenderIndex((prev) => prev.filter((selectedName) => selectedName !== name));
+        setSelectedGenderIndex(prev => prev.filter(selectedName => selectedName !== name));
       } else if (selectedGenderIndex.length < 3) {
-        setSelectedGenderIndex((prev) => [...prev, name]);
+        setSelectedGenderIndex(prev => [...prev, name]);
       }
     },
-    [selectedGenderIndex]
+    [selectedGenderIndex],
   );
 
   const isGenderSelected = (item: { name: string }) => selectedGenderIndex.includes(item?.name);
@@ -74,8 +78,8 @@ const SexualOrientation = () => {
             ? colors.ButtonGradient
             : ['transparent', 'transparent']
           : isDark
-            ? colors.UnselectedGradient
-            : ['transparent', 'transparent'],
+          ? colors.UnselectedGradient
+          : ['transparent', 'transparent'],
       }}
       key={index}
     >
@@ -109,7 +113,7 @@ const SexualOrientation = () => {
   const onSubmitPress = async () => {
     try {
       setIsLoading(true);
-      const orientations = selectedGenderIndex.map((gender) => gender);
+      const orientations = selectedGenderIndex.map(gender => gender);
 
       if (orientations.length === 0) {
         throw new Error('Please select your sexual orientation');
@@ -145,7 +149,9 @@ const SexualOrientation = () => {
 
         <View style={styles.RenderDataContainer}>
           <View style={CreateProfileStyles.ContentView}>
-            <Text style={[styles.TitleText, { color: colors.TitleText }]}>What is your sexual orientation?</Text>
+            <Text style={[styles.TitleText, { color: colors.TitleText }]}>
+              What is your sexual orientation?
+            </Text>
             <Text style={[styles.SelectUptoText, { color: colors.TextColor }]}>Select upto 3</Text>
           </View>
 
@@ -160,7 +166,7 @@ const SexualOrientation = () => {
           </View>
         </View>
 
-        <View style={[styles.BottomContainer]}>
+        <View style={styles.BottomContainer}>
           <View style={styles.BottomView}>
             <View style={styles.CheckBoxView}>
               <CustomCheckBox
@@ -171,7 +177,7 @@ const SexualOrientation = () => {
             </View>
             <GradientButton
               isLoading={isLoading}
-              Title={'Continue'}
+              Title="Continue"
               Navigation={onSubmitPress}
               Disabled={selectedGenderIndex.length === 0 || isLoading}
             />
@@ -180,94 +186,94 @@ const SexualOrientation = () => {
       </View>
     </GradientView>
   );
-};
+}
 
 export default memo(SexualOrientation);
 
 const styles = StyleSheet.create({
-  SelectUptoText: {
-    ...GROUP_FONT.h4,
-    marginVertical: hp('1%'),
-    fontFamily: FONTS.SemiBold,
-  },
-  genderButtonViewContainer: {
-    height: '67%',
-  },
-  RenderDataContainer: {
-    flex: 1,
-    paddingHorizontal: hp('1'),
-    marginTop: hp('1'),
+  BorderBottomWidth: {
+    borderBottomColor: COLORS.Black,
+    borderBottomWidth: hp('0.1%'),
+    marginTop: hp('1%'),
+    right: hp('1.5%'),
+    width: '110%',
   },
   BottomContainer: {
-    width: '90%',
     alignSelf: 'center',
-    position: 'absolute',
     bottom: hp('2%'),
-    overflow: 'hidden',
     justifyContent: 'center',
+    overflow: 'hidden',
+    position: 'absolute',
+    width: '90%',
   },
   BottomView: {
-    width: '90%',
     alignSelf: 'center',
     justifyContent: 'center',
     marginHorizontal: hp('1.9%'),
-  },
-  BorderBottomWidth: {
-    width: '110%',
-    right: hp('1.5%'),
-    marginTop: hp('1%'),
-    borderBottomWidth: hp('0.1%'),
-    borderBottomColor: COLORS.Black,
-  },
-  GenderButtonView: {
-    height: hp('6.5%'),
-    width: width - hp('8%'),
-    marginVertical: hp('0.5%'),
-    alignSelf: 'center',
-    borderWidth: 2,
-    borderRadius: SIZES.radius,
-    justifyContent: 'center',
-    alignContent: 'center',
-  },
-  SelectGenderFlexView: {
-    flexDirection: 'row',
-    marginHorizontal: hp('2%'),
-    justifyContent: 'space-between',
-  },
-  GenderFlexView: {
-    flexDirection: 'row',
-    marginHorizontal: hp('2.8%'),
-    justifyContent: 'space-between',
-  },
-  SelectGenderText: {
-    ...GROUP_FONT.h3,
+    width: '90%',
   },
   CheckBoxView: {
-    justifyContent: 'center',
-    alignSelf: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
     flexDirection: 'row',
+    justifyContent: 'center',
     marginVertical: hp('2%'),
   },
   CheckboxText: {
     ...GROUP_FONT.h4,
-    justifyContent: 'center',
     alignSelf: 'center',
-    marginLeft: hp('0.5%'),
     fontFamily: FONTS.Medium,
+    justifyContent: 'center',
+    marginLeft: hp('0.5%'),
   },
   EmptyViewStyle: {
+    alignSelf: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignSelf: 'center',
   },
   EmptyViewText: {
     ...GROUP_FONT.h2,
     textAlign: 'center',
   },
+  GenderButtonView: {
+    alignContent: 'center',
+    alignSelf: 'center',
+    borderRadius: SIZES.radius,
+    borderWidth: 2,
+    height: hp('6.5%'),
+    justifyContent: 'center',
+    marginVertical: hp('0.5%'),
+    width: width - hp('8%'),
+  },
+  GenderFlexView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: hp('2.8%'),
+  },
+  RenderDataContainer: {
+    flex: 1,
+    marginTop: hp('1'),
+    paddingHorizontal: hp('1'),
+  },
+  SelectGenderFlexView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: hp('2%'),
+  },
+  SelectGenderText: {
+    ...GROUP_FONT.h3,
+  },
+  SelectUptoText: {
+    ...GROUP_FONT.h4,
+    fontFamily: FONTS.SemiBold,
+    marginVertical: hp('1%'),
+  },
   TitleText: {
     color: COLORS.Primary,
-    fontSize: hp('3.3%'),
     fontFamily: FONTS.Bold,
+    fontSize: hp('3.3%'),
+  },
+  genderButtonViewContainer: {
+    height: '67%',
   },
 });

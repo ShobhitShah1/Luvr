@@ -6,7 +6,7 @@ const Toast = (title: string, message: string, status: string) => {
   toast.show(title, {
     type: 'custom_toast',
     title: message,
-    status: status,
+    status,
   });
 };
 

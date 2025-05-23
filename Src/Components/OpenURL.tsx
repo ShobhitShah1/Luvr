@@ -1,6 +1,7 @@
-import {Alert, Linking} from 'react-native';
-import {InAppBrowser} from 'react-native-inappbrowser-reborn';
-import {COLORS} from '../Common/Theme';
+import { Alert, Linking } from 'react-native';
+import { InAppBrowser } from 'react-native-inappbrowser-reborn';
+
+import { COLORS } from '../Common/Theme';
 
 interface OpenURLProps {
   URL: string;
@@ -8,7 +9,7 @@ interface OpenURLProps {
 
 type AsyncFC<P> = (props: P) => Promise<void>;
 
-const OpenURL: AsyncFC<OpenURLProps> = async ({URL}) => {
+const OpenURL: AsyncFC<OpenURLProps> = async ({ URL }) => {
   try {
     if ((await InAppBrowser.isAvailable()) && URL) {
       await InAppBrowser.open(URL, {

@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 import notifee, { EventType } from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 import { getStateFromPath, NavigationContainer } from '@react-navigation/native';
@@ -9,6 +8,7 @@ import { getProducts, initConnection } from 'react-native-iap';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+
 import { onDisplayNotification } from './Src/Components/onDisplayNotification';
 import { skus } from './Src/Config/ApiConfig';
 import { BoostModalProvider } from './Src/Contexts/BoostModalProvider';
@@ -17,7 +17,11 @@ import { SubscriptionModalProvider } from './Src/Contexts/SubscriptionModalConte
 import { ThemeProvider } from './Src/Contexts/ThemeContext';
 import { UserDataProvider } from './Src/Contexts/UserDataContext';
 import useAppStateTracker from './Src/Hooks/useAppStateTracker';
-import { DONATION_PRODUCTS, setCurrentScreenName, setDeepLinkUrl } from './Src/Redux/Action/actions';
+import {
+  DONATION_PRODUCTS,
+  setCurrentScreenName,
+  setDeepLinkUrl,
+} from './Src/Redux/Action/actions';
 import { persistor, store } from './Src/Redux/Store/store';
 import MainRoute from './Src/Routes/MainRoute';
 import { navigationRef } from './Src/Routes/RootNavigation';
@@ -63,6 +67,7 @@ const linking = {
       return getStateFromPath(path, config);
     } catch (error) {
       console.error('Deep link parsing error:', error);
+
       return {
         routes: [{ name: 'BottomTab' }],
       };
@@ -90,11 +95,14 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(handleNotification);
+
     return () => unsubscribe();
   }, [handleNotification]);
 
   const handleNotificationPress = useCallback(() => {
-    if (!navigationRef.getCurrentRoute) return;
+    if (!navigationRef.getCurrentRoute) {
+      return;
+    }
 
     const token = getToken();
     const targetScreen = token?.length ? 'BottomTab' : 'NumberVerification';
@@ -112,7 +120,9 @@ const App: React.FC = () => {
   }, [handleNotificationPress]);
 
   const handleDeepLink = useCallback(({ url }: DeepLinkEvent) => {
-    if (!navigationRef?.current) return;
+    if (!navigationRef?.current) {
+      return;
+    }
 
     try {
       store.dispatch(setDeepLinkUrl(url));
@@ -165,7 +175,9 @@ const App: React.FC = () => {
   const fetchProducts = useCallback(async () => {
     try {
       const connected = await initConnection();
-      if (!connected || !skus || !store) return;
+      if (!connected || !skus || !store) {
+        return;
+      }
 
       const products = await getProducts({ skus });
       if (products?.length) {
@@ -186,11 +198,16 @@ const App: React.FC = () => {
   const stateChangesCall = useCallback((ref: any) => {
     try {
       const currentRouteName = ref?.getCurrentRoute()?.name;
-      if (!currentRouteName) return null;
+      if (!currentRouteName) {
+        return null;
+      }
 
-      return excludedRoutes.some((route) => currentRouteName.includes(route)) ? null : currentRouteName;
+      return excludedRoutes.some(route => currentRouteName.includes(route))
+        ? null
+        : currentRouteName;
     } catch (error) {
       console.error('Error in state changes:', error);
+
       return null;
     }
   }, []);
@@ -204,9 +221,11 @@ const App: React.FC = () => {
 
   const toastConfig = useMemo(
     () => ({
-      custom_toast: (toast: any) => <ToastStyle title={toast?.title} message={toast?.message} status={toast?.status} />,
+      custom_toast: (toast: any) => (
+        <ToastStyle title={toast?.title} message={toast?.message} status={toast?.status} />
+      ),
     }),
-    []
+    [],
   );
 
   return (
@@ -223,7 +242,11 @@ const App: React.FC = () => {
                   animationType="zoom-in"
                   renderType={toastConfig}
                 >
-                  <NavigationContainer ref={navigationRef} linking={linking} onStateChange={handleStateChange}>
+                  <NavigationContainer
+                    ref={navigationRef}
+                    linking={linking}
+                    onStateChange={handleStateChange}
+                  >
                     <SubscriptionModalProvider>
                       <BoostModalProvider>
                         <MainRoute />

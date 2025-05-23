@@ -1,8 +1,14 @@
 import NetInfo from '@react-native-community/netinfo';
+
+import {
+  fetchBoostFailure,
+  fetchBoostRequest,
+  fetchBoostSuccess,
+} from '../Redux/Reducer/boostReducer';
 import { store } from '../Redux/Store/store';
+import type { BoostData } from '../Types/Interface';
+
 import UserService from './AuthService';
-import { fetchBoostFailure, fetchBoostRequest, fetchBoostSuccess } from '../Redux/Reducer/boostReducer';
-import { BoostData } from '../Types/Interface';
 
 let boostFetchTimeout: NodeJS.Timeout | null = null;
 
@@ -52,6 +58,7 @@ export const cancelBoost = async (boostId: string): Promise<boolean> => {
 
     if (response?.code === 200) {
       await debouncedGetBoost(0);
+
       return true;
     } else {
       return false;
@@ -78,17 +85,22 @@ export const scheduleBoostExpiryCheck = (boost: BoostData): void => {
   console.log(`Boost expiry in: ${Math.floor(timeUntilExpiry / (1000 * 60))} minutes`);
 
   if (timeUntilExpiry <= 0 || timeUntilExpiry === 0) {
-    debouncedGetBoost(0).then((refreshed) => {
+    debouncedGetBoost(0).then(refreshed => {
       if (refreshed) {
         const state = store.getState();
         const updatedBoost = state?.boost?.activeBoost;
 
-        if (updatedBoost && updatedBoost._id && calculateBoostExpiryTimestamp(updatedBoost) <= Date.now()) {
+        if (
+          updatedBoost &&
+          updatedBoost._id &&
+          calculateBoostExpiryTimestamp(updatedBoost) <= Date.now()
+        ) {
           console.log('Confirmed expiry, canceling boost');
           cancelBoost(updatedBoost._id);
         }
       }
     });
+
     return;
   }
 
@@ -140,6 +152,7 @@ export const getBoost = async (): Promise<boolean> => {
 
     if (response?.code !== 200) {
       store.dispatch(fetchBoostFailure('Invalid response'));
+
       return false;
     }
 
@@ -152,6 +165,7 @@ export const getBoost = async (): Promise<boolean> => {
     return true;
   } catch (error) {
     store.dispatch(fetchBoostFailure(error instanceof Error ? error.message : 'Unknown error'));
+
     return false;
   }
 };
@@ -162,6 +176,7 @@ export const getBoost = async (): Promise<boolean> => {
  */
 export const hasActiveBoost = (): boolean => {
   const state = store.getState();
+
   return state?.boost?.isBoostActive || false;
 };
 
@@ -190,7 +205,7 @@ export const getBoostTimeRemaining = (): number => {
  * @returns {Promise<boolean>} Success status
  */
 export const debouncedGetBoost = (delayMs = 300): Promise<boolean> => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     if (boostFetchTimeout) {
       clearTimeout(boostFetchTimeout);
     }

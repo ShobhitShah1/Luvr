@@ -1,15 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import React, { memo, useEffect, useRef, useState } from 'react';
-import {
-  Keyboard,
-  NativeSyntheticEvent,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  TextInputKeyPressEventData,
-  View,
-} from 'react-native';
+import type { NativeSyntheticEvent, TextInput, TextInputKeyPressEventData } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import QRCode from 'react-native-qrcode-svg';
 import Animated, {
@@ -21,7 +13,13 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { Camera, useCameraDevice, useCameraPermission, useCodeScanner } from 'react-native-vision-camera';
+import {
+  Camera,
+  useCameraDevice,
+  useCameraPermission,
+  useCodeScanner,
+} from 'react-native-vision-camera';
+
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
 import { FONTS, SIZES } from '../../Common/Theme';
@@ -33,7 +31,7 @@ import { useUserData } from '../../Contexts/UserDataContext';
 import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import UserService from '../../Services/AuthService';
 import { useCustomToast } from '../../Utils/toastUtils';
-import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
+import ProfileAndSettingHeader from '../Profile/Components/profile-and-setting-header';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(CustomTextInput);
 
@@ -41,7 +39,7 @@ interface RouteParams {
   fromRegistration: string;
 }
 
-const RedeemReferralCode = () => {
+function RedeemReferralCode() {
   const { colors, isDark } = useTheme();
   const { params } = useRoute();
   const navigation = useCustomNavigation();
@@ -59,11 +57,12 @@ const RedeemReferralCode = () => {
   const device = useCameraDevice('back');
   const codeScanner = useCodeScanner({
     codeTypes: ['qr', 'ean-13'],
-    onCodeScanned: (codes) => {
+    onCodeScanned: codes => {
       for (const code of codes) {
         if (code?.value && code.value?.length === 8) {
           setReferralCode(code.value.split(''));
         }
+
         break;
       }
     },
@@ -91,6 +90,7 @@ const RedeemReferralCode = () => {
     if (text === '' && referralCode[index] !== '') {
       newCode[index] = '';
       setReferralCode(newCode);
+
       return;
     }
 
@@ -104,11 +104,15 @@ const RedeemReferralCode = () => {
           setFocusedIndex(index - 1);
         }, 10);
       }
+
       return;
     }
 
     if (text && /^[a-zA-Z0-9]$/.test(text)) {
-      inputAnimValues[index].value = withSequence(withTiming(1.2, { duration: 100 }), withTiming(1, { duration: 100 }));
+      inputAnimValues[index].value = withSequence(
+        withTiming(1.2, { duration: 100 }),
+        withTiming(1, { duration: 100 }),
+      );
 
       newCode[index] = text.toLowerCase();
       setReferralCode(newCode);
@@ -154,7 +158,7 @@ const RedeemReferralCode = () => {
   const toggleCamera = () => {
     Keyboard.dismiss();
     setTimeout(() => {
-      setIsCameraActive((prev) => !prev);
+      setIsCameraActive(prev => !prev);
     }, 100);
   };
 
@@ -173,6 +177,7 @@ const RedeemReferralCode = () => {
         subscription_count: 1,
         subscription_month: 3,
       };
+
       const APIResponse = await UserService.UserRegister(dataToSend);
 
       if (APIResponse?.code === 200) {
@@ -185,7 +190,11 @@ const RedeemReferralCode = () => {
 
   const getInputAnimStyle = (index: number) => {
     return useAnimatedStyle(() => {
-      const borderColor = interpolateColor(inputAnimValues[index].value, [0, 1], [colors.Secondary, colors.Primary]);
+      const borderColor = interpolateColor(
+        inputAnimValues[index].value,
+        [0, 1],
+        [colors.Secondary, colors.Primary],
+      );
 
       return {
         borderBottomColor: borderColor,
@@ -197,13 +206,20 @@ const RedeemReferralCode = () => {
   return (
     <GradientView>
       <View style={styles.container}>
-        <ProfileAndSettingHeader Title="Have referral code?" showRightIcon={false} showBackIcon={!fromRegistration} />
+        <ProfileAndSettingHeader
+          Title="Have referral code?"
+          showRightIcon={false}
+          showBackIcon={!fromRegistration}
+        />
 
         <View style={styles.content}>
           <Text style={[styles.label, { color: colors.TextColor }]}>Enter referral code:</Text>
 
           <Animated.View
-            style={[styles.codeInputContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White }]}
+            style={[
+              styles.codeInputContainer,
+              { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White },
+            ]}
           >
             {referralCode.map((char, index) => (
               <AnimatedTextInput
@@ -214,9 +230,9 @@ const RedeemReferralCode = () => {
                 autoCapitalize="none"
                 selectTextOnFocus={true}
                 onFocus={() => handleInputFocus(index)}
-                onKeyPress={(e) => handleKeyPress(e, index)}
-                ref={(ref) => setInputRef(ref as any, index)}
-                onChangeText={(text) => handleCodeChange(text, index)}
+                onKeyPress={e => handleKeyPress(e, index)}
+                ref={ref => setInputRef(ref as any, index)}
+                onChangeText={text => handleCodeChange(text, index)}
                 style={[styles.codeInput, { color: colors.TextColor }, getInputAnimStyle(index)]}
               />
             ))}
@@ -232,26 +248,51 @@ const RedeemReferralCode = () => {
             gradientProps={{ colors: colors.ButtonGradient }}
             style={[
               styles.qrContainer,
-              { shadowColor: colors.Primary, backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White },
+              {
+                shadowColor: colors.Primary,
+                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : colors.White,
+              },
             ]}
           >
             {device && isCameraActive && hasPermission ? (
               <Animated.View entering={FadeIn} style={styles.cameraContainer}>
-                <Pressable style={[styles.closeCamera, { backgroundColor: colors.Primary }]} onPress={toggleCamera}>
+                <Pressable
+                  style={[styles.closeCamera, { backgroundColor: colors.Primary }]}
+                  onPress={toggleCamera}
+                >
                   <Text style={{ color: colors.White }}>✕</Text>
                 </Pressable>
 
-                <Camera style={StyleSheet.absoluteFill} device={device} isActive={true} codeScanner={codeScanner} />
+                <Camera
+                  style={StyleSheet.absoluteFill}
+                  device={device}
+                  isActive={true}
+                  codeScanner={codeScanner}
+                />
               </Animated.View>
             ) : (
               <Pressable
                 style={styles.qrCodeWrapper}
-                onPress={() => requestPermission().then((res) => setIsCameraActive(res))}
+                onPress={() => requestPermission().then(res => setIsCameraActive(res))}
               >
-                <Text style={[styles.scanText, { color: colors.TextColor }]}>Tap to scan referral code</Text>
+                <Text style={[styles.scanText, { color: colors.TextColor }]}>
+                  Tap to scan referral code
+                </Text>
                 <View style={styles.scanFrame}>
-                  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', opacity: 0.5 }}>
-                    <QRCode value={code || '12'} size={95} color={colors.TextColor} backgroundColor="transparent" />
+                  <View
+                    style={{
+                      flex: 1,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      opacity: 0.5,
+                    }}
+                  >
+                    <QRCode
+                      value={code || '12'}
+                      size={95}
+                      color={colors.TextColor}
+                      backgroundColor="transparent"
+                    />
                   </View>
                   <View style={[styles.cornerTL, { borderColor: colors.Primary }]} />
                   <View style={[styles.cornerTR, { borderColor: colors.Primary }]} />
@@ -289,161 +330,161 @@ const RedeemReferralCode = () => {
       </View>
     </GradientView>
   );
-};
+}
 
 export default memo(RedeemReferralCode);
 
 const styles = StyleSheet.create({
+  camera: {
+    flex: 1,
+  },
+  cameraContainer: {
+    backgroundColor: 'rgba(0,0,0,0.1)',
+    borderRadius: SIZES.radius,
+    height: hp('27%'),
+    overflow: 'hidden',
+  },
+  closeCamera: {
+    alignItems: 'center',
+    borderRadius: 15,
+    height: 30,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: 10,
+    top: 10,
+    width: 30,
+    zIndex: 99999,
+  },
+  codeInput: {
+    borderBottomWidth: 2,
+    fontFamily: FONTS.SemiBold,
+    fontSize: SIZES.h3,
+    height: hp('5%'),
+    textAlign: 'center',
+    width: hp('3%'),
+  },
+  codeInputContainer: {
+    alignItems: 'center',
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: SIZES.base * 1.5,
+    paddingHorizontal: SIZES.base * 2,
+  },
   container: {
     flex: 1,
   },
   content: {
     flex: 1,
-    paddingTop: hp('4%'),
     paddingHorizontal: SIZES.padding,
+    paddingTop: hp('4%'),
   },
-  label: {
-    fontSize: 16,
-    marginBottom: hp('1.5%'),
-    fontFamily: FONTS.SemiBold,
-  },
-  codeInputContainer: {
-    borderRadius: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: SIZES.base * 1.5,
-    justifyContent: 'space-between',
-    paddingHorizontal: SIZES.base * 2,
-  },
-  codeInput: {
-    width: hp('3%'),
-    height: hp('5%'),
-    textAlign: 'center',
-    fontFamily: FONTS.SemiBold,
-    fontSize: SIZES.h3,
+  cornerBL: {
     borderBottomWidth: 2,
+    borderLeftWidth: 2,
+    bottom: 0,
+    height: 20,
+    left: 0,
+    position: 'absolute',
+    width: 20,
   },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: hp('3%'),
+  cornerBR: {
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+    bottom: 0,
+    height: 20,
+    position: 'absolute',
+    right: 0,
+    width: 20,
+  },
+  cornerTL: {
+    borderLeftWidth: 2,
+    borderTopWidth: 2,
+    height: 20,
+    left: 0,
+    position: 'absolute',
+    top: 0,
+    width: 20,
+  },
+  cornerTR: {
+    borderRightWidth: 2,
+    borderTopWidth: 2,
+    height: 20,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: 20,
   },
   divider: {
     flex: 1,
     height: 1,
   },
+  dividerContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginVertical: hp('3%'),
+  },
   dividerText: {
-    fontSize: 13,
     fontFamily: FONTS.SemiBold,
+    fontSize: 13,
     marginHorizontal: SIZES.base * 2,
   },
-  qrContainer: {
-    width: '83%',
-    zIndex: 9999,
-    borderWidth: 1,
-    alignSelf: 'center',
-    marginBottom: hp('4%'),
-    borderRadius: SIZES.radius,
+  label: {
+    fontFamily: FONTS.SemiBold,
+    fontSize: 16,
+    marginBottom: hp('1.5%'),
   },
   qrCodeWrapper: {
-    height: hp('27%'),
     alignItems: 'center',
-    justifyContent: 'center',
     borderRadius: SIZES.radius,
+    height: hp('27%'),
+    justifyContent: 'center',
+  },
+  qrContainer: {
+    alignSelf: 'center',
+    borderRadius: SIZES.radius,
+    borderWidth: 1,
+    marginBottom: hp('4%'),
+    width: '83%',
+    zIndex: 9999,
   },
   scanFrame: {
-    top: 18,
-    width: hp('15%'),
     height: hp('15%'),
     position: 'relative',
-  },
-  cornerTL: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 20,
-    height: 20,
-    borderLeftWidth: 2,
-    borderTopWidth: 2,
-  },
-  cornerTR: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 20,
-    height: 20,
-    borderRightWidth: 2,
-    borderTopWidth: 2,
-  },
-  cornerBL: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    width: 20,
-    height: 20,
-    borderLeftWidth: 2,
-    borderBottomWidth: 2,
-  },
-  cornerBR: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 20,
-    height: 20,
-    borderRightWidth: 2,
-    borderBottomWidth: 2,
+    top: 18,
+    width: hp('15%'),
   },
   scanText: {
-    top: 15,
     flex: 1,
-    right: 0,
-    left: 0,
-    width: '100%',
+    fontFamily: FONTS.SemiBold,
     fontSize: 16.5,
-    textAlign: 'center',
+    left: 0,
     position: 'absolute',
-    fontFamily: FONTS.SemiBold,
-  },
-  submitButton: {
-    height: 55,
-    width: 180,
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: hp('1.5%'),
-    borderRadius: SIZES.radius,
-  },
-  submitButtonText: {
-    fontSize: 15,
-    fontFamily: FONTS.SemiBold,
+    right: 0,
+    textAlign: 'center',
+    top: 15,
+    width: '100%',
   },
   skipButton: {
+    alignItems: 'center',
     height: hp('5%'),
     justifyContent: 'center',
-    alignItems: 'center',
   },
   skipButtonText: {
     fontFamily: FONTS.Regular,
     fontSize: SIZES.body4,
   },
-  cameraContainer: {
-    height: hp('27%'),
-    overflow: 'hidden',
-    borderRadius: SIZES.radius,
-    backgroundColor: 'rgba(0,0,0,0.1)',
-  },
-  camera: {
-    flex: 1,
-  },
-  closeCamera: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    zIndex: 99999,
-    justifyContent: 'center',
+  submitButton: {
     alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: SIZES.radius,
+    height: 55,
+    justifyContent: 'center',
+    marginBottom: hp('1.5%'),
+    width: 180,
+  },
+  submitButtonText: {
+    fontFamily: FONTS.SemiBold,
+    fontSize: 15,
   },
 });

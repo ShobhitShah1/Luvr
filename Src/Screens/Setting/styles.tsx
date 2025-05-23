@@ -1,58 +1,77 @@
 import { StyleSheet } from 'react-native';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
+
 import { COLORS, FONTS, GROUP_FONT, SIZES } from '../../Common/Theme';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  AppVersionText: {
+    ...GROUP_FONT.body4,
+    color: COLORS.Black,
+    fontFamily: FONTS.Medium,
+    textAlign: 'center',
+  },
+  AppVersionView: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    margin: 10,
   },
   ContentView: {
     flex: 1,
     marginBottom: 10,
   },
-  ListSubView: {
-    width: '90%',
+  CustomMarkerStyle: {
+    backgroundColor: COLORS.White,
+    borderColor: COLORS.Primary,
+    borderRadius: 500,
+    borderWidth: 1.5,
+    height: 22,
+    width: 22,
+  },
+  DeleteAndLogoutButtonText: {
+    ...GROUP_FONT.h4,
+    color: COLORS.Black,
+    fontFamily: FONTS.SemiBold,
+    fontSize: 13.5,
+    textAlign: 'center',
+  },
+  DeleteAndLogoutButtonView: {
     alignSelf: 'center',
+    borderRadius: 25,
+    height: 55,
+    justifyContent: 'center',
+    width: '48%',
+  },
+  DeleteAndLogoutContainerView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
   },
   DetailContainerView: {
     marginTop: 15,
   },
-  UserNumberStyle: {
-    ...GROUP_FONT.body3,
+  DistanceAndAgeRangeTitleText: {
+    ...GROUP_FONT.h3,
     color: COLORS.Black,
-    fontSize: 15,
     fontFamily: FONTS.Medium,
+    fontSize: 14.5,
+    lineHeight: 25,
+    textAlign: 'center',
   },
-  TitleViewStyle: {
-    marginVertical: 0,
-  },
-  PhoneNumberView: {
+  DistanceAndAgeView: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
   },
-  PhoneNumberFlexStyle: {
-    marginVertical: 5,
-  },
-  NotificationFlexView: {
-    marginVertical: 5,
-  },
-  RightIconView: {
-    width: 35,
-    height: 35,
-    borderRadius: 100,
+  GenderButton: {
     alignItems: 'center',
-    alignSelf: 'center',
+    borderRadius: SIZES.radius,
+    flex: 1,
+    height: '100%',
     justifyContent: 'center',
-    backgroundColor: 'rgba(234, 234, 234, 1)',
-  },
-  RightArrowIcon: {
-    width: 20,
-    height: 20,
-    justifyContent: 'center',
-  },
-  ShareFlexViewStyle: {
-    marginVertical: 8,
+    overflow: 'hidden',
+    width: '100%',
   },
   GenderContainer: {
     flexDirection: 'row',
@@ -62,72 +81,52 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     // paddingHorizontal: 20,
   },
-  GenderView: {
-    padding: 0,
-    height: hp('6.8%'),
-    width: wp('85%'),
-    borderRadius: SIZES.radius,
-    alignItems: 'center',
-    textAlign: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-  },
-  GenderButton: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: SIZES.radius,
-  },
   GenderText: {
-    fontFamily: FONTS.Medium,
     color: COLORS.Gray,
+    fontFamily: FONTS.Medium,
     fontSize: hp('1.7%'),
   },
-  DeleteAndLogoutContainerView: {
-    marginTop: 20,
+  GenderView: {
+    alignItems: 'center',
+    borderRadius: SIZES.radius,
+    borderWidth: 1,
+    height: hp('6.8%'),
+    justifyContent: 'center',
+    padding: 0,
+    textAlign: 'center',
+    width: wp('85%'),
+  },
+  ListSubView: {
+    alignSelf: 'center',
+    width: '90%',
+  },
+  NotificationFlexView: {
+    marginVertical: 5,
+  },
+  PhoneNumberFlexStyle: {
+    marginVertical: 5,
+  },
+  PhoneNumberView: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  DeleteAndLogoutButtonView: {
-    width: '48%',
-    height: 55,
-    borderRadius: 25,
+  RightArrowIcon: {
+    height: 20,
+    justifyContent: 'center',
+    width: 20,
+  },
+  RightIconView: {
+    alignItems: 'center',
     alignSelf: 'center',
+    backgroundColor: 'rgba(234, 234, 234, 1)',
+    borderRadius: 100,
+    height: 35,
     justifyContent: 'center',
+    width: 35,
   },
-  DeleteAndLogoutButtonText: {
-    ...GROUP_FONT.h4,
-    fontFamily: FONTS.SemiBold,
-    textAlign: 'center',
-    fontSize: 13.5,
-    color: COLORS.Black,
-  },
-  AppVersionView: {
-    justifyContent: 'center',
-    alignSelf: 'center',
-    margin: 10,
-  },
-  AppVersionText: {
-    ...GROUP_FONT.body4,
-    fontFamily: FONTS.Medium,
-    textAlign: 'center',
-    color: COLORS.Black,
-  },
-  CustomMarkerStyle: {
-    width: 22,
-    height: 22,
-    borderWidth: 1.5,
-    borderRadius: 500,
-    borderColor: COLORS.Primary,
-    backgroundColor: COLORS.White,
-  },
-  SliderContainerStyle: {
-    margin: 0,
-    overflow: 'visible',
-    justifyContent: 'center',
+  ShareFlexViewStyle: {
+    marginVertical: 8,
   },
   SliderContainer: {
     // alignSelf: 'center',
@@ -135,44 +134,49 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.Gray,
     paddingVertical: 1.5,
   },
+  SliderContainerStyle: {
+    justifyContent: 'center',
+    margin: 0,
+    overflow: 'visible',
+  },
+  TitleViewStyle: {
+    marginVertical: 0,
+  },
   UserAgeText: {
     ...GROUP_FONT.h3,
-    lineHeight: 25,
-    fontSize: 14.5,
-    fontFamily: FONTS.Medium,
-    textAlign: 'center',
     color: COLORS.Black,
-  },
-  DistanceAndAgeView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  DistanceAndAgeRangeTitleText: {
-    ...GROUP_FONT.h3,
-    lineHeight: 25,
-    fontSize: 14.5,
     fontFamily: FONTS.Medium,
+    fontSize: 14.5,
+    lineHeight: 25,
     textAlign: 'center',
-    color: COLORS.Black,
   },
-  incognitoView: {
-    height: 50,
-    width: '100%',
-    borderRadius: 30,
-    marginVertical: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+  UserNumberStyle: {
+    ...GROUP_FONT.body3,
+    color: COLORS.Black,
+    fontFamily: FONTS.Medium,
+    fontSize: 15,
+  },
+  container: {
+    flex: 1,
   },
   incognitoButton: {
+    alignItems: 'center',
     flex: 1,
-    width: '100%',
     height: '100%',
     justifyContent: 'center',
-    alignItems: 'center',
+    width: '100%',
   },
   incognitoText: {
-    fontSize: 15,
     fontFamily: FONTS.SemiBold,
+    fontSize: 15,
+  },
+  incognitoView: {
+    alignItems: 'center',
+    borderRadius: 30,
+    height: 50,
+    justifyContent: 'center',
+    marginVertical: 10,
+    width: '100%',
   },
 });
 

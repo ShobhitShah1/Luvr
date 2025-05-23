@@ -1,4 +1,4 @@
-import { BoostData, BoostState } from '../../Types/Interface';
+import type { BoostData, BoostState } from '../../Types/Interface';
 
 export const FETCH_BOOST_REQUEST = 'FETCH_BOOST_REQUEST';
 export const FETCH_BOOST_SUCCESS = 'FETCH_BOOST_SUCCESS';
@@ -18,7 +18,10 @@ interface FetchBoostFailureAction {
   payload: string;
 }
 
-export type BoostActionTypes = FetchBoostRequestAction | FetchBoostSuccessAction | FetchBoostFailureAction;
+export type BoostActionTypes =
+  | FetchBoostRequestAction
+  | FetchBoostSuccessAction
+  | FetchBoostFailureAction;
 
 export const fetchBoostRequest = (): FetchBoostRequestAction => ({
   type: FETCH_BOOST_REQUEST,
@@ -64,6 +67,7 @@ const isBoostActive = (boost: BoostData | null): boolean => {
     }
 
     const expiryTime = transactionDate + periodInMinutes * 60 * 1000;
+
     return expiryTime > Date.now();
   }
 

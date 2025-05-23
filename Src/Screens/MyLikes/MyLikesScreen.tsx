@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable react-native/no-inline-styles */
+
 import NetInfo from '@react-native-community/netinfo';
+import { useFocusEffect } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useReducer, useState } from 'react';
 import {
   ActivityIndicator,
@@ -15,6 +15,7 @@ import {
   Pressable,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
 import { BOTTOM_TAB_HEIGHT, FONTS } from '../../Common/Theme';
@@ -22,16 +23,16 @@ import SubscriptionView from '../../Components/Subscription/SubscriptionView';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { useUserData } from '../../Contexts/UserDataContext';
 import UserService from '../../Services/AuthService';
-import { ListDetailProps, MyLikeScreenListProps } from '../../Types/Interface';
+import { getDetailedSubscriptionStatus } from '../../Services/SubscriptionService';
+import type { ListDetailProps, MyLikeScreenListProps } from '../../Types/Interface';
 import { useCustomToast } from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
+
 import LikesContent from './Components/LikesContent';
 import ListEmptyView from './Components/ListEmptyView';
 import MatchesContent from './Components/MatchesContent';
 import { RenderLikeScreenTopBar } from './Components/RenderLikeScreenTopBar';
 import styles from './styles';
-import { useFocusEffect } from '@react-navigation/native';
-import { getDetailedSubscriptionStatus } from '../../Services/SubscriptionService';
 
 export type TabData = { title: string; index?: number; count?: number };
 
@@ -89,7 +90,7 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-const MyLikesScreen = () => {
+function MyLikesScreen() {
   // const [sub, setSub] = useState<any>(null);
   const { colors, isDark } = useTheme();
   const { showToast } = useCustomToast();
@@ -112,13 +113,17 @@ const MyLikesScreen = () => {
   useFocusEffect(
     React.useCallback(() => {
       const selectedTabData =
-        selectedTab.index === 0 ? likesData.like : selectedTab.index === 1 ? likesData.match : likesData.crush;
+        selectedTab.index === 0
+          ? likesData.like
+          : selectedTab.index === 1
+          ? likesData.match
+          : likesData.crush;
 
       const shouldShowLoader = selectedTabData.length === 0;
 
       dispatch({ type: 'SET_LOADING', payload: shouldShowLoader });
       fetchLikesAndMatchAPI();
-    }, [selectedTab.index])
+    }, [selectedTab.index]),
   );
 
   const tabsData: TabData[] = [
@@ -131,8 +136,14 @@ const MyLikesScreen = () => {
     const inInternet = (await NetInfo.fetch()).isConnected;
 
     if (!inInternet) {
-      showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+
       dispatch({ type: 'SET_LOADING', payload: false });
+
       return;
     }
 
@@ -140,7 +151,7 @@ const MyLikesScreen = () => {
       const APIResponse = await UserService.UserRegister({ eventName: 'likes_matchs' });
 
       if (APIResponse?.code === 200) {
-        const data = APIResponse.data;
+        const { data } = APIResponse;
         const { like = [], match = [], crush = [] } = data;
 
         const filteredLike = like?.filter((item: any) => item?.user_details?.length > 0) || [];
@@ -149,7 +160,11 @@ const MyLikesScreen = () => {
 
         dispatch({
           type: 'SET_LIKES_COUNT',
-          payload: { like: filteredLike.length, match: filteredMatch.length, crush: filteredCrush.length },
+          payload: {
+            like: filteredLike.length,
+            match: filteredMatch.length,
+            crush: filteredCrush.length,
+          },
         });
 
         dispatch({
@@ -187,7 +202,7 @@ const MyLikesScreen = () => {
           return null;
       }
     },
-    [selectedTab.index]
+    [selectedTab.index],
   );
 
   return (
@@ -219,12 +234,18 @@ const MyLikesScreen = () => {
                 <View style={{ flex: 1, marginTop: 35 }}>
                   <SubscriptionView
                     selectedPlan={selectedPlan}
-                    handlePlanSelection={(plan) => dispatch({ type: 'SET_SELECTED_PLAN', payload: plan })}
+                    handlePlanSelection={plan =>
+                      dispatch({ type: 'SET_SELECTED_PLAN', payload: plan })
+                    }
                   />
                 </View>
               ) : (
                 <FlatList
-                  data={likesData[selectedTab.index === 0 ? 'like' : selectedTab.index === 1 ? 'match' : 'crush']}
+                  data={
+                    likesData[
+                      selectedTab.index === 0 ? 'like' : selectedTab.index === 1 ? 'match' : 'crush'
+                    ]
+                  }
                   nestedScrollEnabled
                   style={{ zIndex: 9999 }}
                   scrollEnabled
@@ -239,7 +260,12 @@ const MyLikesScreen = () => {
                   }
                   initialNumToRender={80}
                   maxToRenderPerBatch={80}
-                  ListEmptyComponent={<ListEmptyView selectedTabIndex={selectedTab.index || 0} onRefresh={onRefresh} />}
+                  ListEmptyComponent={
+                    <ListEmptyView
+                      selectedTabIndex={selectedTab.index || 0}
+                      onRefresh={onRefresh}
+                    />
+                  }
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item }) => <RenderContent item={item} />}
                 />
@@ -304,6 +330,6 @@ const MyLikesScreen = () => {
       )}
     </GradientView>
   );
-};
+}
 
 export default memo(MyLikesScreen);

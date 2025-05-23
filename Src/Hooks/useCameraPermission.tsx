@@ -1,6 +1,6 @@
-import {useState} from 'react';
-import {Platform, Linking, Alert} from 'react-native';
-import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import { useState } from 'react';
+import { Platform, Linking, Alert } from 'react-native';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 export const useCameraPermission = () => {
   const [cameraPermission, setCameraPermission] = useState(false);
@@ -8,13 +8,12 @@ export const useCameraPermission = () => {
   const requestCameraPermission = async () => {
     try {
       const permission =
-        Platform.OS === 'android'
-          ? PERMISSIONS.ANDROID.CAMERA
-          : PERMISSIONS.IOS.CAMERA;
+        Platform.OS === 'android' ? PERMISSIONS.ANDROID.CAMERA : PERMISSIONS.IOS.CAMERA;
 
       const result = await check(permission);
       if (result === RESULTS.GRANTED) {
         setCameraPermission(true);
+
         return true;
       } else {
         const requestPermission = await request(permission);
@@ -49,5 +48,5 @@ export const useCameraPermission = () => {
     );
   };
 
-  return {cameraPermission, requestCameraPermission};
+  return { cameraPermission, requestCameraPermission };
 };

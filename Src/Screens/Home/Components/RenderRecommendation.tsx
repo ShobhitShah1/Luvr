@@ -1,12 +1,13 @@
 import React, { memo } from 'react';
 import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+
 import CommonLogos from '../../../Common/CommonLogos';
 import { COLORS, FONTS } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import { useTheme } from '../../../Contexts/ThemeContext';
-import { ProfileType } from '../../../Types/ProfileType';
-import LinearGradient from 'react-native-linear-gradient';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
+import type { ProfileType } from '../../../Types/ProfileType';
 
 const getRandomColor = () => {
   const letters = '0123456789ABCDEF';
@@ -14,10 +15,11 @@ const getRandomColor = () => {
   for (let i = 0; i < 6; i++) {
     color += letters[Math.floor(Math.random() * 16)];
   }
+
   return color;
 };
 
-const RenderRecommendation = ({ item }: { item: ProfileType }) => {
+function RenderRecommendation({ item }: { item: ProfileType }) {
   const { isDark, colors } = useTheme();
   const navigation = useCustomNavigation();
 
@@ -30,7 +32,11 @@ const RenderRecommendation = ({ item }: { item: ProfileType }) => {
     >
       <View style={{ flex: 1, justifyContent: 'center', overflow: 'hidden', borderRadius: 27 }}>
         <ImageBackground
-          source={item.recent_pik?.[0] ? { uri: ApiConfig.IMAGE_BASE_URL + item.recent_pik[0] } : CommonLogos.AppIcon}
+          source={
+            item.recent_pik?.[0]
+              ? { uri: ApiConfig.IMAGE_BASE_URL + item.recent_pik[0] }
+              : CommonLogos.AppIcon
+          }
           style={styles.imageView}
         >
           <LinearGradient
@@ -53,49 +59,49 @@ const RenderRecommendation = ({ item }: { item: ProfileType }) => {
       </View>
     </Pressable>
   );
-};
+}
 
 export default memo(RenderRecommendation);
 
 const styles = StyleSheet.create({
   container: {
-    width: 110,
-    height: 135,
-    overflow: 'hidden',
-    marginVertical: 5,
     borderRadius: 28,
     borderWidth: 1.5,
-  },
-  imageView: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    alignSelf: 'center',
+    height: 135,
+    marginVertical: 5,
     overflow: 'hidden',
-    justifyContent: 'flex-end',
-  },
-  imageStyle: {
-    width: '99%',
-    height: '99%',
-    alignSelf: 'center',
-    justifyContent: 'center',
+    width: 110,
   },
   gradient: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: 10,
     bottom: 9,
-    width: '85%',
+    justifyContent: 'center',
     maxHeight: 45,
     paddingVertical: 4,
-    borderRadius: 10,
-    justifyContent: 'center',
+    width: '85%',
+  },
+  imageStyle: {
     alignSelf: 'center',
+    height: '99%',
+    justifyContent: 'center',
+    width: '99%',
+  },
+  imageView: {
     alignItems: 'center',
+    alignSelf: 'center',
+    height: '100%',
+    justifyContent: 'flex-end',
+    overflow: 'hidden',
+    width: '100%',
   },
   titleText: {
-    width: '88%',
-    fontSize: 12.5,
-    fontFamily: FONTS.Bold,
-    textAlign: 'center',
-    color: COLORS.White,
     alignSelf: 'center',
+    color: COLORS.White,
+    fontFamily: FONTS.Bold,
+    fontSize: 12.5,
+    textAlign: 'center',
+    width: '88%',
   },
 });

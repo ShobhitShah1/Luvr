@@ -1,6 +1,7 @@
 import NetInfo from '@react-native-community/netinfo';
-import RNIap from 'react-native-iap';
 import { Platform } from 'react-native';
+import RNIap from 'react-native-iap';
+
 import {
   fetchSubscriptionFailure,
   fetchSubscriptionRequest,
@@ -9,7 +10,8 @@ import {
   setSubscriptionCancelled,
 } from '../Redux/Reducer/membershipReducer';
 import { store } from '../Redux/Store/store';
-import { SubscriptionData } from '../Types/SubscriptionTypes';
+import type { SubscriptionData } from '../Types/SubscriptionTypes';
+
 import UserService from './AuthService';
 
 // Unified timer management
@@ -23,7 +25,7 @@ let fetchTimeout: NodeJS.Timeout | null = null;
  */
 export const validateSubscription = async (
   subscription: SubscriptionData,
-  includeStoreValidation = false
+  includeStoreValidation = false,
 ): Promise<{
   isValid: boolean;
   isExpired: boolean;
@@ -52,7 +54,9 @@ export const validateSubscription = async (
 
   const daysUntilExpiry = Math.floor((expiryTimestamp - currentTime) / (1000 * 60 * 60 * 24));
   const isExpired = expiryTimestamp <= currentTime;
-  const isValidState = payment_response.purchaseState === 1 || payment_response?.purchaseState === 'purchased';
+  const isValidState =
+    payment_response.purchaseState === 1 || payment_response?.purchaseState === 'purchased';
+
   const isAutoRenewing = payment_response.autoRenewing !== false;
 
   let storeValidation;
@@ -74,7 +78,7 @@ export const validateSubscription = async (
  * Platform store validation (iOS/Android)
  */
 const validateWithPlatformStore = async (
-  subscription: SubscriptionData
+  subscription: SubscriptionData,
 ): Promise<{
   isValid: boolean;
   error?: string;
@@ -107,8 +111,8 @@ const validateWithPlatformStore = async (
         },
       };
     } else if (Platform.OS === 'android') {
-      const purchaseToken = payment_response.purchaseToken;
-      const productId = payment_response.productId;
+      const { purchaseToken } = payment_response;
+      const { productId } = payment_response;
 
       if (!purchaseToken || !productId) {
         return { isValid: false, error: 'Missing purchase token or product ID' };
@@ -138,6 +142,7 @@ const validateWithPlatformStore = async (
     return { isValid: false, error: 'Unsupported platform' };
   } catch (error) {
     console.warn('Store validation failed:', error);
+
     return {
       isValid: false,
       error: error instanceof Error ? error.message : 'Unknown validation error',
@@ -217,6 +222,7 @@ const handleSubscriptionExpiry = async (subscription: SubscriptionData): Promise
     if (storeValidation.isValid) {
       console.log('Store validation shows subscription is still valid, rescheduling check');
       scheduleSubscriptionCheck(subscription);
+
       return;
     }
 
@@ -239,7 +245,9 @@ const handleSubscriptionExpiry = async (subscription: SubscriptionData): Promise
  * Unified subscription checking and scheduling
  */
 const scheduleSubscriptionCheck = async (subscription: SubscriptionData): Promise<void> => {
-  if (!subscription?._id) return;
+  if (!subscription?._id) {
+    return;
+  }
 
   // Clear existing timers
   clearSubscriptionTimers();
@@ -251,6 +259,7 @@ const scheduleSubscriptionCheck = async (subscription: SubscriptionData): Promis
     if (validation.isExpired) {
       await handleSubscriptionExpiry(subscription);
     }
+
     return;
   }
 
@@ -275,6 +284,7 @@ const scheduleSubscriptionCheck = async (subscription: SubscriptionData): Promis
   } else {
     // Already expired
     await handleSubscriptionExpiry(subscription);
+
     return;
   }
 
@@ -295,7 +305,10 @@ const scheduleSubscriptionCheck = async (subscription: SubscriptionData): Promis
   }, checkDelay);
 
   // Handle iOS grace period separately
-  if (subscription.payment_response.platform === 'ios' && subscription.payment_response.gracePeriodExpiresDate) {
+  if (
+    subscription.payment_response.platform === 'ios' &&
+    subscription.payment_response.gracePeriodExpiresDate
+  ) {
     const gracePeriodTime = subscription.payment_response.gracePeriodExpiresDate - Date.now();
 
     if (gracePeriodTime > 0 && gracePeriodTime < timeUntilExpiry) {
@@ -319,24 +332,21 @@ const startPeriodicValidation = (): void => {
   }
 
   // Check every 6 hours
-  periodicValidationInterval = setInterval(
-    async () => {
-      const state = store.getState();
-      const subscription = state.membership.subscription;
+  periodicValidationInterval = setInterval(async () => {
+    const state = store.getState();
+    const { subscription } = state.membership;
 
-      if (subscription?._id) {
-        const validation = await validateSubscription(subscription, true);
+    if (subscription?._id) {
+      const validation = await validateSubscription(subscription, true);
 
-        if (!validation.isValid || validation.isExpired) {
-          await handleSubscriptionExpiry(subscription);
-        } else if (validation.needsRenewal) {
-          console.log('Subscription needs renewal, performing store validation');
-          // Additional store validation is already included above
-        }
+      if (!validation.isValid || validation.isExpired) {
+        await handleSubscriptionExpiry(subscription);
+      } else if (validation.needsRenewal) {
+        console.log('Subscription needs renewal, performing store validation');
+        // Additional store validation is already included above
       }
-    },
-    6 * 60 * 60 * 1000
-  );
+    }
+  }, 6 * 60 * 60 * 1000);
 };
 
 /**
@@ -366,6 +376,7 @@ export const getSubscription = async (): Promise<boolean> => {
 
     if (response?.code !== 200) {
       store.dispatch(fetchSubscriptionFailure('Invalid response'));
+
       return false;
     }
 
@@ -389,6 +400,7 @@ export const getSubscription = async (): Promise<boolean> => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     store.dispatch(fetchSubscriptionFailure(errorMessage));
+
     return false;
   }
 };
@@ -408,11 +420,14 @@ export const cancelSubscription = async (purchaseId: string): Promise<boolean> =
 
     if (response?.code === 200) {
       await debouncedGetSubscription(0);
+
       return true;
     }
+
     return false;
   } catch (error) {
     console.error('Cancel subscription error:', error);
+
     return false;
   }
 };
@@ -431,7 +446,7 @@ export const getDetailedSubscriptionStatus = async (): Promise<{
   storeValidation?: any;
 }> => {
   const state = store.getState();
-  const subscription = state.membership.subscription;
+  const { subscription } = state.membership;
 
   if (!subscription) {
     return {
@@ -468,7 +483,7 @@ export const forceValidateSubscription = async (): Promise<{
   details?: any;
 }> => {
   const state = store.getState();
-  const subscription = state.membership.subscription;
+  const { subscription } = state.membership;
 
   if (!subscription) {
     return { isValid: false, error: 'No subscription found' };
@@ -499,6 +514,7 @@ export const forceValidateSubscription = async (): Promise<{
  */
 export const hasActiveSubscription = (): boolean => {
   const state = store.getState();
+
   return state.membership.isSubscriptionActive;
 };
 
@@ -506,7 +522,7 @@ export const hasActiveSubscription = (): boolean => {
  * Debounced subscription fetcher
  */
 export const debouncedGetSubscription = (delayMs = 300): Promise<boolean> => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     if (fetchTimeout) {
       clearTimeout(fetchTimeout);
     }

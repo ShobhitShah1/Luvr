@@ -1,10 +1,24 @@
-/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Image, Keyboard, KeyboardAvoidingView, ScrollView, Text, TextInput, View } from 'react-native';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import {
+  FlatList,
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
+import type { TextInput } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
+
 import CommonIcons from '../../../Common/CommonIcons';
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
@@ -25,11 +39,12 @@ import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
 import RenderCountryData from '../CreateProfile/Components/RenderCountryData';
+
 import styles from './styles';
 
 const SOMETHING_WRONG = 'Something went wrong, try again later';
 
-const PhoneNumber = () => {
+function PhoneNumber() {
   const { colors, isDark } = useTheme();
   const style = useThemedStyles(styles);
 
@@ -45,10 +60,14 @@ const PhoneNumber = () => {
 
   const [IsAPILoading, setIsAPILoading] = useState(false);
   const [visible, setVisible] = useState<boolean>(false);
-  const [diallingCode, setDiallingCode] = useState<string | null>(userData.phoneNumberCountryCode || '+91');
-  const [defaultDiallingCode, setDefaultDiallingCode] = useState<string | null>(
-    userData.phoneNumberCountryCode || '+91'
+  const [diallingCode, setDiallingCode] = useState<string | null>(
+    userData.phoneNumberCountryCode || '+91',
   );
+
+  const [defaultDiallingCode, setDefaultDiallingCode] = useState<string | null>(
+    userData.phoneNumberCountryCode || '+91',
+  );
+
   const [StorePhoneNumber, setStorePhoneNumber] = useState<string>(userData.phoneNumberWithoutCode);
   const [SearchText, setSearchText] = useState<string | undefined>('');
   const [FilteredCountries, setFilteredCountries] = useState(CountryWithCode);
@@ -86,10 +105,11 @@ const PhoneNumber = () => {
 
   const searchFunction = (text: string) => {
     const filteredCountries = CountryWithCode.filter(
-      (country) =>
+      country =>
         country.name.toLowerCase().includes(text.toLowerCase()) ||
-        country.dialling_code.toLowerCase().includes(text.toLowerCase())
+        country.dialling_code.toLowerCase().includes(text.toLowerCase()),
     );
+
     setFilteredCountries(filteredCountries);
   };
 
@@ -99,17 +119,21 @@ const PhoneNumber = () => {
       setIsAPILoading(true);
 
       const isValidNumber =
-        StorePhoneNumber?.length >= 10 && StorePhoneNumber?.length <= 12 && StorePhoneNumber.match('[0-9]{10}');
+        StorePhoneNumber?.length >= 10 &&
+        StorePhoneNumber?.length <= 12 &&
+        StorePhoneNumber.match('[0-9]{10}');
 
       const isGuestNumber = StorePhoneNumber === '9999999999';
 
       if (isGuestNumber) {
         await getUserWithoutOTP();
+
         return;
       }
 
       if (isValidNumber) {
         await getUserWithoutOTP();
+
         // await handleSendOtp();
         return;
       }
@@ -126,12 +150,15 @@ const PhoneNumber = () => {
     try {
       const tasks = [
         updateField(LocalStorageFields.mobile_no, PhoneNumberString),
-        updateField(LocalStorageFields.phoneNumberCountryCode, `${diallingCode || defaultDiallingCode}`),
+        updateField(
+          LocalStorageFields.phoneNumberCountryCode,
+          `${diallingCode || defaultDiallingCode}`,
+        ),
         updateField(LocalStorageFields.phoneNumberWithoutCode, StorePhoneNumber),
         updateField(LocalStorageFields.isVerified, true),
       ];
 
-      await Promise.all(tasks.map((task) => dispatch(task)));
+      await Promise.all(tasks.map(task => dispatch(task)));
 
       handleNavigation();
     } catch (error: any) {
@@ -192,7 +219,9 @@ const PhoneNumber = () => {
       const UpdateAPIResponse = await UserService.UserRegister(ModifyData);
 
       if (UpdateAPIResponse?.code !== 200) {
-        const errorMessage = UpdateAPIResponse?.error || 'Unknown error occurred during registration.';
+        const errorMessage =
+          UpdateAPIResponse?.error || 'Unknown error occurred during registration.';
+
         throw new Error(errorMessage);
       }
 
@@ -201,7 +230,10 @@ const PhoneNumber = () => {
       dispatch(updateField(LocalStorageFields.isVerified, true));
 
       const nextScreen = IS_NOTIFICATION_ENABLE ? 'BottomTab' : 'LocationStack';
-      const navigationParams = IS_NOTIFICATION_ENABLE ? undefined : { screen: 'LocationPermission' };
+      const navigationParams = IS_NOTIFICATION_ENABLE
+        ? undefined
+        : { screen: 'LocationPermission' };
+
       navigation.replace(nextScreen, navigationParams);
 
       setIsAPILoading(false);
@@ -225,7 +257,12 @@ const PhoneNumber = () => {
       if (response?.code === 200) {
         await Promise.all([
           dispatch(updateField(LocalStorageFields.mobile_no, PhoneNumberString)),
-          dispatch(updateField(LocalStorageFields.phoneNumberCountryCode, `${diallingCode || defaultDiallingCode}`)),
+          dispatch(
+            updateField(
+              LocalStorageFields.phoneNumberCountryCode,
+              `${diallingCode || defaultDiallingCode}`,
+            ),
+          ),
           dispatch(updateField(LocalStorageFields.phoneNumberWithoutCode, StorePhoneNumber)),
         ]);
 
@@ -242,7 +279,7 @@ const PhoneNumber = () => {
       showToast(
         TextString.error.toUpperCase(),
         String(error?.message || error) || 'Failed to send OTP. Try again.',
-        'error'
+        'error',
       );
     } finally {
       setIsAPILoading(false);
@@ -250,17 +287,19 @@ const PhoneNumber = () => {
   };
 
   const renderItem = useCallback(
-    ({ item, index }: any) => <RenderCountryData data={item} index={index} onPress={handleCountryPress} />,
-    []
+    ({ item, index }: any) => (
+      <RenderCountryData data={item} index={index} onPress={handleCountryPress} />
+    ),
+    [],
   );
 
-  const EmptyComponent = () => {
+  function EmptyComponent() {
     return (
       <View style={style.ListEmptyView}>
         <Text style={style.ListEmptyText}>No Country With Name "{SearchText}" Available</Text>
       </View>
     );
-  };
+  }
 
   return (
     <GradientView>
@@ -275,7 +314,8 @@ const PhoneNumber = () => {
           <View style={style.MyNumberTextView}>
             <Text style={style.MyNumberText}>What’s your {'\n'}number?</Text>
             <Text style={style.MyNumberSubText}>
-              Please enter your valid phone number. We will send you 4-digit code to verify your account.
+              Please enter your valid phone number. We will send you 4-digit code to verify your
+              account.
             </Text>
           </View>
         </View>
@@ -310,12 +350,12 @@ const PhoneNumber = () => {
                   <Image source={CommonIcons.Search} style={style.SearchIconStyle} />
                   <CustomTextInput
                     value={SearchText}
-                    onChangeText={(text) => {
+                    onChangeText={text => {
                       setSearchText(text);
                       searchFunction(text);
                     }}
-                    placeholder={'Search country'}
-                    placeholderTextColor={'rgba(130, 130, 130, 1)'}
+                    placeholder="Search country"
+                    placeholderTextColor="rgba(130, 130, 130, 1)"
                     style={style.SearchCountryText}
                   />
                 </View>
@@ -341,15 +381,15 @@ const PhoneNumber = () => {
 
         <View style={{ marginVertical: visible ? 0 : hp('4%') }}>
           <GradientButton
-            Title={'CONTINUE'}
+            Title="CONTINUE"
             isLoading={IsAPILoading}
             Navigation={onNextClick}
-            Disabled={StorePhoneNumber?.length === 0 ? true : false}
+            Disabled={StorePhoneNumber?.length === 0}
           />
         </View>
       </ScrollView>
     </GradientView>
   );
-};
+}
 
 export default memo(PhoneNumber);

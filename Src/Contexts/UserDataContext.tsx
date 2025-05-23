@@ -1,13 +1,16 @@
 // Context/UserDataContext.tsx
-import React, { ReactNode, createContext, useContext, useReducer, useEffect, useRef, useMemo } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useRef, useMemo } from 'react';
+import type { ReactNode } from 'react';
 import { useSelector } from 'react-redux';
-import { LocalStorageFields, UserField } from '../Types/LocalStorageFields';
-import { store } from '../Redux/Store/store';
-import { updateField as reduxUpdateField } from '../Redux/Action/actions';
 import { createSelector } from 'reselect';
-import UserDataType from '../Types/UserDataType';
-import { SubscriptionData } from '../Types/SubscriptionTypes';
+
+import { updateField as reduxUpdateField } from '../Redux/Action/actions';
+import { store } from '../Redux/Store/store';
 import { debouncedGetSubscription, validateSubscription } from '../Services/SubscriptionService';
+import { LocalStorageFields } from '../Types/LocalStorageFields';
+import type { UserField } from '../Types/LocalStorageFields';
+import type { SubscriptionData } from '../Types/SubscriptionTypes';
+import type UserDataType from '../Types/UserDataType';
 
 interface RootState {
   user: {
@@ -42,7 +45,7 @@ type UserAction =
 
 const initialState: UserDataType = Object.keys(LocalStorageFields).reduce(
   (acc, field) => ({ ...acc, [field]: '' }),
-  {} as UserDataType
+  {} as UserDataType,
 );
 
 const UserDataContext = createContext<UserDataContextProps | undefined>(undefined);
@@ -53,12 +56,17 @@ const userReducer = (state: UserDataType, action: UserAction): UserDataType => {
       if (state[action.field] === action.value) {
         return state;
       }
+
       return { ...state, [action.field]: action.value };
     case 'SET_ALL_DATA':
-      const hasChanges = Object.entries(action.data).some(([key, value]) => state[key as UserField] !== value);
+      const hasChanges = Object.entries(action.data).some(
+        ([key, value]) => state[key as UserField] !== value,
+      );
+
       if (!hasChanges) {
         return state;
       }
+
       return { ...state, ...action.data };
     case 'RESET':
       return initialState;
@@ -77,7 +85,7 @@ const selectUserData = createSelector(
   (userState, userFields, userDataArray): Partial<UserDataType> => {
     const userData: Partial<UserDataType> = {};
 
-    Object.keys(LocalStorageFields).forEach((field) => {
+    Object.keys(LocalStorageFields).forEach(field => {
       const key = field as UserField;
       if (key in userState) {
         userData[key] = userState[key];
@@ -96,7 +104,7 @@ const selectUserData = createSelector(
     }
 
     return userData;
-  }
+  },
 );
 
 const UserDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -108,7 +116,9 @@ const UserDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   useEffect(() => {
     const hasDataChanged = () => {
-      if (Object.keys(reduxUserData).length === 0) return false;
+      if (Object.keys(reduxUserData).length === 0) {
+        return false;
+      }
 
       return Object.entries(reduxUserData).some(([key, value]) => {
         return prevReduxData.current[key] !== value;
@@ -144,7 +154,7 @@ const UserDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const refreshSubscription = async () => {
-    return await debouncedGetSubscription();
+    return debouncedGetSubscription();
   };
 
   const contextValue = useMemo(
@@ -160,7 +170,7 @@ const UserDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       resetUserData,
       refreshSubscription,
     }),
-    [localUserData, subscriptionData]
+    [localUserData, subscriptionData],
   );
 
   return <UserDataContext.Provider value={contextValue}>{children}</UserDataContext.Provider>;
@@ -171,6 +181,7 @@ const useUserData = (): UserDataContextProps => {
   if (!context) {
     throw new Error('useUserData must be used within a UserDataProvider');
   }
+
   return context;
 };
 

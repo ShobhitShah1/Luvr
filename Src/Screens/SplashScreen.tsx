@@ -1,9 +1,11 @@
 import messaging from '@react-native-firebase/messaging';
-import { NavigationProp } from '@react-navigation/native';
+import type { NavigationProp } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Image, Linking, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
+
+import { DeepLinkEvent } from '../../App';
 import CommonImages from '../Common/CommonImages';
 import CommonLogos from '../Common/CommonLogos';
 import { FONTS } from '../Common/Theme';
@@ -12,11 +14,10 @@ import { useTheme } from '../Contexts/ThemeContext';
 import { useLocationPermission } from '../Hooks/useLocationPermission';
 import { updateField, setDeepLinkUrl } from '../Redux/Action/actions';
 import { store } from '../Redux/Store/store';
+import { navigationRef } from '../Routes/RootNavigation';
 import { initGoogleSignIn } from '../Services/AuthService';
 import { LocalStorageFields } from '../Types/LocalStorageFields';
 import { useCustomToast } from '../Utils/toastUtils';
-import { navigationRef } from '../Routes/RootNavigation';
-import { DeepLinkEvent } from '../../App';
 
 interface SplashScreenProps {
   navigation: NavigationProp<any>;
@@ -44,7 +45,9 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   const { checkLocationPermission } = useLocationPermission();
 
   const userStoreData = useSelector((state: any) => state.user);
-  const [initializationStatus, setInitializationStatus] = useState<Record<InitializationStep, boolean>>({
+  const [initializationStatus, setInitializationStatus] = useState<
+    Record<InitializationStep, boolean>
+  >({
     [InitializationStep.NOTIFICATIONS]: false,
     [InitializationStep.GOOGLE_SIGN_IN]: false,
     [InitializationStep.LOCATION_PERMISSION]: false,
@@ -56,7 +59,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   // For debugging - logs the current initialization state
   const logInitializationState = (step: InitializationStep, success: boolean, details?: any) => {
     console.log(`[SplashScreen] ${step}: ${success ? 'SUCCESS' : 'FAILED'}`, details || '');
-    setInitializationStatus((prev) => ({
+    setInitializationStatus(prev => ({
       ...prev,
       [step]: success,
     }));
@@ -67,12 +70,15 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   }, []);
 
   const handleDeepLinkNavigation = useCallback((url: string) => {
-    if (!navigationRef?.current) return;
+    if (!navigationRef?.current) {
+      return;
+    }
 
     try {
       // Validate URL format
       if (!url || typeof url !== 'string') {
         console.error('Invalid deep link URL');
+
         return;
       }
 
@@ -80,6 +86,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       const profileId = url.split('/').pop();
       if (!profileId) {
         console.error('Invalid profile ID in deep link');
+
         return;
       }
 
@@ -124,6 +131,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
           index: 0,
           routes: [{ name: destination, ...(params && { params }) }],
         });
+
         return;
       }
 
@@ -145,14 +153,18 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
         if (Token) {
           store.dispatch(updateField(LocalStorageFields.notification_token, Token));
           logInitializationState(InitializationStep.NOTIFICATIONS, true, { token: Token });
+
           return true;
         }
       }
+
       logInitializationState(InitializationStep.NOTIFICATIONS, false, { authStatus });
+
       return false;
     } catch (error) {
       logInitializationState(InitializationStep.NOTIFICATIONS, false, { error: String(error) });
       console.error('[SplashScreen] Notification Permission Error:', error);
+
       return false;
     }
   };
@@ -161,10 +173,12 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     try {
       await initGoogleSignIn();
       logInitializationState(InitializationStep.GOOGLE_SIGN_IN, true);
+
       return true;
     } catch (error) {
       logInitializationState(InitializationStep.GOOGLE_SIGN_IN, false, { error: String(error) });
       console.error('[SplashScreen] Google Sign In Error:', error);
+
       return false;
     }
   };
@@ -173,10 +187,15 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     try {
       const isLocationEnabled = await checkLocationPermission();
       logInitializationState(InitializationStep.LOCATION_PERMISSION, isLocationEnabled);
+
       return isLocationEnabled;
     } catch (error) {
-      logInitializationState(InitializationStep.LOCATION_PERMISSION, false, { error: String(error) });
+      logInitializationState(InitializationStep.LOCATION_PERMISSION, false, {
+        error: String(error),
+      });
+
       console.error('[SplashScreen] Location Permission Error:', error);
+
       return false;
     }
   };
@@ -184,6 +203,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   const checkUserVerification = () => {
     const isVerified = !!userStoreData?.isVerified;
     logInitializationState(InitializationStep.USER_VERIFICATION, isVerified);
+
     return isVerified;
   };
 
@@ -192,6 +212,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     logInitializationState(InitializationStep.PHONE_NUMBER, hasPhoneNumber, {
       number: hasPhoneNumber ? 'present' : 'missing',
     });
+
     return hasPhoneNumber;
   };
 
@@ -199,7 +220,9 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     const hasImage =
       userStoreData?.isImageUploaded ||
       (userStoreData?.userData?.recent_pik && userStoreData?.userData?.recent_pik?.length !== 0);
+
     logInitializationState(InitializationStep.PROFILE_IMAGE, hasImage);
+
     return hasImage;
   };
 
@@ -212,12 +235,14 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
 
       if (!checkUserVerification()) {
         navigateToDestination(NavigationDestination.NUMBER_VERIFICATION);
+
         return;
       }
 
       const locationEnabled = await handleLocationPermission();
       if (!locationEnabled) {
         navigateToDestination(NavigationDestination.LOCATION_STACK);
+
         return;
       }
 
@@ -225,6 +250,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
         navigateToDestination(NavigationDestination.NUMBER_VERIFICATION, {
           screen: 'PhoneNumber',
         });
+
         return;
       }
 
@@ -232,6 +258,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
         navigateToDestination(NavigationDestination.LOGIN_STACK, {
           screen: 'AddRecentPics',
         });
+
         return;
       }
 
@@ -280,61 +307,61 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    position: 'relative',
-  },
-  gradientBackground: {
-    flex: 1,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  contentContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  appIconContainer: {
-    marginBottom: 20,
-  },
   appIcon: {
-    width: 100,
-    height: 100,
-    borderRadius: 20,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 20,
+    elevation: 3,
+    height: 100,
+    justifyContent: 'center',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    width: 100,
+  },
+  appIconContainer: {
+    marginBottom: 20,
   },
   appIconText: {
     fontFamily: FONTS.Bold,
     fontSize: 24,
   },
-  textContainer: {
-    alignItems: 'center',
-    marginBottom: 40,
+  appSubtitle: {
+    fontFamily: FONTS.Regular,
+    fontSize: 16,
   },
   appTitle: {
     fontFamily: FONTS.Bold,
     fontSize: 32,
     marginBottom: 5,
   },
-  appSubtitle: {
-    fontFamily: FONTS.Regular,
-    fontSize: 16,
-  },
   bottomImage: {
-    position: 'absolute',
     bottom: 0,
+    height: '30%',
     left: 0,
+    position: 'absolute',
     right: 0,
     width: '100%',
-    height: '30%',
+  },
+  container: {
+    flex: 1,
+    position: 'relative',
+  },
+  contentContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  gradientBackground: {
+    bottom: 0,
+    flex: 1,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  textContainer: {
+    alignItems: 'center',
+    marginBottom: 40,
   },
 });
 

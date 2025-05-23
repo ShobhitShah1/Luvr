@@ -1,6 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import { CommonSize } from '../../Common/CommonSize';
 import { COLORS, FONTS } from '../../Common/Theme';
 import { useTheme } from '../../Contexts/ThemeContext';
@@ -37,38 +38,38 @@ const LoginButton: React.FC<LoginButtonProps> = ({ Title, onPress, Icon, IsLoadi
 export default LoginButton;
 
 const styles = StyleSheet.create({
-  LoginButtonContainer: {
-    width: '100%',
-    height: hp('7%'),
+  ButtonTextView: {
+    alignSelf: 'center',
+    flex: 1,
     justifyContent: 'center',
-    borderColor: COLORS.White,
-    marginTop: CommonSize(15),
-    borderWidth: CommonSize(2),
-    borderRadius: CommonSize(50),
-    backgroundColor: COLORS.White,
+  },
+  ButtonTitleText: {
+    alignSelf: 'center',
+    color: COLORS.Black,
+    fontFamily: FONTS.Bold,
+    fontSize: hp('1.8%'),
+    justifyContent: 'center',
+    textAlign: 'center',
+  },
+  IconView: {
+    alignSelf: 'center',
+    height: CommonSize(19),
+    justifyContent: 'center',
+    width: CommonSize(19),
   },
   ItemWarper: {
     flex: 1,
     flexDirection: 'row',
     marginHorizontal: CommonSize(15),
   },
-  IconView: {
-    alignSelf: 'center',
-    width: CommonSize(19),
-    height: CommonSize(19),
+  LoginButtonContainer: {
+    backgroundColor: COLORS.White,
+    borderColor: COLORS.White,
+    borderRadius: CommonSize(50),
+    borderWidth: CommonSize(2),
+    height: hp('7%'),
     justifyContent: 'center',
-  },
-  ButtonTextView: {
-    flex: 1,
-    alignSelf: 'center',
-    justifyContent: 'center',
-  },
-  ButtonTitleText: {
-    alignSelf: 'center',
-    textAlign: 'center',
-    color: COLORS.Black,
-    fontFamily: FONTS.Bold,
-    justifyContent: 'center',
-    fontSize: hp('1.8%'),
+    marginTop: CommonSize(15),
+    width: '100%',
   },
 });

@@ -1,9 +1,10 @@
 import { Platform } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import { COLORS, FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
 import createThemedStyles from '../../../Hooks/createThemedStyles';
 
-const styles = createThemedStyles((colors) => ({
+const styles = createThemedStyles(colors => ({
   Container: {
     flex: 1,
     zIndex: 9999,

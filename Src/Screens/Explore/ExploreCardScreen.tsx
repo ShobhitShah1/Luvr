@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-native/no-inline-styles */
+
 import { addEventListener } from '@react-native-community/netinfo';
 import remoteConfig from '@react-native-firebase/remote-config';
 import { useIsFocused } from '@react-navigation/native';
-import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import type { FC } from 'react';
 import {
   ActivityIndicator,
   Animated,
@@ -21,6 +22,7 @@ import { Easing } from 'react-native-reanimated';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
 import Swiper from 'rn-swipe-deck';
+
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
@@ -33,12 +35,18 @@ import { useTheme } from '../../Contexts/ThemeContext';
 import { useUserData } from '../../Contexts/UserDataContext';
 import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import useInterval from '../../Hooks/useInterval';
-import { onSwipeLeft, onSwipeRight, resetSwipeCount, setCardSkipNumber } from '../../Redux/Action/actions';
+import {
+  onSwipeLeft,
+  onSwipeRight,
+  resetSwipeCount,
+  setCardSkipNumber,
+} from '../../Redux/Action/actions';
 import { store } from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
-import { ProfileType } from '../../Types/ProfileType';
+import type { ProfileType } from '../../Types/ProfileType';
 import { useCustomToast } from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
+
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
 
@@ -125,17 +133,26 @@ const ExploreCardScreen: FC = () => {
       appOpenAd.load();
     });
 
-    const unsubscribeInterstitialLoaded = interstitialAd.addAdEventListener(AdEventType.LOADED, () => {
-      setInterstitialAdLoaded(true);
-    });
+    const unsubscribeInterstitialLoaded = interstitialAd.addAdEventListener(
+      AdEventType.LOADED,
+      () => {
+        setInterstitialAdLoaded(true);
+      },
+    );
 
-    const unsubscribeInterstitialOpened = interstitialAd.addAdEventListener(AdEventType.OPENED, () => {
-      setInterstitialAdLoaded(false);
-    });
+    const unsubscribeInterstitialOpened = interstitialAd.addAdEventListener(
+      AdEventType.OPENED,
+      () => {
+        setInterstitialAdLoaded(false);
+      },
+    );
 
-    const unsubscribeInterstitialClosed = interstitialAd.addAdEventListener(AdEventType.CLOSED, () => {
-      interstitialAd.load();
-    });
+    const unsubscribeInterstitialClosed = interstitialAd.addAdEventListener(
+      AdEventType.CLOSED,
+      () => {
+        interstitialAd.load();
+      },
+    );
 
     interstitialAd.load();
 
@@ -155,21 +172,25 @@ const ExploreCardScreen: FC = () => {
   const { startInterval, stopInterval, clearInterval } = useInterval(
     () => {
       if (cards && isFocused) {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik?.length || 0);
+        setCurrentImageIndex(
+          prevIndex => (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik?.length || 0,
+        );
+
         Animated.timing(animatedOpacity, {
           toValue: 1,
           duration: 1000,
           easing: Easing.linear,
           useNativeDriver: true,
         }).start();
+
         swipeRef.current?.forceUpdate();
       }
     },
-    cards && cards?.length > 0 ? CardDelay : null
+    cards && cards?.length > 0 ? CardDelay : null,
   );
 
   useEffect(() => {
-    const unsubscribe = addEventListener((state) => {
+    const unsubscribe = addEventListener(state => {
       setIsNetConnected(state?.isConnected || false);
     });
 
@@ -224,12 +245,20 @@ const ExploreCardScreen: FC = () => {
   const fetchAPIData = useCallback(
     async (cardSkipValue: number | undefined) => {
       if (!IsNetConnected) {
-        showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
+        showToast(
+          TextString.error.toUpperCase(),
+          TextString.PleaseCheckYourInternetConnection,
+          TextString.error,
+        );
+
         setIsAPILoading(false);
+
         return;
       }
 
-      const skipValue = Number.isInteger(cardSkipValue) ? cardSkipValue || 0 : currentSkipNumberRef.current || 0;
+      const skipValue = Number.isInteger(cardSkipValue)
+        ? cardSkipValue || 0
+        : currentSkipNumberRef.current || 0;
 
       setCurrentCardIndex(0);
 
@@ -249,13 +278,16 @@ const ExploreCardScreen: FC = () => {
         const APIResponse = await UserService.UserRegister(userDataForApi);
 
         if (APIResponse?.code === 200 && Array.isArray(APIResponse.data)) {
-          const filteredCards = await APIResponse.data.filter((card: any) => card?.name || card?.enable === 1);
+          const filteredCards = await APIResponse.data.filter(
+            (card: any) => card?.name || card?.enable === 1,
+          );
 
           if (filteredCards.length > 0) {
             setCards(filteredCards);
             if (swipeRef.current) {
               swipeRef.current.forceUpdate();
             }
+
             startInterval();
           } else {
             setCards([]);
@@ -264,7 +296,12 @@ const ExploreCardScreen: FC = () => {
             }
           }
         } else {
-          showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Something went wrong', TextString.error);
+          showToast(
+            TextString.error.toUpperCase(),
+            APIResponse?.message || 'Something went wrong',
+            TextString.error,
+          );
+
           stopInterval();
           if (skipValue > CardLimit * 2) {
             resetCardSkip();
@@ -279,10 +316,14 @@ const ExploreCardScreen: FC = () => {
         setIsAPILoading(false);
       }
     },
-    [LeftSwipedUserIds, RightSwipedUserIds, userData, showToast, startInterval]
+    [LeftSwipedUserIds, RightSwipedUserIds, userData, showToast, startInterval],
   );
 
-  const swipeCardAction = (cardIndex: number, swipeAction: (id: string) => void, shouldCallApi: boolean = false) => {
+  const swipeCardAction = (
+    cardIndex: number,
+    swipeAction: (id: string) => void,
+    shouldCallApi = false,
+  ) => {
     try {
       if (isMatchModalVisible || !cards || !cards[cardIndex]?._id) {
         return;
@@ -310,8 +351,14 @@ const ExploreCardScreen: FC = () => {
   const onSwipedCard = async (cardIndex: any) => {
     try {
       if (!IsNetConnected) {
-        showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
+        showToast(
+          TextString.error.toUpperCase(),
+          TextString.PleaseCheckYourInternetConnection,
+          TextString.error,
+        );
+
         swipeRef.current?.swipeBack();
+
         return;
       }
 
@@ -385,7 +432,12 @@ const ExploreCardScreen: FC = () => {
 
   const likeUserAPICall = async (id: string, cardData: ProfileType) => {
     if (!IsNetConnected) {
-      showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+
       return;
     }
 
@@ -398,7 +450,11 @@ const ExploreCardScreen: FC = () => {
           setIsMatchModalVisible(true);
         }
       } else {
-        showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Please try again letter', TextString.error);
+        showToast(
+          TextString.error.toUpperCase(),
+          APIResponse?.message || 'Please try again letter',
+          TextString.error,
+        );
       }
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), String(error?.message || error), TextString.error);
@@ -413,7 +469,7 @@ const ExploreCardScreen: FC = () => {
       <GradientView>
         <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
         <View style={[styles.container, styles.LoaderContainer]}>
-          <ActivityIndicator size={'large'} color={colors.Primary} />
+          <ActivityIndicator size="large" color={colors.Primary} />
         </View>
       </GradientView>
     );
@@ -425,7 +481,8 @@ const ExploreCardScreen: FC = () => {
         <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
         <View style={[styles.container, styles.LoaderContainer]}>
           <Text style={styles.NoNetText}>
-            Unable to establish an internet connection at the moment. Please check your network settings and try again."
+            Unable to establish an internet connection at the moment. Please check your network
+            settings and try again."
           </Text>
         </View>
       </GradientView>
@@ -456,18 +513,23 @@ const ExploreCardScreen: FC = () => {
               cardVerticalMargin={0}
               animateCardOpacity={true}
               animateOverlayLabelsOpacity={true}
-              backgroundColor={'transparent'}
+              backgroundColor="transparent"
               disableBottomSwipe={true}
               disableTopSwipe={true}
               disableLeftSwipe={isMatchModalVisible}
               disableRightSwipe={isMatchModalVisible}
               stackScale={0}
-              cardStyle={[styles.swiperStyle, { borderColor: isDark ? colors.White : 'transparent' }]}
+              cardStyle={[
+                styles.swiperStyle,
+                { borderColor: isDark ? colors.White : 'transparent' },
+              ]}
               overlayOpacityHorizontalThreshold={1}
               onSwiping={() => stopInterval()}
               onSwipedAborted={() => startInterval()}
               inputOverlayLabelsOpacityRangeX={
-                Platform.OS === 'ios' ? [-width / 3, -1, 0, 1, width / 3] : [-width / 3, -1, 0, 1, width / 3]
+                Platform.OS === 'ios'
+                  ? [-width / 3, -1, 0, 1, width / 3]
+                  : [-width / 3, -1, 0, 1, width / 3]
               }
               overlayLabels={{
                 left: {
@@ -496,7 +558,8 @@ const ExploreCardScreen: FC = () => {
             !IsAPILoading && (
               <View style={styles.EmptyCardView}>
                 <Text style={[styles.EmptyCardText, { color: colors.TextColor }]}>
-                  Ready to find your match? Let's adjust your preferences to discover meaningful connections.
+                  Ready to find your match? Let's adjust your preferences to discover meaningful
+                  connections.
                 </Text>
 
                 <View style={{ marginTop: 15 }}>
@@ -523,10 +586,17 @@ const ExploreCardScreen: FC = () => {
             </Pressable>
 
             <Pressable onPress={SwipeRight} style={styles.LikeAndRejectButtonView}>
-              <Image resizeMode="contain" style={styles.LikeButton} source={CommonIcons.like_button} />
+              <Image
+                resizeMode="contain"
+                style={styles.LikeButton}
+                source={CommonIcons.like_button}
+              />
             </Pressable>
 
-            <LinearGradient colors={['rgba(92, 196, 255, 1)', 'rgba(12, 145, 219, 1)']} style={styles.infoIconView}>
+            <LinearGradient
+              colors={['rgba(92, 196, 255, 1)', 'rgba(12, 145, 219, 1)']}
+              style={styles.infoIconView}
+            >
               <Pressable
                 onPress={() => {
                   cards?.[CurrentCardIndex] &&
@@ -534,7 +604,11 @@ const ExploreCardScreen: FC = () => {
                 }}
                 style={styles.infoButton}
               >
-                <Image resizeMode="contain" style={styles.infoIcon} source={CommonIcons.ic_info_shape} />
+                <Image
+                  resizeMode="contain"
+                  style={styles.infoIcon}
+                  source={CommonIcons.ic_info_shape}
+                />
               </Pressable>
             </LinearGradient>
           </View>
@@ -549,8 +623,14 @@ const ExploreCardScreen: FC = () => {
           user={MatchedUserInfo}
           onSayHiClick={() => {
             if (!subscription.isActive) {
-              showToast(TextString.premiumFeatureAccessTitle, TextString.premiumFeatureAccessDescription, 'error');
+              showToast(
+                TextString.premiumFeatureAccessTitle,
+                TextString.premiumFeatureAccessDescription,
+                'error',
+              );
+
               showSubscriptionModal();
+
               return;
             }
 
@@ -571,151 +651,112 @@ const ExploreCardScreen: FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  LoaderContainer: {
-    justifyContent: 'center',
-  },
-  card: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  topCard: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
-  topCardTitle: {
-    position: 'absolute',
-    top: 50,
-    zIndex: 9999,
-    ...GROUP_FONT.h1,
-    color: COLORS.White,
-  },
-  LeftImage: {
-    position: 'absolute',
-    top: 50,
-    right: 50,
-    width: 100,
-    height: 100,
-    zIndex: 9999,
-  },
-  RightImage: {
-    position: 'absolute',
-    top: 50,
-    left: 50,
-    width: 100,
-    height: 100,
-    zIndex: 9999,
-  },
-  SwiperContainer: {
-    padding: 0,
-    zIndex: 999,
-    marginVertical: 10,
-  },
   CardContainerStyle: {
-    zIndex: 9999,
     alignSelf: 'center',
     justifyContent: 'center',
+    zIndex: 9999,
   },
-  swiperStyle: {
-    height: '100%',
-    borderWidth: 0.8,
-    overflow: 'hidden',
-    borderRadius: hp('4%'),
-  },
-  LikeAndRejectView: {
-    flex: 0.15,
-    width: '100%',
-    alignItems: 'center',
-    flexDirection: 'row',
+  DislikeButton: {
+    alignSelf: 'center',
+    height: hp('7.2%'),
     justifyContent: 'center',
+    padding: 0,
+    width: hp('7.2%'),
+  },
+  EmptyCardText: {
+    color: COLORS.Primary,
+    fontFamily: FONTS.Bold,
+    fontSize: 20,
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  EmptyCardView: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    flex: 1,
+    height: hp('100%'),
+    justifyContent: 'center',
+    width: '90%',
+  },
+  LeftImage: {
+    height: 100,
+    position: 'absolute',
+    right: 50,
+    top: 50,
+    width: 100,
+    zIndex: 9999,
   },
   LikeAndRejectButtonView: {
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: hp('0.4%'),
   },
-  DislikeButton: {
-    padding: 0,
-    width: hp('7.2%'),
-    height: hp('7.2%'),
+  LikeAndRejectView: {
+    alignItems: 'center',
+    flex: 0.15,
+    flexDirection: 'row',
     justifyContent: 'center',
-    alignSelf: 'center',
+    width: '100%',
   },
   LikeButton: {
-    padding: 0,
-    width: hp('9%'),
+    alignSelf: 'center',
     height: hp('9%'),
     justifyContent: 'center',
-    alignSelf: 'center',
+    padding: 0,
+    width: hp('9%'),
   },
-  EmptyCardView: {
-    flex: 1,
-    width: '90%',
-    height: hp('100%'),
-    alignItems: 'center',
-    alignSelf: 'center',
+  LoaderContainer: {
     justifyContent: 'center',
-  },
-  EmptyCardText: {
-    fontSize: 20,
-    marginBottom: 5,
-    textAlign: 'center',
-    color: COLORS.Primary,
-    fontFamily: FONTS.Bold,
-  },
-  ChangeSettingButton: {
-    marginTop: 20,
-    width: 250,
-    height: 50,
-    alignItems: 'center',
-    borderRadius: hp('4%'),
-    justifyContent: 'center',
-    backgroundColor: COLORS.Primary,
-  },
-  ChangeSettingText: {
-    ...GROUP_FONT.h3,
-    lineHeight: 18,
-    width: '90%',
-    textAlign: 'center',
-    color: COLORS.White,
   },
   NoNetText: {
     width: '90%',
     ...GROUP_FONT.h2,
-    textAlign: 'center',
     alignSelf: 'center',
     color: COLORS.Primary,
+    textAlign: 'center',
   },
-  modalContainer: {
+  RightImage: {
+    height: 100,
+    left: 50,
+    position: 'absolute',
+    top: 50,
+    width: 100,
+    zIndex: 9999,
+  },
+  SwiperContainer: {
+    marginVertical: 10,
+    padding: 0,
+    zIndex: 999,
+  },
+  container: {
     flex: 1,
-    margin: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  infoIconView: {
-    marginHorizontal: hp('0.4%'),
-    width: 50,
-    height: 50,
-    bottom: Platform.OS === 'ios' ? 2.5 : 0,
-    marginLeft: 10,
-    borderRadius: 500,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   infoButton: {
     alignItems: 'center',
+    height: '100%',
     justifyContent: 'center',
     width: '100%',
-    height: '100%',
   },
   infoIcon: {
-    width: Platform.OS === 'ios' ? '48%' : '55%',
     height: Platform.OS === 'ios' ? '48%' : '55%',
+    width: Platform.OS === 'ios' ? '48%' : '55%',
+  },
+  infoIconView: {
+    alignItems: 'center',
+    borderRadius: 500,
+    bottom: Platform.OS === 'ios' ? 2.5 : 0,
+    height: 50,
+    justifyContent: 'center',
+    marginHorizontal: hp('0.4%'),
+    marginLeft: 10,
+    width: 50,
+  },
+
+  swiperStyle: {
+    borderRadius: hp('4%'),
+    borderWidth: 0.8,
+    height: '100%',
+    overflow: 'hidden',
   },
 });
 

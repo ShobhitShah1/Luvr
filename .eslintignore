@@ -1,4 +1,13 @@
-node_modules
+node_modules/
+android/
+ios/
+build/
+coverage/
+*.config.js
+*.config.ts
+babel.config.js
+metro.config.js
+jest.config.js
 .eslintrc.js
 .prettierrc.js
 cli

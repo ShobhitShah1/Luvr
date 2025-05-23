@@ -1,10 +1,10 @@
-/* eslint-disable react-native/no-inline-styles */
 import axios from 'axios';
 import React, { memo, useState } from 'react';
 import { FlatList, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
+
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
 import { FONTS, GROUP_FONT } from '../../../Common/Theme';
@@ -20,12 +20,13 @@ import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { addUrlToItem, deleteUrlFromItem, sortByUrl } from '../../../Utils/ImagePickerUtils';
 import { getProfileData } from '../../../Utils/profileUtils';
 import { useCustomToast } from '../../../Utils/toastUtils';
+
 import AddUserPhoto from './Components/AddUserPhoto';
 import ChooseFromModal from './Components/ChooseFromModal';
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
-const AddRecentPics = () => {
+function AddRecentPics() {
   const { colors } = useTheme();
   const dispatch = useDispatch();
   const { showToast } = useCustomToast();
@@ -44,7 +45,7 @@ const AddRecentPics = () => {
       type: '',
       key: String(index),
       url: '',
-    }))
+    })),
   );
 
   const OnToggleModal = () => {
@@ -55,7 +56,7 @@ const AddRecentPics = () => {
     try {
       const res = await launchImageLibrary({
         mediaType: 'photo',
-        selectionLimit: TotalProfilePicCanUpload - data.filter((item) => item.url !== '').length,
+        selectionLimit: TotalProfilePicCanUpload - data.filter(item => item.url !== '').length,
       });
 
       const newImages =
@@ -67,7 +68,7 @@ const AddRecentPics = () => {
         })) || [];
 
       if (newImages.length > 0) {
-        const newData = data.map((item) => (item.url === '' ? newImages.shift() || item : item));
+        const newData = data.map(item => (item.url === '' ? newImages.shift() || item : item));
         setData(newData);
       }
     } catch (error) {
@@ -90,7 +91,7 @@ const AddRecentPics = () => {
         })) || [];
 
       if (newImages.length > 0) {
-        const newData = data.map((item) => (item.url === '' ? newImages.shift() || item : item));
+        const newData = data.map(item => (item.url === '' ? newImages.shift() || item : item));
         setData(newData);
       }
     } catch (error) {
@@ -110,10 +111,16 @@ const AddRecentPics = () => {
   const handleUserSelection = async (selectedOption: string) => {
     try {
       const permissionStatus =
-        selectedOption === 'Camera' ? await requestCameraPermission() : await requestGalleryPermission();
+        selectedOption === 'Camera'
+          ? await requestCameraPermission()
+          : await requestGalleryPermission();
 
       const isAllGood =
-        Platform.OS === 'android' ? permissionStatus : selectedOption !== 'Camera' ? true : permissionStatus;
+        Platform.OS === 'android'
+          ? permissionStatus
+          : selectedOption !== 'Camera'
+          ? true
+          : permissionStatus;
 
       if (isAllGood) {
         if (selectedOption === 'Camera') {
@@ -155,7 +162,7 @@ const AddRecentPics = () => {
     setIsLoading(true);
 
     try {
-      const validImages = data.filter((image) => image.url);
+      const validImages = data.filter(image => image.url);
       uploadImagesSequentially(validImages)
         .then(async () => {
           dispatch(updateField(LocalStorageFields.isImageUploaded, true));
@@ -164,7 +171,7 @@ const AddRecentPics = () => {
           navigation.replace('RedeemReferralCode', { fromRegistration: true });
           setIsLoading(false);
         })
-        .catch((error) => {
+        .catch(error => {
           throw new Error(String(error?.message || error));
         });
     } catch (error: any) {
@@ -182,7 +189,7 @@ const AddRecentPics = () => {
       formData.append('file', {
         uri: Platform.OS === 'android' ? url : url.replace('file://', ''),
         type,
-        name: name,
+        name,
       });
 
       try {
@@ -211,7 +218,7 @@ const AddRecentPics = () => {
         showToast(
           TextString.error.toUpperCase(),
           String(error?.message || error) && 'Something went wrong while uploading image',
-          'error'
+          'error',
         );
       }
     }
@@ -224,7 +231,9 @@ const AddRecentPics = () => {
 
         <View style={styles.DataViewContainer}>
           <View style={{ width: '84%', alignSelf: 'center' }}>
-            <Text style={[CreateProfileStyles.TitleText, { color: colors.TitleText }]}>Add your recent pics</Text>
+            <Text style={[CreateProfileStyles.TitleText, { color: colors.TitleText }]}>
+              Add your recent pics
+            </Text>
             <Text style={[styles.CompatibilityText, { color: colors.TextColor }]}>
               Upload 2 phots to start. Add 4 or more to make your profile stand out.
             </Text>
@@ -255,29 +264,29 @@ const AddRecentPics = () => {
             Title="Continue"
             isLoading={IsLoading}
             Navigation={onNextPress}
-            Disabled={IsLoading || !(data && data.some((image) => image.url))}
+            Disabled={IsLoading || !(data && data.some(image => image.url))}
           />
         </View>
       </View>
     </GradientView>
   );
-};
+}
 
 export default memo(AddRecentPics);
 
 const styles = StyleSheet.create({
   CompatibilityText: {
     ...GROUP_FONT.h3,
-    marginVertical: hp('1%'),
     fontFamily: FONTS.Regular,
+    marginVertical: hp('1%'),
   },
   DataViewContainer: {
     marginTop: hp('1%'),
   },
   FlatListWrapper: {
-    width: '100%',
-    flexGrow: 1,
     alignItems: 'center',
     alignSelf: 'center',
+    flexGrow: 1,
+    width: '100%',
   },
 });

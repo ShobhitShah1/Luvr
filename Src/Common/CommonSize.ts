@@ -1,6 +1,6 @@
-import {Dimensions, PixelRatio, Platform} from 'react-native';
+import { Dimensions, PixelRatio, Platform } from 'react-native';
 
-const {width: SCREEN_WIDTH} = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const scale = SCREEN_WIDTH / 320;
 

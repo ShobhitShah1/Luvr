@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-native/no-inline-styles */
+
 /* eslint-disable react/no-unstable-nested-components */
 import NetInfo from '@react-native-community/netinfo';
 import { useIsFocused } from '@react-navigation/native';
@@ -8,22 +8,32 @@ import { ActivityIndicator, FlatList, Image, Platform, StyleSheet, Text, View } 
 import LinearGradient from 'react-native-linear-gradient';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Socket, io } from 'socket.io-client';
+import { io } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
+
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
 import { BOTTOM_TAB_HEIGHT, COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
-import ApiConfig from '../../Config/ApiConfig';
-import { APP_NAME, gradientEnd, gradientStart, JOIN_EVENT, LIST_EVENT, UPDATE_LIST } from '../../Config/Setting';
-import { useTheme } from '../../Contexts/ThemeContext';
-import { store } from '../../Redux/Store/store';
-import { MessageItem, SocketEventHandlers } from '../../Types/Interface';
-import { useCustomToast } from '../../Utils/toastUtils';
-import RenderChatRoomList from './Components/RenderChatRoomList';
-import { useUserData } from '../../Contexts/UserDataContext';
 import SubscriptionView from '../../Components/Subscription/SubscriptionView';
+import ApiConfig from '../../Config/ApiConfig';
+import {
+  APP_NAME,
+  gradientEnd,
+  gradientStart,
+  JOIN_EVENT,
+  LIST_EVENT,
+  UPDATE_LIST,
+} from '../../Config/Setting';
+import { useTheme } from '../../Contexts/ThemeContext';
+import { useUserData } from '../../Contexts/UserDataContext';
+import { store } from '../../Redux/Store/store';
+import type { MessageItem, SocketEventHandlers } from '../../Types/Interface';
+import { useCustomToast } from '../../Utils/toastUtils';
 
-const ChatRoomScreen = () => {
+import RenderChatRoomList from './Components/RenderChatRoomList';
+
+function ChatRoomScreen() {
   const { colors, isDark } = useTheme();
   const isFocused = useIsFocused();
   const { showToast } = useCustomToast();
@@ -40,6 +50,7 @@ const ChatRoomScreen = () => {
       if (!messages.length) {
         setIsSocketLoading(true);
       }
+
       ConnectSocket();
     }
 
@@ -52,8 +63,14 @@ const ChatRoomScreen = () => {
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
     if (!InInternetConnected) {
-      showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+
       setIsSocketLoading(false);
+
       return;
     }
 
@@ -65,7 +82,7 @@ const ChatRoomScreen = () => {
       setSocket(socketInstance);
     });
 
-    socketInstance.on('connect_error', (error) => {
+    socketInstance.on('connect_error', error => {
       showToast(error.name, error.message || 'Something went wrong', 'error');
       setIsSocketLoading(false);
     });
@@ -87,22 +104,25 @@ const ChatRoomScreen = () => {
         socket.emit(LIST_EVENT, { id: currentLoginUserId });
 
         //* Event: List - Response
-        const handleListResponse: SocketEventHandlers['List'] = (data) => {
+        const handleListResponse: SocketEventHandlers['List'] = data => {
           try {
             if (data && data?.data) {
               const filteredData = data.data.filter(
-                (item: MessageItem | null) => item !== null && item?.to !== currentLoginUserId
+                (item: MessageItem | null) => item !== null && item?.to !== currentLoginUserId,
               );
 
               if (filteredData && filteredData?.length !== 0) {
                 const usersWithFirstChat =
                   filteredData &&
-                  filteredData.map((message) => {
+                  filteredData.map(message => {
                     const otherUserChats = message?.chat?.filter(
-                      (chat: any) => (chat?.id || chat?.senderId) !== currentLoginUserId
+                      (chat: any) => (chat?.id || chat?.senderId) !== currentLoginUserId,
                     );
 
-                    const firstChat = otherUserChats?.length > 0 ? otherUserChats[otherUserChats?.length - 1] : null;
+                    const firstChat =
+                      otherUserChats?.length > 0
+                        ? otherUserChats[otherUserChats?.length - 1]
+                        : null;
 
                     return {
                       chat: firstChat ? [firstChat] : [],
@@ -143,7 +163,7 @@ const ChatRoomScreen = () => {
     }
   }, [socket, isFocused, currentLoginUserId]);
 
-  const ListEmptyView = () => {
+  function ListEmptyView() {
     return (
       <View style={styles.EmptyListView}>
         <LinearGradient
@@ -159,12 +179,17 @@ const ChatRoomScreen = () => {
           />
         </LinearGradient>
         <Text style={[styles.NoChatText, { color: colors.TitleText }]}>No chats, Get swiping</Text>
-        <Text style={[styles.NoChatDescription, { color: isDark ? 'rgba(255, 255, 255, 0.5)' : colors.TextColor }]}>
+        <Text
+          style={[
+            styles.NoChatDescription,
+            { color: isDark ? 'rgba(255, 255, 255, 0.5)' : colors.TextColor },
+          ]}
+        >
           When you match with other peoples they’ll appear here, where you can send them a message.
         </Text>
       </View>
     );
-  };
+  }
 
   if (isSocketLoading) {
     return (
@@ -179,12 +204,14 @@ const ChatRoomScreen = () => {
         >
           <View style={styles.contentView}>
             <View style={[styles.titleTextView, Platform.OS === 'ios' ? { height: 40 } : {}]}>
-              <Text style={[styles.titleText, { color: colors.TitleText }]}>{APP_NAME?.toUpperCase()}</Text>
+              <Text style={[styles.titleText, { color: colors.TitleText }]}>
+                {APP_NAME?.toUpperCase()}
+              </Text>
             </View>
           </View>
         </SafeAreaView>
         <View style={[styles.container, styles.LoaderContainer]}>
-          <ActivityIndicator size={'large'} color={colors.Primary} />
+          <ActivityIndicator size="large" color={colors.Primary} />
         </View>
       </GradientView>
     );
@@ -203,7 +230,9 @@ const ChatRoomScreen = () => {
         >
           <View style={styles.contentView}>
             <View style={[styles.titleTextView, Platform.OS === 'ios' ? { height: 40 } : {}]}>
-              <Text style={[styles.titleText, { color: colors.TitleText }]}>{APP_NAME?.toUpperCase()}</Text>
+              <Text style={[styles.titleText, { color: colors.TitleText }]}>
+                {APP_NAME?.toUpperCase()}
+              </Text>
             </View>
           </View>
         </SafeAreaView>
@@ -234,40 +263,45 @@ const ChatRoomScreen = () => {
       </View>
     </GradientView>
   );
-};
+}
 
 export default memo(ChatRoomScreen);
 
 const styles = StyleSheet.create({
-  container: {
+  EmptyListView: {
+    alignItems: 'center',
+    alignSelf: 'center',
     flex: 1,
-  },
-  LoaderContainer: {
     justifyContent: 'center',
+    width: '90%',
   },
   ListChatView: {
     flex: 1,
     marginTop: 10,
   },
-  EmptyListView: {
-    flex: 1,
-    width: '90%',
-    alignSelf: 'center',
-    alignItems: 'center',
+  LoaderContainer: {
     justifyContent: 'center',
   },
-  NoChatIconBackground: {
-    width: 160,
-    height: 160,
-    borderRadius: 100,
-    marginVertical: 10,
-    justifyContent: 'center',
-    backgroundColor: COLORS.White,
+  NoChatDescription: {
+    marginTop: 8,
+    width: '85%',
+    ...GROUP_FONT.body4,
+    fontFamily: FONTS.SemiBold,
+    fontSize: 15,
+    textAlign: 'center',
   },
   NoChatIcon: {
-    width: 90,
-    height: 90,
     alignSelf: 'center',
+    height: 90,
+    width: 90,
+  },
+  NoChatIconBackground: {
+    backgroundColor: COLORS.White,
+    borderRadius: 100,
+    height: 160,
+    justifyContent: 'center',
+    marginVertical: 10,
+    width: 160,
   },
   NoChatText: {
     ...GROUP_FONT.h1,
@@ -275,31 +309,26 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: 'center',
   },
-  NoChatDescription: {
-    marginTop: 8,
-    width: '85%',
-    ...GROUP_FONT.body4,
-    textAlign: 'center',
-    fontSize: 15,
-    fontFamily: FONTS.SemiBold,
+  container: {
+    flex: 1,
   },
 
   contentView: {
-    width: '93%',
     alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  titleTextView: {
-    top: 2,
-
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10,
+    width: '93%',
   },
   titleText: {
+    color: COLORS.Primary,
     fontFamily: FONTS.Bold,
     fontSize: 20,
-    color: COLORS.Primary,
+  },
+  titleTextView: {
+    alignItems: 'center',
+
+    justifyContent: 'center',
+    top: 2,
+    zIndex: 10,
   },
 });

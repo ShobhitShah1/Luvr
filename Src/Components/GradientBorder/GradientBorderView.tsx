@@ -1,7 +1,10 @@
 import omit from 'lodash/omit';
 import React from 'react';
-import { StyleProp, StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
-import GradientBorder, { RequiredGradientBorderProps } from './GradientBorder';
+import { StyleSheet, View } from 'react-native';
+import type { StyleProp, ViewProps, ViewStyle } from 'react-native';
+
+import GradientBorder from './GradientBorder';
+import type { RequiredGradientBorderProps } from './GradientBorder';
 
 type GradientBorderViewProps = Omit<
   ViewStyle,
@@ -27,23 +30,32 @@ export type GradientBorderViewStyle = StyleProp<
   }
 >;
 
-export const GradientBorderView = ({
+export function GradientBorderView({
   gradientProps,
   ...props
 }: Omit<ViewProps, 'style'> & {
   style?: GradientBorderViewStyle;
-} & RequiredGradientBorderProps) => {
+} & RequiredGradientBorderProps) {
   const styles = StyleSheet.flatten(props.style);
   const userAllPadding = styles?.padding ? styles?.padding : 0;
   const compensationAllPadding = styles?.borderWidth ? styles?.borderWidth : 0;
 
   function calcPaddingForSide(
     paddingName: 'paddingLeft' | 'paddingRight' | 'paddingTop' | 'paddingBottom',
-    borderWidthName: 'borderTopWidth' | 'borderBottomWidth' | 'borderLeftWidth' | 'borderRightWidth'
+    borderWidthName:
+      | 'borderTopWidth'
+      | 'borderBottomWidth'
+      | 'borderLeftWidth'
+      | 'borderRightWidth',
   ) {
-    const userPadding = typeof styles[paddingName] !== 'undefined' ? styles[paddingName]! : userAllPadding;
+    const userPadding =
+      typeof styles[paddingName] !== 'undefined' ? styles[paddingName]! : userAllPadding;
+
     const compensationPadding =
-      typeof styles[borderWidthName] !== 'undefined' ? styles[borderWidthName]! : compensationAllPadding;
+      typeof styles[borderWidthName] !== 'undefined'
+        ? styles[borderWidthName]!
+        : compensationAllPadding;
+
     return compensationPadding + userPadding;
   }
 
@@ -57,7 +69,9 @@ export const GradientBorderView = ({
       styles.borderBottomWidth
     )
   ) {
-    console.warn('No borderWidth was passed in the GradientBorderView style, no border will be shown.');
+    console.warn(
+      'No borderWidth was passed in the GradientBorderView style, no border will be shown.',
+    );
   }
 
   return (
@@ -71,7 +85,13 @@ export const GradientBorderView = ({
           paddingBottom: calcPaddingForSide('paddingBottom', 'borderBottomWidth'),
           paddingTop: calcPaddingForSide('paddingTop', 'borderTopWidth'),
         },
-        omit(styles, ['borderWidth', 'borderTopWidth', 'borderLeftWidth', 'borderRightWidth', 'borderBottomWidth']),
+        omit(styles, [
+          'borderWidth',
+          'borderTopWidth',
+          'borderLeftWidth',
+          'borderRightWidth',
+          'borderBottomWidth',
+        ]),
       ]}
     >
       <GradientBorder
@@ -82,16 +102,24 @@ export const GradientBorderView = ({
         borderRightWidth={styles.borderRightWidth}
         borderLeftWidth={styles.borderLeftWidth}
         borderTopWidth={styles.borderTopWidth}
-        borderTopLeftRadius={typeof styles.borderTopLeftRadius === 'number' ? styles.borderTopLeftRadius : undefined}
-        borderTopRightRadius={typeof styles.borderTopRightRadius === 'number' ? styles.borderTopRightRadius : undefined}
+        borderTopLeftRadius={
+          typeof styles.borderTopLeftRadius === 'number' ? styles.borderTopLeftRadius : undefined
+        }
+        borderTopRightRadius={
+          typeof styles.borderTopRightRadius === 'number' ? styles.borderTopRightRadius : undefined
+        }
         borderBottomRightRadius={
-          typeof styles.borderBottomRightRadius === 'number' ? styles.borderBottomRightRadius : undefined
+          typeof styles.borderBottomRightRadius === 'number'
+            ? styles.borderBottomRightRadius
+            : undefined
         }
         borderBottomLeftRadius={
-          typeof styles.borderBottomLeftRadius === 'number' ? styles.borderBottomLeftRadius : undefined
+          typeof styles.borderBottomLeftRadius === 'number'
+            ? styles.borderBottomLeftRadius
+            : undefined
         }
       />
       {props.children}
     </View>
   );
-};
+}

@@ -1,6 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState } from 'react-native';
+import type { AppStateStatus } from 'react-native';
+
 import { clearBoostTimers, debouncedGetBoost } from '../Services/BoostService';
+
 import { useUserData } from './UserDataContext';
 
 interface BoostProviderProps {
@@ -19,7 +22,11 @@ const BoostProvider: React.FC<BoostProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
-      if (appState.current.match(/inactive|background/) && nextAppState === 'active' && userData._id) {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active' &&
+        userData._id
+      ) {
         debouncedGetBoost(0);
       }
 

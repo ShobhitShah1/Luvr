@@ -1,9 +1,9 @@
-/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+
 import { COLORS, FONTS, GROUP_FONT } from '../../../../Common/Theme';
 
-const ToastStyle = ({ status, title, message }: any) => {
+function ToastStyle({ status, title, message }: any) {
   return (
     <View style={[styles.Container, { borderLeftColor: status === 'success' ? 'green' : 'red' }]}>
       <View>
@@ -18,20 +18,25 @@ const ToastStyle = ({ status, title, message }: any) => {
       </View>
     </View>
   );
-};
+}
 
 export default ToastStyle;
 
 const styles = StyleSheet.create({
   Container: {
-    width: '85%',
-    paddingVertical: 10,
     backgroundColor: COLORS.White,
-    marginVertical: 4,
-    borderRadius: 8,
     borderLeftWidth: 10,
-    paddingHorizontal: 16,
+    borderRadius: 8,
     flexDirection: 'row',
+    marginVertical: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    width: '85%',
+  },
+  Message: {
+    ...GROUP_FONT.body4,
+    color: COLORS.Gray,
+    fontFamily: FONTS.Medium,
   },
   MessageText: {
     marginVertical: 5,
@@ -42,10 +47,5 @@ const styles = StyleSheet.create({
     ...GROUP_FONT.h3,
     color: COLORS.Primary,
     fontFamily: FONTS.Bold,
-  },
-  Message: {
-    ...GROUP_FONT.body4,
-    color: COLORS.Gray,
-    fontFamily: FONTS.Medium,
   },
 });

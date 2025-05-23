@@ -7,7 +7,7 @@ export function RootNavigation(name: string, type: string, params: object) {
     if (type === 'replace') {
       navigationRef.navigate(name);
     } else {
-      navigationRef.navigate(name, params ? params : {});
+      navigationRef.navigate(name, params || {});
     }
   }
 }

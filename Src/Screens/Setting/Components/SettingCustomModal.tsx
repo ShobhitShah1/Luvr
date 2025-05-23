@@ -1,7 +1,8 @@
-/* eslint-disable react-native/no-inline-styles */
-import React, { FC, memo } from 'react';
+import React, { memo } from 'react';
+import type { FC } from 'react';
 import { View } from 'react-native';
 import Modal from 'react-native-modal';
+
 import LogOutModalRenderView from './LogOutModalRenderView';
 
 interface ModalProps {
@@ -26,8 +27,8 @@ const SettingCustomModal: FC<ModalProps> = ({
   return (
     <Modal
       isVisible={isVisible}
-      animationIn={'slideInUp'}
-      animationOut={'slideOutDown'}
+      animationIn="slideInUp"
+      animationOut="slideOutDown"
       animationInTiming={500}
       animationOutTiming={500}
       useNativeDriver

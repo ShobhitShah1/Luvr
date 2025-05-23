@@ -1,10 +1,21 @@
-import appleAuth, { AppleRequestResponse } from '@invertase/react-native-apple-authentication';
+import appleAuth from '@invertase/react-native-apple-authentication';
+import type { AppleRequestResponse } from '@invertase/react-native-apple-authentication';
 import remoteConfig from '@react-native-firebase/remote-config';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import React, { memo, useEffect, useState } from 'react';
-import { Alert, ImageBackground, Linking, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  Alert,
+  ImageBackground,
+  Linking,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
+
 import CommonImages from '../../../Common/CommonImages';
 import CommonLogos from '../../../Common/CommonLogos';
 import TextString from '../../../Common/TextString';
@@ -19,8 +30,9 @@ import { store } from '../../../Redux/Store/store';
 import UserService, { initGoogleSignIn } from '../../../Services/AuthService';
 import { transformUserDataForApi } from '../../../Services/dataTransformService';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
-import { ProfileType } from '../../../Types/ProfileType';
+import type { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
+
 import styles from './styles';
 
 const appleLoginAlert = () => {
@@ -38,11 +50,11 @@ const appleLoginAlert = () => {
         style: 'cancel',
       },
     ],
-    { cancelable: true }
+    { cancelable: true },
   );
 };
 
-const LoginScreen = () => {
+function LoginScreen() {
   const style = useThemedStyles(styles);
   const { showToast } = useCustomToast();
 
@@ -70,6 +82,7 @@ const LoginScreen = () => {
     async function initializeRemoteConfig() {
       await Promise.all([initGoogleSignIn(), RemoteConfig()]);
     }
+
     initializeRemoteConfig();
   }, []);
 
@@ -93,7 +106,12 @@ const LoginScreen = () => {
   const handleGoogleLogin = async () => {
     try {
       if (!isFollowTerms) {
-        showToast('Action Required', 'Please agree to the terms (EULA) to continue.', TextString.error);
+        showToast(
+          'Action Required',
+          'Please agree to the terms (EULA) to continue.',
+          TextString.error,
+        );
+
         return;
       }
 
@@ -103,6 +121,7 @@ const LoginScreen = () => {
           showPlayServicesUpdateDialog: true,
         });
       }
+
       const GoogleUserData = await GoogleSignin.signIn();
 
       await Promise.all([
@@ -111,7 +130,11 @@ const LoginScreen = () => {
         dispatch(updateField(LocalStorageFields.full_name, GoogleUserData.user.familyName || '')),
         dispatch(updateField(LocalStorageFields.login_type, 'social')),
       ]);
-      handleNavigation(GoogleUserData.user.email, GoogleUserData.user.name || GoogleUserData.user.givenName || '');
+
+      handleNavigation(
+        GoogleUserData.user.email,
+        GoogleUserData.user.name || GoogleUserData.user.givenName || '',
+      );
     } catch (error: any) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         showToast('Error!', 'You cancelled the login flow', 'error');
@@ -120,15 +143,25 @@ const LoginScreen = () => {
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         showToast('Error!', 'Play services not available or outdated', 'error');
       } else {
-        showToast('Error!', String(error?.message || error) || 'An error occurred during Google login', 'error');
+        showToast(
+          'Error!',
+          String(error?.message || error) || 'An error occurred during Google login',
+          'error',
+        );
       }
+
       setIsSocialLoginLoading({ ...IsSocialLoginLoading, Google: false });
     }
   };
 
   const handleAppleLogin = async () => {
     if (!isFollowTerms) {
-      showToast('Action Required', 'Please agree to the terms (EULA) to continue.', TextString.error);
+      showToast(
+        'Action Required',
+        'Please agree to the terms (EULA) to continue.',
+        TextString.error,
+      );
+
       return;
     }
 
@@ -139,7 +172,10 @@ const LoginScreen = () => {
         requestedOperation: appleAuth.Operation.LOGIN,
         requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
       });
-      const credentialState = await appleAuth.getCredentialStateForUser(appleAuthRequestResponse.user);
+
+      const credentialState = await appleAuth.getCredentialStateForUser(
+        appleAuthRequestResponse.user,
+      );
 
       if (credentialState === appleAuth.State.AUTHORIZED) {
         handleAppleLoginResponse(appleAuthRequestResponse);
@@ -206,7 +242,12 @@ const LoginScreen = () => {
         ...IsSocialLoginLoading,
         Apple: false,
       });
-      showToast('Error!', String(error?.message || error) || 'An error occurred during Apple login', 'error');
+
+      showToast(
+        'Error!',
+        String(error?.message || error) || 'An error occurred during Apple login',
+        'error',
+      );
     }
   };
 
@@ -241,6 +282,7 @@ const LoginScreen = () => {
       navigation?.replace('NumberVerification', {
         screen: 'PhoneNumber',
       });
+
       setIsSocialLoginLoading({
         ...IsSocialLoginLoading,
         Google: false,
@@ -288,7 +330,11 @@ const LoginScreen = () => {
       source={CommonImages.LoginBackground}
       style={style.Container}
     >
-      <ScrollView bounces={false} style={style.ContentView} contentContainerStyle={style.ScrollViewContainContainer}>
+      <ScrollView
+        bounces={false}
+        style={style.ContentView}
+        contentContainerStyle={style.ScrollViewContainContainer}
+      >
         <View style={style.AppNameTitleView}>
           <Text style={style.AppNameTitle}>Welcome to the {APP_NAME}</Text>
         </View>
@@ -327,9 +373,15 @@ const LoginScreen = () => {
                 Icon={CommonLogos.NumberLogin}
                 onPress={() => {
                   if (!isFollowTerms) {
-                    showToast('Action Required', 'Please agree to the terms (EULA) to continue.', TextString.error);
+                    showToast(
+                      'Action Required',
+                      'Please agree to the terms (EULA) to continue.',
+                      TextString.error,
+                    );
+
                     return;
                   }
+
                   navigation.navigate('NumberVerification', {
                     screen: 'PhoneNumber',
                   });
@@ -404,6 +456,6 @@ const LoginScreen = () => {
       </ScrollView>
     </ImageBackground>
   );
-};
+}
 
 export default memo(LoginScreen);

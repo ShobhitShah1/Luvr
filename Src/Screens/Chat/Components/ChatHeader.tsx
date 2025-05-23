@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
-import { ProfileType } from '../../../Types/ProfileType';
+
+import type { ProfileType } from '../../../Types/ProfileType';
+
 import ChatScreenHeader from './ChatScreenHeader';
 
 interface ChatHeaderProps {

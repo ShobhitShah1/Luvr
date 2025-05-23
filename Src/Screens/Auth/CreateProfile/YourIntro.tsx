@@ -1,9 +1,9 @@
-/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
+
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
 import { COLORS, FONTS, GROUP_FONT, SIZES } from '../../../Common/Theme';
@@ -17,10 +17,11 @@ import UserService from '../../../Services/AuthService';
 import { transformUserDataForApi } from '../../../Services/dataTransformService';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
+
 import CreateProfileHeader from './Components/CreateProfileHeader';
 import CreateProfileStyles from './styles';
 
-const YourIntro = () => {
+function YourIntro() {
   const { colors, isDark } = useTheme();
   const navigation = useCustomNavigation();
   const userData = useSelector((state: any) => state?.user);
@@ -31,9 +32,9 @@ const YourIntro = () => {
   const [selectedItems, setSelectedItems] = useState<string[]>(userData.likes_into || []);
 
   const handleOptionPress = useCallback((YourIntoID: number, name: string) => {
-    setSelectedItems((prevSelection) => {
+    setSelectedItems(prevSelection => {
       if (prevSelection?.includes(name)) {
-        return prevSelection.filter((item) => item !== name);
+        return prevSelection.filter(item => item !== name);
       }
 
       if (prevSelection.length >= 5) {
@@ -57,8 +58,8 @@ const YourIntro = () => {
                   ? colors.ButtonGradient
                   : ['transparent', 'transparent']
                 : isDark
-                  ? colors.UnselectedGradient
-                  : ['transparent', 'transparent'],
+                ? colors.UnselectedGradient
+                : ['transparent', 'transparent'],
             }}
             style={[
               styles.YourIntoButton,
@@ -74,7 +75,10 @@ const YourIntro = () => {
             >
               <Text
                 numberOfLines={2}
-                style={[styles.CategoriesText, { color: selected ? colors.White : colors.TextColor }]}
+                style={[
+                  styles.CategoriesText,
+                  { color: selected ? colors.White : colors.TextColor },
+                ]}
               >
                 {item.name}
               </Text>
@@ -82,7 +86,7 @@ const YourIntro = () => {
           </GradientBorderView>
         );
       },
-    [selectedItems, handleOptionPress]
+    [selectedItems, handleOptionPress],
   );
 
   const onPressNext = async () => {
@@ -94,12 +98,13 @@ const YourIntro = () => {
           dispatch(updateField(LocalStorageFields.likes_into, selectedItems)),
           dispatch(updateField(LocalStorageFields.eventName, 'app_user_register')),
         ]);
+
         CallUpdateProfileAPI(selectedItems);
       } else {
         throw new Error(
           `You have selected ${selectedItems.length} items. ${
             5 - selectedItems.length
-          } items remaining to reach the total of ${5}.`
+          } items remaining to reach the total of ${5}.`,
         );
       }
     } catch (error: any) {
@@ -117,21 +122,32 @@ const YourIntro = () => {
         ...userDataForApi,
         likes_into: items,
         validation: false,
-        eventName: userDataForApi?.login_type === 'social' ? 'app_user_register_social' : 'app_user_register',
+        eventName:
+          userDataForApi?.login_type === 'social'
+            ? 'app_user_register_social'
+            : 'app_user_register',
         ...(userDataForApi?.apple_id ? { apple_id: userDataForApi.apple_id } : {}),
       };
 
       const APIResponse = await UserService.UserRegister(ModifyData);
 
       if (APIResponse && APIResponse.code === 200) {
-        showToast('Registration Successful', 'Thank you for registering! You can now proceed.', 'success');
+        showToast(
+          'Registration Successful',
+          'Thank you for registering! You can now proceed.',
+          'success',
+        );
+
         dispatch(updateField(LocalStorageFields.Token, APIResponse.data?.token));
         navigation.replace('LoginStack', {
           screen: 'AddRecentPics',
         });
       } else {
         const errorMessage =
-          APIResponse && APIResponse.error ? APIResponse.error : 'Unknown error occurred during registration.';
+          APIResponse && APIResponse.error
+            ? APIResponse.error
+            : 'Unknown error occurred during registration.';
+
         throw new Error(errorMessage);
       }
     } catch (error: any) {
@@ -144,14 +160,14 @@ const YourIntro = () => {
       <View style={CreateProfileStyles.Container}>
         <CreateProfileHeader ProgressCount={8} Skip={true} handleSkipPress={() => onPressNext()} />
         <View style={styles.DataViewContainer}>
-          <View style={[styles.ContentView]}>
+          <View style={styles.ContentView}>
             <Text style={[styles.TitleText, { color: colors.TitleText }]}>What are you into?</Text>
             <Text style={[styles.YourIntoMatchText, { color: colors.TextColor }]}>
               You like what you like. Now, let everyone know.
             </Text>
           </View>
 
-          <View style={[styles.FlatListContainer]}>
+          <View style={styles.FlatListContainer}>
             <FlatList
               numColumns={3}
               columnWrapperStyle={{ justifyContent: 'space-between' }}
@@ -167,7 +183,7 @@ const YourIntro = () => {
             />
           </View>
         </View>
-        <View style={[CreateProfileStyles.BottomButton]}>
+        <View style={CreateProfileStyles.BottomButton}>
           <GradientButton
             isLoading={IsAPILoading}
             Title={`Next ${selectedItems?.length || 0}/5`}
@@ -181,76 +197,76 @@ const YourIntro = () => {
       </View>
     </GradientView>
   );
-};
+}
 
 export default memo(YourIntro);
 
 const styles = StyleSheet.create({
-  ContentView: {
+  BottomButtonWidth: {
+    borderTopColor: COLORS.Placeholder,
+    borderTopWidth: hp('0.07%'),
+    bottom: hp('1.5%'),
+    paddingTop: hp('1.5%'),
+    position: 'absolute',
     width: '100%',
-    overflow: 'hidden',
   },
-  TitleText: {
-    color: COLORS.Primary,
-    fontSize: hp('3.3%'),
-    fontFamily: FONTS.Bold,
-  },
-  DataViewContainer: {
-    height: '90%',
-    width: '84%',
+  ButtonContainer: {
     alignSelf: 'center',
-    marginTop: hp('1%'),
+    justifyContent: 'center',
+    overflow: 'hidden',
+    width: '90%',
   },
-  FlatListStyle: {},
+  CategoriesText: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    width: '85%',
+    ...GROUP_FONT.body4,
+    color: 'rgba(130, 130, 130, 1)',
+    fontFamily: FONTS.SemiBold,
+    fontSize: hp('1.5%'),
+    textAlign: 'center',
+  },
   ContainerContainerStyle: {
     width: '100%',
   },
-  YourIntoMatchText: {
-    ...GROUP_FONT.h3,
-    marginTop: hp('1%'),
-    fontFamily: FONTS.Regular,
-  },
-  ButtonContainer: {
-    width: '90%',
+  ContentView: {
     overflow: 'hidden',
-    alignSelf: 'center',
-    justifyContent: 'center',
-  },
-  BottomButtonWidth: {
     width: '100%',
-    bottom: hp('1.5%'),
-    position: 'absolute',
-    paddingTop: hp('1.5%'),
-    borderTopWidth: hp('0.07%'),
-    borderTopColor: COLORS.Placeholder,
   },
-  YourIntoButton: {
-    width: hp('12%'),
-    height: hp('6.8%'),
-    justifyContent: 'center',
-    borderRadius: SIZES.radius,
-    marginVertical: hp('1%'),
-  },
-  selectedOption: {
-    backgroundColor: COLORS.Primary,
-    borderWidth: 2,
-    borderColor: COLORS.White,
-  },
-  CategoriesText: {
-    width: '85%',
-    justifyContent: 'center',
+  DataViewContainer: {
     alignSelf: 'center',
-    ...GROUP_FONT.body4,
-    fontSize: hp('1.5%'),
-    color: 'rgba(130, 130, 130, 1)',
-    fontFamily: FONTS.SemiBold,
-    textAlign: 'center',
-  },
-  SelectedCategoriesText: {
-    color: COLORS.White,
+    height: '90%',
+    marginTop: hp('1%'),
+    width: '84%',
   },
   FlatListContainer: {
     height: '72%',
     marginTop: hp('1.5%'),
+  },
+  FlatListStyle: {},
+  SelectedCategoriesText: {
+    color: COLORS.White,
+  },
+  TitleText: {
+    color: COLORS.Primary,
+    fontFamily: FONTS.Bold,
+    fontSize: hp('3.3%'),
+  },
+  YourIntoButton: {
+    borderRadius: SIZES.radius,
+    height: hp('6.8%'),
+    justifyContent: 'center',
+    marginVertical: hp('1%'),
+    width: hp('12%'),
+  },
+  YourIntoMatchText: {
+    ...GROUP_FONT.h3,
+    fontFamily: FONTS.Regular,
+    marginTop: hp('1%'),
+  },
+  selectedOption: {
+    backgroundColor: COLORS.Primary,
+    borderColor: COLORS.White,
+    borderWidth: 2,
   },
 });

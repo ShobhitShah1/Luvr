@@ -1,9 +1,11 @@
-import React, { FC, memo } from 'react';
+import React, { memo } from 'react';
+import type { FC } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+
 import CommonIcons from '../../../../Common/CommonIcons';
 import { COLORS, FONTS, GROUP_FONT } from '../../../../Common/Theme';
-import { useTheme } from '../../../../Contexts/ThemeContext';
 import { GradientBorderView } from '../../../../Components/GradientBorder';
+import { useTheme } from '../../../../Contexts/ThemeContext';
 
 interface CategoriesListProps {
   Item: any[];
@@ -26,8 +28,10 @@ const EditProfileCategoriesList: FC<CategoriesListProps> = ({ Item, onPress, Emp
             );
           })
         ) : (
-          <View style={[styles.emptyCategoryView]}>
-            <Text style={[styles.categoryTextStyle, { color: colors.Placeholder }]}>{EmptyTitleText}</Text>
+          <View style={styles.emptyCategoryView}>
+            <Text style={[styles.categoryTextStyle, { color: colors.Placeholder }]}>
+              {EmptyTitleText}
+            </Text>
           </View>
         )}
       </View>
@@ -49,6 +53,7 @@ const EditProfileCategoriesList: FC<CategoriesListProps> = ({ Item, onPress, Emp
     </View>
   );
 };
+
 export default memo(EditProfileCategoriesList);
 
 const styles = StyleSheet.create({
@@ -58,40 +63,40 @@ const styles = StyleSheet.create({
   },
   categoryTextStyle: {
     ...GROUP_FONT.body4,
-    fontSize: 14,
     fontFamily: FONTS.Medium,
+    fontSize: 14,
   },
   categoryView: {
-    width: '85%',
-    flexWrap: 'wrap',
     alignItems: 'center',
     flexDirection: 'row',
-  },
-  singleCategoryView: {
-    padding: 8,
-    borderWidth: 1,
-    marginRight: 10,
-    borderRadius: 15,
-    marginBottom: 10,
+    flexWrap: 'wrap',
+    width: '85%',
   },
   emptyCategoryView: {
-    padding: 5,
-    marginRight: 10,
     marginBottom: 10,
+    marginRight: 10,
+    padding: 5,
     paddingHorizontal: 13,
   },
-  rightIconView: {
-    width: 30,
-    height: 30,
-    borderRadius: 100,
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
   rightIcon: {
-    width: 13,
-    height: 13,
     alignSelf: 'center',
+    height: 13,
     justifyContent: 'center',
+    width: 13,
+  },
+  rightIconView: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: 100,
+    height: 30,
+    justifyContent: 'center',
+    width: 30,
+  },
+  singleCategoryView: {
+    borderRadius: 15,
+    borderWidth: 1,
+    marginBottom: 10,
+    marginRight: 10,
+    padding: 8,
   },
 });

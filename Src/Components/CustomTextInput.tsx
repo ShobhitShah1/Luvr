@@ -1,5 +1,7 @@
 import React, { forwardRef, memo } from 'react';
-import { StyleProp, TextInput, TextInputProps, ViewStyle } from 'react-native';
+import { TextInput } from 'react-native';
+import type { StyleProp, TextInputProps, ViewStyle } from 'react-native';
+
 import { COLORS } from '../Common/Theme';
 import { useTheme } from '../Contexts/ThemeContext';
 

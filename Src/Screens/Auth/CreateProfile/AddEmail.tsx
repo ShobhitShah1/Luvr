@@ -2,6 +2,7 @@ import React, { memo, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { CommonSize } from '../../../Common/CommonSize';
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
@@ -16,8 +17,10 @@ import { useThemedStyles } from '../../../Hooks/useThemedStyles';
 import { updateField } from '../../../Redux/Action/actions';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
-import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
-const AddEmail = () => {
+
+import CreateProfileHeader from './Components/CreateProfileHeader';
+
+function AddEmail() {
   const dispatch = useDispatch();
 
   const { colors, isDark } = useTheme();
@@ -65,7 +68,9 @@ const AddEmail = () => {
           <View style={style.NumberContainer}>
             <View style={style.MyNumberTextView}>
               <Text style={style.MyNumberText}>What’s your {'\n'}email?</Text>
-              <Text style={style.MyNumberSubText}>Please enter your valid email to verify your account.</Text>
+              <Text style={style.MyNumberSubText}>
+                Please enter your valid email to verify your account.
+              </Text>
             </View>
           </View>
 
@@ -73,12 +78,17 @@ const AddEmail = () => {
             <View style={style.TextViewForSpace}>
               <Text style={style.NameText}>My email is</Text>
               <GradientBorderView
-                style={[style.TextInputViewStyle, { backgroundColor: isDark ? 'transparent' : colors.White }]}
-                gradientProps={{ colors: isDark ? colors.ButtonGradient : ['transparent', 'transparent'] }}
+                style={[
+                  style.TextInputViewStyle,
+                  { backgroundColor: isDark ? 'transparent' : colors.White },
+                ]}
+                gradientProps={{
+                  colors: isDark ? colors.ButtonGradient : ['transparent', 'transparent'],
+                }}
               >
                 <CustomTextInput
                   value={email}
-                  onChangeText={(value) => {
+                  onChangeText={value => {
                     setEmail(value?.trimStart());
                   }}
                   textContentType="emailAddress"
@@ -91,17 +101,22 @@ const AddEmail = () => {
           </View>
 
           <View style={{ marginVertical: hp('4%') }}>
-            <GradientButton Title={'CONTINUE'} isLoading={isLoading} Disabled={isLoading} Navigation={onNextClick} />
+            <GradientButton
+              Title="CONTINUE"
+              isLoading={isLoading}
+              Disabled={isLoading}
+              Navigation={onNextClick}
+            />
           </View>
         </ScrollView>
       </View>
     </GradientView>
   );
-};
+}
 
 export default memo(AddEmail);
 
-const styles = createThemedStyles((colors) => ({
+const styles = createThemedStyles(colors => ({
   Container: {
     flex: 1,
   },

@@ -11,6 +11,7 @@ export function flattenObject(obj: any): Record<string, any> {
     } else {
       acc[prefixedKey] = value;
     }
+
     return acc;
   }, {});
 }

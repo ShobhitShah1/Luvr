@@ -1,14 +1,14 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, { memo, useMemo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+
 import CommonIcons from '../../../Common/CommonIcons';
 import { GROUP_FONT } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
-import { ChatRoomProps } from '../../../Types/Interface';
+import type { ChatRoomProps } from '../../../Types/Interface';
 
-const RenderChatRoomList = ({ item }: ChatRoomProps) => {
+function RenderChatRoomList({ item }: ChatRoomProps) {
   const { colors, isDark } = useTheme();
   const navigation = useCustomNavigation();
 
@@ -59,7 +59,9 @@ const RenderChatRoomList = ({ item }: ChatRoomProps) => {
       android_ripple={{ color: 'rgba(0, 0, 0, 0.1)' }}
     >
       <View style={styles.profilePicView}>
-        {profileImageUrl && <Image resizeMode="cover" style={styles.profilePic} source={{ uri: profileImageUrl }} />}
+        {profileImageUrl && (
+          <Image resizeMode="cover" style={styles.profilePic} source={{ uri: profileImageUrl }} />
+        )}
       </View>
       <View style={styles.nameAndMessageView}>
         <View style={styles.nameAndIconView}>
@@ -77,68 +79,68 @@ const RenderChatRoomList = ({ item }: ChatRoomProps) => {
       </View>
     </Pressable>
   );
-};
+}
 
 export default memo(RenderChatRoomList);
 
 const styles = StyleSheet.create({
   chatRoomContainerView: {
-    width: '90%',
-    height: 80,
+    alignSelf: 'center',
     borderRadius: 25,
+    flexDirection: 'row',
+    height: 80,
+    justifyContent: 'space-between',
     marginVertical: 8,
     overflow: 'hidden',
-    alignSelf: 'center',
-    flexDirection: 'row',
     paddingHorizontal: 10,
-    justifyContent: 'space-between',
+    width: '90%',
   },
-  profilePicView: {
-    width: '20%',
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profilePic: {
-    width: 60,
-    height: 60,
-    borderRadius: 50,
-    justifyContent: 'center',
-  },
-  nameAndMessageView: {
-    width: '60%',
-    overflow: 'hidden',
-    paddingHorizontal: 10,
-    justifyContent: 'center',
+  lastMessageText: {
+    ...GROUP_FONT.body4,
+    color: 'rgba(108, 108, 108, 1)',
+    fontSize: 14,
+    marginTop: 5,
   },
   nameAndIconView: {
-    width: '90%',
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
+    width: '90%',
+  },
+  nameAndMessageView: {
+    justifyContent: 'center',
+    overflow: 'hidden',
+    paddingHorizontal: 10,
+    width: '60%',
   },
   nameText: {
     ...GROUP_FONT.h3,
     fontSize: 16,
   },
-  verifyIcon: {
-    width: 16,
-    height: 16,
-    marginLeft: 5,
+  profilePic: {
+    borderRadius: 50,
+    height: 60,
+    justifyContent: 'center',
+    width: 60,
   },
-  lastMessageText: {
-    ...GROUP_FONT.body4,
-    fontSize: 14,
-    marginTop: 5,
-    color: 'rgba(108, 108, 108, 1)',
-  },
-  timeView: {
-    width: '20%',
-    overflow: 'hidden',
+  profilePicView: {
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+    width: '20%',
   },
   timeText: {
     ...GROUP_FONT.body4,
     color: 'rgba(108, 108, 108, 1)',
+  },
+  timeView: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    width: '20%',
+  },
+  verifyIcon: {
+    height: 16,
+    marginLeft: 5,
+    width: 16,
   },
 });

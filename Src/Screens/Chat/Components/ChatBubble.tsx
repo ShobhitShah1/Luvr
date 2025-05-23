@@ -1,9 +1,11 @@
 import React, { memo } from 'react';
-import { Bubble, BubbleProps, IMessage } from 'react-native-gifted-chat';
+import { Bubble } from 'react-native-gifted-chat';
+import type { BubbleProps, IMessage } from 'react-native-gifted-chat';
+
 import { FONTS } from '../../../Common/Theme';
 import { useTheme } from '../../../Contexts/ThemeContext';
 
-const ChatBubble: React.FC<BubbleProps<IMessage>> = (props) => {
+const ChatBubble: React.FC<BubbleProps<IMessage>> = props => {
   const { colors, isDark } = useTheme();
 
   return (

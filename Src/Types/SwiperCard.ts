@@ -1,4 +1,4 @@
-import {ProfileType} from './ProfileType';
+import type { ProfileType } from './ProfileType';
 
 export interface SwiperCard {
   _id: string | number;

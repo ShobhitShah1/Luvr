@@ -1,17 +1,19 @@
-/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import FastImage from '@d11/react-native-fast-image';
-import React, { FC, memo, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Image, LayoutChangeEvent, Pressable, Text, TouchableWithoutFeedback, View } from 'react-native';
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
+import type { FC } from 'react';
+import { FlatList, Image, Pressable, Text, TouchableWithoutFeedback, View } from 'react-native';
+import type { LayoutChangeEvent } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+
 import CommonIcons from '../../../Common/CommonIcons';
 import ApiConfig from '../../../Config/ApiConfig';
 import { DummyImage } from '../../../Config/Setting';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import useCalculateAge from '../../../Hooks/useCalculateAge';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
-import { SwiperCard } from '../../../Types/SwiperCard';
+import type { SwiperCard } from '../../../Types/SwiperCard';
 import styles from '../styles';
 
 interface RenderCardProps {
@@ -102,6 +104,7 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
+
     return shuffled;
   };
 
@@ -111,10 +114,14 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
     <TouchableWithoutFeedback
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      onLayout={(event) => LayOutChange(event)}
+      onLayout={event => LayOutChange(event)}
     >
       <View style={[styles.card, { backgroundColor: colors.Secondary }]}>
-        <Animated.View entering={FadeIn.duration(500)} exiting={FadeOut.duration(500)} style={[styles.imageContainer]}>
+        <Animated.View
+          entering={FadeIn.duration(500)}
+          exiting={FadeOut.duration(500)}
+          style={styles.imageContainer}
+        >
           {cardData?.recent_pik && cardData?.recent_pik?.length !== 0 ? (
             <FlatList
               horizontal
@@ -133,8 +140,12 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
                 return (
                   <View
                     style={{
-                      height: ContainerWidthAndHeight.height ? ContainerWidthAndHeight.height : 530.9091186523438,
-                      width: ContainerWidthAndHeight.width ? ContainerWidthAndHeight.width : 350.5454406738281,
+                      height: ContainerWidthAndHeight.height
+                        ? ContainerWidthAndHeight.height
+                        : 530.9091186523438,
+                      width: ContainerWidthAndHeight.width
+                        ? ContainerWidthAndHeight.width
+                        : 350.5454406738281,
                     }}
                   >
                     <FastImage
@@ -156,8 +167,12 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
           ) : (
             <View
               style={{
-                height: ContainerWidthAndHeight.height ? ContainerWidthAndHeight.height : 530.9091186523438,
-                width: ContainerWidthAndHeight.width ? ContainerWidthAndHeight.width : 350.5454406738281,
+                height: ContainerWidthAndHeight.height
+                  ? ContainerWidthAndHeight.height
+                  : 530.9091186523438,
+                width: ContainerWidthAndHeight.width
+                  ? ContainerWidthAndHeight.width
+                  : 350.5454406738281,
               }}
             >
               <Image
@@ -175,13 +190,17 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
           <View style={{ width: '90%' }}>
             <View style={styles.TitleView}>
               <Text style={[styles.TitleText, { color: colors.White }]} numberOfLines={2}>
-                {`${cardData?.full_name ? cardData?.full_name : 'User'}, ${age ? age : 0}`}
+                {`${cardData?.full_name ? cardData?.full_name : 'User'}, ${age || 0}`}
               </Text>
               <Image source={CommonIcons.Verification_Icon} style={styles.VerifyIconImage} />
             </View>
 
             <View style={styles.LocationView}>
-              <Image tintColor={colors.White} style={styles.LocationIcon} source={CommonIcons.Location} />
+              <Image
+                tintColor={colors.White}
+                style={styles.LocationIcon}
+                source={CommonIcons.Location}
+              />
               <Text numberOfLines={1} style={[styles.LocationText, { color: colors.White }]}>
                 {cardData?.city || 'Somewhere in earth'}
               </Text>
@@ -193,7 +212,8 @@ const RenderSwiperCard: FC<RenderCardProps> = ({
                 cardData.likes_into[0] !== '' && (
                   <>
                     {cardData.likes_into.map((interestedInItem, index) => {
-                      const backgroundColor = shuffledHobbyColors[index % shuffledHobbyColors.length];
+                      const backgroundColor =
+                        shuffledHobbyColors[index % shuffledHobbyColors.length];
 
                       return isDark ? (
                         <LinearGradient

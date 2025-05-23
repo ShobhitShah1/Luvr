@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Alert, BackHandler, Linking, Platform } from 'react-native';
-import { PERMISSIONS, RESULTS, check, request, Permission } from 'react-native-permissions';
-import { store } from '../Redux/Store/store';
-import { updateField } from '../Redux/Action/actions';
-import { LocalStorageFields } from '../Types/LocalStorageFields';
 import Geolocation from 'react-native-geolocation-service';
+import { PERMISSIONS, RESULTS, check, request } from 'react-native-permissions';
+import type { Permission } from 'react-native-permissions';
+
 import { APP_NAME } from '../Config/Setting';
+import { updateField } from '../Redux/Action/actions';
+import { store } from '../Redux/Store/store';
+import { LocalStorageFields } from '../Types/LocalStorageFields';
 
 const getLocationPermission = (): Permission => {
   if (Platform.OS === 'android') {
@@ -50,6 +52,7 @@ export const useLocationPermission = () => {
       if (checkResult === RESULTS.GRANTED) {
         setLocationPermission(true);
         storeCurrentCods();
+
         return true;
       }
 
@@ -74,7 +77,7 @@ export const useLocationPermission = () => {
 
   const storeCurrentCods = async (): Promise<void> => {
     Geolocation.getCurrentPosition(
-      async (position) => {
+      async position => {
         const { coords } = position;
         if (coords) {
           await Promise.all([
@@ -83,10 +86,10 @@ export const useLocationPermission = () => {
           ]);
         }
       },
-      (error) => {
+      error => {
         console.error('Error getting current location:', error);
       },
-      { enableHighAccuracy: false, timeout: 15000, maximumAge: 10000 }
+      { enableHighAccuracy: false, timeout: 15000, maximumAge: 10000 },
     );
   };
 
@@ -104,7 +107,7 @@ export const useLocationPermission = () => {
           text: 'Open Settings',
           onPress: () => Linking.openSettings(),
         },
-      ]
+      ],
     );
   };
 

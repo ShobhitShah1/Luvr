@@ -1,5 +1,5 @@
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
-import UserDataType from '../../../Types/UserDataType';
+import type UserDataType from '../../../Types/UserDataType';
 
 const excludeFields = [
   'socket_id',
@@ -51,7 +51,7 @@ const calculateDataPercentage = (userData: UserDataType): number => {
     }
   };
 
-  const totalFields = Object.keys(userData).filter((key) => !excludeFields.includes(key)).length;
+  const totalFields = Object.keys(userData).filter(key => !excludeFields.includes(key)).length;
 
   let filledFieldsCount = 0;
   const missingFields: string[] = [];

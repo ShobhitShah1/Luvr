@@ -1,10 +1,11 @@
 import React, { memo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+
 import { FONTS, SIZES } from '../../../Common/Theme';
 import CustomTextInput from '../../../Components/CustomTextInput';
 import { GradientBorderView } from '../../../Components/GradientBorder';
 import { useTheme } from '../../../Contexts/ThemeContext';
-import LinearGradient from 'react-native-linear-gradient';
 
 interface EmailInputModalProps {
   isVisible: boolean;
@@ -26,10 +27,13 @@ const EmailInputModal: React.FC<EmailInputModalProps> = ({ isVisible, onClose, o
 
   const isValidEmail = (text: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     return emailRegex.test(text);
   };
 
-  if (!isVisible) return null;
+  if (!isVisible) {
+    return null;
+  }
 
   return (
     <View style={styles.overlay}>
@@ -71,7 +75,13 @@ const EmailInputModal: React.FC<EmailInputModalProps> = ({ isVisible, onClose, o
 
           <LinearGradient colors={colors.ButtonGradient} style={styles.addButton}>
             <Pressable
-              style={{ width: '100%', height: '100%', flex: 1, justifyContent: 'center', alignItems: 'center' }}
+              style={{
+                width: '100%',
+                height: '100%',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
               onPress={handleAddEmail}
               disabled={!email.trim() || !isValidEmail(email)}
             >
@@ -87,30 +97,27 @@ const EmailInputModal: React.FC<EmailInputModalProps> = ({ isVisible, onClose, o
 export default memo(EmailInputModal);
 
 const styles = StyleSheet.create({
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+  addButton: {
+    alignItems: 'center',
+    borderRadius: 20,
+    height: 50,
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 10,
+    marginTop: SIZES.padding,
+    width: '55%',
   },
-  modalContent: {
-    padding: SIZES.padding,
-    alignItems: 'center',
+  addButtonText: {
+    fontFamily: FONTS.Bold,
+    fontSize: 16,
   },
   closeButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 15,
+    height: 30,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: 10,
+    top: 10,
+    width: 30,
     zIndex: 1,
   },
   closeButtonText: {
@@ -118,23 +125,26 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   input: {
-    width: '100%',
-    height: 50,
     borderBottomWidth: 1,
-    fontSize: 16,
     fontFamily: FONTS.Regular,
-    marginVertical: 10,
-  },
-  addButton: {
-    width: '55%',
-    height: 50,
-    borderRadius: 20,
-    marginTop: SIZES.padding,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  addButtonText: {
     fontSize: 16,
-    fontFamily: FONTS.Bold,
+    height: 50,
+    marginVertical: 10,
+    width: '100%',
+  },
+  modalContent: {
+    alignItems: 'center',
+    padding: SIZES.padding,
+  },
+  overlay: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    zIndex: 10,
   },
 });

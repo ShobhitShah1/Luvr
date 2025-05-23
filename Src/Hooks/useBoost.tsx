@@ -1,6 +1,12 @@
 import { useSelector } from 'react-redux';
-import { RootState } from '../Redux/Store/store';
-import { cancelBoost, debouncedGetBoost, getBoostTimeRemaining, hasActiveBoost } from '../Services/BoostService';
+
+import type { RootState } from '../Redux/Store/store';
+import {
+  cancelBoost,
+  debouncedGetBoost,
+  getBoostTimeRemaining,
+  hasActiveBoost,
+} from '../Services/BoostService';
 
 export const useBoost = () => {
   const boostState = useSelector((state: RootState) => state.boost);

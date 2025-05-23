@@ -1,4 +1,4 @@
-import {useToast} from 'react-native-toast-notifications';
+import { useToast } from 'react-native-toast-notifications';
 
 export const useCustomToast = () => {
   const toaster = useToast();
@@ -6,8 +6,8 @@ export const useCustomToast = () => {
   const showToast = (title: string, message: string, status: string) => {
     toaster.show(message, {
       type: 'custom_toast',
-      title: title,
-      status: status,
+      title,
+      status,
     });
   };
 

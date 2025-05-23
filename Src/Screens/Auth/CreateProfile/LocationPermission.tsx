@@ -1,8 +1,10 @@
-import React, { FC, memo, useState } from 'react';
+import React, { memo, useState } from 'react';
+import type { FC } from 'react';
 import { Image, Text, View } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
+
 import CommonIcons from '../../../Common/CommonIcons';
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
@@ -18,6 +20,7 @@ import UserService from '../../../Services/AuthService';
 import { transformUserDataForApi } from '../../../Services/dataTransformService';
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
+
 import CreateProfileStyles from './styles';
 
 const LocationPermission: FC = () => {
@@ -38,11 +41,11 @@ const LocationPermission: FC = () => {
 
     try {
       await requestLocationPermission()
-        .then((isLocationGranted) => {
+        .then(isLocationGranted => {
           if (isLocationGranted) {
             return new Promise((resolve, reject) => {
               Geolocation.getCurrentPosition(
-                async (position) => {
+                async position => {
                   const { coords } = position;
                   if (coords) {
                     await Promise.all([
@@ -53,22 +56,22 @@ const LocationPermission: FC = () => {
                     await handleNavigation();
                   }
                 },
-                (error) => {
+                error => {
                   reject(error);
                 },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 100 }
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 100 },
               );
             });
           }
         })
-        .catch((error) => {
+        .catch(error => {
           showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
         });
     } catch (error: any) {
       showToast(
         TextString.error.toUpperCase(),
         String(error?.message || 'Unable to find your location please try gain letter'),
-        'error'
+        'error',
       );
     } finally {
       setIsLocationLoading(false);
@@ -109,13 +112,14 @@ const LocationPermission: FC = () => {
         <View style={style.MiddleTextView}>
           <Text style={[style.TitleText, { color: colors.TitleText }]}>Allow your location</Text>
           <Text style={[style.DescriptionText, { color: colors.TextColor }]}>
-            Set your location to see nearby people. You won’t be able to match with people otherwise.
+            Set your location to see nearby people. You won’t be able to match with people
+            otherwise.
           </Text>
         </View>
 
-        <View style={[CreateProfileStyles.BottomButton]}>
+        <View style={CreateProfileStyles.BottomButton}>
           <GradientButton
-            Title={'Continue'}
+            Title="Continue"
             Disabled={false}
             Navigation={() => {
               setIsLocationLoading(true);
@@ -131,7 +135,7 @@ const LocationPermission: FC = () => {
 
 export default memo(LocationPermission);
 
-const styles = createThemedStyles((colors) => ({
+const styles = createThemedStyles(colors => ({
   container: {
     flex: 1,
     paddingHorizontal: hp('1.3%'),

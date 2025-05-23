@@ -1,5 +1,5 @@
-/* eslint-disable react-native/no-inline-styles */
-import React, { FC, memo, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
+import type { FC } from 'react';
 import { Pressable, StyleSheet, View, Image } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -8,6 +8,7 @@ import Animated, {
   Easing,
   interpolateColor,
 } from 'react-native-reanimated';
+
 import CommonIcons from '../Common/CommonIcons';
 import { COLORS } from '../Common/Theme';
 import { useTheme } from '../Contexts/ThemeContext';
@@ -57,7 +58,11 @@ const SwitchComponent: FC<SwitchComponentProps> = ({ isActive, size, onPress }) 
 
   const trackAnimatedStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: interpolateColor(progress.value, [0, 1], [_colors.InActiveBackground, _colors.ActiveBackground]),
+      backgroundColor: interpolateColor(
+        progress.value,
+        [0, 1],
+        [_colors.InActiveBackground, _colors.ActiveBackground],
+      ),
       borderColor: interpolateColor(progress.value, [0, 1], [_colors.InActive, _colors.Active]),
     };
   });
@@ -76,7 +81,10 @@ const SwitchComponent: FC<SwitchComponentProps> = ({ isActive, size, onPress }) 
   });
 
   return (
-    <Pressable onPress={onPress} style={{ width: trackWidth, height: size, justifyContent: 'center' }}>
+    <Pressable
+      onPress={onPress}
+      style={{ width: trackWidth, height: size, justifyContent: 'center' }}
+    >
       <View style={styles.switchContainer}>
         <Animated.View
           style={[
@@ -123,11 +131,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  track: {
-    position: 'absolute',
-  },
   thumb: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  track: {
+    position: 'absolute',
   },
 });

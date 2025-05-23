@@ -1,7 +1,8 @@
 import { Dimensions, StatusBar } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import { CommonSize } from './CommonSize';
-import { ThemeColors } from './ThemeTypes';
+import type { ThemeColors } from './ThemeTypes';
 
 export const LIGHT_COLORS: ThemeColors = {
   Primary: 'rgba(157, 133, 240, 1)', // #ff4165 - Pink
@@ -169,7 +170,8 @@ export const GROUP_FONT = {
   },
 };
 
-export const deviceHeightWithStatusbar = Dimensions.get('window').height + (StatusBar?.currentHeight || 10);
+export const deviceHeightWithStatusbar =
+  Dimensions.get('window').height + (StatusBar?.currentHeight || 10);
 
 export const BOTTOM_TAB_HEIGHT = hp('10%');
 

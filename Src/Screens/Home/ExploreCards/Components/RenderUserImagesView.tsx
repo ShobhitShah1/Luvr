@@ -1,14 +1,8 @@
-import React, { FC, memo, useState, useCallback } from 'react';
-import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
-  ImageErrorEventData,
-  NativeSyntheticEvent,
-  StyleSheet,
-  View,
-  Text,
-} from 'react-native';
+import React, { memo, useState, useCallback } from 'react';
+import type { FC } from 'react';
+import { ActivityIndicator, Dimensions, Image, StyleSheet, View, Text } from 'react-native';
+import type { ImageErrorEventData, NativeSyntheticEvent } from 'react-native';
+
 import { COLORS } from '../../../../Common/Theme';
 import ApiConfig from '../../../../Config/ApiConfig';
 import { DummyImage } from '../../../../Config/Setting';
@@ -82,46 +76,46 @@ const RenderUserImagesView: FC<UserImagesProps> = ({ Images, index }) => {
 export default memo(RenderUserImagesView);
 
 const styles = StyleSheet.create({
-  ImageContainer: {
-    flex: 1,
-    width: '90%',
-    overflow: 'hidden',
+  ErrorContainer: {
     alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    padding: 20,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  ErrorText: {
+    color: 'red',
+    fontSize: 16,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  ImageContainer: {
+    alignItems: 'center',
+    flex: 1,
+    overflow: 'hidden',
+    width: '90%',
+  },
+  Loader: {
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  RetryText: {
+    color: COLORS.Primary,
+    fontSize: 14,
+    textAlign: 'center',
   },
   UserProfileImages: {
     flex: 1,
     height: '100%',
     resizeMode: 'contain',
     width: Dimensions.get('window').width,
-  },
-  Loader: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    right: 0,
-    left: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ErrorContainer: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    right: 0,
-    left: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  ErrorText: {
-    color: 'red',
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  RetryText: {
-    color: COLORS.Primary,
-    fontSize: 14,
-    textAlign: 'center',
   },
 });

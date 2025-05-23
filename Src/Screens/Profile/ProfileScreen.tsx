@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Skeleton } from 'moti/skeleton';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import {
@@ -14,6 +13,7 @@ import {
 } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import LinearGradient from 'react-native-linear-gradient';
+
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import { COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
@@ -26,9 +26,10 @@ import useCalculateAge from '../../Hooks/useCalculateAge';
 import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import { debouncedGetProfileData } from '../../Utils/profileUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
-import calculateDataPercentage from './Components/calculateDataPercentage';
 
-const ProfileScreen = () => {
+import calculateDataPercentage from './Components/calculate-data-percentage';
+
+function ProfileScreen() {
   const { userData } = useUserData();
   const { colors, isDark } = useTheme();
   const navigation = useCustomNavigation();
@@ -85,7 +86,11 @@ const ProfileScreen = () => {
               >
                 {() => (
                   <View style={styles.ImageContainerView}>
-                    <Skeleton show={isImageLoading} colorMode="light" colors={colors.LoaderGradient}>
+                    <Skeleton
+                      show={isImageLoading}
+                      colorMode="light"
+                      colors={colors.LoaderGradient}
+                    >
                       {userData?.recent_pik && userData?.recent_pik?.length !== 0 ? (
                         <Image
                           style={styles.ProfileImage}
@@ -131,15 +136,27 @@ const ProfileScreen = () => {
             <LinearGradient
               start={{ x: 1, y: 0 }}
               end={{ x: 0, y: 1 }}
-              colors={isDark ? ['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.1)'] : [colors.Primary, colors.Primary]}
+              colors={
+                isDark
+                  ? ['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.1)']
+                  : [colors.Primary, colors.Primary]
+              }
               style={[styles.TotalPercentageCompletedView, { borderWidth: 0 }]}
             >
               <View style={{ flex: 1 }}>
                 <View style={styles.PercentageView}>
                   <GradientBorderView
-                    style={[styles.PercentageCountView, !isDark && { backgroundColor: colors.White }]}
+                    style={[
+                      styles.PercentageCountView,
+                      !isDark && { backgroundColor: colors.White },
+                    ]}
                   >
-                    <Skeleton show={false} colorMode="light" height={57} colors={colors.LoaderGradient}>
+                    <Skeleton
+                      show={false}
+                      colorMode="light"
+                      height={57}
+                      colors={colors.LoaderGradient}
+                    >
                       <View style={styles.PercentageTextFlexView}>
                         <Text
                           style={[styles.PercentageCountText, { color: colors.TextColor }]}
@@ -164,7 +181,9 @@ const ProfileScreen = () => {
                       onPress={() => navigation.navigate('EditProfile')}
                       style={{ flex: 1, justifyContent: 'center' }}
                     >
-                      <Text style={[styles.EditButtonText, { color: colors.TextColor }]}>Edit profile</Text>
+                      <Text style={[styles.EditButtonText, { color: colors.TextColor }]}>
+                        Edit profile
+                      </Text>
                     </Pressable>
                   </LinearGradient>
                 </View>
@@ -175,160 +194,51 @@ const ProfileScreen = () => {
       </View>
     </GradientView>
   );
-};
+}
 
 export default memo(ProfileScreen);
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  CompleteProfileText: {
+    color: COLORS.White,
+    fontFamily: FONTS.Bold,
+    fontSize: 15,
   },
-  LoaderContainer: {
-    justifyContent: 'center',
-  },
-  NameAndBadgeContainer: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    marginTop: 5,
-  },
-  ProfileImage: {
-    width: '101%',
-    height: '101%',
-    borderRadius: 100,
-    alignSelf: 'center',
-    alignItems: 'center',
-    resizeMode: 'contain',
-    justifyContent: 'center',
-  },
-  ImageContainerView: {
-    width: 210,
-    height: 210,
-    justifyContent: 'center',
-    overflow: 'hidden',
-    borderRadius: Dimensions.get('window').width / 2,
-  },
-  ProfileViewContainer: {
-    flex: 1,
+  CompleteProfileTextView: {
+    marginHorizontal: 10,
+    width: '70%',
   },
   ContentView: {
     marginTop: Platform.select({ ios: 60, android: 95 }),
   },
-  ProfileImageView: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  UserNameAndLocationView: {
-    marginTop: 21,
-    marginVertical: 4,
-    justifyContent: 'center',
-  },
-  NameAndBadgeView: {
-    alignSelf: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  UserNameText: {
-    ...GROUP_FONT.h1,
-    color: COLORS.Black,
-    textAlign: 'center',
-    maxWidth: '85%',
-    paddingTop: 6,
-  },
-  UserCityText: {
-    marginTop: 3,
-    fontSize: 20,
-    textAlign: 'center',
-    fontFamily: FONTS.Medium,
-    color: 'rgba(108, 108, 108, 1)',
-  },
-  VerifyIcon: {
-    width: 22,
-    height: 22,
-    marginLeft: 8,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-  },
-  TotalPercentageCompletedView: {
-    flex: 1,
-    width: '85%',
-    height: 120,
-    marginTop: 30,
-    borderRadius: 20,
-    alignSelf: 'center',
-    alignItems: 'center',
-    padding: 10,
-  },
-  PercentageView: {
-    zIndex: 999,
-    width: '100%',
-    height: '60%',
-    alignItems: 'center',
-    flexDirection: 'row',
-    overflow: 'hidden',
-    alignSelf: 'center',
-    alignContent: 'center',
-  },
-  PercentageCountView: {
-    width: 57,
-    height: 57,
-    borderWidth: 2,
-    overflow: 'hidden',
-    borderRadius: 100,
-    justifyContent: 'center',
-  },
-  PercentageTextFlexView: {
-    justifyContent: 'center',
-    alignSelf: 'center',
-    flex: 1,
-  },
-  PercentageCountText: {
-    fontSize: 16,
-    fontFamily: FONTS.Bold,
-    textAlign: 'center',
-  },
-  CompleteProfileTextView: {
-    width: '70%',
-    marginHorizontal: 10,
-  },
-  CompleteProfileText: {
-    fontSize: 15,
-    fontFamily: FONTS.Bold,
-    color: COLORS.White,
-  },
-  EditProfileView: {
-    zIndex: 999,
-    position: 'absolute',
-    bottom: 3,
-    right: 0,
-    width: '100%',
-    height: '40%',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-  },
-  EditButtonView: {
-    width: 130,
-    height: 35,
-    borderRadius: 20,
-    justifyContent: 'center',
-    backgroundColor: COLORS.White,
-  },
   EditButtonText: {
     ...GROUP_FONT.h3,
-    textAlign: 'center',
     color: COLORS.Primary,
+    textAlign: 'center',
   },
-  ImageLoaderView: {
-    top: '37%',
-    left: 0,
-    right: 0,
+  EditButtonView: {
+    backgroundColor: COLORS.White,
+    borderRadius: 20,
+    height: 35,
+    justifyContent: 'center',
+    width: 130,
+  },
+  EditProfileView: {
+    alignItems: 'flex-end',
+    bottom: 3,
+    height: '40%',
+    justifyContent: 'flex-end',
     position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
+    right: 0,
+    width: '100%',
+    zIndex: 999,
   },
-  ImageLoader: {
+  ImageContainerView: {
+    borderRadius: Dimensions.get('window').width / 2,
+    height: 210,
     justifyContent: 'center',
-    alignItems: 'center',
+    overflow: 'hidden',
+    width: 210,
   },
   LottieViewStyle: {
     // width: '100%',
@@ -338,37 +248,91 @@ const styles = StyleSheet.create({
     aspectRatio: 1 / 17,
     backgroundColor: COLORS.Primary,
   },
-  ErrorViewContainer: {
-    flex: 1,
-    width: '90%',
-    justifyContent: 'center',
+  NameAndBadgeContainer: {
     alignItems: 'center',
     alignSelf: 'center',
+    marginTop: 5,
   },
-  ErrorViewTitleText: {
-    ...GROUP_FONT.h2,
-    color: COLORS.Primary,
-    textAlign: 'center',
-  },
-  ErrorRefButton: {
-    top: 10,
-    height: 45,
-    width: 250,
-    backgroundColor: COLORS.Primary,
-    borderRadius: 15,
-    justifyContent: 'center',
+  NameAndBadgeView: {
+    alignItems: 'center',
     alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
-  ErrorRefText: {
-    ...GROUP_FONT.h3,
+  PercentageCountText: {
+    fontFamily: FONTS.Bold,
+    fontSize: 16,
     textAlign: 'center',
-    color: COLORS.White,
   },
-  ThrowPCGif: {
-    width: 300,
-    height: 180,
-    marginVertical: 15,
-    borderRadius: 10,
+  PercentageCountView: {
+    borderRadius: 100,
+    borderWidth: 2,
+    height: 57,
+    justifyContent: 'center',
     overflow: 'hidden',
+    width: 57,
+  },
+  PercentageTextFlexView: {
+    alignSelf: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  PercentageView: {
+    alignContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    height: '60%',
+    overflow: 'hidden',
+    width: '100%',
+    zIndex: 999,
+  },
+  ProfileImage: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: 100,
+    height: '101%',
+    justifyContent: 'center',
+    resizeMode: 'contain',
+    width: '101%',
+  },
+  ProfileImageView: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ProfileViewContainer: {
+    flex: 1,
+  },
+  TotalPercentageCompletedView: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: 20,
+    flex: 1,
+    height: 120,
+    marginTop: 30,
+    padding: 10,
+    width: '85%',
+  },
+  UserNameAndLocationView: {
+    justifyContent: 'center',
+    marginTop: 21,
+    marginVertical: 4,
+  },
+  UserNameText: {
+    ...GROUP_FONT.h1,
+    color: COLORS.Black,
+    maxWidth: '85%',
+    paddingTop: 6,
+    textAlign: 'center',
+  },
+  VerifyIcon: {
+    alignItems: 'flex-end',
+    height: 22,
+    justifyContent: 'center',
+    marginLeft: 8,
+    width: 22,
+  },
+  container: {
+    flex: 1,
   },
 });

@@ -1,8 +1,10 @@
 import React, { memo } from 'react';
 import { View, Image, Text } from 'react-native';
-import { Composer, InputToolbar, InputToolbarProps, Send, SendProps, IMessage } from 'react-native-gifted-chat';
-import { FONTS } from '../../../Common/Theme';
+import { Composer, InputToolbar, Send } from 'react-native-gifted-chat';
+import type { InputToolbarProps, SendProps, IMessage } from 'react-native-gifted-chat';
+
 import CommonIcons from '../../../Common/CommonIcons';
+import { FONTS } from '../../../Common/Theme';
 import { useTheme } from '../../../Contexts/ThemeContext';
 
 interface ChatInputProps {
@@ -46,7 +48,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage
             verticalAlign: 'center',
           }}
           composerHeight={59}
-          placeholder={canSendMessage ? 'Write your message here' : 'Wait for a message or upgrade to Gold'}
+          placeholder={
+            canSendMessage ? 'Write your message here' : 'Wait for a message or upgrade to Gold'
+          }
           placeholderTextColor={isDark ? 'rgba(255, 255, 255, 1)' : 'rgba(130, 130, 130, 1)'}
           editable={canSendMessage}
         />
@@ -77,7 +81,11 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage
       >
         <Image
           source={CommonIcons.ic_send_message}
-          style={{ width: 22, height: 22, tintColor: isDark ? colors.White : 'rgba(130, 130, 130, 1)' }}
+          style={{
+            width: 22,
+            height: 22,
+            tintColor: isDark ? colors.White : 'rgba(130, 130, 130, 1)',
+          }}
         />
       </View>
     </Send>

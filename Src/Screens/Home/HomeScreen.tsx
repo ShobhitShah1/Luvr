@@ -2,7 +2,8 @@
 import messaging from '@react-native-firebase/messaging';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import type { FlatList } from 'react-native';
 import { requestNotifications } from 'react-native-permissions';
 import Animated, {
   FadeIn,
@@ -12,6 +13,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
 import { COLORS, FONTS } from '../../Common/Theme';
@@ -25,12 +27,13 @@ import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import { useLocationPermission } from '../../Hooks/useLocationPermission';
 import { store } from '../../Redux/Store/store';
 import UserService from '../../Services/AuthService';
-import { HomeListProps } from '../../Types/Interface';
-import { ProfileType } from '../../Types/ProfileType';
+import type { HomeListProps } from '../../Types/Interface';
+import type { ProfileType } from '../../Types/ProfileType';
 import { getMyLikes } from '../../Utils/getMyLikes';
 import { getProfileData } from '../../Utils/profileUtils';
 import { useCustomToast } from '../../Utils/toastUtils';
 import { updateDeviceToken } from '../../Utils/updateDeviceToken';
+
 import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
 import RenderHomeNearby from './Components/RenderHomeNearby';
@@ -47,7 +50,7 @@ const askNotificationPermission = async () => {
   }
 };
 
-const HomeScreen = () => {
+function HomeScreen() {
   const isFocus = useIsFocused();
   const { colors } = useTheme();
   const navigation = useCustomNavigation();
@@ -82,13 +85,18 @@ const HomeScreen = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
+
       return () => {};
-    }, [])
+    }, []),
   );
 
   const setupApp = async () => {
     try {
-      await Promise.all([askNotificationPermission(), requestLocationPermission(), updateDeviceToken()]);
+      await Promise.all([
+        askNotificationPermission(),
+        requestLocationPermission(),
+        updateDeviceToken(),
+      ]);
 
       if (isFocus && !isBoostActive) {
         setTimeout(showModal, 5000);
@@ -104,7 +112,13 @@ const HomeScreen = () => {
       setIsNearbyFetching(nearByData?.length === 0);
 
       listOpacity.value = 0;
-      await Promise.all([getMyLikes(), getProfileData(), fetchCategoryListData(), fetchNearbyListData()]);
+      await Promise.all([
+        getMyLikes(),
+        getProfileData(),
+        fetchCategoryListData(),
+        fetchNearbyListData(),
+      ]);
+
       listOpacity.value = withSpring(1, { damping: 15 });
     } catch (error) {
       console.error('Error fetching data on focus:', error);
@@ -142,7 +156,11 @@ const HomeScreen = () => {
       if (APIResponse?.code === 200) {
         setCategoryData(APIResponse?.data || []);
       } else {
-        showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Please try again later', 'error');
+        showToast(
+          TextString.error.toUpperCase(),
+          APIResponse?.message || 'Please try again later',
+          'error',
+        );
       }
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
@@ -177,7 +195,11 @@ const HomeScreen = () => {
       if (APIResponse?.code === 200) {
         setNearByData(APIResponse?.data || []);
       } else {
-        showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Please try again later', 'error');
+        showToast(
+          TextString.error.toUpperCase(),
+          APIResponse?.message || 'Please try again later',
+          'error',
+        );
       }
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
@@ -203,7 +225,10 @@ const HomeScreen = () => {
     });
   }, [selectedCategory, navigation]);
 
-  const keyExtractor = useCallback((item: any, index: number) => `${item.id || index.toString()}`, []);
+  const keyExtractor = useCallback(
+    (item: any, index: number) => `${item.id || index.toString()}`,
+    [],
+  );
 
   const renderLookingItem = useCallback(
     ({ item, index }: { item: HomeListProps['item']; index: number }) => (
@@ -211,11 +236,11 @@ const HomeScreen = () => {
         <RenderLookingView
           item={item}
           selectedCategory={selectedCategory}
-          onCategoryPress={(item) => setSelectedCategory(item.title)}
+          onCategoryPress={item => setSelectedCategory(item.title)}
         />
       </Animated.View>
     ),
-    [selectedCategory]
+    [selectedCategory],
   );
 
   const renderHomeNearbyItem = useCallback(
@@ -228,7 +253,7 @@ const HomeScreen = () => {
         <RenderHomeNearby item={item} />
       </Animated.View>
     ),
-    []
+    [],
   );
 
   const renderRecommendationItem = useCallback(
@@ -237,18 +262,22 @@ const HomeScreen = () => {
         <RenderRecommendation item={item} />
       </Animated.View>
     ),
-    []
+    [],
   );
 
   const NoCategoryListFound = useCallback(
     () => (
-      <Animated.View style={styles.noDataFoundView} entering={FadeIn.duration(400)} exiting={FadeOut.duration(400)}>
+      <Animated.View
+        style={styles.noDataFoundView}
+        entering={FadeIn.duration(400)}
+        exiting={FadeOut.duration(400)}
+      >
         <Text style={[styles.noDataFoundText, { color: colors.TextColor }]}>
           No people found for <Text style={{ color: colors.Primary }}>{selectedCategory}</Text>.
         </Text>
       </Animated.View>
     ),
-    [selectedCategory, colors]
+    [selectedCategory, colors],
   );
 
   const RenderNearbyHeader = useCallback(() => {
@@ -258,7 +287,9 @@ const HomeScreen = () => {
         hitSlop={{ right: 10, top: 10, bottom: 10, left: 10 }}
         onPress={handleSeeMorePress}
       >
-        <Text style={{ color: colors.TextColor, fontFamily: FONTS.SemiBold, fontSize: 15 }}>See more</Text>
+        <Text style={{ color: colors.TextColor, fontFamily: FONTS.SemiBold, fontSize: 15 }}>
+          See more
+        </Text>
       </Pressable>
     );
   }, [handleSeeMorePress]);
@@ -282,7 +313,10 @@ const HomeScreen = () => {
           contentContainerStyle={{ paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
         >
-          <Animated.View style={[{ paddingHorizontal: 20, alignSelf: 'center' }]} entering={FadeIn.duration(500)}>
+          <Animated.View
+            style={{ paddingHorizontal: 20, alignSelf: 'center' }}
+            entering={FadeIn.duration(500)}
+          >
             <CategoryHeaderView title="Welcome to explore" description="I'm looking for..." />
 
             <Animated.FlatList
@@ -316,7 +350,11 @@ const HomeScreen = () => {
               <NoCategoryListFound />
             )}
 
-            <CategoryHeaderView title="Near by" description="Based on your profile" style={{ marginTop: 30 }} />
+            <CategoryHeaderView
+              title="Near by"
+              description="Based on your profile"
+              style={{ marginTop: 30 }}
+            />
 
             {isNearbyFetching ? (
               <ActivityIndicator size="large" color={COLORS.Primary} style={{ height: 190 }} />
@@ -335,7 +373,9 @@ const HomeScreen = () => {
                     entering={FadeIn.duration(400)}
                     exiting={FadeOut.duration(400)}
                   >
-                    <Text style={[styles.noDataFoundText, { color: colors.TextColor }]}>No people near you.</Text>
+                    <Text style={[styles.noDataFoundText, { color: colors.TextColor }]}>
+                      No people near you.
+                    </Text>
                   </Animated.View>
                 }
               />
@@ -345,6 +385,6 @@ const HomeScreen = () => {
       </View>
     </GradientView>
   );
-};
+}
 
 export default memo(HomeScreen);

@@ -15,14 +15,23 @@ const useCalculateAge = (birthDate: string) => {
   const calculateAge = () => {
     if (!birthDate) {
       setAge(null);
+
       return;
     }
 
     try {
       const [month, day, year] = birthDate.split('/');
 
-      if (!month || !day || !year || isNaN(Number(month)) || isNaN(Number(day)) || isNaN(Number(year))) {
+      if (
+        !month ||
+        !day ||
+        !year ||
+        isNaN(Number(month)) ||
+        isNaN(Number(day)) ||
+        isNaN(Number(year))
+      ) {
         setAge(null);
+
         return;
       }
 
@@ -30,6 +39,7 @@ const useCalculateAge = (birthDate: string) => {
 
       if (isNaN(birthDateObject.getTime())) {
         setAge(null);
+
         return;
       }
 
@@ -39,7 +49,8 @@ const useCalculateAge = (birthDate: string) => {
 
       if (
         today.getMonth() < birthDateObject.getMonth() ||
-        (today.getMonth() === birthDateObject.getMonth() && today.getDate() < birthDateObject.getDate())
+        (today.getMonth() === birthDateObject.getMonth() &&
+          today.getDate() < birthDateObject.getDate())
       ) {
         calculatedAge--;
       }

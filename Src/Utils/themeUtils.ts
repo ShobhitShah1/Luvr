@@ -1,5 +1,5 @@
 import { COLORS, DARK_COLORS } from '../Common/Theme';
-import { ThemeColors } from '../Common/ThemeTypes';
+import type { ThemeColors } from '../Common/ThemeTypes';
 
 /**
  * Helper function to get the appropriate color based on theme
@@ -9,6 +9,7 @@ import { ThemeColors } from '../Common/ThemeTypes';
  */
 export const getColor = (colorName: keyof ThemeColors, isDark: boolean): string => {
   const color = isDark ? DARK_COLORS[colorName] : COLORS[colorName];
+
   return Array.isArray(color) ? color.join(', ') : color;
 };
 

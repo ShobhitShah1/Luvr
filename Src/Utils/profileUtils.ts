@@ -1,9 +1,11 @@
 import NetInfo from '@react-native-community/netinfo';
 import { batch } from 'react-redux';
+
+import { setUserData, updateField } from '../Redux/Action/actions';
+import { store } from '../Redux/Store/store';
 import UserService from '../Services/AuthService';
 import { LocalStorageFields } from '../Types/LocalStorageFields';
-import { store } from '../Redux/Store/store';
-import { setUserData, updateField } from '../Redux/Action/actions';
+
 import { flattenObject } from './flattenObject';
 
 const VALID_FIELDS = new Set(Object.keys(LocalStorageFields));
@@ -68,7 +70,7 @@ const batchUpdateFields = (validFields: FieldValuePair[], fullData: any): void =
 let profileFetchTimeout: NodeJS.Timeout | null = null;
 
 export const debouncedGetProfileData = (delayMs = 300): Promise<boolean> => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     if (profileFetchTimeout) {
       clearTimeout(profileFetchTimeout);
     }

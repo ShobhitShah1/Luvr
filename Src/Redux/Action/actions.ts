@@ -1,4 +1,4 @@
-import { LocalStorageFields } from '../../Types/LocalStorageFields';
+import type { LocalStorageFields } from '../../Types/LocalStorageFields';
 
 export const UPDATE_FIELD = 'UPDATE_FIELD';
 export const SET_USER_DATA = 'SET_USER_DATA';

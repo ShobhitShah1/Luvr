@@ -1,6 +1,9 @@
 // SettingFlexView.js
-import React, { FC, memo, useEffect, useState } from 'react';
-import { Image, ImageStyle, Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import React, { memo, useEffect, useState } from 'react';
+import type { FC } from 'react';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
+
 import CommonIcons from '../../../Common/CommonIcons';
 import { FONTS, GROUP_FONT } from '../../../Common/Theme';
 import SwitchComponent from '../../../Components/SwitchComponent';
@@ -46,7 +49,11 @@ const SettingFlexView: FC<SettingFlexViewProps> = ({
     >
       <Text style={[styles.ItemTextStyle, { color: colors.TextColor }, itemStyle]}>{Item}</Text>
       {!hideRightIcon && IsSwitch ? (
-        <SwitchComponent size={38} isActive={localIsActive} onPress={() => (onSwitchPress ? onSwitchPress() : {})} />
+        <SwitchComponent
+          size={38}
+          isActive={localIsActive}
+          onPress={() => (onSwitchPress ? onSwitchPress() : {})}
+        />
       ) : (
         <View
           style={[
@@ -66,32 +73,33 @@ const SettingFlexView: FC<SettingFlexViewProps> = ({
     </Pressable>
   );
 };
+
 export default memo(SettingFlexView);
 
 const styles = StyleSheet.create({
-  SettingView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  RightIconView: {
-    width: 30,
-    height: 30,
-    borderRadius: 100,
-    alignItems: 'center',
-    alignSelf: 'center',
-    justifyContent: 'center',
-  },
-  RightArrowIcon: {
-    width: 13,
-    height: 13,
-    alignItems: 'center',
-    alignSelf: 'center',
-    justifyContent: 'center',
-  },
   ItemTextStyle: {
     ...GROUP_FONT.body3,
-    fontSize: 14.5,
     fontFamily: FONTS.Medium,
+    fontSize: 14.5,
+  },
+  RightArrowIcon: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    height: 13,
+    justifyContent: 'center',
+    width: 13,
+  },
+  RightIconView: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: 100,
+    height: 30,
+    justifyContent: 'center',
+    width: 30,
+  },
+  SettingView: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });

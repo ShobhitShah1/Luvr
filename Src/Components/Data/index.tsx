@@ -1365,9 +1365,19 @@ export interface WhatAboutYouType {
 
 export const CommunicationStyleData: string[] = ['Introvert', 'Extrovert', 'Ambivert'];
 
-export const LoveLanguageData: string[] = ['Words of Affirmation', 'Acts of Service', 'Quality Time', 'Physical Touch'];
+export const LoveLanguageData: string[] = [
+  'Words of Affirmation',
+  'Acts of Service',
+  'Quality Time',
+  'Physical Touch',
+];
 
-export const EducationLevelData: string[] = ['High School', 'Some College', "Bachelor's Degree", "Master's Degree"];
+export const EducationLevelData: string[] = [
+  'High School',
+  'Some College',
+  "Bachelor's Degree",
+  "Master's Degree",
+];
 
 export const StarSignData: string[] = [
   'Aries',

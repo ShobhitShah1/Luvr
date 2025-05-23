@@ -1,9 +1,11 @@
+import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import MaskedView from '@react-native-masked-view/masked-view';
-import LinearGradient, { LinearGradientProps } from 'react-native-linear-gradient';
-import { useTheme } from '../../Contexts/ThemeContext';
+import LinearGradient from 'react-native-linear-gradient';
+import type { LinearGradientProps } from 'react-native-linear-gradient';
+
 import { gradientEnd, gradientStart } from '../../Config/Setting';
+import { useTheme } from '../../Contexts/ThemeContext';
 
 export type GradientProps = Omit<LinearGradientProps, 'style' | 'pointerEvents'>;
 
@@ -113,7 +115,7 @@ export default function GradientBorder({
           collapsable={false}
         />
       }
-      style={[StyleSheet.absoluteFill]}
+      style={StyleSheet.absoluteFill}
       pointerEvents="none"
     >
       <LinearGradient

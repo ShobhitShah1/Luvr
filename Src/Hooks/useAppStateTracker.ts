@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState } from 'react-native';
+import type { AppStateStatus } from 'react-native';
+
 import UserService from '../Services/AuthService';
 
 interface OnlineStatusData {
@@ -7,7 +9,7 @@ interface OnlineStatusData {
   is_online: boolean;
 }
 
-/**`
+/** `
  * Custom hook to track app state changes and notify the backend
  * Uses memoization and refs to prevent unnecessary re-renders or API calls
  * @returns The current app state

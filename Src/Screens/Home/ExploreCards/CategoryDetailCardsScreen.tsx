@@ -1,19 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-native/no-inline-styles */
+
 import NetInfo from '@react-native-community/netinfo';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { FC, memo, useCallback, useEffect, useState } from 'react';
+import { useRoute } from '@react-navigation/native';
+import type { RouteProp } from '@react-navigation/native';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import type { FC } from 'react';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
+
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { store } from '../../../Redux/Store/store';
 import UserService from '../../../Services/AuthService';
-import { ProfileType } from '../../../Types/ProfileType';
+import type { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import ItsAMatch from '../../Explore/Components/ItsAMatch';
+
 import CategoryDetailHeader from './Components/CategoryDetailHeader';
 import CategoryRenderCard from './Components/CategoryRenderCard';
 import styles from './styles';
@@ -22,7 +26,7 @@ type RootStackParamList = {
   CategoryDetailCards: { item: { id: number; title: string; image: any } };
 };
 
-interface CategoryDetailCardsInterface extends RouteProp<RootStackParamList, 'CategoryDetailCards'> {}
+type CategoryDetailCardsInterface = RouteProp<RootStackParamList, 'CategoryDetailCards'>;
 
 const CategoryDetailCardsScreen: FC = () => {
   const { colors } = useTheme();
@@ -45,12 +49,17 @@ const CategoryDetailCardsScreen: FC = () => {
     setIsAPILoading(categoryData?.length === 0);
     setItsMatchModalView(false);
 
-    const isConnected = (await NetInfo.fetch()).isConnected;
+    const { isConnected } = await NetInfo.fetch();
 
     if (!isConnected) {
       setIsAPILoading(false);
       setItsMatchModalView(false);
-      showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+
       return;
     }
 
@@ -77,7 +86,11 @@ const CategoryDetailCardsScreen: FC = () => {
       if (APIResponse?.code === 200) {
         setCategoryData(APIResponse?.data || []);
       } else {
-        showToast(TextString.error.toUpperCase(), APIResponse?.message || 'Please try again letter', 'error');
+        showToast(
+          TextString.error.toUpperCase(),
+          APIResponse?.message || 'Please try again letter',
+          'error',
+        );
       }
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
@@ -92,7 +105,7 @@ const CategoryDetailCardsScreen: FC = () => {
         <View style={styles.container}>
           <CategoryDetailHeader item={params?.item} />
           <View style={[styles.container, styles.LoaderContainer]}>
-            <ActivityIndicator size={'large'} color={colors.Primary} />
+            <ActivityIndicator size="large" color={colors.Primary} />
           </View>
         </View>
       </GradientView>

@@ -1,7 +1,14 @@
-import React, { FC, memo, useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
+import type { FC } from 'react';
 import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import Animated, { interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import CommonIcons from '../../../../Common/CommonIcons';
 import { COLORS, GROUP_FONT } from '../../../../Common/Theme';
 import { useTheme } from '../../../../Contexts/ThemeContext';
@@ -14,7 +21,12 @@ interface CreateProfileProps {
   hideBack?: boolean;
 }
 
-const CreateProfileHeader: FC<CreateProfileProps> = ({ ProgressCount, Skip, handleSkipPress, hideBack }) => {
+const CreateProfileHeader: FC<CreateProfileProps> = ({
+  ProgressCount,
+  Skip,
+  handleSkipPress,
+  hideBack,
+}) => {
   const { colors } = useTheme();
   const navigation = useCustomNavigation();
 
@@ -41,7 +53,7 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({ ProgressCount, Skip, hand
     <View style={styles.headerContainer}>
       <SafeAreaView />
       <View style={styles.buttonAndTitleContainer}>
-        <Animated.View style={[styles.leftSection]}>
+        <Animated.View style={styles.leftSection}>
           {!hideBack && (
             <Pressable
               style={styles.backButtonView}
@@ -58,15 +70,17 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({ ProgressCount, Skip, hand
           )}
         </Animated.View>
 
-        <Animated.View style={[styles.centerSection]}>
+        <Animated.View style={styles.centerSection}>
           {ProgressCount !== 0 && (
-            <Animated.Text style={[styles.pageCount, { color: colors.TextColor }, countAnimatedStyle]}>
+            <Animated.Text
+              style={[styles.pageCount, { color: colors.TextColor }, countAnimatedStyle]}
+            >
               {countValue.value}/9
             </Animated.Text>
           )}
         </Animated.View>
 
-        <Animated.View style={[styles.rightSection]}>
+        <Animated.View style={styles.rightSection}>
           {Skip && (
             <Pressable
               onPress={handleSkipPress}
@@ -85,52 +99,52 @@ const CreateProfileHeader: FC<CreateProfileProps> = ({ ProgressCount, Skip, hand
 export default memo(CreateProfileHeader);
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    width: '100%',
-    margin: hp('1%'),
-    paddingHorizontal: hp('1.5%'),
+  backButtonView: {
+    alignItems: 'center',
+    height: hp('3.5%'),
     justifyContent: 'center',
-    alignSelf: 'center',
   },
   buttonAndTitleContainer: {
-    width: '100%',
-    marginHorizontal: hp('1.5%'),
-    marginVertical: Platform.OS === 'ios' ? 0 : hp('1.5%'),
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  leftSection: {
-    flex: 1,
-    alignItems: 'flex-start',
-  },
-  centerSection: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  rightSection: {
-    flex: 1,
-    alignItems: 'flex-end',
+    marginHorizontal: hp('1.5%'),
+    marginVertical: Platform.OS === 'ios' ? 0 : hp('1.5%'),
+    width: '100%',
   },
   cancelButton: {
-    width: hp('3.5%'),
     height: hp('3.5%'),
+    width: hp('3.5%'),
+  },
+  centerSection: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  headerContainer: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    margin: hp('1%'),
+    paddingHorizontal: hp('1.5%'),
+    width: '100%',
+  },
+  leftSection: {
+    alignItems: 'flex-start',
+    flex: 1,
   },
   pageCount: {
     ...GROUP_FONT.h3,
     fontSize: hp('1.9%'),
   },
-  skipText: {
-    ...GROUP_FONT.h3,
-    color: COLORS.Gray,
-  },
-  backButtonView: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: hp('3.5%'),
+  rightSection: {
+    alignItems: 'flex-end',
+    flex: 1,
   },
   skipButton: {
     justifyContent: 'center',
     marginRight: Platform.OS === 'ios' ? hp('2.5%') : hp('1%'),
+  },
+  skipText: {
+    ...GROUP_FONT.h3,
+    color: COLORS.Gray,
   },
 });

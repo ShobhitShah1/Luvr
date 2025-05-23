@@ -1,14 +1,16 @@
-import React, { FC, memo } from 'react';
+import React, { memo } from 'react';
+import type { FC } from 'react';
 import { Dimensions, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import ReactNativeModal from 'react-native-modal';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import CommonIcons from '../../../Common/CommonIcons';
 import { COLORS, FONTS, deviceHeightWithStatusbar } from '../../../Common/Theme';
 import { GradientBorderView } from '../../../Components/GradientBorder';
-import { ReportOrBlockInterface } from '../../../Types/Interface';
-import { useTheme } from '../../../Contexts/ThemeContext';
-import LinearGradient from 'react-native-linear-gradient';
 import { gradientEnd, gradientStart } from '../../../Config/Setting';
+import { useTheme } from '../../../Contexts/ThemeContext';
+import type { ReportOrBlockInterface } from '../../../Types/Interface';
 
 const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
   isVisible,
@@ -37,9 +39,19 @@ const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
     >
       <SafeAreaView style={styles.safeAreaContainer}>
         <GradientBorderView
-          style={[styles.modalContent, { backgroundColor: isDark ? 'rgba(13, 1, 38, 0.9)' : colors.White }]}
+          style={[
+            styles.modalContent,
+            { backgroundColor: isDark ? 'rgba(13, 1, 38, 0.9)' : colors.White },
+          ]}
         >
-          <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'center', marginVertical: 10 }}>
+          <View
+            style={{
+              width: '100%',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              marginVertical: 10,
+            }}
+          >
             <Text style={[styles.title, { color: colors.TitleText }]}>Choose an Action</Text>
 
             <Pressable
@@ -110,75 +122,75 @@ const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
 export default memo(ReportOrBlockModal);
 
 const styles = StyleSheet.create({
-  modalContainer: {
-    margin: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  safeAreaContainer: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modalContent: {
-    width: Dimensions.get('screen').width - 50,
-    borderRadius: 30,
-    alignItems: 'center',
-    borderWidth: 2,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 10,
-    right: 20,
-    zIndex: 10,
-  },
-  closeIcon: {
-    width: 26,
-    height: 26,
-  },
-  title: {
-    fontSize: 19,
-    fontFamily: FONTS.Bold,
-    marginVertical: 10,
-    textAlign: 'center',
-  },
-  buttonContainer: {
-    width: '100%',
-    gap: 15,
-  },
   actionButton: {
-    flexDirection: 'row',
     alignItems: 'center',
+    borderRadius: 20,
+    borderWidth: 1,
+    flexDirection: 'row',
     justifyContent: 'center',
     marginHorizontal: 10,
     padding: 15,
-    borderRadius: 20,
-    borderWidth: 1,
   },
   actionIcon: {
-    width: 20,
     height: 20,
     marginRight: 10,
+    width: 20,
   },
   actionText: {
     fontFamily: FONTS.SemiBold,
     fontSize: 16,
   },
-  cancelButton: {
-    marginVertical: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  cancelText: {
-    fontSize: 15,
-    fontFamily: FONTS.Medium,
-  },
   button: {
+    alignItems: 'center',
     flex: 1,
-    width: '100%',
+    flexDirection: 'row',
     height: '100%',
     justifyContent: 'center',
-    flexDirection: 'row',
+    width: '100%',
+  },
+  buttonContainer: {
+    gap: 15,
+    width: '100%',
+  },
+  cancelButton: {
+    marginVertical: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  cancelText: {
+    fontFamily: FONTS.Medium,
+    fontSize: 15,
+  },
+  closeButton: {
+    position: 'absolute',
+    right: 20,
+    top: 10,
+    zIndex: 10,
+  },
+  closeIcon: {
+    height: 26,
+    width: 26,
+  },
+  modalContainer: {
     alignItems: 'center',
+    justifyContent: 'center',
+    margin: 0,
+  },
+  modalContent: {
+    alignItems: 'center',
+    borderRadius: 30,
+    borderWidth: 2,
+    width: Dimensions.get('screen').width - 50,
+  },
+  safeAreaContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  title: {
+    fontFamily: FONTS.Bold,
+    fontSize: 19,
+    marginVertical: 10,
+    textAlign: 'center',
   },
 });

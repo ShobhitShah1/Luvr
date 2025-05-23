@@ -1,9 +1,11 @@
-/* eslint-disable react-native/no-inline-styles */
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import React, { FC, memo, useEffect, useRef, useState } from 'react';
-import { Keyboard, Text, TextInput, View } from 'react-native';
+import React, { memo, useEffect, useRef, useState } from 'react';
+import type { FC } from 'react';
+import { Keyboard, Text, View } from 'react-native';
+import type { TextInput } from 'react-native';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
 import { useDispatch, useSelector } from 'react-redux';
+
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
 import GradientButton from '../../../Components/AuthComponents/GradientButton';
@@ -18,6 +20,7 @@ import { transformUserDataForApi } from '../../../Services/dataTransformService'
 import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import CreateProfileHeader from '../CreateProfile/Components/CreateProfileHeader';
+
 import styles from './styles';
 
 const OTPInputs = 4;
@@ -59,16 +62,19 @@ const OTPScreen: FC = () => {
     let interval: NodeJS.Timeout;
     if (ResendDisabled) {
       interval = setInterval(() => {
-        setResendTimer((prevTimer) => {
+        setResendTimer(prevTimer => {
           if (prevTimer === 0) {
             clearInterval(interval);
             setResendDisabled(false);
+
             return 0;
           }
+
           return prevTimer - 1;
         });
       }, 1000);
     }
+
     return () => {
       clearInterval(interval);
     };
@@ -111,15 +117,16 @@ const OTPScreen: FC = () => {
         showToast(
           'OTP verified Successfully',
           'Your OTP has been successfully verified. You can now proceed.',
-          'success'
+          'success',
         );
+
         return;
       }
 
       const userDataForApi = {
         eventName: 'verify_otp',
         mobile_no: number,
-        otp: otp,
+        otp,
       };
 
       const response = await UserService.UserRegister(userDataForApi);
@@ -141,10 +148,11 @@ const OTPScreen: FC = () => {
         showToast(
           'OTP verified Successfully',
           'Your OTP has been successfully verified. You can now proceed.',
-          'success'
+          'success',
         );
       } else {
         setOtp('');
+
         throw new Error('The OTP entered is incorrect. Please try again.');
       }
     } catch (error: any) {
@@ -170,7 +178,9 @@ const OTPScreen: FC = () => {
         setResendTimer(10);
         showToast('OTP Resend Successfully', 'Please check your device for OTP', 'success');
       } else {
-        throw new Error(response?.error?.message || response?.message || 'OTP resend failed. Please try again.');
+        throw new Error(
+          response?.error?.message || response?.message || 'OTP resend failed. Please try again.',
+        );
       }
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
@@ -207,6 +217,7 @@ const OTPScreen: FC = () => {
     const userDataToSend = {
       eventName: 'get_profile',
     };
+
     const APIResponse = await UserService.UserRegister(userDataToSend);
 
     if (APIResponse?.code === 200) {
@@ -216,6 +227,7 @@ const OTPScreen: FC = () => {
         longitude: userData?.longitude || 0,
         eventName: 'update_profile',
       };
+
       const UpdateAPIResponse = await UserService.UserRegister(ModifyData);
 
       if (UpdateAPIResponse && UpdateAPIResponse.code === 200) {
@@ -234,6 +246,7 @@ const OTPScreen: FC = () => {
           UpdateAPIResponse && UpdateAPIResponse.error
             ? UpdateAPIResponse.error
             : 'Unknown error occurred during registration.';
+
         throw new Error(errorMessage);
       }
     }
@@ -249,7 +262,9 @@ const OTPScreen: FC = () => {
             <Text style={style.MyCodeText}>Enter your{'\n'}code</Text>
             <Text style={[style.DescText, { color: colors.TextColor }]}>
               Enter 4-digit code. We have sent to{'\n'}you at{' '}
-              <Text style={[style.NumberText, { color: colors.Primary }]}>{number?.toString() || ''}</Text>
+              <Text style={[style.NumberText, { color: colors.Primary }]}>
+                {number?.toString() || ''}
+              </Text>
             </Text>
           </View>
 
@@ -261,7 +276,7 @@ const OTPScreen: FC = () => {
               codeLength={OTPInputs}
               disableFullscreenUI={false}
               cellStyle={style.OTPCellStyle}
-              placeholder={'0'}
+              placeholder="0"
               textStyle={style.OTPTextStyle}
               containerStyle={style.OTPContainerStyle}
               cellStyleFocused={style.OTPCellStyleFocused}
@@ -291,9 +306,9 @@ const OTPScreen: FC = () => {
           </View>
         </View>
 
-        <View style={[style.VerifyOTPButtonView]}>
+        <View style={style.VerifyOTPButtonView}>
           <GradientButton
-            Title={'Continue'}
+            Title="Continue"
             isLoading={IsAPILoading}
             Disabled={DisableButton}
             Navigation={onVerifyClick}

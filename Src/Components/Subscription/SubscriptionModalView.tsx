@@ -1,11 +1,13 @@
-import { Dimensions, Image, Platform, Pressable, StatusBar, StyleSheet, View } from 'react-native';
 import React, { memo } from 'react';
-import Modal from 'react-native-modal';
-import SubscriptionView from './SubscriptionView';
-import { useTheme } from '../../Contexts/ThemeContext';
+import { Dimensions, Image, Platform, Pressable, StatusBar, StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import Modal from 'react-native-modal';
+
 import CommonIcons from '../../Common/CommonIcons';
 import { useSubscriptionModal } from '../../Contexts/SubscriptionModalContext';
+import { useTheme } from '../../Contexts/ThemeContext';
+
+import SubscriptionView from './SubscriptionView';
 
 interface SubscriptionModalViewProps {
   isVisible: boolean;
@@ -14,12 +16,12 @@ interface SubscriptionModalViewProps {
   handlePlanSelection?: (key: string) => void;
 }
 
-const SubscriptionModalView = ({
+function SubscriptionModalView({
   isVisible,
   onClose,
   selectedPlan,
   handlePlanSelection,
-}: SubscriptionModalViewProps) => {
+}: SubscriptionModalViewProps) {
   const { colors } = useTheme();
   const { hideSubscriptionModal } = useSubscriptionModal();
 
@@ -40,7 +42,12 @@ const SubscriptionModalView = ({
     >
       <Pressable
         onPress={hideSubscriptionModal}
-        style={{ position: 'absolute', top: Platform.OS === 'ios' ? 75 : 50, right: 25, zIndex: 1000 }}
+        style={{
+          position: 'absolute',
+          top: Platform.OS === 'ios' ? 75 : 50,
+          right: 25,
+          zIndex: 1000,
+        }}
       >
         <Image source={CommonIcons.CloseModal} style={{ width: 30, height: 30 }} />
       </Pressable>
@@ -50,23 +57,23 @@ const SubscriptionModalView = ({
       </LinearGradient>
     </Modal>
   );
-};
+}
 
 export default memo(SubscriptionModalView);
 
 const styles = StyleSheet.create({
-  modal: {
-    margin: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   container: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    paddingTop: Platform.OS === 'ios' ? '40%' : '30%',
     borderRadius: 20,
-    overflow: 'hidden',
+    flex: 1,
+    height: '100%',
     justifyContent: 'center',
+    overflow: 'hidden',
+    paddingTop: Platform.OS === 'ios' ? '40%' : '30%',
+    width: '100%',
+  },
+  modal: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 0,
   },
 });

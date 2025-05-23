@@ -4,8 +4,8 @@ import {
   SET_BOOST_LOADING,
   SET_BOOST_ERROR,
   CLEAR_BOOST_ERROR,
-  BoostModalActionTypes,
 } from '../Action/BoostModalActions';
+import type { BoostModalActionTypes } from '../Action/BoostModalActions';
 
 export interface BoostModalState {
   isVisible: boolean;
@@ -19,7 +19,10 @@ const initialState: BoostModalState = {
   error: null,
 };
 
-const boostModalReducer = (state = initialState, action: BoostModalActionTypes): BoostModalState => {
+const boostModalReducer = (
+  state = initialState,
+  action: BoostModalActionTypes,
+): BoostModalState => {
   switch (action.type) {
     case SHOW_BOOST_MODAL:
       return {

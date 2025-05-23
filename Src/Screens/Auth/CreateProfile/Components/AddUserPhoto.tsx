@@ -1,7 +1,7 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, { useState } from 'react';
 import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import CommonIcons from '../../../../Common/CommonIcons';
 import { COLORS, GROUP_FONT, SIZES } from '../../../../Common/Theme';
 import { useTheme } from '../../../../Contexts/ThemeContext';
@@ -58,11 +58,15 @@ const AddUserPhoto: React.FC<AddUserPhotoProps> = ({ picture }) => {
           styles.BlurViewContainer,
           {
             // backgroundColor: isDark ? 'rgba(255, 255, 255, 0.2)' : colors.White,
-            borderColor: hasPicture ? colors.White : isDark ? 'rgba(198, 198, 198, 0.5)' : colors.Black,
+            borderColor: hasPicture
+              ? colors.White
+              : isDark
+              ? 'rgba(198, 198, 198, 0.5)'
+              : colors.Black,
           },
         ]}
       >
-        <View style={[styles.AddAndDeleteContainerView]}>
+        <View style={styles.AddAndDeleteContainerView}>
           <View style={styles.FlexView}>
             <Image
               resizeMode="cover"
@@ -94,87 +98,87 @@ const AddUserPhoto: React.FC<AddUserPhotoProps> = ({ picture }) => {
 export default AddUserPhoto;
 
 const styles = StyleSheet.create({
-  item: {
-    overflow: 'hidden',
-    width: hp('19%'),
-    height: hp('19%'),
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: hp('1.5%'),
-    marginVertical: hp('0.3%'),
-    // backgroundColor: colors.White,
-  },
-  ImageHasImageView: {
-    width: '100%',
-    height: '100%',
-  },
-  NoImageView: {
-    width: '30%',
-    height: '30%',
-    overflow: 'hidden',
-    alignSelf: 'center',
-    justifyContent: 'center',
-    bottom: 15,
-  },
-  item_text: {
-    ...GROUP_FONT.h4,
-  },
-  userImageContainer: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-    borderRadius: hp('1.5%'),
-    justifyContent: 'center',
-  },
-  ImageAddAndDeleteView: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  BlurViewContainer: {
-    flex: 1,
-    bottom: 10,
-    height: 35,
-    width: '85%',
-    overflow: 'hidden',
-    alignSelf: 'center',
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: hp('0.13%'),
-    borderRadius: SIZES.radius,
-  },
-  BlurView: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    alignSelf: 'center',
-    overflow: 'hidden',
-    borderWidth: 1,
-    justifyContent: 'center',
-  },
   AddAndDeleteContainerView: {
     alignSelf: 'center',
-    justifyContent: 'center',
     backgroundColor: 'transparent',
-  },
-  FlexView: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    flexDirection: 'row',
     justifyContent: 'center',
-  },
-  ImageView: {
-    width: hp('2%'),
-    height: hp('2%'),
-    alignSelf: 'center',
-    marginHorizontal: hp('0.5%'),
   },
   AddAndRemoveText: {
     alignSelf: 'center',
     textAlign: 'center',
     ...GROUP_FONT.h3,
+  },
+  BlurView: {
+    alignSelf: 'center',
+    borderWidth: 1,
+    flex: 1,
+    height: '100%',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    width: '100%',
+  },
+  BlurViewContainer: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: SIZES.radius,
+    borderWidth: hp('0.13%'),
+    bottom: 10,
+    flex: 1,
+    height: 35,
+    justifyContent: 'center',
+    overflow: 'hidden',
+    position: 'absolute',
+    width: '85%',
+  },
+  FlexView: {
+    flex: 1,
+    flexDirection: 'row',
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  ImageAddAndDeleteView: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  ImageHasImageView: {
+    height: '100%',
+    width: '100%',
+  },
+  ImageView: {
+    alignSelf: 'center',
+    height: hp('2%'),
+    marginHorizontal: hp('0.5%'),
+    width: hp('2%'),
+  },
+  NoImageView: {
+    alignSelf: 'center',
+    bottom: 15,
+    height: '30%',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    width: '30%',
+  },
+  item: {
+    alignItems: 'center',
+    borderRadius: hp('1.5%'),
+    height: hp('19%'),
+    justifyContent: 'center',
+    marginVertical: hp('0.3%'),
+    overflow: 'hidden',
+    width: hp('19%'),
+    // backgroundColor: colors.White,
+  },
+  item_text: {
+    ...GROUP_FONT.h4,
+  },
+  userImageContainer: {
+    borderRadius: hp('1.5%'),
+    flex: 1,
+    height: '100%',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    width: '100%',
   },
 });

@@ -1,16 +1,17 @@
-/* eslint-disable react-native/no-inline-styles */
 import { BlurView } from '@react-native-community/blur';
-import React, { FC, memo } from 'react';
+import React, { memo } from 'react';
+import type { FC } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 import CommonIcons from '../../../../Common/CommonIcons';
 import CommonImages from '../../../../Common/CommonImages';
-import { COLORS, GROUP_FONT, SIZES } from '../../../../Common/Theme';
 import GradientView from '../../../../Common/GradientView';
-import { useTheme } from '../../../../Contexts/ThemeContext';
-import LinearGradient from 'react-native-linear-gradient';
+import { COLORS, GROUP_FONT, SIZES } from '../../../../Common/Theme';
 import { gradientEnd, gradientStart } from '../../../../Config/Setting';
+import { useTheme } from '../../../../Contexts/ThemeContext';
 
 interface ChooseFromModalProps {
   isModalVisible: boolean;
@@ -18,26 +19,37 @@ interface ChooseFromModalProps {
   OnOptionPress: (option: string) => void;
 }
 
-const BlurredBackdrop = ({ toggleModal }: { toggleModal: () => void }) => (
-  <Pressable onPress={toggleModal} style={styles.blurContainer}>
-    <BlurView style={styles.blurView} blurAmount={1} blurType="dark" reducedTransparencyFallbackColor="transparent" />
-  </Pressable>
-);
+function BlurredBackdrop({ toggleModal }: { toggleModal: () => void }) {
+  return (
+    <Pressable onPress={toggleModal} style={styles.blurContainer}>
+      <BlurView
+        style={styles.blurView}
+        blurAmount={1}
+        blurType="dark"
+        reducedTransparencyFallbackColor="transparent"
+      />
+    </Pressable>
+  );
+}
 
-const ChooseFromModal: FC<ChooseFromModalProps> = ({ isModalVisible, toggleModal, OnOptionPress }) => {
+const ChooseFromModal: FC<ChooseFromModalProps> = ({
+  isModalVisible,
+  toggleModal,
+  OnOptionPress,
+}) => {
   const { colors, isDark } = useTheme();
 
   return (
     <Modal
       hasBackdrop
-      testID={'modal'}
+      testID="modal"
       backdropColor="transparent"
-      animationIn={'slideInUp'}
+      animationIn="slideInUp"
       animationInTiming={300}
       animationOutTiming={300}
       backdropOpacity={1}
       customBackdrop={<BlurredBackdrop toggleModal={toggleModal} />}
-      animationOut={'slideOutDown'}
+      animationOut="slideOutDown"
       useNativeDriver={true}
       useNativeDriverForBackdrop={true}
       onBackButtonPress={toggleModal}
@@ -49,14 +61,20 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({ isModalVisible, toggleModal
       <LinearGradient
         start={gradientStart}
         end={gradientEnd}
-        colors={isDark ? ['rgba(255, 255, 255, 0.35)', 'rgba(255, 255, 255, 0.35)'] : [colors.White, colors.White]}
+        colors={
+          isDark
+            ? ['rgba(255, 255, 255, 0.35)', 'rgba(255, 255, 255, 0.35)']
+            : [colors.White, colors.White]
+        }
         style={styles.ModalView}
       >
         <View style={{}}>
           <View style={styles.TopViewContainer}>
             <View style={styles.TopTitleViewContainer}>
               <Text style={[styles.TitleText, { color: colors.TitleText }]}>Add photos from</Text>
-              <Text style={[styles.DescriptionText, { color: colors.TextColor }]}>Select source for upload photos</Text>
+              <Text style={[styles.DescriptionText, { color: colors.TextColor }]}>
+                Select source for upload photos
+              </Text>
             </View>
 
             <Pressable
@@ -71,7 +89,10 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({ isModalVisible, toggleModal
           <View style={styles.ButtonContainerView}>
             <Pressable
               onPress={() => OnOptionPress('Gallery')}
-              style={[styles.ButtonView, { backgroundColor: isDark ? colors.White : 'rgba(255, 155, 82, 1)' }]}
+              style={[
+                styles.ButtonView,
+                { backgroundColor: isDark ? colors.White : 'rgba(255, 155, 82, 1)' },
+              ]}
             >
               <Image
                 resizeMode="contain"
@@ -80,14 +101,21 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({ isModalVisible, toggleModal
                 style={styles.IconView}
               />
               <View style={styles.TextView}>
-                <Text style={[styles.Title, { color: isDark ? colors.Black : colors.White }]}>Upload from</Text>
-                <Text style={[styles.Pick, { color: isDark ? colors.Black : colors.White }]}>Gallery</Text>
+                <Text style={[styles.Title, { color: isDark ? colors.Black : colors.White }]}>
+                  Upload from
+                </Text>
+                <Text style={[styles.Pick, { color: isDark ? colors.Black : colors.White }]}>
+                  Gallery
+                </Text>
               </View>
             </Pressable>
 
             <Pressable
               onPress={() => OnOptionPress('Camera')}
-              style={[styles.ButtonView, { backgroundColor: isDark ? colors.White : 'rgba(95, 197, 255, 1)' }]}
+              style={[
+                styles.ButtonView,
+                { backgroundColor: isDark ? colors.White : 'rgba(95, 197, 255, 1)' },
+              ]}
             >
               <Image
                 resizeMode="contain"
@@ -96,8 +124,12 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({ isModalVisible, toggleModal
                 style={styles.IconView}
               />
               <View style={styles.TextView}>
-                <Text style={[styles.Title, { color: isDark ? colors.Black : colors.White }]}>Capture from</Text>
-                <Text style={[styles.Pick, { color: isDark ? colors.Black : colors.White }]}>Camera</Text>
+                <Text style={[styles.Title, { color: isDark ? colors.Black : colors.White }]}>
+                  Capture from
+                </Text>
+                <Text style={[styles.Pick, { color: isDark ? colors.Black : colors.White }]}>
+                  Camera
+                </Text>
               </View>
             </Pressable>
           </View>
@@ -110,67 +142,54 @@ const ChooseFromModal: FC<ChooseFromModalProps> = ({ isModalVisible, toggleModal
 export default memo(ChooseFromModal);
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'flex-end',
-    margin: 0,
-  },
-  ModalView: {
-    width: '85%',
-    bottom: hp('4%'),
-    alignSelf: 'center',
-    justifyContent: 'center',
+  ButtonContainerView: {
     borderRadius: SIZES.radius,
-    paddingVertical: hp('2.5%'),
   },
-
-  TopViewContainer: {
-    width: '100%',
-    paddingHorizontal: hp('2.7%'),
-    marginBottom: hp('3%'),
+  ButtonView: {
+    alignSelf: 'center',
+    backgroundColor: COLORS.Primary,
+    borderRadius: SIZES.radius,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  TopTitleViewContainer: {
+    height: hp('7.5%'),
+    justifyContent: 'center',
+    marginVertical: hp(1),
+    overflow: 'hidden',
     width: '80%',
   },
-  TitleText: {
-    ...GROUP_FONT.h2,
+
+  CloseButton: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  CloseButtonIcon: {
+    height: 23,
+    justifyContent: 'center',
+    width: 23,
   },
   DescriptionText: {
     ...GROUP_FONT.body3,
     fontSize: 13,
     top: 3,
   },
-  CloseButton: {
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  CloseButtonIcon: {
-    justifyContent: 'center',
-    width: 23,
-    height: 23,
-  },
-
-  ButtonContainerView: {
-    borderRadius: SIZES.radius,
-  },
-  ButtonView: {
-    width: '80%',
-    height: hp('7.5%'),
-    overflow: 'hidden',
-    alignSelf: 'center',
-    marginVertical: hp(1),
-    flexDirection: 'row',
-    justifyContent: 'center',
-    borderRadius: SIZES.radius,
-    backgroundColor: COLORS.Primary,
-  },
   IconView: {
-    width: hp('4.5%'),
-    height: hp('4.5%'),
     alignSelf: 'center',
+    height: hp('4.5%'),
     justifyContent: 'center',
+    width: hp('4.5%'),
+  },
+  ModalView: {
+    alignSelf: 'center',
+    borderRadius: SIZES.radius,
+    bottom: hp('4%'),
+    justifyContent: 'center',
+    paddingVertical: hp('2.5%'),
+    width: '85%',
+  },
+  Pick: {
+    ...GROUP_FONT.h3,
+    color: COLORS.White,
+    fontSize: 12,
+    marginHorizontal: hp('1%'),
   },
 
   TextView: {
@@ -184,21 +203,34 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginHorizontal: hp('1%'),
   },
-  Pick: {
-    ...GROUP_FONT.h3,
-    color: COLORS.White,
-    fontSize: 12,
-    marginHorizontal: hp('1%'),
+  TitleText: {
+    ...GROUP_FONT.h2,
+  },
+
+  TopTitleViewContainer: {
+    width: '80%',
+  },
+  TopViewContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: hp('3%'),
+    paddingHorizontal: hp('2.7%'),
+    width: '100%',
   },
   blurContainer: {
     backgroundColor: 'transparent',
     flex: 1,
   },
   blurView: {
-    position: 'absolute',
+    bottom: 0,
     left: 0,
+    position: 'absolute',
     right: 0,
     top: 0,
-    bottom: 0,
+  },
+  container: {
+    justifyContent: 'flex-end',
+    margin: 0,
   },
 });

@@ -1,12 +1,13 @@
-import { AxiosRequestConfig } from 'axios';
-import { ProfileType } from './ProfileType';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RouteProp } from '@react-navigation/native';
-import { chatRoomDataType } from './chatRoomDataType';
+import type { RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { AxiosRequestConfig } from 'axios';
+
+import type { chatRoomDataType } from './chatRoomDataType';
+import type { ProfileType } from './ProfileType';
 
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
+    type RootParamList = RootStackParamList;
   }
 }
 
@@ -87,7 +88,10 @@ export type RootStackParamList = {
   IncognitoScreen: undefined;
 };
 
-export type StackNavigationProp<T extends keyof RootStackParamList> = NativeStackNavigationProp<RootStackParamList, T>;
+export type StackNavigationProp<T extends keyof RootStackParamList> = NativeStackNavigationProp<
+  RootStackParamList,
+  T
+>;
 
 export type StackRouteProp<T extends keyof RootStackParamList> = RouteProp<RootStackParamList, T>;
 
@@ -102,7 +106,7 @@ export interface FetchWrapper {
   uploadHandler: (
     url: string,
     formData: FormData | Record<string, any> | any,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ) => Promise<any>;
 }
 

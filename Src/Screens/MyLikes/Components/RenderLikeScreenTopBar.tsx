@@ -1,8 +1,9 @@
 import React from 'react';
-import { LinearGradient } from 'react-native-linear-gradient';
-import { useTheme } from '../../../Contexts/ThemeContext';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { TabData } from '../MyLikesScreen';
+import { LinearGradient } from 'react-native-linear-gradient';
+
+import { useTheme } from '../../../Contexts/ThemeContext';
+import type { TabData } from '../MyLikesScreen';
 import styles from '../styles';
 
 type RenderLikeScreenTopBarProps = {
@@ -15,6 +16,7 @@ type RenderLikeScreenTopBarProps = {
 export const RenderLikeScreenTopBar = React.memo(
   ({ item, onPress, isSelected, tabsData }: RenderLikeScreenTopBarProps) => {
     const { colors, isDark } = useTheme();
+
     return (
       <Pressable
         key={item.index}
@@ -32,7 +34,11 @@ export const RenderLikeScreenTopBar = React.memo(
           start={{ x: 1, y: 0 }}
           end={{ x: 0, y: 1 }}
           colors={
-            isSelected ? colors.ButtonGradient : !isDark ? [colors.White, colors.White] : ['transparent', 'transparent']
+            isSelected
+              ? colors.ButtonGradient
+              : !isDark
+              ? [colors.White, colors.White]
+              : ['transparent', 'transparent']
           }
           style={{
             flex: 1,
@@ -44,7 +50,11 @@ export const RenderLikeScreenTopBar = React.memo(
             style={[
               styles.TabBarButtonText,
               {
-                color: isSelected ? (isDark ? colors.TextColor : colors.White) : 'rgba(130, 130, 130, 1)',
+                color: isSelected
+                  ? isDark
+                    ? colors.TextColor
+                    : colors.White
+                  : 'rgba(130, 130, 130, 1)',
               },
             ]}
           >
@@ -66,9 +76,11 @@ export const RenderLikeScreenTopBar = React.memo(
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: colors.Black, fontSize: 10, fontWeight: 'bold' }}>{item.count}</Text>
+          <Text style={{ color: colors.Black, fontSize: 10, fontWeight: 'bold' }}>
+            {item.count}
+          </Text>
         </View>
       </Pressable>
     );
-  }
+  },
 );

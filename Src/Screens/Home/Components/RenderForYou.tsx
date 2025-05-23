@@ -1,8 +1,10 @@
-import React, {FC} from 'react';
-import {ImageBackground, StyleSheet, Text, View} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import React from 'react';
+import type { FC } from 'react';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {COLORS, GROUP_FONT} from '../../../Common/Theme';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
+import { COLORS, GROUP_FONT } from '../../../Common/Theme';
 
 interface RenderlookingViewProps {
   item: {
@@ -14,20 +16,22 @@ interface RenderlookingViewProps {
   isFullWidth: boolean;
 }
 
-const RenderForYou: FC<RenderlookingViewProps> = ({item, index}) => {
+const RenderForYou: FC<RenderlookingViewProps> = ({ item, index }) => {
   const marginHorizontal = index === 1 || index === 3 ? '3%' : 0;
 
   return (
-    <View style={[styles.container, {marginHorizontal}]}>
+    <View style={[styles.container, { marginHorizontal }]}>
       <ImageBackground
         source={item.image}
         resizeMode="cover"
         style={styles.imageView}
-        imageStyle={styles.imageStyle}>
+        imageStyle={styles.imageStyle}
+      >
         <LinearGradient
           colors={COLORS.GradientViewForCards}
           locations={[0, 1]}
-          style={styles.gradient}>
+          style={styles.gradient}
+        >
           <Text style={styles.TitleText}>{item.title}</Text>
         </LinearGradient>
       </ImageBackground>
@@ -38,34 +42,34 @@ const RenderForYou: FC<RenderlookingViewProps> = ({item, index}) => {
 export default RenderForYou;
 
 const styles = StyleSheet.create({
+  TitleText: {
+    width: '100%',
+    ...GROUP_FONT.h2,
+    bottom: hp('2%'),
+    color: COLORS.White,
+    marginHorizontal: hp('2%'),
+  },
   container: {
-    width: '47%',
-    height: hp('23%'),
-    overflow: 'hidden',
-    marginVertical: '1%',
     borderRadius: hp('3%'),
-  },
-  imageView: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'flex-end',
-  },
-  imageStyle: {
-    width: '100%',
-    height: '100%',
-    alignSelf: 'center',
-    justifyContent: 'center',
+    height: hp('23%'),
+    marginVertical: '1%',
+    overflow: 'hidden',
+    width: '47%',
   },
   gradient: {
     flex: 0.5,
     justifyContent: 'flex-end',
     // borderRadius: hp('5%'),
   },
-  TitleText: {
+  imageStyle: {
+    alignSelf: 'center',
+    height: '100%',
+    justifyContent: 'center',
     width: '100%',
-    ...GROUP_FONT.h2,
-    color: COLORS.White,
-    marginHorizontal: hp('2%'),
-    bottom: hp('2%'),
+  },
+  imageView: {
+    height: '100%',
+    justifyContent: 'flex-end',
+    width: '100%',
   },
 });

@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 import {
   BottomSheetBackdrop,
@@ -22,12 +20,14 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
+import type { TextInput } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import * as ImagePicker from 'react-native-image-picker';
+import LinearGradient from 'react-native-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
+
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
@@ -43,17 +43,17 @@ import { useLocationPermission } from '../../Hooks/useLocationPermission';
 import { updateField } from '../../Redux/Action/actions';
 import UserService from '../../Services/AuthService';
 import { LocalStorageFields } from '../../Types/LocalStorageFields';
-import { ProfileType } from '../../Types/ProfileType';
+import type { ProfileType } from '../../Types/ProfileType';
+import { getProfileData } from '../../Utils/profileUtils';
 import { useCustomToast } from '../../Utils/toastUtils';
 import ChooseFromModal from '../Auth/CreateProfile/Components/ChooseFromModal';
+
 import EditProfileAllImageView from './Components/EditProfileComponents/EditProfileAllImageView';
 import EditProfileBoxView from './Components/EditProfileComponents/EditProfileBoxView';
 import EditProfileCategoriesList from './Components/EditProfileComponents/EditProfileCategoriesList';
 import EditProfileSheetView from './Components/EditProfileComponents/EditProfileSheetView';
 import EditProfileTitleView from './Components/EditProfileComponents/EditProfileTitleView';
-import ProfileAndSettingHeader from './Components/ProfileAndSettingHeader';
-import LinearGradient from 'react-native-linear-gradient';
-import { getProfileData } from '../../Utils/profileUtils';
+import ProfileAndSettingHeader from './Components/profile-and-setting-header';
 
 export interface ViewPositionsProps {
   Gender: number;
@@ -82,6 +82,7 @@ const calculateAge = (inputDate: any) => {
   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
     age--;
   }
+
   return age;
 };
 
@@ -89,7 +90,7 @@ const isEligible = (age: number) => {
   return age >= 18 && age < 100;
 };
 
-const EditProfileScreen = () => {
+function EditProfileScreen() {
   const dispatch = useDispatch();
   const { colors, isDark } = useTheme();
   const { showToast } = useCustomToast();
@@ -142,6 +143,7 @@ const EditProfileScreen = () => {
     Movie: 3216.761962890625,
     Drink: 3355.047607421875,
   });
+
   const [selectedCategoryName, setSelectedCategoryName] = useState('');
   const [UserPicks, setUserPicks] = useState(
     Array.from({ length: TotalProfilePicCanUploadEditProfile }, (_, index) => ({
@@ -149,7 +151,7 @@ const EditProfileScreen = () => {
       type: '',
       key: String(index),
       url: '',
-    }))
+    })),
   );
 
   const { locationPermission, requestLocationPermission } = useLocationPermission();
@@ -160,17 +162,21 @@ const EditProfileScreen = () => {
 
   const checkConnection = async () => {
     try {
-      const isConnected = (await NetInfo.fetch()).isConnected;
+      const { isConnected } = await NetInfo.fetch();
       const localData = userData?.userData;
 
       if (isConnected) {
         await checkLocationPermission();
-        const updatedPicks = Array.from({ length: TotalProfilePicCanUploadEditProfile }, (_, index) => ({
-          name: '',
-          type: '',
-          key: String(index),
-          url: localData?.recent_pik?.[index] || '',
-        }));
+        const updatedPicks = Array.from(
+          { length: TotalProfilePicCanUploadEditProfile },
+          (_, index) => ({
+            name: '',
+            type: '',
+            key: String(index),
+            url: localData?.recent_pik?.[index] || '',
+          }),
+        );
+
         setUserPicks(updatedPicks);
         if (!localData || !localData?._id || !localData?.full_name) {
           setIsLoading(true);
@@ -189,7 +195,7 @@ const EditProfileScreen = () => {
     value: string,
     setValueFunc: (value: string) => void,
     maxLength: number,
-    nextInputRef: any
+    nextInputRef: any,
   ) => {
     const numericValue = value.replace(/[^0-9]/g, '');
     setValueFunc(numericValue);
@@ -206,14 +212,15 @@ const EditProfileScreen = () => {
         return;
       }
     }
+
     storeLocationPermission();
   };
 
   const storeLocationPermission = async () => {
     try {
-      return new Promise((resolve, reject) => {
+      return await new Promise((resolve, reject) => {
         Geolocation.getCurrentPosition(
-          async (position) => {
+          async position => {
             const { coords } = position;
             if (coords) {
               await Promise.all([
@@ -222,8 +229,8 @@ const EditProfileScreen = () => {
               ]);
             }
           },
-          (error) => reject(error),
-          { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+          error => reject(error),
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
         );
       });
     } catch (error: any) {
@@ -273,7 +280,7 @@ const EditProfileScreen = () => {
               const pathParts = res.split('/');
               const name = pathParts[pathParts.length - 1];
 
-              setUserPicks((prevUserPicks) => {
+              setUserPicks(prevUserPicks => {
                 const updatedUserPicks = [...prevUserPicks];
                 const existingPick = updatedUserPicks[index];
 
@@ -309,7 +316,10 @@ const EditProfileScreen = () => {
 
   const handleSheetChanges = useCallback(
     (index: number) => {
-      if (index === 0 && viewPositions[selectedCategoryName as keyof typeof viewPositions] !== undefined) {
+      if (
+        index === 0 &&
+        viewPositions[selectedCategoryName as keyof typeof viewPositions] !== undefined
+      ) {
         scrollViewRef.current?.scrollTo({
           x: 0,
           y: viewPositions[selectedCategoryName as keyof typeof viewPositions],
@@ -317,7 +327,7 @@ const EditProfileScreen = () => {
         });
       }
     },
-    [selectedCategoryName, viewPositions, bottomSheetModalRef, scrollViewRef]
+    [selectedCategoryName, viewPositions, bottomSheetModalRef, scrollViewRef],
   );
 
   const onToggleModal = () => {
@@ -328,7 +338,8 @@ const EditProfileScreen = () => {
     try {
       const res = await ImagePicker.launchImageLibrary({
         mediaType: 'photo',
-        selectionLimit: TotalProfilePicCanUploadEditProfile - UserPicks.filter((item) => item.url !== '').length,
+        selectionLimit:
+          TotalProfilePicCanUploadEditProfile - UserPicks.filter(item => item.url !== '').length,
       });
 
       const newImages =
@@ -372,9 +383,17 @@ const EditProfileScreen = () => {
   const handleUserSelection = async (selectedOption: string) => {
     try {
       const permissionStatus =
-        selectedOption === 'Camera' ? await requestCameraPermission() : await requestGalleryPermission();
+        selectedOption === 'Camera'
+          ? await requestCameraPermission()
+          : await requestGalleryPermission();
 
-      if (Platform.OS === 'android' ? permissionStatus : selectedOption !== 'Camera' ? true : permissionStatus) {
+      if (
+        Platform.OS === 'android'
+          ? permissionStatus
+          : selectedOption !== 'Camera'
+          ? true
+          : permissionStatus
+      ) {
         if (selectedOption === 'Camera') {
           await handleCameraImagePicker();
         } else {
@@ -394,8 +413,14 @@ const EditProfileScreen = () => {
     const InInternetConnected = (await NetInfo.fetch()).isConnected;
 
     if (!InInternetConnected) {
-      showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+
       setIsLoading(false);
+
       return;
     }
 
@@ -427,7 +452,7 @@ const EditProfileScreen = () => {
         }
       }
 
-      const allUploadsSuccessful = uploadResults.every((result) => result?.code === 200);
+      const allUploadsSuccessful = uploadResults.every(result => result?.code === 200);
 
       if (allUploadsSuccessful) {
         fetchProfileData();
@@ -447,7 +472,12 @@ const EditProfileScreen = () => {
     const isInternetConnected = (await NetInfo.fetch()).isConnected;
 
     if (!isInternetConnected) {
-      showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
+      showToast(
+        TextString.error.toUpperCase(),
+        TextString.PleaseCheckYourInternetConnection,
+        TextString.error,
+      );
+
       setIsLoading(false);
 
       return;
@@ -461,6 +491,7 @@ const EditProfileScreen = () => {
 
       if (!isValid) {
         showToast(TextString.error.toUpperCase(), 'Please enter a valid age.', 'error');
+
         return;
       }
 
@@ -471,9 +502,11 @@ const EditProfileScreen = () => {
         identity: userData?.identity || userData.email,
         profile_image: profile?.profile_image,
         full_name: userName,
-        birthdate: `${BirthdateDay || '00'}/${BirthdateMonth || '00'}/${BirthdateYear || '0000'}` || profile?.birthdate,
+        birthdate:
+          `${BirthdateDay || '00'}/${BirthdateMonth || '00'}/${BirthdateYear || '0000'}` ||
+          profile?.birthdate,
         gender: profile?.gender,
-        city: city,
+        city,
         orientation: profile?.orientation,
         is_orientation_visible: profile?.is_orientation_visible,
         hoping: profile?.hoping,
@@ -512,7 +545,11 @@ const EditProfileScreen = () => {
       const APIResponse = await UserService.UserRegister(DataToSend);
 
       if (APIResponse.code === 200) {
-        showToast('Profile Updated', 'Your profile information has been successfully updated.', 'success');
+        showToast(
+          'Profile Updated',
+          'Your profile information has been successfully updated.',
+          'success',
+        );
 
         fetchProfileData();
         getProfileData();
@@ -522,8 +559,9 @@ const EditProfileScreen = () => {
         showToast(
           'Error Updating Profile',
           'Oops! Something went wrong while trying to update your profile. Please try again later or contact support if the issue persists',
-          'error'
+          'error',
         );
+
         setIsLoading(false);
       }
     } catch (error: any) {
@@ -533,7 +571,7 @@ const EditProfileScreen = () => {
   };
 
   const storeViewPosition = (viewName: string, position: number) => {
-    setViewPositions((prevState) => ({
+    setViewPositions(prevState => ({
       ...prevState,
       [viewName]: position,
     }));
@@ -550,7 +588,11 @@ const EditProfileScreen = () => {
   return (
     <GradientView>
       <View style={styles.Container}>
-        <ProfileAndSettingHeader Title={'Edit Profile'} onUpdatePress={onUpdateProfile} isLoading={isLoading} />
+        <ProfileAndSettingHeader
+          Title="Edit Profile"
+          onUpdatePress={onUpdateProfile}
+          isLoading={isLoading}
+        />
         <ScrollView
           bounces={false}
           style={styles.ContentView}
@@ -589,7 +631,11 @@ const EditProfileScreen = () => {
             </View>
 
             <View style={styles.detailContainerView}>
-              <EditProfileTitleView isIcon={true} Icon={CommonIcons.birthday_icon} Title="Birthday" />
+              <EditProfileTitleView
+                isIcon={true}
+                Icon={CommonIcons.birthday_icon}
+                Title="Birthday"
+              />
 
               <GradientBorderView
                 gradientProps={{ colors: colors.editFiledBackground }}
@@ -600,12 +646,15 @@ const EditProfileScreen = () => {
                     <CustomTextInput
                       ref={dayInputRef}
                       editable={true}
-                      keyboardType={'number-pad'}
+                      keyboardType="number-pad"
                       value={BirthdateDay}
                       cursorColor={colors.Primary}
                       defaultValue={profile?.birthdate?.split('/')[0]}
-                      onChangeText={(value) => {
-                        if (value === '' || (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 31)) {
+                      onChangeText={value => {
+                        if (
+                          value === '' ||
+                          (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 31)
+                        ) {
                           setBirthdateDay(value);
                           if (value.length === 2) {
                             monthInputRef?.current?.focus();
@@ -618,7 +667,11 @@ const EditProfileScreen = () => {
                       textAlignVertical="center"
                       style={[
                         styles.birthDateInputStyle,
-                        { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(240, 236, 255, 1)' },
+                        {
+                          backgroundColor: isDark
+                            ? 'rgba(255, 255, 255, 0.1)'
+                            : 'rgba(240, 236, 255, 1)',
+                        },
                       ]}
                       placeholderTextColor={colors.Gray}
                     />
@@ -626,11 +679,14 @@ const EditProfileScreen = () => {
                       ref={monthInputRef}
                       value={BirthdateMonth}
                       editable={true}
-                      keyboardType={'number-pad'}
+                      keyboardType="number-pad"
                       cursorColor={colors.Primary}
                       defaultValue={profile?.birthdate?.split('/')[1]}
-                      onChangeText={(value) => {
-                        if (value === '' || (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 12)) {
+                      onChangeText={value => {
+                        if (
+                          value === '' ||
+                          (/^\d{1,2}$/.test(value) && parseInt(value, 10) <= 12)
+                        ) {
                           setBirthdateMonth(value);
                           if (value.length === 2) {
                             yearInputRef?.current?.focus();
@@ -641,7 +697,11 @@ const EditProfileScreen = () => {
                       placeholder="MM"
                       style={[
                         styles.birthDateInputStyle,
-                        { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(240, 236, 255, 1)' },
+                        {
+                          backgroundColor: isDark
+                            ? 'rgba(255, 255, 255, 0.1)'
+                            : 'rgba(240, 236, 255, 1)',
+                        },
                       ]}
                       placeholderTextColor={colors.Gray}
                     />
@@ -651,13 +711,19 @@ const EditProfileScreen = () => {
                       value={BirthdateYear}
                       cursorColor={colors.Primary}
                       defaultValue={profile?.birthdate?.split('/')[2]}
-                      keyboardType={'number-pad'}
-                      onChangeText={(value) => handleTextInputChange(value, setBirthdateYear, 4, yearInputRef)}
+                      keyboardType="number-pad"
+                      onChangeText={value =>
+                        handleTextInputChange(value, setBirthdateYear, 4, yearInputRef)
+                      }
                       maxLength={4}
                       placeholder="YYYY"
                       style={[
                         styles.birthDateInputStyle,
-                        { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(240, 236, 255, 1)' },
+                        {
+                          backgroundColor: isDark
+                            ? 'rgba(255, 255, 255, 0.1)'
+                            : 'rgba(240, 236, 255, 1)',
+                        },
                       ]}
                       placeholderTextColor={colors.Gray}
                     />
@@ -689,7 +755,11 @@ const EditProfileScreen = () => {
             </View>
 
             <View style={styles.detailContainerView}>
-              <EditProfileTitleView isIcon={true} Icon={CommonIcons.about_me_icon} Title="About me" />
+              <EditProfileTitleView
+                isIcon={true}
+                Icon={CommonIcons.about_me_icon}
+                Title="About me"
+              />
               <GradientBorderView
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
@@ -702,7 +772,9 @@ const EditProfileScreen = () => {
                   maxLength={500}
                   IsViewLoading={isLoading}
                   TextInputStyle={[styles.textInputTextStyle, { minHeight: 80 }]}
-                  TextInputChildren={<Text style={styles.TotalWordCount}>{`${bio?.length}/500`}</Text>}
+                  TextInputChildren={
+                    <Text style={styles.TotalWordCount}>{`${bio?.length}/500`}</Text>
+                  }
                   PlaceholderText="Write something about you..."
                 />
               </GradientBorderView>
@@ -717,7 +789,13 @@ const EditProfileScreen = () => {
                 <EditProfileBoxView IsViewLoading={isLoading}>
                   <EditProfileCategoriesList
                     EmptyTitleText="Your gender?"
-                    Item={profile?.gender ? (Array.isArray(profile?.gender) ? profile?.gender : [profile?.gender]) : []}
+                    Item={
+                      profile?.gender
+                        ? Array.isArray(profile?.gender)
+                          ? profile?.gender
+                          : [profile?.gender]
+                        : []
+                    }
                     onPress={() => handlePresentModalPress('Gender')}
                   />
                 </EditProfileBoxView>
@@ -725,7 +803,11 @@ const EditProfileScreen = () => {
             </View>
 
             <View style={styles.detailContainerView}>
-              <EditProfileTitleView isIcon={true} Icon={CommonIcons.location_icon} Title="I’m from" />
+              <EditProfileTitleView
+                isIcon={true}
+                Icon={CommonIcons.location_icon}
+                Title="I’m from"
+              />
               <GradientBorderView
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
@@ -756,7 +838,7 @@ const EditProfileScreen = () => {
                     EmptyTitleText="What you like?"
                     Item={
                       profile?.likes_into && Array.isArray(profile?.likes_into)
-                        ? profile?.likes_into?.filter((item) => item.trim() !== '')
+                        ? profile?.likes_into?.filter(item => item.trim() !== '')
                         : profile?.likes_into || []
                     }
                     onPress={() => handlePresentModalPress('ImInto')}
@@ -766,7 +848,11 @@ const EditProfileScreen = () => {
             </View>
 
             <View style={styles.detailContainerView}>
-              <EditProfileTitleView isIcon={true} Icon={CommonIcons.looking_for_icon} Title="Looking for" />
+              <EditProfileTitleView
+                isIcon={true}
+                Icon={CommonIcons.looking_for_icon}
+                Title="Looking for"
+              />
               <GradientBorderView
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
@@ -776,7 +862,7 @@ const EditProfileScreen = () => {
                     EmptyTitleText="Add what you looking for"
                     Item={
                       profile?.hoping && Array.isArray(profile?.hoping)
-                        ? profile?.hoping?.filter((item) => item.trim() !== '')
+                        ? profile?.hoping?.filter(item => item.trim() !== '')
                         : [profile?.hoping?.toString()]
                     }
                     onPress={() => handlePresentModalPress('LookingFor')}
@@ -786,7 +872,11 @@ const EditProfileScreen = () => {
             </View>
 
             <View style={styles.detailContainerView}>
-              <EditProfileTitleView isIcon={true} Icon={CommonIcons.interested_in_icon} Title="Interested in" />
+              <EditProfileTitleView
+                isIcon={true}
+                Icon={CommonIcons.interested_in_icon}
+                Title="Interested in"
+              />
               <GradientBorderView
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
@@ -808,7 +898,11 @@ const EditProfileScreen = () => {
             </View>
 
             <View style={styles.detailContainerView}>
-              <EditProfileTitleView isIcon={true} Icon={CommonIcons.zodiac_sign_icon} Title="Zodiac sign" />
+              <EditProfileTitleView
+                isIcon={true}
+                Icon={CommonIcons.zodiac_sign_icon}
+                Title="Zodiac sign"
+              />
 
               <GradientBorderView
                 gradientProps={{ colors: colors.editFiledBackground }}
@@ -831,7 +925,11 @@ const EditProfileScreen = () => {
             </View>
 
             <View style={styles.detailContainerView}>
-              <EditProfileTitleView isIcon={true} Icon={CommonIcons.education_icon} Title="Education" />
+              <EditProfileTitleView
+                isIcon={true}
+                Icon={CommonIcons.education_icon}
+                Title="Education"
+              />
               <GradientBorderView
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
@@ -866,7 +964,9 @@ const EditProfileScreen = () => {
                       </GradientBorderView>
                     </View>
                     <View style={styles.EducationInputView}>
-                      <Text style={[styles.EducationTitleText, { color: colors.TextColor }]}>My college name is</Text>
+                      <Text style={[styles.EducationTitleText, { color: colors.TextColor }]}>
+                        My college name is
+                      </Text>
                       <GradientBorderView
                         gradientProps={{ colors: colors.editFiledBackground }}
                         style={{
@@ -923,7 +1023,11 @@ const EditProfileScreen = () => {
             </View>
 
             <View style={styles.detailContainerView}>
-              <EditProfileTitleView isIcon={true} Icon={CommonIcons.exercise_icon} Title="Exercise" />
+              <EditProfileTitleView
+                isIcon={true}
+                Icon={CommonIcons.exercise_icon}
+                Title="Exercise"
+              />
 
               <GradientBorderView
                 gradientProps={{ colors: colors.editFiledBackground }}
@@ -946,7 +1050,11 @@ const EditProfileScreen = () => {
             </View>
 
             <View style={styles.detailContainerView}>
-              <EditProfileTitleView isIcon={true} Icon={CommonIcons.smoke_and_drinks_icon} Title="Smoke & drinks" />
+              <EditProfileTitleView
+                isIcon={true}
+                Icon={CommonIcons.smoke_and_drinks_icon}
+                Title="Smoke & drinks"
+              />
               <GradientBorderView
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
@@ -1025,23 +1133,30 @@ const EditProfileScreen = () => {
           <BottomSheetModal
             ref={bottomSheetModalRef}
             enableDynamicSizing
-            backgroundStyle={{ backgroundColor: !isDark ? 'rgba(240, 236, 255, 1)' : colors.sheetBackground[0] }}
+            backgroundStyle={{
+              backgroundColor: !isDark ? 'rgba(240, 236, 255, 1)' : colors.sheetBackground[0],
+            }}
             onDismiss={onSheetClose}
             handleComponent={null}
-            backdropComponent={(props) => (
+            backdropComponent={props => (
               <BlurView blurAmount={2} style={props.style}>
                 <BottomSheetBackdrop
                   {...props}
                   enableTouchThrough={false}
                   appearsOnIndex={0}
                   disappearsOnIndex={-1}
-                  style={[StyleSheet.absoluteFillObject]}
+                  style={StyleSheet.absoluteFillObject}
                 />
               </BlurView>
             )}
             maxDynamicContentSize={Dimensions.get('screen').height - 150}
             onChange={handleSheetChanges}
-            style={{ borderRadius: 20, borderWidth: 0.5, width: '101%', borderColor: colors.Primary }}
+            style={{
+              borderRadius: 20,
+              borderWidth: 0.5,
+              width: '101%',
+              borderColor: colors.Primary,
+            }}
             containerStyle={{ borderRadius: 0 }}
           >
             <View style={styles.CloseViewContainer}>
@@ -1063,7 +1178,9 @@ const EditProfileScreen = () => {
                 <LinearGradient
                   style={styles.ModalSubmitButton}
                   colors={
-                    isDark ? ['rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.3)'] : [colors.White, colors.White]
+                    isDark
+                      ? ['rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.3)']
+                      : [colors.White, colors.White]
                   }
                 >
                   {isLoading ? (
@@ -1110,70 +1227,28 @@ const EditProfileScreen = () => {
       </View>
     </GradientView>
   );
-};
+}
 
 export default memo(EditProfileScreen);
 
 const styles = StyleSheet.create({
-  Container: {
-    flex: 1,
-  },
-  LoaderContainer: {
-    justifyContent: 'center',
-  },
-  ContentView: {
-    flex: 1,
-    marginBottom: 10,
-  },
-  ListSubView: {
-    width: '90%',
-    alignSelf: 'center',
-  },
-  detailContainerView: {
-    overflow: 'hidden',
-    justifyContent: 'center',
-  },
-  selectionGradientView: {
-    borderWidth: 1,
-    borderRadius: 15,
-    marginVertical: 5,
-    overflow: 'hidden',
-    justifyContent: 'center',
-  },
-  textInputTextStyle: {
-    ...GROUP_FONT.body3,
-    fontSize: 15,
-    overflow: 'hidden',
-    fontFamily: FONTS.Medium,
-  },
   BirthDateContainerView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  birthDateInputStyle: {
-    width: '30%',
-    height: 50,
-    borderRadius: 20,
-    paddingHorizontal: 25,
-    textAlign: 'center',
+
+  CloseViewContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    paddingVertical: 15,
   },
-  AboutMeCustomView: {
-    borderRadius: 25,
-    marginVertical: 5,
-    // paddingVertical: 20,
-    paddingHorizontal: 20,
+  Container: {
+    flex: 1,
   },
-  AboutMeTextViewStyle: {
-    ...GROUP_FONT.body4,
-    fontSize: 14,
-    fontFamily: FONTS.Medium,
-  },
-  TotalWordCount: {
-    paddingBottom: 5,
-    textAlign: 'right',
-    ...GROUP_FONT.body4,
-    color: 'rgba(130, 130, 130, 1)',
-    fontFamily: FONTS.Medium,
+  ContentView: {
+    flex: 1,
+    marginBottom: 10,
   },
   EducationInputView: {
     justifyContent: 'center',
@@ -1184,44 +1259,64 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginVertical: 5,
   },
+  ListSubView: {
+    alignSelf: 'center',
+    width: '90%',
+  },
+  ModalCloseIcon: {
+    height: 13,
+    width: 13,
+  },
+  ModalCloseIconBTN: {
+    alignItems: 'center',
+    borderRadius: 500,
+    height: 29,
+    justifyContent: 'center',
+    width: 29,
+  },
+  ModalSubmitButton: {
+    alignSelf: 'center',
+    borderRadius: 500,
+    height: 29,
+    justifyContent: 'center',
+    width: 29,
+  },
+  ModalSubmitIcon: {
+    alignSelf: 'center',
+    height: 15,
+    resizeMode: 'contain',
+    width: 15,
+  },
+
   YourEducationTextStyle: {
     textAlign: 'center',
     ...GROUP_FONT.body4,
+    borderRadius: 20,
     fontSize: 14,
     overflow: 'hidden',
+  },
+  birthDateInputStyle: {
     borderRadius: 20,
+    height: 50,
+    paddingHorizontal: 25,
+    textAlign: 'center',
+    width: '30%',
   },
-  BottomSheetContainerView: {
-    marginVertical: 10,
-  },
-  CloseViewContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-  },
-  ModalCloseIconBTN: {
-    width: 29,
-    height: 29,
+  detailContainerView: {
     justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 500,
+    overflow: 'hidden',
   },
-  ModalCloseIcon: {
-    width: 13,
-    height: 13,
-  },
-  ModalSubmitButton: {
-    width: 29,
-    height: 29,
-    borderRadius: 500,
-    alignSelf: 'center',
+  selectionGradientView: {
+    borderRadius: 15,
+    borderWidth: 1,
     justifyContent: 'center',
+    marginVertical: 5,
+    overflow: 'hidden',
   },
-  ModalSubmitIcon: {
-    width: 15,
-    height: 15,
-    alignSelf: 'center',
-    resizeMode: 'contain',
+  textInputTextStyle: {
+    ...GROUP_FONT.body3,
+    fontFamily: FONTS.Medium,
+    fontSize: 15,
+    overflow: 'hidden',
   },
 });

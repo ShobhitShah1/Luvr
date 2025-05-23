@@ -1,23 +1,25 @@
 import React, { memo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Contact } from 'react-native-contacts/type';
+import type { Contact } from 'react-native-contacts/type';
 import { useDispatch, useSelector } from 'react-redux';
+
 import CommonIcons from '../../Common/CommonIcons';
 import GradientView from '../../Common/GradientView';
 import { FONTS } from '../../Common/Theme';
 import { GradientBorderView } from '../../Components/GradientBorder';
 import { useTheme } from '../../Contexts/ThemeContext';
 import {
-  EmailItem,
   saveContactsToApi,
   saveEmailsToApi,
   toggleIncognitoModeCall,
 } from '../../Redux/Action/IncognitoActions';
-import { IncognitoState } from '../../Redux/Reducer/IncognitoReducer';
+import type { EmailItem } from '../../Redux/Action/IncognitoActions';
+import type { IncognitoState } from '../../Redux/Reducer/IncognitoReducer';
 import EditProfileBoxView from '../Profile/Components/EditProfileComponents/EditProfileBoxView';
 import EditProfileTitleView from '../Profile/Components/EditProfileComponents/EditProfileTitleView';
-import ProfileAndSettingHeader from '../Profile/Components/ProfileAndSettingHeader';
+import ProfileAndSettingHeader from '../Profile/Components/profile-and-setting-header';
 import SettingFlexView from '../Setting/Components/SettingFlexView';
+
 import EmailInputModal from './Components/EmailInputModal';
 import IncognitoFlexView from './Components/IncognitoFlexView';
 import SelectContactModal from './Components/SelectContactModal';
@@ -26,7 +28,7 @@ const IncognitoScreen: React.FC = () => {
   const { colors, isDark } = useTheme();
   const dispatch = useDispatch();
   const { isIncognitoEnabled, contacts, emails, isLoading } = useSelector(
-    (state: { incognito: IncognitoState }) => state.incognito
+    (state: { incognito: IncognitoState }) => state.incognito,
   );
 
   const [isContactModalVisible, setContactModalVisible] = useState<boolean>(false);
@@ -45,12 +47,12 @@ const IncognitoScreen: React.FC = () => {
   };
 
   const removeContact = (contactId: string) => {
-    const updatedContacts = contacts.filter((contact) => contact.recordID !== contactId);
+    const updatedContacts = contacts.filter(contact => contact.recordID !== contactId);
     dispatch(saveContactsToApi(updatedContacts) as any);
   };
 
   const removeEmail = (emailId: string) => {
-    const updatedEmails = emails.filter((email) => email.id !== emailId);
+    const updatedEmails = emails.filter(email => email.id !== emailId);
     dispatch(saveEmailsToApi(updatedEmails) as any);
   };
 
@@ -92,7 +94,7 @@ const IncognitoScreen: React.FC = () => {
             <SettingFlexView
               isActive={isIncognitoEnabled}
               style={styles.switchContainer}
-              Item={'Incognito mode'}
+              Item="Incognito mode"
               onPress={toggleIncognitoMode}
               IsSwitch={true}
               onSwitchPress={toggleIncognitoMode}
@@ -120,14 +122,14 @@ const IncognitoScreen: React.FC = () => {
             <View>
               <IncognitoFlexView
                 style={styles.switchContainer}
-                title={'My contact incognito:'}
+                title="My contact incognito:"
                 disabled={isIncognitoEnabled}
                 onPress={() => setContactModalVisible(true)}
               />
 
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 15 }}>
                 {contacts.length > 0 &&
-                  contacts.map((contact) => (
+                  contacts.map(contact => (
                     <Pressable
                       disabled={isIncognitoEnabled}
                       key={contact.recordID}
@@ -140,7 +142,9 @@ const IncognitoScreen: React.FC = () => {
                             color: isDark ? colors.TextColor : colors.Primary,
                             borderWidth: 1,
                             borderColor: !isDark ? colors.Primary : 'transparent',
-                            backgroundColor: isDark ? colors.lightBackground : colors.InputBackground,
+                            backgroundColor: isDark
+                              ? colors.lightBackground
+                              : colors.InputBackground,
                           },
                         ]}
                       >
@@ -173,15 +177,19 @@ const IncognitoScreen: React.FC = () => {
             <View>
               <IncognitoFlexView
                 style={styles.switchContainer}
-                title={'My email incognito:'}
+                title="My email incognito:"
                 disabled={isIncognitoEnabled}
                 onPress={() => setEmailModalVisible(true)}
               />
 
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 15 }}>
                 {emails.length > 0 &&
-                  emails.map((item) => (
-                    <Pressable disabled={isIncognitoEnabled} key={item.id} onPress={() => removeEmail(item.id)}>
+                  emails.map(item => (
+                    <Pressable
+                      disabled={isIncognitoEnabled}
+                      key={item.id}
+                      onPress={() => removeEmail(item.id)}
+                    >
                       <Text
                         style={[
                           styles.listText,
@@ -189,7 +197,9 @@ const IncognitoScreen: React.FC = () => {
                             color: isDark ? colors.TextColor : colors.Primary,
                             borderWidth: 1,
                             borderColor: !isDark ? colors.Primary : 'transparent',
-                            backgroundColor: isDark ? colors.lightBackground : colors.InputBackground,
+                            backgroundColor: isDark
+                              ? colors.lightBackground
+                              : colors.InputBackground,
                           },
                         ]}
                       >
@@ -223,31 +233,25 @@ const IncognitoScreen: React.FC = () => {
 export default memo(IncognitoScreen);
 
 const styles = StyleSheet.create({
-  detailContainerView: {
-    width: '90%',
-    marginTop: 5,
-    alignSelf: 'center',
-  },
   containContainer: {
     paddingBottom: 20,
   },
-  titleViewStyle: {
-    marginTop: 20,
+  detailContainerView: {
+    alignSelf: 'center',
+    marginTop: 5,
+    width: '90%',
+  },
+  listText: {
+    borderRadius: 15,
+    fontFamily: FONTS.SemiBold,
+    fontSize: 14,
+    padding: 9,
+    paddingHorizontal: 15,
   },
   switchContainer: {
     marginVertical: 5,
   },
-  listText: {
-    padding: 9,
-    paddingHorizontal: 15,
-    borderRadius: 15,
-    fontSize: 14,
-    fontFamily: FONTS.SemiBold,
-  },
-  emptyText: {
-    fontSize: 14,
-    fontFamily: FONTS.Regular,
-    fontStyle: 'italic',
-    padding: 5,
+  titleViewStyle: {
+    marginTop: 20,
   },
 });

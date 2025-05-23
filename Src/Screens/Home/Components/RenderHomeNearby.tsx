@@ -1,12 +1,14 @@
-import React, { FC, memo } from 'react';
+import React, { memo } from 'react';
+import type { FC } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+
 import CommonLogos from '../../../Common/CommonLogos';
 import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
-import { ProfileType } from '../../../Types/ProfileType';
+import type { ProfileType } from '../../../Types/ProfileType';
 
 interface RenderLookingViewProps {
   item: ProfileType;
@@ -25,7 +27,9 @@ const RenderHomeNearby: FC<RenderLookingViewProps> = ({ item }) => {
       <View style={styles.cardContainer}>
         <Image
           source={
-            item?.recent_pik?.[0] ? { uri: ApiConfig.IMAGE_BASE_URL + item?.recent_pik?.[0] } : CommonLogos.AppIcon
+            item?.recent_pik?.[0]
+              ? { uri: ApiConfig.IMAGE_BASE_URL + item?.recent_pik?.[0] }
+              : CommonLogos.AppIcon
           }
           style={styles.backgroundImage}
           resizeMode="cover"
@@ -39,7 +43,9 @@ const RenderHomeNearby: FC<RenderLookingViewProps> = ({ item }) => {
         </View> */}
 
         <View style={styles.infoContainer}>
-          {item?.full_name?.trim() && <Text style={styles.nameText}>{item?.full_name?.trim()}</Text>}
+          {item?.full_name?.trim() && (
+            <Text style={styles.nameText}>{item?.full_name?.trim()}</Text>
+          )}
           {item?.education?.digree?.trim() && (
             <Text numberOfLines={1} style={styles.jobText}>
               {item?.education?.digree?.trim()}
@@ -58,56 +64,65 @@ const RenderHomeNearby: FC<RenderLookingViewProps> = ({ item }) => {
 export default memo(RenderHomeNearby);
 
 const styles = StyleSheet.create({
-  container: {
-    width: 200,
-    height: 200,
-    marginTop: 8,
+  backgroundImage: {
+    height: '100%',
+    position: 'absolute',
+    width: '100%',
   },
   cardContainer: {
-    width: '100%',
     height: '100%',
     overflow: 'hidden',
     position: 'relative',
-  },
-  backgroundImage: {
-    position: 'absolute',
     width: '100%',
-    height: '100%',
   },
-  overlay: {
-    position: 'absolute',
+  container: {
+    height: 200,
+    marginTop: 8,
+    width: 200,
+  },
+  infoContainer: {
+    alignItems: 'center',
     bottom: 0,
+    justifyContent: 'center',
     left: 0,
+    paddingBottom: 32,
+    position: 'absolute',
     right: 0,
-    height: '50%',
+    zIndex: 2,
+  },
+  jobText: {
+    color: COLORS.Primary,
+    fontSize: 14,
+    textAlign: 'center',
+    width: '90%',
   },
   likeContainer: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: COLORS.White,
     borderRadius: 20,
+    flexDirection: 'row',
     paddingHorizontal: 8,
     paddingVertical: 5,
-    alignItems: 'center',
+    position: 'absolute',
+    right: 10,
+    top: 10,
     zIndex: 3,
   },
   likeCount: {
-    marginLeft: 2,
-    fontSize: 16,
     color: COLORS.Black,
     fontFamily: FONTS.Bold,
+    fontSize: 16,
+    marginLeft: 2,
   },
-  infoContainer: {
+  locationContainer: {
+    bottom: 10,
     position: 'absolute',
-    bottom: 0,
-    paddingBottom: 32,
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
+    right: 10,
     zIndex: 2,
+  },
+  locationText: {
+    color: COLORS.White,
+    fontWeight: 'bold',
   },
   nameText: {
     ...GROUP_FONT.h2,
@@ -116,20 +131,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: '90%',
   },
-  jobText: {
-    width: '90%',
-    fontSize: 14,
-    color: COLORS.Primary,
-    textAlign: 'center',
-  },
-  locationContainer: {
+  overlay: {
+    bottom: 0,
+    height: '50%',
+    left: 0,
     position: 'absolute',
-    bottom: 10,
-    right: 10,
-    zIndex: 2,
-  },
-  locationText: {
-    fontWeight: 'bold',
-    color: COLORS.White,
+    right: 0,
   },
 });

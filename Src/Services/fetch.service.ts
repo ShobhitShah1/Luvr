@@ -1,7 +1,9 @@
-import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import axios from 'axios';
+import type { AxiosError, AxiosRequestConfig } from 'axios';
+
 import ApiConfig from '../Config/ApiConfig';
 import { store } from '../Redux/Store/store';
-import { FetchWrapper } from '../Types/Interface';
+import type { FetchWrapper } from '../Types/Interface';
 
 const commonConfig: AxiosRequestConfig = {
   method: 'post',
@@ -24,18 +26,31 @@ export function getToken(): string {
   if (ApiConfig.DEBUG) {
     console.log('Token:', token);
   }
+
   return token;
 }
 
-async function get(url: string, params?: Record<string, any>, config?: AxiosRequestConfig): Promise<any> {
+async function get(
+  url: string,
+  params?: Record<string, any>,
+  config?: AxiosRequestConfig,
+): Promise<any> {
   return makeRequest(url, 'get', params, config);
 }
 
-async function post(url: string, params: Record<string, any>, config?: AxiosRequestConfig): Promise<any> {
+async function post(
+  url: string,
+  params: Record<string, any>,
+  config?: AxiosRequestConfig,
+): Promise<any> {
   return makeRequest(url, 'post', params, config);
 }
 
-async function uploadHandler(url: string, formData: FormData, config?: AxiosRequestConfig): Promise<any> {
+async function uploadHandler(
+  url: string,
+  formData: FormData,
+  config?: AxiosRequestConfig,
+): Promise<any> {
   handleLogs(url);
 
   try {
@@ -59,7 +74,7 @@ async function makeRequest(
   url: string,
   method: 'get' | 'post',
   params?: Record<string, any>,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
 ): Promise<any> {
   const token = getToken();
 
@@ -78,6 +93,7 @@ async function makeRequest(
 
   try {
     const response = await axios(mergedConfig);
+
     return handleResponse(response);
   } catch (error: AxiosError | any) {
     return handleError(error);
@@ -104,7 +120,8 @@ async function handleError(error: AxiosError | any) {
   }
 
   const errorCode = error.response?.status;
-  const errorMessage = error.response?.data?.message || error.message || 'An unexpected error occurred';
+  const errorMessage =
+    error.response?.data?.message || error.message || 'An unexpected error occurred';
 
   return {
     status: false,

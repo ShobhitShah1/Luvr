@@ -1,9 +1,12 @@
-import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
-import { useColorScheme } from 'react-native';
-// import { setRootViewBackgroundColor } from '@pnthach95/react-native-root-view-background';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import type { ReactNode } from 'react';
+import { useColorScheme } from 'react-native';
+
+// import { setRootViewBackgroundColor } from '@pnthach95/react-native-root-view-background';
 import { COLORS, DARK_COLORS } from '../Common/Theme';
-import { ThemeContextType, ThemeOption } from '../Common/ThemeTypes';
+import { ThemeOption } from '../Common/ThemeTypes';
+import type { ThemeContextType } from '../Common/ThemeTypes';
 
 const THEME_PREFERENCE_KEY = '@theme_preference';
 
@@ -52,7 +55,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   }, [themePreference]);
 
   const isDark =
-    themePreference === ThemeOption.DARK || (themePreference === ThemeOption.SYSTEM && systemColorScheme === 'dark');
+    themePreference === ThemeOption.DARK ||
+    (themePreference === ThemeOption.SYSTEM && systemColorScheme === 'dark');
 
   const colors = isDark ? DARK_COLORS : COLORS;
 
