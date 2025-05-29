@@ -59,8 +59,8 @@ export default memo(RenderHomeNearby);
 
 const styles = StyleSheet.create({
   container: {
-    width: 200,
-    height: 200,
+    width: 180,
+    height: 180,
     marginTop: 8,
   },
   cardContainer: {

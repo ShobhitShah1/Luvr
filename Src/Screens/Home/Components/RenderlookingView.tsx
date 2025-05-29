@@ -34,8 +34,8 @@ export default memo(RenderLookingView);
 
 const styles = StyleSheet.create({
   container: {
-    width: 128,
-    height: 128,
+    width: 125,
+    height: 125,
     overflow: 'hidden',
     marginVertical: 5,
     borderRadius: 20,

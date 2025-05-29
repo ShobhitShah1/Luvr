@@ -267,29 +267,34 @@ const EditProfileScreen = () => {
         setBirthdateMonth(data?.birthdate?.split('/')?.[1] || '');
         setBirthdateYear(data?.birthdate?.split('/')?.[2] || '');
 
+        console.log('data?.recent_pik:', data?.recent_pik);
+
         if (data?.recent_pik?.length !== 0) {
-          data?.recent_pik?.forEach((res, index) => {
-            if (index < TotalProfilePicCanUploadEditProfile) {
-              const pathParts = res.split('/');
+          // Get the last 6 images from recent_pik
+          const lastSixImages = data.recent_pik.slice(-6);
+
+          // Create array of 6 items with empty slots for remaining positions
+          const finalPicks = Array.from({ length: 6 }, (_, index) => {
+            if (index < lastSixImages.length) {
+              const pathParts = lastSixImages[index].split('/');
               const name = pathParts[pathParts.length - 1];
 
-              setUserPicks((prevUserPicks) => {
-                const updatedUserPicks = [...prevUserPicks];
-                const existingPick = updatedUserPicks[index];
-
-                if (existingPick) {
-                  updatedUserPicks[index] = {
-                    ...existingPick,
-                    name,
-                    url: res,
-                    key: res,
-                  };
-                }
-
-                return updatedUserPicks;
-              });
+              return {
+                name,
+                type: '',
+                key: lastSixImages[index],
+                url: lastSixImages[index],
+              };
             }
+            return {
+              name: '',
+              type: '',
+              key: String(5 - index),
+              url: '',
+            };
           });
+
+          setUserPicks(finalPicks);
         }
       } else {
         setProfile({} as ProfileType);
@@ -552,7 +557,6 @@ const EditProfileScreen = () => {
       <View style={styles.Container}>
         <ProfileAndSettingHeader Title={'Edit Profile'} onUpdatePress={onUpdateProfile} isLoading={isLoading} />
         <ScrollView
-          bounces={false}
           style={styles.ContentView}
           refreshControl={
             <RefreshControl
@@ -682,6 +686,10 @@ const EditProfileScreen = () => {
                     UserPicks={UserPicks}
                     OnToggleModal={onToggleModal}
                     isLoading={isLoading}
+                    onRefetchData={async () => {
+                      await fetchProfileData();
+                      await getProfileData();
+                    }}
                   />
                 )}
                 keyExtractor={(item, index) => index.toString()}
@@ -725,7 +733,7 @@ const EditProfileScreen = () => {
             </View>
 
             <View style={styles.detailContainerView}>
-              <EditProfileTitleView isIcon={true} Icon={CommonIcons.location_icon} Title="I’m from" />
+              <EditProfileTitleView isIcon={true} Icon={CommonIcons.location_icon} Title="I'm from" />
               <GradientBorderView
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}

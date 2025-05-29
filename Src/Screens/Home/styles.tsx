@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   noDataFoundView: {
     width: Dimensions.get('screen').width - 40,
-    height: 190,
+    height: 180,
     justifyContent: 'center',
     alignItems: 'center',
     top: 10,

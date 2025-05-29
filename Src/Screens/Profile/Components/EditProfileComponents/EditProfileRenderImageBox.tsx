@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import { Skeleton } from 'moti/skeleton';
 import React, { memo, useMemo, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import FastImage from '@d11/react-native-fast-image';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
@@ -21,15 +21,21 @@ type EditProfileRenderImageBoxProps = {
   onDelete?: () => void;
   onAdd?: () => void;
   isLoading?: boolean;
+  onChange?: (index: string) => void;
 };
 
-const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({ picture, isLoading }) => {
+const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
+  picture,
+  isLoading,
+  onAdd,
+  onChange,
+}) => {
   const { isDark, colors } = useTheme();
   const hasPicture = useMemo(() => {
     return picture?.url;
   }, [picture?.url]);
 
-  const [IsImageLoading, setIsImageLoading] = useState<boolean>(false);
+  const [isImageLoading, setIsImageLoading] = useState<boolean>(false);
 
   return (
     <View style={[styles.item, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : colors.White }]}>
@@ -38,7 +44,7 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({ p
           width={'100%'}
           height={'100%'}
           colors={colors.LoaderGradient}
-          show={(IsImageLoading || isLoading) && hasPicture ? true : false}
+          show={(isImageLoading || isLoading) && hasPicture ? true : false}
         >
           <View
             style={{
@@ -68,7 +74,7 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({ p
                   : [
                       styles.NoImageView,
                       {
-                        top: IsImageLoading ? 2.5 : undefined,
+                        top: isImageLoading ? 2.5 : undefined,
                       },
                     ]
               }
@@ -77,8 +83,15 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({ p
         </Skeleton>
       </View>
 
-      {!IsImageLoading && !hasPicture && (
-        <View
+      {!isImageLoading && (
+        <Pressable
+          onPress={() => {
+            if (hasPicture) {
+              onChange?.(picture?.key);
+            } else {
+              onAdd?.();
+            }
+          }}
           style={[
             styles.BlurViewContainer,
             { borderColor: hasPicture ? colors.White : isDark ? colors.White : colors.Black },
@@ -96,14 +109,14 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({ p
                     height: hasPicture ? hp('1.4%') : hp('1.4%'),
                   },
                 ]}
-                source={hasPicture ? CommonIcons.DeleteImage : CommonIcons.AddImage}
+                source={hasPicture ? CommonIcons.media_icon : CommonIcons.AddImage}
               />
               <Text style={[styles.addAndRemoveText, { color: hasPicture ? colors.White : colors.TextColor }]}>
-                {hasPicture ? 'Delete Photo' : 'Add Photo'}
+                {hasPicture ? 'Change Photo' : 'Add Photo'}
               </Text>
             </View>
           </View>
-        </View>
+        </Pressable>
       )}
     </View>
   );

@@ -60,7 +60,7 @@ export default memo(RenderRecommendation);
 const styles = StyleSheet.create({
   container: {
     width: 110,
-    height: 135,
+    height: 125,
     overflow: 'hidden',
     marginVertical: 5,
     borderRadius: 28,

@@ -67,17 +67,17 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
       <View style={styles.contentView}>
-        {/* {Platform.OS === 'android' && !hideDonation && ( */}
-        <Pressable
-          onLongPress={() => showModal()}
-          onPress={() => navigation.navigate('Donation')}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Animated.View style={[styles.iconWrapper, animatedStyle]}>
-            <Image style={styles.donateIcon} resizeMode="contain" source={CommonIcons.donate_icon} />
-          </Animated.View>
-        </Pressable>
-        {/* )} */}
+        {Platform.OS === 'android' && !hideDonation && (
+          <Pressable
+            onLongPress={() => showModal()}
+            onPress={() => navigation.navigate('Donation')}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Animated.View style={[styles.iconWrapper, animatedStyle]}>
+              <Image style={styles.donateIcon} resizeMode="contain" source={CommonIcons.donate_icon} />
+            </Animated.View>
+          </Pressable>
+        )}
 
         {showTitle && (
           <View style={styles.titleTextView}>
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     width: '100%',
     zIndex: 99999,
     justifyContent: 'center',
-    height: Platform.OS === 'ios' ? hp('12.5%') : hp('7%'),
+    height: Platform.OS === 'ios' ? hp('12%') : hp('7%'),
   },
   contentView: {
     width: '93%',

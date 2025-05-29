@@ -209,12 +209,6 @@ const ChatRoomScreen = () => {
         </SafeAreaView>
 
         <View style={styles.ListChatView}>
-          {/* {!subscription.isActive ? (
-            <View style={{ flex: 1, marginTop: 30 }}>
-              <SubscriptionView selectedPlan={''} handlePlanSelection={() => {}} />
-            </View>
-          ) : (
-            !isSocketLoading && ( */}
           <FlatList
             data={messages}
             contentContainerStyle={{
@@ -228,8 +222,6 @@ const ChatRoomScreen = () => {
             }}
             ListEmptyComponent={<ListEmptyView />}
           />
-          {/* )
-          )} */}
         </View>
       </View>
     </GradientView>
