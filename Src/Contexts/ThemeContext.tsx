@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { useColorScheme } from 'react-native';
-import { setRootViewBackgroundColor } from '@pnthach95/react-native-root-view-background';
+// import { setRootViewBackgroundColor } from '@pnthach95/react-native-root-view-background';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS, DARK_COLORS } from '../Common/Theme';
 import { ThemeContextType, ThemeOption } from '../Common/ThemeTypes';
@@ -56,9 +56,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   const colors = isDark ? DARK_COLORS : COLORS;
 
-  useEffect(() => {
-    setRootViewBackgroundColor(colors.Primary);
-  }, [colors.Primary]);
+  // useEffect(() => {
+  //   setRootViewBackgroundColor(colors.Primary);
+  // }, [colors.Primary]);
 
   const toggleTheme = (): void => {
     if (themePreference === ThemeOption.LIGHT) {

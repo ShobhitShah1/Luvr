@@ -18,11 +18,12 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   TabBarButtonView: {
-    width: '46%',
     height: 52,
-    justifyContent: 'center',
     borderWidth: 2,
     borderRadius: 25,
+    overflow: 'visible',
+    zIndex: 99999999,
+    justifyContent: 'center',
   },
   TabBarButtonText: {
     textAlign: 'center',
@@ -38,7 +39,8 @@ const styles = StyleSheet.create({
   },
   FlatListContentContainerStyle: {
     flexDirection: 'row',
-    zIndex: 999999999999,
+    zIndex: 9999,
+    overflow: 'visible',
     justifyContent: 'space-between',
   },
   FlatListColumnWrapperStyle: {

@@ -267,29 +267,34 @@ const EditProfileScreen = () => {
         setBirthdateMonth(data?.birthdate?.split('/')?.[1] || '');
         setBirthdateYear(data?.birthdate?.split('/')?.[2] || '');
 
+        console.log('data?.recent_pik:', data?.recent_pik);
+
         if (data?.recent_pik?.length !== 0) {
-          data?.recent_pik?.forEach((res, index) => {
-            if (index < TotalProfilePicCanUploadEditProfile) {
-              const pathParts = res.split('/');
+          // Get the last 6 images from recent_pik
+          const lastSixImages = data.recent_pik.slice(-6);
+
+          // Create array of 6 items with empty slots for remaining positions
+          const finalPicks = Array.from({ length: 6 }, (_, index) => {
+            if (index < lastSixImages.length) {
+              const pathParts = lastSixImages[index].split('/');
               const name = pathParts[pathParts.length - 1];
 
-              setUserPicks((prevUserPicks) => {
-                const updatedUserPicks = [...prevUserPicks];
-                const existingPick = updatedUserPicks[index];
-
-                if (existingPick) {
-                  updatedUserPicks[index] = {
-                    ...existingPick,
-                    name,
-                    url: res,
-                    key: res,
-                  };
-                }
-
-                return updatedUserPicks;
-              });
+              return {
+                name,
+                type: '',
+                key: lastSixImages[index],
+                url: lastSixImages[index],
+              };
             }
+            return {
+              name: '',
+              type: '',
+              key: String(5 - index),
+              url: '',
+            };
           });
+
+          setUserPicks(finalPicks);
         }
       } else {
         setProfile({} as ProfileType);
@@ -552,7 +557,6 @@ const EditProfileScreen = () => {
       <View style={styles.Container}>
         <ProfileAndSettingHeader Title={'Edit Profile'} onUpdatePress={onUpdateProfile} isLoading={isLoading} />
         <ScrollView
-          bounces={false}
           style={styles.ContentView}
           refreshControl={
             <RefreshControl
@@ -614,6 +618,8 @@ const EditProfileScreen = () => {
                       }}
                       maxLength={2}
                       placeholder="DD"
+                      textAlign="center"
+                      textAlignVertical="center"
                       style={[
                         styles.birthDateInputStyle,
                         { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(240, 236, 255, 1)' },
@@ -680,6 +686,10 @@ const EditProfileScreen = () => {
                     UserPicks={UserPicks}
                     OnToggleModal={onToggleModal}
                     isLoading={isLoading}
+                    onRefetchData={async () => {
+                      await fetchProfileData();
+                      await getProfileData();
+                    }}
                   />
                 )}
                 keyExtractor={(item, index) => index.toString()}
@@ -699,7 +709,7 @@ const EditProfileScreen = () => {
                   onChangeText={setBio}
                   maxLength={500}
                   IsViewLoading={isLoading}
-                  TextInputStyle={styles.textInputTextStyle}
+                  TextInputStyle={[styles.textInputTextStyle, { minHeight: 80 }]}
                   TextInputChildren={<Text style={styles.TotalWordCount}>{`${bio?.length}/500`}</Text>}
                   PlaceholderText="Write something about you..."
                 />
@@ -723,7 +733,7 @@ const EditProfileScreen = () => {
             </View>
 
             <View style={styles.detailContainerView}>
-              <EditProfileTitleView isIcon={true} Icon={CommonIcons.location_icon} Title="I’m from" />
+              <EditProfileTitleView isIcon={true} Icon={CommonIcons.location_icon} Title="I'm from" />
               <GradientBorderView
                 gradientProps={{ colors: colors.editFiledBackground }}
                 style={[styles.selectionGradientView, !isDark && { backgroundColor: colors.White }]}
@@ -858,7 +868,7 @@ const EditProfileScreen = () => {
                           defaultValue={collegeName}
                           onChangeText={setCollegeName}
                           placeholder="Enter your education degree"
-                          style={styles.YourEducationTextStyle}
+                          style={[styles.YourEducationTextStyle, { minHeight: 45 }]}
                           placeholderTextColor={colors.Gray}
                         />
                       </GradientBorderView>
@@ -883,7 +893,7 @@ const EditProfileScreen = () => {
                           cursorColor={colors.Primary}
                           onChangeText={setEducationDegree}
                           placeholder="Enter your college name"
-                          style={styles.YourEducationTextStyle}
+                          style={[styles.YourEducationTextStyle, { minHeight: 45 }]}
                           placeholderTextColor={colors.Gray}
                         />
                       </GradientBorderView>
@@ -1068,7 +1078,12 @@ const EditProfileScreen = () => {
                     <ActivityIndicator size={17} color={colors.Primary} />
                   ) : (
                     <Pressable
-                      style={{ flex: 1, justifyContent: 'center' }}
+                      style={{
+                        flex: 1,
+                        width: '100%',
+                        height: '100%',
+                        justifyContent: 'center',
+                      }}
                       disabled={isLoading}
                       onPress={() => {
                         bottomSheetModalRef?.current && bottomSheetModalRef?.current?.close();
@@ -1145,11 +1160,10 @@ const styles = StyleSheet.create({
   },
   birthDateInputStyle: {
     width: '30%',
-    paddingVertical: 13,
+    height: 50,
     borderRadius: 20,
     paddingHorizontal: 25,
     textAlign: 'center',
-    ...GROUP_FONT.body3,
   },
   AboutMeCustomView: {
     borderRadius: 25,
@@ -1216,5 +1230,6 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     alignSelf: 'center',
+    resizeMode: 'contain',
   },
 });

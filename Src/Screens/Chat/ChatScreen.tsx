@@ -113,7 +113,7 @@ const ChatScreen = () => {
 
   return (
     <GradientView>
-      <View style={styles.Container}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.Container}>
         <ChatHeader data={otherUserProfileData} onRightIconPress={() => setReportAndBlockModal(true)} />
         <View style={styles.ChatContainer}>
           {isLoading ? (
@@ -129,7 +129,6 @@ const ChatScreen = () => {
               user={{ _id: 1, avatar: avatarUrl }}
               isTyping={false}
               messagesContainerStyle={styles.messagesContainer}
-              maxComposerHeight={100}
               renderInputToolbar={(props) => <ChatInput inputToolbarProps={props} canSendMessage={canSendMessage} />}
               timeTextStyle={{
                 left: { color: colors.White },
@@ -158,9 +157,10 @@ const ChatScreen = () => {
           SelectedReportReason={selectedReportReason}
           setSelectedReportReason={setSelectedReportReason}
         />
-        {Platform.OS === 'android' && <KeyboardAvoidingView behavior="height" />}
+
+        {/* <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} /> */}
         <SafeAreaView />
-      </View>
+      </KeyboardAvoidingView>
     </GradientView>
   );
 };

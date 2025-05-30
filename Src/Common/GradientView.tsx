@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../Contexts/ThemeContext';
@@ -9,7 +9,7 @@ const GradientView = ({ children }: { children: React.ReactNode }) => {
   const { colors } = useTheme();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={Platform.OS === 'android' ? ['top', 'left', 'right', 'bottom'] : []}>
       <LinearGradient
         start={gradientStart}
         end={gradientEnd}

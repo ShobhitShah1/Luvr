@@ -297,7 +297,7 @@ const HomeScreen = () => {
             />
 
             {isLoading ? (
-              <ActivityIndicator size="large" color={COLORS.Primary} style={{ height: 190 }} />
+              <ActivityIndicator size="large" color={COLORS.Primary} style={{ height: 180 }} />
             ) : categoryData?.length > 0 ? (
               <>
                 <RenderNearbyHeader />
@@ -319,7 +319,7 @@ const HomeScreen = () => {
             <CategoryHeaderView title="Near by" description="Based on your profile" style={{ marginTop: 30 }} />
 
             {isNearbyFetching ? (
-              <ActivityIndicator size="large" color={COLORS.Primary} style={{ height: 190 }} />
+              <ActivityIndicator size="large" color={COLORS.Primary} style={{ height: 180 }} />
             ) : (
               <Animated.FlatList
                 horizontal

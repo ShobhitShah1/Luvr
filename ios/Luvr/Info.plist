@@ -41,12 +41,19 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>yourdomain.com</key>
+			<key>nirvanatechlabs.in</key>
 			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
 				<key>NSIncludesSubdomains</key>
 				<true/>
-				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
-				<false/>
+			</dict>
+			<key>yourdomain.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
 			</dict>
 		</dict>
 	</dict>
@@ -58,6 +65,8 @@
 	<string>$(PRODUCT_NAME) need location permisstion to show nearby profile that matches your profile.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>$(PRODUCT_NAME) need photo access to upload images for profile.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>$(PRODUCT_NAME) need contacts permission to show contacts who are also using the app.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>OpenSans-Bold.ttf</string>
@@ -73,8 +82,8 @@
 		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
-	<!-- <key>UILaunchStoryboardName</key>
-	<string>BootSplash</string> -->
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen.storyboard</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>arm64</string>

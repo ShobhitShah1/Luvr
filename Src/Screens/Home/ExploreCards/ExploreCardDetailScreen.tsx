@@ -4,7 +4,6 @@ import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Animated,
   Dimensions,
   Image,
@@ -25,6 +24,7 @@ import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import Paginator from '../../../Components/Paginator';
 import ReportUserModalView from '../../../Components/ReportUserModalView';
 import ApiConfig from '../../../Config/ApiConfig';
+import { useSubscriptionModal } from '../../../Contexts/SubscriptionModalContext';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { useUserData } from '../../../Contexts/UserDataContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
@@ -35,7 +35,7 @@ import { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import DetailCardHeader from './Components/DetailCardHeader';
 import RenderUserImagesView from './Components/RenderUserImagesView';
-import { useSubscriptionModal } from '../../../Contexts/SubscriptionModalContext';
+import { useShareProfile } from '../../../Hooks/useShareProfile';
 
 type DetailCardRouteParams = {
   props: ProfileType;
@@ -48,6 +48,7 @@ const ExploreCardDetailScreen = () => {
   const { showToast } = useCustomToast();
   const { subscription } = useUserData();
   const { showSubscriptionModal } = useSubscriptionModal();
+  const shareProfile = useShareProfile();
 
   const cardDetail = useRoute<RouteProp<Record<string, DetailCardRouteParams>, string>>();
 
@@ -133,34 +134,11 @@ const ExploreCardDetailScreen = () => {
     }
   };
 
-  const onSharePress = () => {
+  const onSharePress = async () => {
     try {
-      if (!subscription.isActive) {
-        showToast(TextString.premiumFeatureAccessTitle, TextString.premiumFeatureAccessDescription, 'error');
-        setTimeout(() => {
-          showSubscriptionModal();
-        }, 2000);
-        return;
-      }
-
-      const id = userId || cardDetail?.params?.props?._id;
-
-      if (!id) {
-        showToast('Error', 'Unable to share profile - missing user ID', 'error');
-        return;
-      }
-
-      const deepLinkUrl = `https://nirvanatechlabs.in/app/profile/${id}`;
-
-      const userName = cardDetail?.params?.props?.full_name || 'this profile';
-      const shareMessage = `Check out ${userName} on Luvr!\n${deepLinkUrl}`;
-
-      Share.share({
-        message: shareMessage,
-        url: deepLinkUrl, // For iOS
-      });
+      await shareProfile(cardDetail);
     } catch (error: any) {
-      showToast('Error', error?.message?.toString(), 'error');
+      showToast('Error', error?.message?.toString() || 'Failed to share profile', 'error');
     }
   };
 
@@ -516,7 +494,7 @@ const ExploreCardDetailScreen = () => {
                   }
                   style={[styles.ShareButtonView, { opacity: !subscription.isActive ? 0.5 : 1 }]}
                 >
-                  <Pressable onPress={onSharePress} style={[styles.ShareButtonView, {}]}>
+                  <Pressable onPress={onSharePress} style={styles.shareButton}>
                     <Image resizeMode="contain" style={styles.ShareIcon} source={CommonIcons.ic_share} />
                   </Pressable>
                 </LinearGradient>
@@ -660,12 +638,12 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
+    marginBottom: Platform.OS === 'ios' ? 30 : 0,
   },
   LikeAndRejectButtonView: {
     justifyContent: 'center',
     alignSelf: 'center',
     marginHorizontal: hp('0.4%'),
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
   },
   DislikeButton: {
     padding: 0,
@@ -691,14 +669,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     margin: hp('1.25%'),
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    height: 50,
+    width: 50,
+    backgroundColor: 'yellow',
     borderRadius: 5000,
-    overflow: 'hidden',
+  },
+  shareButton: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   ShareIcon: {
-    padding: 0,
-    width: hp('3.5%'),
-    height: hp('3.5%'),
+    width: hp('3.2%'),
+    height: hp('3.2%'),
     justifyContent: 'center',
     alignSelf: 'center',
   },

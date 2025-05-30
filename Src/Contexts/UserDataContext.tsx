@@ -7,7 +7,7 @@ import { updateField as reduxUpdateField } from '../Redux/Action/actions';
 import { createSelector } from 'reselect';
 import UserDataType from '../Types/UserDataType';
 import { SubscriptionData } from '../Types/SubscriptionTypes';
-import { debouncedGetSubscription, scheduleSubscriptionExpiryCheck } from '../Services/SubscriptionService';
+import { debouncedGetSubscription, validateSubscription } from '../Services/SubscriptionService';
 
 interface RootState {
   user: {
@@ -127,7 +127,7 @@ const UserDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   useEffect(() => {
     if (subscriptionData.subscription && subscriptionData.isSubscriptionActive) {
-      scheduleSubscriptionExpiryCheck(subscriptionData.subscription);
+      validateSubscription(subscriptionData.subscription);
     }
   }, [subscriptionData.subscription, subscriptionData.isSubscriptionActive]);
 

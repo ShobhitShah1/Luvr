@@ -16,12 +16,15 @@ import { APP_NAME, DonationIconAnimationTime } from '../../../Config/Setting';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { useBoostModal } from '../../../Hooks/useBoostModal';
+import { useShareProfile } from '../../../Hooks/useShareProfile';
+import { useUserData } from '../../../Contexts/UserDataContext';
 
 interface BottomTabHeaderProps {
   hideSettingAndNotification?: boolean;
   showSetting?: boolean;
   hideDonation?: boolean;
   showTitle?: boolean;
+  isShare?: boolean;
 }
 
 const ANGLE = 10;
@@ -33,11 +36,14 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
   showSetting,
   hideDonation = false,
   showTitle = false,
+  isShare = false,
 }) => {
   const navigation = useCustomNavigation();
   const rotation = useSharedValue(0);
   const { colors } = useTheme();
   const { showModal } = useBoostModal();
+  const { userData } = useUserData();
+  const shareProfile = useShareProfile();
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ rotateZ: `${rotation.value}deg` }],
@@ -80,6 +86,20 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
         )}
 
         <View style={styles.iconsView}>
+          {isShare && (
+            <Pressable
+              onPress={() => shareProfile(userData)}
+              style={[styles.iconWrapper, { marginRight: 22 }]}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Image
+                style={styles.icons}
+                tintColor={colors.TextColor}
+                resizeMode="contain"
+                source={CommonIcons.ic_share}
+              />
+            </Pressable>
+          )}
           {(!hideSettingAndNotification || showSetting) && (
             <Pressable
               onPress={() => {
@@ -123,8 +143,9 @@ export default memo(BottomTabHeader);
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+    zIndex: 99999,
     justifyContent: 'center',
-    height: Platform.OS === 'ios' ? hp('12.5%') : hp('7%'),
+    height: Platform.OS === 'ios' ? hp('12%') : hp('7%'),
   },
   contentView: {
     width: '93%',
@@ -148,6 +169,7 @@ const styles = StyleSheet.create({
   },
   iconsView: {
     flex: 1,
+    zIndex: 99999,
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },

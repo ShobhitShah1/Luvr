@@ -1,5 +1,5 @@
-import React, { memo } from 'react';
-import { View, Image, Text } from 'react-native';
+import React, { memo, useState, useEffect } from 'react';
+import { View, Image, Text, Platform, Keyboard } from 'react-native';
 import { Composer, InputToolbar, InputToolbarProps, Send, SendProps, IMessage } from 'react-native-gifted-chat';
 import { FONTS } from '../../../Common/Theme';
 import CommonIcons from '../../../Common/CommonIcons';
@@ -12,26 +12,50 @@ interface ChatInputProps {
 
 const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage }) => {
   const { colors, isDark } = useTheme();
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardWillShowListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => setKeyboardVisible(true)
+    );
+    const keyboardWillHideListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setKeyboardVisible(false)
+    );
+
+    return () => {
+      keyboardWillShowListener.remove();
+      keyboardWillHideListener.remove();
+    };
+  }, []);
 
   const renderComposer = (composerProps: any) => (
     <View
       style={{
+        top: Platform.OS === 'ios' ? (keyboardVisible ? -70 : 0) : 0,
         height: 59,
-        alignSelf: 'center',
         width: '90%',
-        overflow: 'hidden',
-        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.3))' : colors.White,
-        borderRadius: 25,
         marginRight: 5,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
+        borderRadius: 25,
+        paddingBottom: 5,
         borderWidth: 0.5,
-        borderColor: isDark ? colors.White : 'transparent',
+        overflow: 'hidden',
+        flexDirection: 'row',
+        paddingHorizontal: 10,
         opacity: canSendMessage ? 1 : 0.5,
+        borderColor: isDark ? colors.White : 'transparent',
+        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.3))' : colors.White,
       }}
     >
-      <View style={{ width: '88%', top: 2.5 }}>
+      <View
+        style={{
+          width: '88%',
+          alignSelf: 'flex-start',
+          top: 2.5,
+          justifyContent: 'center',
+        }}
+      >
         <Composer
           {...composerProps}
           textInputStyle={{
@@ -39,9 +63,13 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage
             backgroundColor: 'transparent',
             marginLeft: 0,
             fontSize: 14,
-            flex: 1,
             fontFamily: FONTS.Medium,
           }}
+          textInputProps={{
+            textAlignVertical: 'center',
+            verticalAlign: 'center',
+          }}
+          // composerHeight={59}
           placeholder={canSendMessage ? 'Write your message here' : 'Wait for a message or upgrade to Gold'}
           placeholderTextColor={isDark ? 'rgba(255, 255, 255, 1)' : 'rgba(130, 130, 130, 1)'}
           editable={canSendMessage}
@@ -83,15 +111,12 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage
     <InputToolbar
       {...inputToolbarProps}
       containerStyle={{
-        marginVertical: 10,
-        paddingHorizontal: 5,
-        marginBottom: 8,
         left: 8,
-        flex: 1,
-        flexGrow: 1,
-        justifyContent: 'center',
-        backgroundColor: 'transparent',
+        paddingHorizontal: 5,
         borderColor: 'transparent',
+        backgroundColor: 'transparent',
+        marginVertical: Platform.OS === 'ios' ? 0 : 10,
+        marginBottom: Platform.OS === 'ios' ? 0 : 8,
       }}
       primaryStyle={{
         alignSelf: 'center',

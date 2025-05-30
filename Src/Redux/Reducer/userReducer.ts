@@ -12,13 +12,14 @@ import {
   RESET_RIGHT_SWIPE,
   SET_CARD_SKIP_NUMBER,
   RESET_SWIPE_COUNT,
+  SET_DEEP_LINK_URL,
 } from '../Action/actions';
 
 const initialState: UserDataType & { swipedLeftUserIds: string[] } & { swipedRightUserIds: string[] } & {
   userData: string[];
 } & { notifications: string[] } & { swipeCount: number } & {
   cardSkipNumber: number;
-} = {
+} & { deepLinkUrl: string | null } = {
   ...Object.keys(LocalStorageFields).reduce((acc, field) => ({ ...acc, [field]: '' }), {} as UserDataType),
   swipedLeftUserIds: [],
   swipedRightUserIds: [],
@@ -27,6 +28,7 @@ const initialState: UserDataType & { swipedLeftUserIds: string[] } & { swipedRig
   CurrentScreen: '',
   swipeCount: 0,
   cardSkipNumber: 0,
+  deepLinkUrl: null,
 };
 
 const userReducer = (
@@ -42,6 +44,8 @@ const userReducer = (
     CurrentScreen: string;
   } & {
     swipeCount: number;
+  } & {
+    deepLinkUrl: string | null;
   } = initialState,
   action: any
 ) => {
@@ -102,6 +106,11 @@ const userReducer = (
       return {
         ...state,
         swipeCount: 0,
+      };
+    case SET_DEEP_LINK_URL:
+      return {
+        ...state,
+        deepLinkUrl: action.payload,
       };
     case RESET:
       return initialState;

@@ -1,7 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Skeleton } from 'moti/skeleton';
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { Dimensions, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Dimensions,
+  Image,
+  Platform,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import LinearGradient from 'react-native-linear-gradient';
 import CommonIcons from '../../Common/CommonIcons';
@@ -43,7 +53,13 @@ const ProfileScreen = () => {
   return (
     <GradientView>
       <View style={styles.container}>
-        <BottomTabHeader hideSettingAndNotification={true} hideDonation={true} showTitle={true} showSetting={true} />
+        <BottomTabHeader
+          isShare={true}
+          hideSettingAndNotification={true}
+          hideDonation={true}
+          showTitle={true}
+          showSetting={true}
+        />
         <ScrollView
           refreshControl={
             <RefreshControl
@@ -54,6 +70,8 @@ const ProfileScreen = () => {
             />
           }
           style={styles.ProfileViewContainer}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
         >
           <View style={styles.ContentView}>
             <View style={styles.ProfileImageView}>
@@ -193,7 +211,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   ContentView: {
-    marginTop: 95,
+    marginTop: Platform.select({ ios: 60, android: 95 }),
   },
   ProfileImageView: {
     alignItems: 'center',
