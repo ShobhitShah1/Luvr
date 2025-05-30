@@ -172,10 +172,11 @@ const EditProfileScreen = () => {
           url: localData?.recent_pik?.[index] || '',
         }));
         setUserPicks(updatedPicks);
+        // await fetchProfileData();
+        await getProfileData();
+
         if (!localData || !localData?._id || !localData?.full_name) {
           setIsLoading(true);
-          await fetchProfileData();
-          await getProfileData();
         }
       }
     } catch (error: any) {
@@ -268,22 +269,17 @@ const EditProfileScreen = () => {
         setBirthdateYear(data?.birthdate?.split('/')?.[2] || '');
 
         console.log('data?.recent_pik:', data?.recent_pik);
-
         if (data?.recent_pik?.length !== 0) {
-          // Get the last 6 images from recent_pik
-          const lastSixImages = data.recent_pik.slice(-6);
-
-          // Create array of 6 items with empty slots for remaining positions
           const finalPicks = Array.from({ length: 6 }, (_, index) => {
-            if (index < lastSixImages.length) {
-              const pathParts = lastSixImages[index].split('/');
+            if (index < data.recent_pik.length) {
+              const pathParts = data.recent_pik[index].split('/');
               const name = pathParts[pathParts.length - 1];
 
               return {
                 name,
                 type: '',
-                key: lastSixImages[index],
-                url: lastSixImages[index],
+                key: data.recent_pik[index],
+                url: data.recent_pik[index],
               };
             }
             return {
@@ -555,7 +551,7 @@ const EditProfileScreen = () => {
   return (
     <GradientView>
       <View style={styles.Container}>
-        <ProfileAndSettingHeader Title={'Edit Profile'} onUpdatePress={onUpdateProfile} isLoading={isLoading} />
+        <ProfileAndSettingHeader Title="Edit Profile" onUpdatePress={onUpdateProfile} isLoading={isLoading} />
         <ScrollView
           style={styles.ContentView}
           refreshControl={
@@ -676,11 +672,9 @@ const EditProfileScreen = () => {
               <FlatList
                 data={UserPicks}
                 numColumns={3}
-                initialNumToRender={6}
-                maxToRenderPerBatch={10}
-                windowSize={21}
-                renderItem={({ item }) => (
+                renderItem={({ item, index }) => (
                   <EditProfileAllImageView
+                    index={index}
                     item={item}
                     setUserPicks={setUserPicks}
                     UserPicks={UserPicks}
@@ -692,7 +686,7 @@ const EditProfileScreen = () => {
                     }}
                   />
                 )}
-                keyExtractor={(item, index) => index.toString()}
+                keyExtractor={(item, index) => item.key?.toString() || index.toString()}
               />
             </View>
 
@@ -710,8 +704,9 @@ const EditProfileScreen = () => {
                   maxLength={500}
                   IsViewLoading={isLoading}
                   TextInputStyle={[styles.textInputTextStyle, { minHeight: 80 }]}
-                  TextInputChildren={<Text style={styles.TotalWordCount}>{`${bio?.length}/500`}</Text>}
+                  TextInputChildren={<Text style={styles.TotalWordCount}>{`${(bio && bio?.length) || 0}/500`}</Text>}
                   PlaceholderText="Write something about you..."
+                  textInputProps={{ textAlignVertical: 'top' }}
                 />
               </GradientBorderView>
             </View>

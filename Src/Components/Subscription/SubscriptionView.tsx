@@ -1,7 +1,7 @@
 import { BlurView } from '@react-native-community/blur';
 import remoteConfig from '@react-native-firebase/remote-config';
 import React, { memo, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Dimensions, Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import * as RNIap from 'react-native-iap';
 import LinearGradient from 'react-native-linear-gradient';
 import CommonIcons from '../../Common/CommonIcons';
@@ -215,8 +215,6 @@ const SubscriptionView = ({
       if (!purchaseResponse) {
         return;
       }
-
-      Alert.alert('Subscription Data:', JSON.stringify(purchaseResponse, null, 2));
 
       let payment_response;
 

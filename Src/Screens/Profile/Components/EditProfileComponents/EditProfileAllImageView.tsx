@@ -28,9 +28,15 @@ interface EditProfileAllImageViewProps {
   OnToggleModal: () => void;
   isLoading: boolean;
   onRefetchData: () => Promise<void>;
+  index: number;
 }
 
-const uploadImageToServer = async (imageData: any, token: string, onRefetchData: () => Promise<void>) => {
+const uploadImageToServer = async (
+  imageData: any,
+  token: string,
+  onRefetchData: () => Promise<void>,
+  index: number
+) => {
   try {
     const formData = new FormData();
     formData.append('eventName', 'update_profile');
@@ -40,6 +46,7 @@ const uploadImageToServer = async (imageData: any, token: string, onRefetchData:
       type: imageData.type,
       name: imageData.fileName || 'image.jpg',
     });
+    formData.append('index', index);
 
     const response = await axios.post(ApiConfig.IMAGE_UPLOAD_BASE_URL, formData, {
       headers: {
@@ -66,6 +73,7 @@ const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
   OnToggleModal,
   isLoading,
   onRefetchData,
+  index,
 }) => {
   const [localLoading, setLocalLoading] = useState(false);
   const userData = useSelector((state: any) => state?.user);
@@ -81,7 +89,7 @@ const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
   );
 
   const handleImageChange = useCallback(
-    async (key: string) => {
+    async (key: number) => {
       try {
         const isInternetConnected = (await NetInfo.fetch()).isConnected;
         if (!isInternetConnected) {
@@ -100,7 +108,7 @@ const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
 
         if (result.assets && result.assets.length > 0) {
           const selectedImage = result.assets[0];
-          await uploadImageToServer(selectedImage, userData.Token, onRefetchData);
+          await uploadImageToServer(selectedImage, userData.Token, onRefetchData, key);
         }
       } catch (error: any) {
         showToast('Error', error?.message || 'Failed to pick image', 'error');
@@ -119,28 +127,10 @@ const EditProfileAllImageView: FC<EditProfileAllImageViewProps> = ({
     >
       <EditProfileRenderImageBox
         onDelete={() => {}}
-        onAdd={() => {
-          const newPics = UserPicks.map(addUrlToItem(item)).sort(sortByUrl);
-          const imagesWithUrls = newPics.filter((pick) => pick.url);
-          const lastSixImages = imagesWithUrls.slice(-6);
-
-          const finalPicks = Array.from({ length: 6 }, (_, index) => {
-            if (index < lastSixImages.length) {
-              return lastSixImages[index];
-            }
-            return {
-              name: '',
-              type: '',
-              key: String(5 - index),
-              url: '',
-            };
-          });
-
-          setUserPicks(finalPicks);
-        }}
-        onChange={handleImageChange}
+        onChange={() => handleImageChange(index)}
         picture={item}
         isLoading={isLoading || localLoading}
+        index={index}
       />
     </Pressable>
   );

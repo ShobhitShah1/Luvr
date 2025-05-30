@@ -17,10 +17,6 @@ import UserService from '../../../Services/AuthService';
 import { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
 
-const generateRandomId = () => {
-  return Math.random().toString(36).substr(2, 9);
-};
-
 export const useChat = (
   currentUserId: string,
   currentUserImage: string[],
@@ -44,7 +40,6 @@ export const useChat = (
 
   const getOtherUserDataCall = async () => {
     try {
-      console.log('[Chat Debug] Fetching other user data for ID:', otherUserId);
       const data = {
         eventName: 'get_other_profile',
         id: otherUserId,
@@ -53,10 +48,6 @@ export const useChat = (
       const apiResponse = await UserService.UserRegister(data);
 
       if (apiResponse?.code === 200 && apiResponse.data) {
-        console.log('[Chat Debug] Received other user data:', {
-          name: apiResponse.data?.full_name,
-          hasProfilePic: !!apiResponse.data?.recent_pik,
-        });
         setOtherUserProfileData(apiResponse.data);
         if (apiResponse.data && apiResponse.data?.recent_pik) {
           setAvatarUrl(ApiConfig.IMAGE_BASE_URL + apiResponse.data?.recent_pik[0]);
@@ -108,7 +99,6 @@ export const useChat = (
   };
 
   const handleListResponse = async (data: { data: any }) => {
-    console.log('[Chat Debug] Received LIST_EVENT response', JSON.stringify(data, null, 2));
     const giftedChatMessages = transformDataForGiftedChat(data.data);
 
     if (giftedChatMessages?.length > 0) {
@@ -168,8 +158,6 @@ export const useChat = (
   useEffect(() => {
     if (!socket) return;
 
-    console.log('[Chat Debug] Setting up socket event listeners');
-
     socket.emit(JOIN_EVENT, {
       id: currentUserId,
       to_profile: otherUserProfileData?.recent_pik[0],
@@ -180,11 +168,6 @@ export const useChat = (
     socket.emit(READ_ALL, { to: otherUserProfileData?._id });
 
     const handleReceiverChat = async (chat: any) => {
-      console.log('[Chat Debug] Received new chat message:', {
-        from: chat?.from,
-        time: chat?.last_updated_time,
-      });
-
       if (!otherUserProfileData) {
         await getOtherUserDataCall();
       }
@@ -193,7 +176,6 @@ export const useChat = (
         socket.emit(READ_ALL, { to: otherUserProfileData?._id });
 
         const messageExists = userMessage.some((msg) => msg._id === giftedChatMessages[0]._id);
-        console.log('[Chat Debug] New message exists?', messageExists);
 
         if (!messageExists) {
           const updatedMessages = giftedChatMessages.map((message: any) => ({
@@ -202,7 +184,6 @@ export const useChat = (
           }));
           setUserMessages((previousMessages) => {
             const newMessages = GiftedChat.append(previousMessages, updatedMessages.flat());
-            console.log('[Chat Debug] Messages after append:', newMessages.length);
             return newMessages;
           });
         }
@@ -210,28 +191,23 @@ export const useChat = (
     };
 
     const handleReceiverSocketId = (data: { to_socket_id: string }) => {
-      console.log('[Chat Debug] Received socket ID:', data?.to_socket_id);
       setReceiverSocketId(data?.to_socket_id);
     };
 
     const handleJoinResponse = (data: any) => {
-      console.log('[Chat Debug] Join response:', data);
       if (data && data.id === otherUserId) {
         setReceiverSocketId(data.socket_id);
       }
     };
 
     socket.on(JOIN_EVENT, handleJoinResponse);
-    socket.on(READ_ALL, () => {
-      console.log('[Chat Debug] Messages marked as read');
-    });
+    socket.on(READ_ALL, () => {});
     socket.on(LIST_EVENT, handleListResponse);
     socket.on(MESSAGE_EVENT, () => {});
     socket.on(CHAT_EVENT, handleReceiverChat);
     socket.on(GET_RECEIVER_SOCKET_EVENT, handleReceiverSocketId);
 
     return () => {
-      console.log('[Chat Debug] Cleaning up socket event listeners');
       socket.off(JOIN_EVENT, handleJoinResponse);
       socket.off(READ_ALL, () => {});
       socket.off(LIST_EVENT, handleListResponse);
@@ -243,10 +219,7 @@ export const useChat = (
 
   const onSend = useCallback(
     async (messages: IMessage[]) => {
-      console.log('[Chat Debug] Attempting to send message');
-
       if (!canSendMessage) {
-        console.log('[Chat Debug] Cannot send message - subscription required');
         showToast(TextString.premiumFeatureAccessTitle, TextString.premiumFeatureAccessDescription, 'error');
         setTimeout(() => {
           showSubscriptionModal();
@@ -271,25 +244,15 @@ export const useChat = (
           from_profile: currentUserImage[0],
         };
 
-        console.log('[Chat Debug] Sending message:', {
-          isFirst: userMessage?.length === 0,
-          hasReceiverId: !!receiverSocketId,
-          messagePreview: messages[0].text.substring(0, 20) + '...',
-        });
-
         setUserMessages((previousMessages) => {
           const newMessages = GiftedChat.append(previousMessages, messages);
-          console.log('[Chat Debug] Local message count after append:', newMessages.length);
           return newMessages;
         });
 
         socket.emit(READ_ALL, { to: otherUserProfileData?._id });
         socket.emit(CHAT_EVENT, chatData, (error: any) => {
           if (error) {
-            console.error('[Chat Debug] Error sending message:', error);
             showToast('Error', String(error?.message || error), 'error');
-          } else {
-            console.log('[Chat Debug] Message sent successfully');
           }
         });
       }

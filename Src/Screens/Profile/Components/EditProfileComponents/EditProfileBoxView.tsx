@@ -1,6 +1,15 @@
 import { Skeleton } from 'moti/skeleton';
 import React, { FC, memo } from 'react';
-import { LayoutChangeEvent, StyleProp, StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
+import {
+  LayoutChangeEvent,
+  StyleProp,
+  StyleSheet,
+  TextInput,
+  TextInputProps,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { FONTS, GROUP_FONT } from '../../../../Common/Theme';
 import { useTheme } from '../../../../Contexts/ThemeContext';
 
@@ -16,6 +25,7 @@ interface EditProfileBoxViewProps {
   maxLength?: number;
   TextInputStyle?: StyleProp<TextStyle>;
   PlaceholderText?: string;
+  textInputProps?: TextInputProps;
 }
 
 const EditProfileBoxView: FC<EditProfileBoxViewProps> = ({
@@ -30,6 +40,7 @@ const EditProfileBoxView: FC<EditProfileBoxViewProps> = ({
   maxLength,
   TextInputStyle,
   PlaceholderText,
+  textInputProps,
 }) => {
   const { colors, isDark } = useTheme();
   return IsViewLoading ? (
@@ -49,6 +60,7 @@ const EditProfileBoxView: FC<EditProfileBoxViewProps> = ({
         style={[styles.AboutMeTextViewStyle, { color: isDark ? colors.White : 'rgba(0,0,0,1)' }, TextInputStyle]}
         placeholderTextColor={colors.Placeholder}
         placeholder={PlaceholderText}
+        {...textInputProps}
       />
       {TextInputChildren}
     </View>

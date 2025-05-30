@@ -10,7 +10,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Share,
   StyleSheet,
   Text,
   View,
@@ -28,6 +27,7 @@ import { useSubscriptionModal } from '../../../Contexts/SubscriptionModalContext
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { useUserData } from '../../../Contexts/UserDataContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
+import { useShareProfile } from '../../../Hooks/useShareProfile';
 import { onSwipeLeft, onSwipeRight } from '../../../Redux/Action/actions';
 import { store } from '../../../Redux/Store/store';
 import UserService from '../../../Services/AuthService';
@@ -35,7 +35,6 @@ import { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import DetailCardHeader from './Components/DetailCardHeader';
 import RenderUserImagesView from './Components/RenderUserImagesView';
-import { useShareProfile } from '../../../Hooks/useShareProfile';
 
 type DetailCardRouteParams = {
   props: ProfileType;
@@ -72,10 +71,7 @@ const ExploreCardDetailScreen = () => {
 
   const getUserData = async () => {
     try {
-      const userDataForApi = {
-        eventName: 'get_other_profile',
-        id: userId,
-      };
+      const userDataForApi = { eventName: 'get_other_profile', id: userId };
 
       const APIResponse = await UserService.UserRegister(userDataForApi);
       if (APIResponse?.code === 200) {
@@ -95,10 +91,7 @@ const ExploreCardDetailScreen = () => {
   const onLikePress = async () => {
     try {
       if (userId) {
-        const userDataForApi = {
-          eventName: 'like',
-          like_to: userId,
-        };
+        const userDataForApi = { eventName: 'like', like_to: userId };
 
         const APIResponse = await UserService.UserRegister(userDataForApi);
 
@@ -230,25 +223,29 @@ const ExploreCardDetailScreen = () => {
             contentContainerStyle={styles.ScrollViewContentContainerStyle}
           >
             <View style={styles.ProfileImageView}>
-              {cardData?.recent_pik && cardData?.recent_pik?.length !== 0 && (
-                <Animated.FlatList
-                  horizontal={true}
-                  pagingEnabled={true}
-                  style={{ flex: 1, width: '100%' }}
-                  showsHorizontalScrollIndicator={false}
-                  data={cardData?.recent_pik}
-                  renderItem={({ item, index }) => {
-                    return <RenderUserImagesView Images={item} index={index} />;
-                  }}
-                  onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
-                    useNativeDriver: false,
-                  })}
-                  scrollEventThrottle={32}
-                  keyExtractor={(item, index) => index.toString()}
+              {cardData?.recent_pik &&
+                cardData?.recent_pik?.filter((item) => item && item.trim() !== '').length !== 0 && (
+                  <Animated.FlatList
+                    horizontal={true}
+                    pagingEnabled={true}
+                    style={{ flex: 1, width: '100%' }}
+                    showsHorizontalScrollIndicator={false}
+                    data={cardData?.recent_pik?.filter((item) => item && item.trim() !== '')}
+                    renderItem={({ item, index }) => {
+                      return <RenderUserImagesView Images={item} index={index} />;
+                    }}
+                    onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
+                      useNativeDriver: false,
+                    })}
+                    scrollEventThrottle={32}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+                )}
+              {cardData && cardData?.recent_pik?.filter((item) => item && item.trim() !== '').length > 1 && (
+                <Paginator
+                  data={cardData?.recent_pik?.filter((item) => item && item.trim() !== '')}
+                  scrollX={scrollX}
                 />
-              )}
-              {cardData && cardData?.recent_pik?.length > 1 && (
-                <Paginator data={cardData?.recent_pik} scrollX={scrollX} />
               )}
             </View>
 

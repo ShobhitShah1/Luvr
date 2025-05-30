@@ -19,16 +19,16 @@ type Picture = {
 type EditProfileRenderImageBoxProps = {
   picture: Picture;
   onDelete?: () => void;
-  onAdd?: () => void;
   isLoading?: boolean;
-  onChange?: (index: string) => void;
+  onChange?: (index: number) => void;
+  index: number;
 };
 
 const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
   picture,
   isLoading,
-  onAdd,
   onChange,
+  index,
 }) => {
   const { isDark, colors } = useTheme();
   const hasPicture = useMemo(() => {
@@ -85,13 +85,7 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
 
       {!isImageLoading && (
         <Pressable
-          onPress={() => {
-            if (hasPicture) {
-              onChange?.(picture?.key);
-            } else {
-              onAdd?.();
-            }
-          }}
+          onPress={() => onChange?.(index)}
           style={[
             styles.BlurViewContainer,
             { borderColor: hasPicture ? colors.White : isDark ? colors.White : colors.Black },
@@ -100,13 +94,13 @@ const EditProfileRenderImageBox: React.FC<EditProfileRenderImageBoxProps> = ({
           <View style={[styles.addAndDeleteContainerView]}>
             <View style={styles.flexView}>
               <Image
-                resizeMode="cover"
+                resizeMode="contain"
                 style={[
                   styles.imageView,
                   {
                     tintColor: hasPicture ? colors.White : colors.TextColor,
-                    width: hasPicture ? hp('1.4%') : hp('1.4%'),
-                    height: hasPicture ? hp('1.4%') : hp('1.4%'),
+                    width: hp('1.2%'),
+                    height: hp('1.2%'),
                   },
                 ]}
                 source={hasPicture ? CommonIcons.media_icon : CommonIcons.AddImage}
@@ -200,6 +194,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     textAlign: 'center',
     ...GROUP_FONT.h3,
-    fontSize: 11,
+    fontSize: 10,
   },
 });

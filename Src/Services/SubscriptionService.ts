@@ -115,23 +115,25 @@ const validateWithPlatformStore = async (
       }
 
       // Android validation logic
-      let expiryTime = 0;
-      if (payment_response.transactionReceipt) {
-        try {
-          const receipt =
-            typeof payment_response.transactionReceipt === 'string'
-              ? JSON.parse(payment_response.transactionReceipt)
-              : payment_response.transactionReceipt;
+      const currentTime = Date.now();
+      const purchaseTime = payment_response.transactionDate || payment_response.purchaseTime || 0;
 
-          expiryTime = parseInt(receipt.expiryTimeMillis || '0');
-        } catch (error) {
-          console.warn('Failed to parse Android receipt:', error);
-        }
-      }
+      // For Android, we consider the subscription valid if:
+      // 1. It has a valid purchase token
+      // 2. The purchase state is 1 (purchased) or 0 (pending)
+      // 3. The purchase time is valid
+      const isValid =
+        purchaseToken &&
+        (payment_response.purchaseState === 1 || payment_response.purchaseState === 0) &&
+        purchaseTime > 0;
 
       return {
-        isValid: expiryTime > Date.now(),
-        storeData: { expiryTime },
+        isValid,
+        storeData: {
+          purchaseTime,
+          purchaseState: payment_response.purchaseState,
+          autoRenewing: payment_response.autoRenewing,
+        },
       };
     }
 
@@ -166,21 +168,21 @@ const calculateExpiryTimestamp = (subscription: SubscriptionData): number => {
   }
 
   // Priority 3: Android expiry from receipt
-  if (payment_response.platform === 'android' && payment_response.transactionReceipt) {
-    try {
-      const receipt =
-        typeof payment_response.transactionReceipt === 'string'
-          ? JSON.parse(payment_response.transactionReceipt)
-          : payment_response.transactionReceipt;
+  // if (payment_response.platform === 'android' && payment_response.transactionReceipt) {
+  //   try {
+  //     const receipt =
+  //       typeof payment_response.transactionReceipt === 'string'
+  //         ? JSON.parse(payment_response.transactionReceipt)
+  //         : payment_response.transactionReceipt;
 
-      const expiryTime = parseInt(receipt.expiryTimeMillis || '0');
-      if (expiryTime > 0) {
-        return expiryTime;
-      }
-    } catch (error) {
-      console.warn('Failed to parse receipt for expiry:', error);
-    }
-  }
+  //     const expiryTime = parseInt(receipt.expiryTimeMillis || '0');
+  //     if (expiryTime > 0) {
+  //       return expiryTime;
+  //     }
+  //   } catch (error) {
+  //     console.warn('Failed to parse receipt for expiry:', error);
+  //   }
+  // }
 
   // Fallback: Calculate from transaction date and product ID
   const { transactionDate, productId } = payment_response;
@@ -281,7 +283,7 @@ const scheduleSubscriptionCheck = async (subscription: SubscriptionData): Promis
   // Schedule next check
   subscriptionCheckTimeout = setTimeout(async () => {
     const currentState = store.getState();
-    const currentSubscription = currentState.membership.subscription;
+    const currentSubscription = currentState?.membership?.subscription;
 
     if (currentSubscription?._id) {
       const revalidation = await validateSubscription(currentSubscription, includeStoreValidation);
@@ -322,7 +324,7 @@ const startPeriodicValidation = (): void => {
   periodicValidationInterval = setInterval(
     async () => {
       const state = store.getState();
-      const subscription = state.membership.subscription;
+      const subscription = state?.membership?.subscription;
 
       if (subscription?._id) {
         const validation = await validateSubscription(subscription, true);
@@ -356,7 +358,7 @@ export const getSubscription = async (): Promise<boolean> => {
 
     const dataToSend = {
       eventName: 'get_purchase',
-      user_id: store.getState().user._id || '',
+      user_id: store.getState()?.user?._id || '',
       include_validation: true,
       timestamp: Date.now(),
     };
@@ -431,7 +433,7 @@ export const getDetailedSubscriptionStatus = async (): Promise<{
   storeValidation?: any;
 }> => {
   const state = store.getState();
-  const subscription = state.membership.subscription;
+  const subscription = state?.membership?.subscription;
 
   if (!subscription) {
     return {
@@ -468,7 +470,7 @@ export const forceValidateSubscription = async (): Promise<{
   details?: any;
 }> => {
   const state = store.getState();
-  const subscription = state.membership.subscription;
+  const subscription = state?.membership?.subscription;
 
   if (!subscription) {
     return { isValid: false, error: 'No subscription found' };
@@ -499,7 +501,7 @@ export const forceValidateSubscription = async (): Promise<{
  */
 export const hasActiveSubscription = (): boolean => {
   const state = store.getState();
-  return state.membership.isSubscriptionActive;
+  return state?.membership?.isSubscriptionActive || false;
 };
 
 /**

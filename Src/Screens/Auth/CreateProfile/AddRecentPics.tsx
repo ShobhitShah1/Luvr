@@ -172,7 +172,7 @@ const AddRecentPics = () => {
     }
   };
 
-  const uploadImage = async (ImageData: any) => {
+  const uploadImage = async (ImageData: any, index: number) => {
     const { url, type, name } = ImageData;
     const formData = new FormData();
 
@@ -184,6 +184,7 @@ const AddRecentPics = () => {
         type,
         name: name,
       });
+      formData.append('index', index);
 
       try {
         const response = await axios.post(ApiConfig.IMAGE_UPLOAD_BASE_URL, formData, {
@@ -205,7 +206,7 @@ const AddRecentPics = () => {
     if (index < images.length) {
       const image = images[index];
       try {
-        await uploadImage(image);
+        await uploadImage(image, index);
         await uploadImagesSequentially(images, index + 1);
       } catch (error: any) {
         showToast(

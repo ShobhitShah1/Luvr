@@ -145,7 +145,6 @@ const App: React.FC = () => {
     const getInitialURL = async () => {
       try {
         const initialURL = await Linking.getInitialURL();
-        console.log('initialURL APP:', initialURL);
         if (initialURL) {
           handleDeepLink({ url: initialURL });
         }
