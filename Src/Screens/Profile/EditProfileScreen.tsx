@@ -1052,7 +1052,7 @@ const EditProfileScreen = () => {
                 <Pressable
                   onPress={() => bottomSheetModalRef?.current?.close()}
                   style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  hitSlop={10}
                 >
                   <Image source={CommonIcons.ic_cross} style={styles.ModalCloseIcon} />
                 </Pressable>
@@ -1088,7 +1088,7 @@ const EditProfileScreen = () => {
                           onUpdateProfile();
                         }, 100);
                       }}
-                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      hitSlop={10}
                     >
                       <Image
                         source={CommonIcons.Check}

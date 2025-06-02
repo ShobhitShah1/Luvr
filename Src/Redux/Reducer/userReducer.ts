@@ -16,14 +16,14 @@ import {
 } from '../Action/actions';
 
 const initialState: UserDataType & { swipedLeftUserIds: string[] } & { swipedRightUserIds: string[] } & {
-  userData: string[];
+  userData: UserDataType;
 } & { notifications: string[] } & { swipeCount: number } & {
   cardSkipNumber: number;
 } & { deepLinkUrl: string | null } = {
   ...Object.keys(LocalStorageFields).reduce((acc, field) => ({ ...acc, [field]: '' }), {} as UserDataType),
   swipedLeftUserIds: [],
   swipedRightUserIds: [],
-  userData: [],
+  userData: {} as UserDataType,
   notifications: [],
   CurrentScreen: '',
   swipeCount: 0,
@@ -37,7 +37,7 @@ const userReducer = (
   } & {
     swipedRightUserIds: string[];
   } & {
-    userData: string[];
+    userData: UserDataType;
   } & {
     notifications: string[];
   } & {

@@ -10,6 +10,7 @@ import { ToastProvider } from 'react-native-toast-notifications';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { onDisplayNotification } from './Src/Components/onDisplayNotification';
+import BoostTimerWrapper from './Src/Components/BoostTimerWrapper';
 import { skus } from './Src/Config/ApiConfig';
 import { BoostModalProvider } from './Src/Contexts/BoostModalProvider';
 import BoostProvider from './Src/Contexts/BoostProvider';
@@ -225,7 +226,9 @@ const App: React.FC = () => {
                   <NavigationContainer ref={navigationRef} linking={linking} onStateChange={handleStateChange}>
                     <SubscriptionModalProvider>
                       <BoostModalProvider>
-                        <MainRoute />
+                        <BoostTimerWrapper>
+                          <MainRoute />
+                        </BoostTimerWrapper>
                       </BoostModalProvider>
                     </SubscriptionModalProvider>
                   </NavigationContainer>

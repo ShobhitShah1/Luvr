@@ -24,3 +24,5 @@ export const PLAYSTORE = 'https://play.google.com/store/apps/details?id=com.luvr
 
 export const gradientStart = { x: 0, y: 1 };
 export const gradientEnd = { x: 1, y: 0 };
+
+export const MAX_RADIUS = 9000000000000000;

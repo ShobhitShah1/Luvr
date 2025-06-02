@@ -42,11 +42,7 @@ const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
           <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'center', marginVertical: 10 }}>
             <Text style={[styles.title, { color: colors.TitleText }]}>Choose an Action</Text>
 
-            <Pressable
-              style={styles.closeButton}
-              onPress={closeModal}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
+            <Pressable style={styles.closeButton} onPress={closeModal} hitSlop={10}>
               <Image source={CommonIcons.CloseModal} style={styles.closeIcon} />
             </Pressable>
           </View>
@@ -58,11 +54,7 @@ const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
               colors={isDark ? colors.ButtonGradient : [colors.White, colors.White]}
               style={styles.actionButton}
             >
-              <Pressable
-                style={styles.button}
-                onPress={onBlockProfileClick}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
+              <Pressable style={styles.button} onPress={onBlockProfileClick} hitSlop={10}>
                 <Image
                   resizeMode="contain"
                   tintColor={colors.TextColor}
@@ -85,7 +77,7 @@ const ReportOrBlockModal: FC<ReportOrBlockInterface> = ({
                   setShowReportModalView(!ShowReportModalView);
                 }}
                 style={styles.button}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                hitSlop={10}
               >
                 <Image
                   resizeMode="contain"

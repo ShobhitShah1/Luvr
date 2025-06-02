@@ -43,7 +43,7 @@ const DetailCardHeader: FC<DetailCardRouteParams> = ({ props }) => {
             navigation.canGoBack() ? navigation.goBack() : navigation.replace('BottomTab', { screen: 'Home' })
           }
           style={styles.BackIconView}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          hitSlop={10}
         >
           <Image
             resizeMode="contain"

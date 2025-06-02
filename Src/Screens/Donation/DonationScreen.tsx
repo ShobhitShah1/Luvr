@@ -102,7 +102,7 @@ const DonationScreen = () => {
             top: Platform.OS === 'ios' ? 60 : 20,
           }}
           onPress={() => navigation.canGoBack() && navigation.goBack()}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          hitSlop={10}
         >
           <Image
             tintColor={colors.TextColor}
@@ -143,7 +143,10 @@ const DonationScreen = () => {
             <GradientButton
               Title={isPaymentSuccess ? 'Make another donation' : `Donate now ${donationAmount}`}
               isLoading={isPaymentLoading}
-              Navigation={() => requestDonationPurchase({ id: [donationStore?.donationProducts?.[1]?.productId] })}
+              Navigation={() =>
+                donationStore?.donationProducts?.[0]?.productId &&
+                requestDonationPurchase({ id: [donationStore?.donationProducts?.[0]?.productId] })
+              }
               Disabled={false}
             />
             {!isPaymentSuccess && (

@@ -14,22 +14,19 @@ import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
 import { BOTTOM_TAB_HEIGHT, COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
 import ApiConfig from '../../Config/ApiConfig';
-import { APP_NAME, gradientEnd, gradientStart, JOIN_EVENT, LIST_EVENT, UPDATE_LIST } from '../../Config/Setting';
+import { APP_NAME, JOIN_EVENT, LIST_EVENT, UPDATE_LIST, gradientEnd, gradientStart } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { store } from '../../Redux/Store/store';
 import { MessageItem, SocketEventHandlers } from '../../Types/Interface';
 import { useCustomToast } from '../../Utils/toastUtils';
 import RenderChatRoomList from './Components/RenderChatRoomList';
-import { useUserData } from '../../Contexts/UserDataContext';
-import SubscriptionView from '../../Components/Subscription/SubscriptionView';
 
 const ChatRoomScreen = () => {
   const { colors, isDark } = useTheme();
   const isFocused = useIsFocused();
   const { showToast } = useCustomToast();
-  const { subscription } = useUserData();
 
-  const currentLoginUserId = store.getState().user?.userData?._id || '';
+  const currentLoginUserId = store?.getState?.()?.user?.userData?._id || '';
 
   const [socket, setSocket] = useState<Socket | undefined>();
   const [messages, setMessages] = useState<MessageItem[]>([]);
@@ -98,23 +95,36 @@ const ChatRoomScreen = () => {
                 const usersWithFirstChat =
                   filteredData &&
                   filteredData.map((message) => {
-                    const otherUserChats = message?.chat?.filter(
+                    // Get all messages and find the most recent one for sorting
+                    const allChats = message?.chat || [];
+                    const mostRecentChat =
+                      allChats.length > 0
+                        ? allChats.reduce((latest, current) => (current.time > latest.time ? current : latest))
+                        : null;
+
+                    // Get only the other person's last message for display
+                    const otherPersonChats = allChats.filter(
                       (chat: any) => (chat?.id || chat?.senderId) !== currentLoginUserId
                     );
+                    const otherPersonLastChat =
+                      otherPersonChats.length > 0 ? otherPersonChats[otherPersonChats.length - 1] : null;
 
-                    const firstChat = otherUserChats?.length > 0 ? otherUserChats[otherUserChats?.length - 1] : null;
-
-                    return {
-                      chat: firstChat ? [firstChat] : [],
-                      last_updated_time: message?.last_updated_time,
+                    const messageItem: MessageItem = {
+                      chat: otherPersonLastChat ? [otherPersonLastChat] : [],
+                      last_updated_time: Number(mostRecentChat?.time) || 0,
                       name: message?.name,
                       reciver_socket_id: message?.reciver_socket_id,
                       to: message?.to,
                       profile: message?.profile,
                     };
+
+                    return messageItem;
                   });
 
-                setMessages(usersWithFirstChat);
+                // Sort messages by last_updated_time in descending order (newest first)
+                const sortedMessages = usersWithFirstChat.sort((a, b) => b.last_updated_time - a.last_updated_time);
+
+                setMessages(sortedMessages);
               }
             }
           } catch (error) {
@@ -160,7 +170,7 @@ const ChatRoomScreen = () => {
         </LinearGradient>
         <Text style={[styles.NoChatText, { color: colors.TitleText }]}>No chats, Get swiping</Text>
         <Text style={[styles.NoChatDescription, { color: isDark ? 'rgba(255, 255, 255, 0.5)' : colors.TextColor }]}>
-          When you match with other peoples they’ll appear here, where you can send them a message.
+          When you match with other peoples they'll appear here, where you can send them a message.
         </Text>
       </View>
     );
@@ -211,12 +221,12 @@ const ChatRoomScreen = () => {
         <View style={styles.ListChatView}>
           <FlatList
             data={messages}
+            keyExtractor={(item) => item.to}
             contentContainerStyle={{
               flexGrow: messages?.length === 0 ? 1 : undefined,
               paddingBottom: BOTTOM_TAB_HEIGHT,
-              justifyContent: messages.length === 0 ? 'center' : undefined,
+              justifyContent: messages?.length === 0 ? 'center' : undefined,
             }}
-            maxToRenderPerBatch={10}
             renderItem={({ item, index }) => {
               return <RenderChatRoomList item={item} />;
             }}

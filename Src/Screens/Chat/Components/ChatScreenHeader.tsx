@@ -21,10 +21,7 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({ data, onRightIconPress }) => {
     <SafeAreaView style={styles.Container}>
       <View style={styles.ContentView}>
         <View style={styles.BackAndProfileInfoView}>
-          <Pressable
-            onPress={() => navigation.canGoBack() && navigation.goBack()}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
+          <Pressable onPress={() => navigation.canGoBack() && navigation.goBack()} hitSlop={10}>
             <Image
               resizeMode="contain"
               tintColor={colors.TextColor}
@@ -56,11 +53,7 @@ const ChatScreenHeader: FC<ChatHeaderProps> = ({ data, onRightIconPress }) => {
             )}
           </View>
         </View>
-        <Pressable
-          onPress={onRightIconPress}
-          style={styles.RemoveChatView}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
+        <Pressable onPress={onRightIconPress} style={styles.RemoveChatView} hitSlop={10}>
           <Image tintColor={colors.TextColor} style={styles.RemoveChatIcon} source={CommonIcons.more_option} />
         </Pressable>
       </View>

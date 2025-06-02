@@ -18,7 +18,8 @@ import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { useBoostModal } from '../../../Hooks/useBoostModal';
 import { useShareProfile } from '../../../Hooks/useShareProfile';
 import { useUserData } from '../../../Contexts/UserDataContext';
-
+import { IncognitoState } from '../../../Redux/Reducer/IncognitoReducer';
+import { useSelector } from 'react-redux';
 interface BottomTabHeaderProps {
   hideSettingAndNotification?: boolean;
   showSetting?: boolean;
@@ -45,6 +46,8 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
   const { userData } = useUserData();
   const shareProfile = useShareProfile();
 
+  const { isIncognitoEnabled } = useSelector((state: { incognito: IncognitoState }) => state.incognito);
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ rotateZ: `${rotation.value}deg` }],
   }));
@@ -67,17 +70,27 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
       <View style={styles.contentView}>
-        {Platform.OS === 'android' && !hideDonation && (
-          <Pressable
-            onLongPress={() => showModal()}
-            onPress={() => navigation.navigate('Donation')}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Animated.View style={[styles.iconWrapper, animatedStyle]}>
-              <Image style={styles.donateIcon} resizeMode="contain" source={CommonIcons.donate_icon} />
-            </Animated.View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+          {Platform.OS === 'android' && !hideDonation && (
+            <Pressable onPress={() => navigation.navigate('Donation')} hitSlop={10}>
+              <Animated.View style={[styles.iconWrapper, animatedStyle]}>
+                <Image style={styles.donateIcon} resizeMode="contain" source={CommonIcons.donate_icon} />
+              </Animated.View>
+            </Pressable>
+          )}
+          <Pressable onPress={() => showModal()}>
+            <Image
+              style={[styles.donateIcon, { width: 28, height: 28 }]}
+              resizeMode="contain"
+              source={CommonIcons.ic_boost}
+            />
           </Pressable>
-        )}
+          {isIncognitoEnabled && (
+            <Pressable style={styles.incognitoView} onPress={() => navigation.navigate('IncognitoScreen')}>
+              <Image source={CommonIcons.ic_Incognito_mode} style={styles.incognitoIcon} />
+            </Pressable>
+          )}
+        </View>
 
         {showTitle && (
           <View style={styles.titleTextView}>
@@ -90,7 +103,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
             <Pressable
               onPress={() => shareProfile(userData)}
               style={[styles.iconWrapper, { marginRight: 22 }]}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              hitSlop={10}
             >
               <Image
                 style={styles.icons}
@@ -106,7 +119,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
                 navigation.navigate('Setting');
               }}
               style={styles.iconWrapper}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              hitSlop={10}
             >
               <Image
                 style={styles.icons}
@@ -122,7 +135,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
                 navigation.navigate('Notification');
               }}
               style={[styles.iconWrapper, { marginLeft: 22 }]}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              hitSlop={10}
             >
               <Image
                 style={styles.icons}
@@ -182,6 +195,17 @@ const styles = StyleSheet.create({
     height: 21.5,
   },
   donateIcon: {
+    width: 33,
+    height: 33,
+  },
+  incognitoView: {
+    borderRadius: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    left: 3,
+    zIndex: 99999999999999,
+  },
+  incognitoIcon: {
     width: 33,
     height: 33,
   },

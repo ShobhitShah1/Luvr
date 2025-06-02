@@ -20,7 +20,7 @@ const CategoryDetailHeader: FC<CategoryHeaderProps> = ({ item }) => {
         <Pressable
           onPress={() => navigation?.canGoBack() && navigation.goBack()}
           style={styles.BackIconView}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          hitSlop={10}
         >
           <Image
             resizeMode="contain"

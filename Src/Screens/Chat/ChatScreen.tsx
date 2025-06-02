@@ -158,7 +158,7 @@ const ChatScreen = () => {
           setSelectedReportReason={setSelectedReportReason}
         />
 
-        {/* <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} /> */}
+        {Platform.OS === 'android' && <KeyboardAvoidingView behavior={'height'} />}
         <SafeAreaView />
       </KeyboardAvoidingView>
     </GradientView>

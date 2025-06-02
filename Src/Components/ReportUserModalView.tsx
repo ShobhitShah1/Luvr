@@ -52,11 +52,7 @@ const ReportUserModalView: FC<ReportUserProps> = ({
             <View style={styles.titleView}>
               <View />
               <Text style={[styles.titleText, { color: colors.TitleText }]}>Report Profile</Text>
-              <Pressable
-                onPress={() => setVisibility(false)}
-                style={styles.closeModalIconView}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
+              <Pressable onPress={() => setVisibility(false)} style={styles.closeModalIconView} hitSlop={10}>
                 <Image source={CommonIcons.CloseModal} style={styles.closeModalIcon} />
               </Pressable>
             </View>

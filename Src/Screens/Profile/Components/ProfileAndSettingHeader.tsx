@@ -34,7 +34,7 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({
             disabled={isLoading}
             onPress={() => navigation.canGoBack() && navigation.goBack()}
             style={styles.ViewStyle}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={10}
           >
             <Image
               resizeMode="contain"
@@ -48,12 +48,7 @@ const ProfileAndSettingHeader: FC<HeaderProps> = ({
           <Text style={[styles.Title, { color: colors.TextColor }]}>{Title}</Text>
         </View>
         {Title !== 'Notification' && showRightIcon ? (
-          <Pressable
-            disabled={isLoading}
-            style={styles.ModalSubmitButton}
-            onPress={onUpdatePress}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
+          <Pressable disabled={isLoading} style={styles.ModalSubmitButton} onPress={onUpdatePress} hitSlop={10}>
             <Image
               source={CommonIcons.Check}
               tintColor={isDark ? colors.TextColor : colors.White}

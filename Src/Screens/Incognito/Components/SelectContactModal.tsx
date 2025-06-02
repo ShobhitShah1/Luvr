@@ -192,11 +192,7 @@ const SelectContactModal: FC<SelectContactModalProps> = ({
       >
         <View style={styles.modalContent}>
           <View style={styles.header}>
-            <Pressable
-              style={styles.closeButton}
-              onPress={onClose}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
+            <Pressable style={styles.closeButton} onPress={onClose} hitSlop={10}>
               <Text style={[styles.closeButtonText, { color: colors.TextColor }]}>✕</Text>
             </Pressable>
           </View>

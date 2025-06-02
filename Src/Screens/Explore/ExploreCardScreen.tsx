@@ -12,8 +12,8 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import { AdEventType, AppOpenAd, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 import LinearGradient from 'react-native-linear-gradient';
@@ -27,7 +27,7 @@ import TextString from '../../Common/TextString';
 import { BOTTOM_TAB_HEIGHT, COLORS, FONTS, GROUP_FONT } from '../../Common/Theme';
 import GradientButton from '../../Components/AuthComponents/GradientButton';
 import ApiConfig from '../../Config/ApiConfig';
-import { CardDelay, CardLimit } from '../../Config/Setting';
+import { CardDelay, CardLimit, MAX_RADIUS } from '../../Config/Setting';
 import { useSubscriptionModal } from '../../Contexts/SubscriptionModalContext';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { useUserData } from '../../Contexts/UserDataContext';
@@ -239,7 +239,7 @@ const ExploreCardScreen: FC = () => {
           like: RightSwipedUserIds,
           unlike: LeftSwipedUserIds,
           skip: skipValue,
-          radius: userData.radius,
+          radius: userData.radius || MAX_RADIUS,
           eventName: 'list_neighbour',
           latitude: userData.latitude,
           longitude: userData.longitude,
@@ -462,7 +462,13 @@ const ExploreCardScreen: FC = () => {
               disableLeftSwipe={isMatchModalVisible}
               disableRightSwipe={isMatchModalVisible}
               stackScale={0}
-              cardStyle={[styles.swiperStyle, { borderColor: isDark ? colors.White : 'transparent' }]}
+              cardStyle={{
+                height: '100%',
+                borderWidth: 0.8,
+                overflow: 'hidden',
+                borderRadius: hp('4%'),
+                borderColor: isDark ? colors.White : 'transparent',
+              }}
               overlayOpacityHorizontalThreshold={1}
               onSwiping={() => stopInterval()}
               onSwipedAborted={() => startInterval()}
@@ -621,12 +627,6 @@ const styles = StyleSheet.create({
     zIndex: 9999,
     alignSelf: 'center',
     justifyContent: 'center',
-  },
-  swiperStyle: {
-    height: '100%',
-    borderWidth: 0.8,
-    overflow: 'hidden',
-    borderRadius: hp('4%'),
   },
   LikeAndRejectView: {
     flex: 0.15,

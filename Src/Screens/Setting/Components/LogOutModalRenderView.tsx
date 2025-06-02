@@ -35,11 +35,7 @@ const LogOutModalRenderView: FC<SettingModalProps> = ({
         },
       ]}
     >
-      <Pressable
-        onPress={() => setState(false)}
-        style={styles.CloseModalContainerView}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-      >
+      <Pressable onPress={() => setState(false)} style={styles.CloseModalContainerView} hitSlop={10}>
         <Image source={CommonIcons.CloseModal} style={styles.CloseModalImage} />
       </Pressable>
       <View style={styles.ContentContainer}>

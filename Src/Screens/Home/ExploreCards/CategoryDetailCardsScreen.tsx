@@ -7,6 +7,7 @@ import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import GradientView from '../../../Common/GradientView';
 import TextString from '../../../Common/TextString';
+import { MAX_RADIUS } from '../../../Config/Setting';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { store } from '../../../Redux/Store/store';
@@ -63,7 +64,7 @@ const CategoryDetailCardsScreen: FC = () => {
         eventName: 'list_neighbour_home',
         latitude: userData.latitude,
         longitude: userData.longitude,
-        radius: userData?.userData?.radius || 9000000000000000,
+        radius: userData?.userData?.radius || MAX_RADIUS,
         unlike: store.getState().user?.swipedLeftUserIds,
         like: store.getState().user?.swipedRightUserIds,
         hoping: params?.item?.title,

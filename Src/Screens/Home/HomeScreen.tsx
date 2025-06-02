@@ -16,11 +16,10 @@ import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
 import { COLORS, FONTS } from '../../Common/Theme';
 import { HomeLookingForData } from '../../Components/Data';
+import { MAX_RADIUS } from '../../Config/Setting';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { useUserData } from '../../Contexts/UserDataContext';
-import useAppStateTracker from '../../Hooks/useAppStateTracker';
 import { useBoost } from '../../Hooks/useBoost';
-import { useBoostModal } from '../../Hooks/useBoostModal';
 import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import { useLocationPermission } from '../../Hooks/useLocationPermission';
 import { store } from '../../Redux/Store/store';
@@ -34,8 +33,8 @@ import { updateDeviceToken } from '../../Utils/updateDeviceToken';
 import BottomTabHeader from './Components/BottomTabHeader';
 import CategoryHeaderView from './Components/CategoryHeaderView';
 import RenderHomeNearby from './Components/RenderHomeNearby';
-import RenderLookingView from './Components/RenderlookingView';
 import RenderRecommendation from './Components/RenderRecommendation';
+import RenderLookingView from './Components/RenderlookingView';
 import styles from './styles';
 
 const askNotificationPermission = async () => {
@@ -54,7 +53,6 @@ const HomeScreen = () => {
 
   const { userData } = useUserData();
   const { isBoostActive } = useBoost();
-  const { showModal } = useBoostModal();
   const { showToast } = useCustomToast();
   const { requestLocationPermission } = useLocationPermission();
 
@@ -89,10 +87,6 @@ const HomeScreen = () => {
   const setupApp = async () => {
     try {
       await Promise.all([askNotificationPermission(), requestLocationPermission(), updateDeviceToken()]);
-
-      if (isFocus && !isBoostActive) {
-        setTimeout(showModal, 5000);
-      }
     } catch (error) {
       console.error('App setup error:', error);
     }
@@ -118,7 +112,7 @@ const HomeScreen = () => {
     return {
       latitude: userData.latitude,
       longitude: userData.longitude,
-      radius: userData?.radius || 9000000000000000,
+      radius: userData?.radius || MAX_RADIUS,
       unlike: store.getState().user?.swipedLeftUserIds,
       like: store.getState().user?.swipedRightUserIds,
       skip: 0,
@@ -254,11 +248,11 @@ const HomeScreen = () => {
   const RenderNearbyHeader = useCallback(() => {
     return (
       <Pressable
-        style={{ height: 40, alignSelf: 'flex-end', justifyContent: 'center' }}
-        hitSlop={{ right: 10, top: 10, bottom: 10, left: 10 }}
+        hitSlop={10}
         onPress={handleSeeMorePress}
+        style={{ height: 40, alignSelf: 'flex-end', justifyContent: 'center' }}
       >
-        <Text style={{ color: colors.TextColor, fontFamily: FONTS.SemiBold, fontSize: 15 }}>See more</Text>
+        <Text style={{ color: colors.TextColor, fontFamily: FONTS.SemiBold, fontSize: 14 }}>See more</Text>
       </Pressable>
     );
   }, [handleSeeMorePress]);

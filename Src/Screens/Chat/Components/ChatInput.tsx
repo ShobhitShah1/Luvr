@@ -33,9 +33,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage
   const renderComposer = (composerProps: any) => (
     <View
       style={{
-        top: Platform.OS === 'ios' ? (keyboardVisible ? -70 : 0) : 0,
+        top: Platform.OS === 'ios' ? (keyboardVisible ? -70 : 0) : keyboardVisible ? -25 : 0,
         height: 59,
-        width: '90%',
+        width: '93%',
         marginRight: 5,
         borderRadius: 25,
         paddingBottom: 5,
@@ -88,6 +88,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage
         position: 'absolute',
         right: 15,
         zIndex: 9999,
+        top: Platform.OS === 'ios' ? (keyboardVisible ? -70 : 0) : keyboardVisible ? -25 : 0,
         opacity: canSendMessage ? 1 : 0.5,
       }}
     >
@@ -116,7 +117,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage
         borderColor: 'transparent',
         backgroundColor: 'transparent',
         marginVertical: Platform.OS === 'ios' ? 0 : 10,
-        marginBottom: Platform.OS === 'ios' ? 0 : 8,
+        marginBottom: Platform.OS === 'ios' ? 0 : 20,
       }}
       primaryStyle={{
         alignSelf: 'center',
