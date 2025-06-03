@@ -109,8 +109,7 @@ const PhoneNumber = () => {
       }
 
       if (isValidNumber) {
-        await getUserWithoutOTP();
-        // await handleSendOtp();
+        await handleSendOtp();
         return;
       }
 

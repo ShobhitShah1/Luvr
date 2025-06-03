@@ -33,11 +33,6 @@ const RenderHomeNearby: FC<RenderLookingViewProps> = ({ item }) => {
 
         <LinearGradient colors={colors.GradientViewForCards} style={styles.overlay} />
 
-        {/* <View style={styles.likeContainer}>
-          <Image source={CommonIcons.ic_red_heart} style={{ width: 20, height: 20 }} resizeMode="contain" />
-          <Text style={styles.likeCount}>{item?.likes_into?.length || 10}</Text>
-        </View> */}
-
         <View style={styles.infoContainer}>
           {item?.full_name?.trim() && <Text style={styles.nameText}>{item?.full_name?.trim()}</Text>}
           {item?.education?.digree?.trim() && (

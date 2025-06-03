@@ -113,7 +113,7 @@ const ChatScreen = () => {
 
   return (
     <GradientView>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.Container}>
+      <KeyboardAvoidingView behavior={'padding'} style={styles.Container}>
         <ChatHeader data={otherUserProfileData} onRightIconPress={() => setReportAndBlockModal(true)} />
         <View style={styles.ChatContainer}>
           {isLoading ? (
@@ -123,6 +123,8 @@ const ChatScreen = () => {
           ) : (
             <GiftedChat
               alignTop
+              isKeyboardInternallyHandled
+              forceGetKeyboardHeight
               keyboardShouldPersistTaps="handled"
               messages={userMessage}
               onSend={(messages) => onSend(messages)}
@@ -158,7 +160,7 @@ const ChatScreen = () => {
           setSelectedReportReason={setSelectedReportReason}
         />
 
-        {Platform.OS === 'android' && <KeyboardAvoidingView behavior={'height'} />}
+        {/* {Platform.OS === 'android' && <KeyboardAvoidingView behavior={'padding'} />} */}
         <SafeAreaView />
       </KeyboardAvoidingView>
     </GradientView>
