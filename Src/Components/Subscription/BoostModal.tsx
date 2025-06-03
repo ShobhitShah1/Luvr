@@ -1,3 +1,4 @@
+import { BlurView } from '@react-native-community/blur';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { Dimensions, Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import * as RNIap from 'react-native-iap';
@@ -17,9 +18,8 @@ import { debouncedGetBoost } from '../../Services/BoostService';
 import { getProfileData } from '../../Utils/profileUtils';
 import { useCustomToast } from '../../Utils/toastUtils';
 import GradientButton from '../AuthComponents/GradientButton';
-import GradientBorder from '../GradientBorder/GradientBorder';
 import { GradientBorderView } from '../GradientBorder';
-import { BlurView } from '@react-native-community/blur';
+import GradientBorder from '../GradientBorder/GradientBorder';
 
 const { width } = Dimensions.get('window');
 
@@ -280,6 +280,9 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
           { backgroundColor: isDark ? 'rgba(18, 18, 19, 2)' : colors.White, shadowColor: colors.Primary },
         ]}
       >
+        <Pressable onPress={handleClose} style={styles.closeButton}>
+          <Image source={CommonIcons.CloseModal} style={styles.closeIcon} />
+        </Pressable>
         {isBoostActive ? (
           renderActiveBoost()
         ) : (
@@ -533,5 +536,16 @@ const styles = StyleSheet.create({
   countdownLabel: {
     fontSize: 14,
     fontFamily: FONTS.Regular,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: -9,
+    right: -9,
+    zIndex: 1,
+    padding: 5,
+  },
+  closeIcon: {
+    width: 27,
+    height: 27,
   },
 });

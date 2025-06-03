@@ -27,11 +27,7 @@ export const useBoostTimer = () => {
 
       if (isFocus && !isBoostActive && token) {
         const boostTimer = remoteConfig().getValue('boost_modal_timer').asNumber();
-        console.log('boostTimer:', boostTimer);
-
         const timerDuration = boostTimer || 300000;
-
-        console.log('timerDuration:', timerDuration);
 
         if (boostTimerRef.current) {
           clearTimeout(boostTimerRef.current);

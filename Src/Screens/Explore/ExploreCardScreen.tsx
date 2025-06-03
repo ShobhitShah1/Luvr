@@ -6,6 +6,7 @@ import { useIsFocused } from '@react-navigation/native';
 import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Animated,
   Image,
   Platform,
@@ -555,8 +556,19 @@ const ExploreCardScreen: FC = () => {
           user={MatchedUserInfo}
           onSayHiClick={() => {
             if (!subscription.isActive) {
-              showToast(TextString.premiumFeatureAccessTitle, TextString.premiumFeatureAccessDescription, 'error');
-              showSubscriptionModal();
+              Alert.alert(TextString.premiumFeatureAccessTitle, TextString.premiumFeatureAccessDescription, [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text: 'Upgrade',
+                  onPress: () => {
+                    showSubscriptionModal();
+                  },
+                },
+              ]);
+
               return;
             }
 
