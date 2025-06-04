@@ -41,7 +41,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
 }) => {
   const navigation = useCustomNavigation();
   const rotation = useSharedValue(0);
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const { showModal } = useBoostModal();
   const { userData } = useUserData();
   const shareProfile = useShareProfile();
@@ -70,7 +70,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
       <View style={styles.contentView}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, alignContent: 'center' }}>
           {Platform.OS === 'android' && !hideDonation && (
             <Pressable onPress={() => navigation.navigate('Donation')} hitSlop={10}>
               <Animated.View style={[styles.iconWrapper, animatedStyle]}>
@@ -78,11 +78,21 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
               </Animated.View>
             </Pressable>
           )}
-          <Pressable onPress={() => showModal()}>
+          <Pressable
+            style={{
+              width: 35,
+              height: 34,
+              borderRadius: 10,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: isDark ? 'rgba(246, 209, 0, 0.08)' : 'rgba(246, 209, 0, 0.2)',
+            }}
+            onPress={() => showModal()}
+          >
             <Image
-              style={[styles.donateIcon, { width: 28, height: 28 }]}
+              style={[styles.donateIcon, { width: '75%', height: '75%' }]}
               resizeMode="contain"
-              source={CommonIcons.ic_boost}
+              source={CommonIcons.ic_fire}
             />
           </Pressable>
           {isIncognitoEnabled && (
@@ -191,8 +201,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   icons: {
-    width: 21.5,
-    height: 21.5,
+    width: 21.8,
+    height: 21.8,
   },
   donateIcon: {
     width: 33,

@@ -88,7 +88,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage
         position: 'absolute',
         right: 15,
         zIndex: 9999,
-        top: Platform.OS === 'ios' ? (keyboardVisible ? -70 : 0) : keyboardVisible ? -25 : 0,
+        top: Platform.OS === 'ios' ? (keyboardVisible ? -70 : 0) : 0,
         opacity: canSendMessage ? 1 : 0.5,
       }}
     >

@@ -2,11 +2,9 @@ import { useEffect, useRef } from 'react';
 import remoteConfig from '@react-native-firebase/remote-config';
 import { useBoostModal } from './useBoostModal';
 import { useBoost } from './useBoost';
-import { useIsFocused } from '@react-navigation/native';
 import { getToken } from '../Services/fetch.service';
 
 export const useBoostTimer = () => {
-  const isFocus = useIsFocused();
   const { showModal } = useBoostModal();
   const { isBoostActive } = useBoost();
   const boostTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -18,17 +16,18 @@ export const useBoostTimer = () => {
         clearTimeout(boostTimerRef.current);
       }
     };
-  }, [isFocus, isBoostActive]);
+  }, [isBoostActive]);
 
   const setupBoostTimer = async () => {
     try {
       const token = getToken();
-      remoteConfig().fetchAndActivate();
 
-      if (isFocus && !isBoostActive && token) {
-        const boostTimer = remoteConfig().getValue('boost_modal_timer').asNumber();
-        const timerDuration = boostTimer || 300000;
+      await remoteConfig().fetchAndActivate();
 
+      const boostTimer = remoteConfig().getValue('boost_modal_timer').asNumber();
+      const timerDuration = boostTimer || 300000;
+
+      if (!isBoostActive && token) {
         if (boostTimerRef.current) {
           clearTimeout(boostTimerRef.current);
         }
