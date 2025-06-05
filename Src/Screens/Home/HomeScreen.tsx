@@ -4,14 +4,7 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { requestNotifications } from 'react-native-permissions';
-import Animated, {
-  FadeIn,
-  FadeOut,
-  LinearTransition,
-  SlideInRight,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { useSharedValue, withSpring } from 'react-native-reanimated';
 import GradientView from '../../Common/GradientView';
 import TextString from '../../Common/TextString';
 import { COLORS, FONTS } from '../../Common/Theme';
@@ -197,50 +190,44 @@ const HomeScreen = () => {
     });
   }, [selectedCategory, navigation]);
 
-  const keyExtractor = useCallback((item: any, index: number) => `${item.id || index.toString()}`, []);
-
   const renderLookingItem = useCallback(
     ({ item, index }: { item: HomeListProps['item']; index: number }) => (
-      <Animated.View entering={SlideInRight.delay(index)} layout={LinearTransition.springify()}>
+      <View>
         <RenderLookingView
           item={item}
           selectedCategory={selectedCategory}
           onCategoryPress={(item) => setSelectedCategory(item.title)}
         />
-      </Animated.View>
+      </View>
     ),
     [selectedCategory]
   );
 
   const renderHomeNearbyItem = useCallback(
     ({ item, index }: { item: ProfileType; index: number }) => (
-      <Animated.View
-        entering={FadeIn.delay(index).duration(300)}
-        exiting={FadeOut.duration(200)}
-        layout={LinearTransition.springify()}
-      >
+      <View>
         <RenderHomeNearby item={item} />
-      </Animated.View>
+      </View>
     ),
     []
   );
 
   const renderRecommendationItem = useCallback(
     ({ item, index }: { item: ProfileType; index: number }) => (
-      <Animated.View entering={FadeIn.delay(index)} layout={LinearTransition.springify()}>
+      <View>
         <RenderRecommendation item={item} />
-      </Animated.View>
+      </View>
     ),
     []
   );
 
   const NoCategoryListFound = useCallback(
     () => (
-      <Animated.View style={styles.noDataFoundView} entering={FadeIn.duration(400)} exiting={FadeOut.duration(400)}>
+      <View style={styles.noDataFoundView}>
         <Text style={[styles.noDataFoundText, { color: colors.TextColor }]}>
           No people found for <Text style={{ color: colors.Primary }}>{selectedCategory}</Text>.
         </Text>
-      </Animated.View>
+      </View>
     ),
     [selectedCategory, colors]
   );
@@ -276,17 +263,17 @@ const HomeScreen = () => {
           contentContainerStyle={{ paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
         >
-          <Animated.View style={[{ paddingHorizontal: 20, alignSelf: 'center' }]} entering={FadeIn.duration(500)}>
+          <View style={[{ paddingHorizontal: 20, alignSelf: 'center' }]}>
             <CategoryHeaderView title="Welcome to explore" description="I'm looking for..." />
 
-            <Animated.FlatList
+            <FlatList
               ref={categoryListRef}
               horizontal
               nestedScrollEnabled
               data={HomeLookingForData}
               contentContainerStyle={{ gap: 15 }}
               showsHorizontalScrollIndicator={false}
-              keyExtractor={keyExtractor}
+              keyExtractor={(item, index) => `${item.title}-${index}`}
               renderItem={renderLookingItem}
             />
 
@@ -295,14 +282,14 @@ const HomeScreen = () => {
             ) : categoryData?.length > 0 ? (
               <>
                 <RenderNearbyHeader />
-                <Animated.FlatList
+                <FlatList
                   horizontal
                   ref={nearbyListRef}
                   nestedScrollEnabled
                   data={categoryData}
                   contentContainerStyle={{ gap: 15 }}
                   showsHorizontalScrollIndicator={false}
-                  keyExtractor={keyExtractor}
+                  keyExtractor={(item, index) => `${item._id}-${index}`}
                   renderItem={renderHomeNearbyItem}
                 />
               </>
@@ -315,26 +302,22 @@ const HomeScreen = () => {
             {isNearbyFetching ? (
               <ActivityIndicator size="large" color={COLORS.Primary} style={{ height: 180 }} />
             ) : (
-              <Animated.FlatList
+              <FlatList
                 horizontal
                 nestedScrollEnabled
                 data={nearByData}
                 contentContainerStyle={{ gap: 15 }}
                 showsHorizontalScrollIndicator={false}
-                keyExtractor={keyExtractor}
+                keyExtractor={(item, index) => `${item._id}-${index}`}
                 renderItem={renderRecommendationItem}
                 ListEmptyComponent={
-                  <Animated.View
-                    style={styles.noDataFoundView}
-                    entering={FadeIn.duration(400)}
-                    exiting={FadeOut.duration(400)}
-                  >
+                  <View style={styles.noDataFoundView}>
                     <Text style={[styles.noDataFoundText, { color: colors.TextColor }]}>No people near you.</Text>
-                  </Animated.View>
+                  </View>
                 }
               />
             )}
-          </Animated.View>
+          </View>
         </ScrollView>
       </View>
     </GradientView>
