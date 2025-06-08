@@ -12,7 +12,6 @@ import { boostSkus } from '../../Config/ApiConfig';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { useUserData } from '../../Contexts/UserDataContext';
 import { useBoost } from '../../Hooks/useBoost';
-import { useBoostTimer } from '../../Hooks/useBoostTimer';
 import UserService from '../../Services/AuthService';
 import { debouncedGetBoost } from '../../Services/BoostService';
 import { getProfileData } from '../../Utils/profileUtils';
@@ -52,7 +51,6 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
   const { showToast } = useCustomToast();
   const { userData } = useUserData();
   const { isBoostActive, timeRemaining } = useBoost();
-  const { resetBoostTimer } = useBoostTimer();
 
   const [countdown, setCountdown] = useState<string>(formatTimeRemaining(timeRemaining * 60));
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -112,7 +110,7 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-    resetBoostTimer();
+    // resetBoostTimer();
     onClose();
   };
 

@@ -1,15 +1,15 @@
-import { BlurView } from '@react-native-community/blur';
 import React, { FC, memo } from 'react';
 import { FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CommonIcons from '../Common/CommonIcons';
-import { COLORS, deviceHeightWithStatusbar, FONTS } from '../Common/Theme';
+import { COLORS, FONTS, deviceHeightWithStatusbar } from '../Common/Theme';
+import { gradientEnd, gradientStart } from '../Config/Setting';
 import { useTheme } from '../Contexts/ThemeContext';
+import { BlurredBackdrop } from './BlurredBackdrop';
 import { reportReasons } from './Data';
 import { GradientBorderView } from './GradientBorder';
-import { gradientEnd, gradientStart } from '../Config/Setting';
 
 interface ReportUserProps {
   Visible: boolean;
@@ -18,12 +18,6 @@ interface ReportUserProps {
   setSelectedReportReason: (name: string) => void;
   onReportPress: () => void;
 }
-
-export const BlurredBackdrop = () => (
-  <View style={styles.blurContainer}>
-    <BlurView blurAmount={5} blurType="dark" style={styles.blurView} reducedTransparencyFallbackColor="transparent" />
-  </View>
-);
 
 const ReportUserModalView: FC<ReportUserProps> = ({
   Visible,
@@ -44,7 +38,7 @@ const ReportUserModalView: FC<ReportUserProps> = ({
       onBackdropPress={() => setVisibility(false)}
       hasBackdrop={true}
       onBackButtonPress={() => setVisibility(false)}
-      customBackdrop={<BlurredBackdrop />}
+      customBackdrop={<BlurredBackdrop toggleModal={() => setVisibility(false)} />}
     >
       <View style={[styles.container, { backgroundColor: isDark ? 'rgba(18, 18, 19, 0.7)' : colors.White }]}>
         <SafeAreaView style={{ flex: 1 }}>
@@ -251,17 +245,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.SemiBold,
     fontSize: 15,
   },
-  blurContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  blurView: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-  },
+
   reportButton: {
     flex: 1,
     width: '100%',

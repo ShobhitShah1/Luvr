@@ -42,6 +42,7 @@ import { useCustomToast } from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
+import { useBoostModal } from '../../Hooks/useBoostModal';
 
 const appOpenAdUnitId = __DEV__ ? TestIds.APP_OPEN : ApiConfig.ANDROID_AD_ID;
 const interstitialAdUnitId = __DEV__ ? TestIds.INTERSTITIAL : ApiConfig.ANDROID_AD_ID;
@@ -60,10 +61,12 @@ const ExploreCardScreen: FC = () => {
   const dispatch = useDispatch();
   const { subscription } = useUserData();
   const { showSubscriptionModal } = useSubscriptionModal();
+  const { showModal } = useBoostModal();
 
   const swipeRef = useRef<any>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const slideDownAnimation = useRef(new Animated.Value(1)).current;
+  const swipeCountRef = useRef(0);
 
   const currentSkipNumberRef = useRef(0);
   const isRequestInProgressRef = useRef(false);
@@ -318,6 +321,12 @@ const ExploreCardScreen: FC = () => {
 
       setCurrentImageIndex(0);
       setCurrentCardIndex(cardIndex + 1);
+
+      swipeCountRef.current += 1;
+      if (swipeCountRef.current >= 5) {
+        swipeCountRef.current = 0;
+        showModal();
+      }
 
       if ((swipeCount + 1) % adSwipeThreshold === 0 && !subscription.isActive) {
         setTimeout(async () => {

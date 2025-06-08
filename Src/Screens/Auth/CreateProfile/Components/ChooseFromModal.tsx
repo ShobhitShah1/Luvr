@@ -1,28 +1,21 @@
 /* eslint-disable react-native/no-inline-styles */
-import { BlurView } from '@react-native-community/blur';
 import React, { FC, memo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import CommonIcons from '../../../../Common/CommonIcons';
 import CommonImages from '../../../../Common/CommonImages';
 import { COLORS, GROUP_FONT, SIZES } from '../../../../Common/Theme';
-import GradientView from '../../../../Common/GradientView';
-import { useTheme } from '../../../../Contexts/ThemeContext';
-import LinearGradient from 'react-native-linear-gradient';
+import { BlurredBackdrop } from '../../../../Components/BlurredBackdrop';
 import { gradientEnd, gradientStart } from '../../../../Config/Setting';
+import { useTheme } from '../../../../Contexts/ThemeContext';
 
 interface ChooseFromModalProps {
   isModalVisible: boolean;
   toggleModal: () => void;
   OnOptionPress: (option: string) => void;
 }
-
-const BlurredBackdrop = ({ toggleModal }: { toggleModal: () => void }) => (
-  <Pressable onPress={toggleModal} style={styles.blurContainer}>
-    <BlurView style={styles.blurView} blurAmount={1} blurType="dark" reducedTransparencyFallbackColor="transparent" />
-  </Pressable>
-);
 
 const ChooseFromModal: FC<ChooseFromModalProps> = ({ isModalVisible, toggleModal, OnOptionPress }) => {
   const { colors, isDark } = useTheme();

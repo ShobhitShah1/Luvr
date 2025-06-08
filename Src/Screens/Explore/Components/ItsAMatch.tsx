@@ -5,14 +5,14 @@ import LinearGradient from 'react-native-linear-gradient';
 import ReactNativeModal from 'react-native-modal';
 import { useSelector } from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
-import { COLORS, deviceHeightWithStatusbar, FONTS } from '../../../Common/Theme';
+import CommonImages from '../../../Common/CommonImages';
+import { COLORS, FONTS, deviceHeightWithStatusbar } from '../../../Common/Theme';
+import { BlurredBackdrop } from '../../../Components/BlurredBackdrop';
 import { GradientBorderView } from '../../../Components/GradientBorder';
-import { BlurredBackdrop } from '../../../Components/ReportUserModalView';
 import ApiConfig from '../../../Config/ApiConfig';
 import { APP_NAME, DummyImage } from '../../../Config/Setting';
 import { useTheme } from '../../../Contexts/ThemeContext';
 import { ProfileType } from '../../../Types/ProfileType';
-import CommonImages from '../../../Common/CommonImages';
 
 interface ItsAMatchProps {
   user: ProfileType | null;
@@ -41,7 +41,7 @@ const ItsAMatch: FC<ItsAMatchProps> = ({ user, onSayHiClick, onCloseModalClick, 
   return (
     <ReactNativeModal
       isVisible={isVisible}
-      customBackdrop={<BlurredBackdrop />}
+      customBackdrop={<BlurredBackdrop toggleModal={onClose} />}
       statusBarTranslucent={true}
       deviceHeight={deviceHeightWithStatusbar}
       useNativeDriver={true}
