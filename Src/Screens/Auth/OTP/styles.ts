@@ -55,7 +55,7 @@ const styles = createThemedStyles((colors) => ({
   NoCodeText: {
     fontSize: hp('1.7%'),
     fontFamily: FONTS.Medium,
-    color: colors.Black,
+    color: colors.TextColor,
   },
   ResendText: {
     fontSize: hp('1.6%'),
