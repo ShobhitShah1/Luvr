@@ -13,6 +13,7 @@ export const RESET_SWIPE_COUNT = 'RESET_SWIPE_COUNT';
 export const RESET_RIGHT_SWIPE = 'RESET_RIGHT_SWIPE';
 export const SET_CARD_SKIP_NUMBER = 'SET_CARD_SKIP_NUMBER';
 export const SET_DEEP_LINK_URL = 'SET_DEEP_LINK_URL';
+export const SET_AGE_VERIFIED = 'SET_AGE_VERIFIED';
 
 export type NotificationPayload = {
   title: string;
@@ -39,7 +40,8 @@ export type UserAction =
   | { type: typeof RESET_SWIPE_COUNT }
   | { type: typeof RESET_RIGHT_SWIPE }
   | { type: typeof SET_CARD_SKIP_NUMBER; payload: number }
-  | { type: typeof SET_DEEP_LINK_URL; payload: string | null };
+  | { type: typeof SET_DEEP_LINK_URL; payload: string | null }
+  | { type: typeof SET_AGE_VERIFIED; payload: boolean };
 
 // Action creators with proper typing
 export const updateField = (field: UserField, value: any, _id?: string): UserAction => ({
@@ -98,4 +100,9 @@ export const setCardSkipNumber = (skipNumber: number): UserAction => ({
 export const setDeepLinkUrl = (url: string | null): UserAction => ({
   type: SET_DEEP_LINK_URL,
   payload: url,
+});
+
+export const setAgeVerified = (isVerified: boolean): UserAction => ({
+  type: SET_AGE_VERIFIED,
+  payload: isVerified,
 });

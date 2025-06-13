@@ -13,13 +13,14 @@ import {
   SET_CARD_SKIP_NUMBER,
   RESET_SWIPE_COUNT,
   SET_DEEP_LINK_URL,
+  SET_AGE_VERIFIED,
 } from '../Action/actions';
 
 const initialState: UserDataType & { swipedLeftUserIds: string[] } & { swipedRightUserIds: string[] } & {
   userData: UserDataType;
 } & { notifications: string[] } & { swipeCount: number } & {
   cardSkipNumber: number;
-} & { deepLinkUrl: string | null } = {
+} & { deepLinkUrl: string | null } & { isAgeVerified: boolean } = {
   ...Object.keys(LocalStorageFields).reduce((acc, field) => ({ ...acc, [field]: '' }), {} as UserDataType),
   swipedLeftUserIds: [],
   swipedRightUserIds: [],
@@ -29,6 +30,7 @@ const initialState: UserDataType & { swipedLeftUserIds: string[] } & { swipedRig
   swipeCount: 0,
   cardSkipNumber: 0,
   deepLinkUrl: null,
+  isAgeVerified: false,
 };
 
 const userReducer = (
@@ -46,6 +48,8 @@ const userReducer = (
     swipeCount: number;
   } & {
     deepLinkUrl: string | null;
+  } & {
+    isAgeVerified: boolean;
   } = initialState,
   action: any
 ) => {
@@ -111,6 +115,11 @@ const userReducer = (
       return {
         ...state,
         deepLinkUrl: action.payload,
+      };
+    case SET_AGE_VERIFIED:
+      return {
+        ...state,
+        isAgeVerified: action.payload,
       };
     case RESET:
       return initialState;
