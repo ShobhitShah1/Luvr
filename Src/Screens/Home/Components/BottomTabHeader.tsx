@@ -80,8 +80,9 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
           )}
           <Pressable
             style={{
+              top: 1.5,
               width: 35,
-              height: 34,
+              height: 35,
               borderRadius: 10,
               alignItems: 'center',
               justifyContent: 'center',

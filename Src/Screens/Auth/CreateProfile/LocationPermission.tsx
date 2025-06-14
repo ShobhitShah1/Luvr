@@ -29,7 +29,7 @@ const LocationPermission: FC = () => {
   const { showToast } = useCustomToast();
 
   const userData = useSelector((state: any) => state?.user);
-  const { requestLocationPermission } = useLocationPermission();
+  const { requestLocationPermission, showBlockedAlert } = useLocationPermission();
 
   const [IsLocationLoading, setIsLocationLoading] = useState(false);
 
@@ -37,40 +37,50 @@ const LocationPermission: FC = () => {
     setIsLocationLoading(true);
 
     try {
-      await requestLocationPermission()
-        .then((isLocationGranted) => {
-          if (isLocationGranted) {
-            return new Promise((resolve, reject) => {
-              Geolocation.getCurrentPosition(
-                async (position) => {
-                  const { coords } = position;
-                  if (coords) {
-                    await Promise.all([
-                      dispatch(updateField(LocalStorageFields.longitude, coords.longitude)),
-                      dispatch(updateField(LocalStorageFields.latitude, coords.latitude)),
-                    ]);
+      const isLocationGranted = await requestLocationPermission(userData?.isVerified);
 
+      if (isLocationGranted) {
+        await new Promise((resolve, reject) => {
+          Geolocation.getCurrentPosition(
+            async (position) => {
+              try {
+                const { coords } = position;
+                if (coords) {
+                  await Promise.all([
+                    dispatch(updateField(LocalStorageFields.longitude, coords.longitude)),
+                    dispatch(updateField(LocalStorageFields.latitude, coords.latitude)),
+                  ]);
+
+                  // Check if user is logged in before proceeding
+                  if (userData?.isVerified) {
                     await handleNavigation();
+                  } else {
+                    // For non-logged in users, just store location and proceed
+                    navigation.replace('BottomTab', {});
                   }
-                },
-                (error) => {
-                  reject(error);
-                },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 100 }
-              );
-            });
-          }
-        })
-        .catch((error) => {
-          showToast(TextString.error.toUpperCase(), String(error?.message || error), 'error');
+                  resolve(true);
+                }
+              } catch (error) {
+                reject(error);
+              }
+            },
+            (error) => {
+              reject(error);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 100 }
+          );
         });
+      } else {
+        // If permission is denied but not blocked, show toast and stop loading
+        showToast('Location Permission', 'Please allow location access to continue using the app', 'warning');
+        setIsLocationLoading(false);
+      }
     } catch (error: any) {
       showToast(
         TextString.error.toUpperCase(),
-        String(error?.message || 'Unable to find your location please try gain letter'),
+        String(error?.message || 'Unable to find your location please try again later'),
         'error'
       );
-    } finally {
       setIsLocationLoading(false);
     }
   };
@@ -87,12 +97,13 @@ const LocationPermission: FC = () => {
 
       if (APIResponse.data?.token) {
         dispatch(updateField(LocalStorageFields.Token, APIResponse.data?.token));
-        navigation.replace('BottomTab');
+        navigation.replace('BottomTab', {});
       } else {
-        navigation.replace('LoginStack');
+        navigation.replace('LoginStack', {});
       }
     } catch (error: any) {
       showToast(TextString.error.toUpperCase(), String(error?.message || error), TextString.error);
+      setIsLocationLoading(false);
     }
   };
 
@@ -109,7 +120,9 @@ const LocationPermission: FC = () => {
         <View style={style.MiddleTextView}>
           <Text style={[style.TitleText, { color: colors.TitleText }]}>Allow your location</Text>
           <Text style={[style.DescriptionText, { color: colors.TextColor }]}>
-            Set your location to see nearby people. You won’t be able to match with people otherwise.
+            {userData?.isVerified
+              ? "Location access is required to use the app. You won't be able to match with people otherwise."
+              : 'Set your location to see nearby people. You can change this later in settings.'}
           </Text>
         </View>
 

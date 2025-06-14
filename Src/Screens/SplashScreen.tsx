@@ -207,17 +207,24 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     try {
       console.log('[SplashScreen] Starting app initialization');
 
+      // First check if user is verified/logged in
+      const isUserVerified = checkUserVerification();
+
+      // Only check location if user is logged in
+      if (isUserVerified) {
+        const locationEnabled = await handleLocationPermission();
+        if (!locationEnabled) {
+          navigateToDestination(NavigationDestination.LOCATION_STACK);
+          return;
+        }
+      }
+
+      // Then proceed with other initializations
       await handleNotificationPermission();
       await handleGoogleSignIn();
 
-      if (!checkUserVerification()) {
+      if (!isUserVerified) {
         navigateToDestination(NavigationDestination.NUMBER_VERIFICATION);
-        return;
-      }
-
-      const locationEnabled = await handleLocationPermission();
-      if (!locationEnabled) {
-        navigateToDestination(NavigationDestination.LOCATION_STACK);
         return;
       }
 
@@ -240,6 +247,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       console.error('[SplashScreen] Initialization Error:', error);
       showToast('Initialization Error', `Could not complete setup: ${String(error)}`, 'error');
 
+      // Prioritize user verification in error handling
       if (!initializationStatus[InitializationStep.USER_VERIFICATION]) {
         navigateToDestination(NavigationDestination.NUMBER_VERIFICATION);
       } else if (!initializationStatus[InitializationStep.LOCATION_PERMISSION]) {

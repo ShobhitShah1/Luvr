@@ -17,10 +17,10 @@ const getLocationPermission = (): Permission => {
 
 export const useLocationPermission = () => {
   const [locationPermission, setLocationPermission] = useState<boolean>(false);
+  const [permissionAttempts, setPermissionAttempts] = useState<number>(0);
 
   useEffect(() => {
     checkLocationPermission();
-    requestLocationPermission();
   }, []);
 
   const checkLocationPermission = async (): Promise<boolean> => {
@@ -41,10 +41,9 @@ export const useLocationPermission = () => {
     }
   };
 
-  const requestLocationPermission = async (): Promise<boolean> => {
+  const requestLocationPermission = async (isLoggedIn: boolean = false): Promise<boolean> => {
     try {
       const permission = getLocationPermission();
-
       const checkResult = await check(permission);
 
       if (checkResult === RESULTS.GRANTED) {
@@ -53,14 +52,25 @@ export const useLocationPermission = () => {
         return true;
       }
 
+      if (checkResult === RESULTS.BLOCKED) {
+        showBlockedAlert();
+        return false;
+      }
+
+      if (isLoggedIn) {
+        setPermissionAttempts((prev) => prev + 1);
+      }
+
       const requestResult = await request(permission);
       const isGranted = requestResult === RESULTS.GRANTED;
 
       setLocationPermission(isGranted);
 
       if (!isGranted) {
-        if (requestResult === RESULTS.BLOCKED) {
-          showAlertAndNavigateToSettings();
+        if (isLoggedIn) {
+          if (requestResult === RESULTS.BLOCKED || permissionAttempts >= 1) {
+            showBlockedAlert();
+          }
         }
       } else {
         storeCurrentCods();
@@ -90,21 +100,22 @@ export const useLocationPermission = () => {
     );
   };
 
-  const showAlertAndNavigateToSettings = (): void => {
+  const showBlockedAlert = (): void => {
     Alert.alert(
-      'Location Permission',
-      `${APP_NAME} needs access to your location for a better user experience. This allows us to show you potential matches in your area and enhance your overall app experience.`,
+      'Location Permission Required',
+      `${APP_NAME} requires location access to function properly. Please enable location services in your device settings to continue using the app.`,
       [
         {
-          text: 'Cancel',
-          style: 'cancel',
+          text: 'Exit App',
+          style: 'destructive',
           onPress: () => BackHandler.exitApp(),
         },
         {
           text: 'Open Settings',
           onPress: () => Linking.openSettings(),
         },
-      ]
+      ],
+      { cancelable: false }
     );
   };
 
@@ -112,6 +123,6 @@ export const useLocationPermission = () => {
     locationPermission,
     requestLocationPermission,
     checkLocationPermission,
-    showAlertAndNavigateToSettings,
+    showBlockedAlert,
   };
 };
