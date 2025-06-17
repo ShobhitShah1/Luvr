@@ -48,9 +48,22 @@ async function fetchRemoteConfigValues() {
     if (SOCKET_BASE_URL_REMOTE) {
       ApiConfig.ANDROID_AD_ID = AD_MOB_ID;
     }
-  } catch (error) {
-    console.error('Error fetching remote config:', error);
-  }
+
+    const SHARE_BASE = remoteConfig().getValue('SHARE_BASE').asString();
+    if (SOCKET_BASE_URL_REMOTE) {
+      ApiConfig.SHARE_BASE = SHARE_BASE;
+    }
+
+    const IMAGE_BASE_URL = remoteConfig().getValue('IMAGE_BASE_URL').asString();
+    if (IMAGE_BASE_URL) {
+      ApiConfig.IMAGE_BASE_URL = IMAGE_BASE_URL;
+    }
+
+    const ANDROID_AD_ID = remoteConfig().getValue('ANDROID_AD_ID').asString();
+    if (ANDROID_AD_ID) {
+      ApiConfig.ANDROID_AD_ID = ANDROID_AD_ID;
+    }
+  } catch (error) {}
 }
 
 fetchRemoteConfigValues();

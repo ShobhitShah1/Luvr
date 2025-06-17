@@ -64,7 +64,6 @@ const linking = {
     try {
       return getStateFromPath(path, config);
     } catch (error) {
-      console.error('Deep link parsing error:', error);
       return {
         routes: [{ name: 'BottomTab' }],
       };
@@ -85,9 +84,7 @@ const App: React.FC = () => {
       if (title && body && !['ChatRoom', 'Chat'].includes(ScreenName)) {
         await onDisplayNotification(title, body);
       }
-    } catch (error) {
-      console.error('Error handling notification:', error);
-    }
+    } catch (error) {}
   }, []);
 
   useEffect(() => {
@@ -136,9 +133,7 @@ const App: React.FC = () => {
           });
         }
       }
-    } catch (error) {
-      console.error('Error handling deep link:', error);
-    }
+    } catch (error) {}
   }, []);
 
   useEffect(() => {
@@ -150,9 +145,7 @@ const App: React.FC = () => {
         if (initialURL) {
           handleDeepLink({ url: initialURL });
         }
-      } catch (error) {
-        console.error('Error getting initial URL:', error);
-      }
+      } catch (error) {}
     };
 
     getInitialURL();
@@ -175,9 +168,7 @@ const App: React.FC = () => {
           donationProducts: products,
         });
       }
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
+    } catch (error) {}
   }, []);
 
   useEffect(() => {
@@ -191,7 +182,6 @@ const App: React.FC = () => {
 
       return excludedRoutes.some((route) => currentRouteName.includes(route)) ? null : currentRouteName;
     } catch (error) {
-      console.error('Error in state changes:', error);
       return null;
     }
   }, []);

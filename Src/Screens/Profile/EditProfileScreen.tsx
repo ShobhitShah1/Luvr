@@ -268,7 +268,6 @@ const EditProfileScreen = () => {
         setBirthdateMonth(data?.birthdate?.split('/')?.[1] || '');
         setBirthdateYear(data?.birthdate?.split('/')?.[2] || '');
 
-        console.log('data?.recent_pik:', data?.recent_pik);
         if (data?.recent_pik?.length !== 0) {
           const finalPicks = Array.from({ length: 6 }, (_, index) => {
             if (index < data.recent_pik.length) {
@@ -384,9 +383,7 @@ const EditProfileScreen = () => {
 
         setChooseModalVisible(false);
       }
-    } catch (error: any) {
-      console.error('Error handling user selection:', error);
-    }
+    } catch (error: any) {}
   };
 
   const uploadImage = async (items: any[]) => {
@@ -424,7 +421,6 @@ const EditProfileScreen = () => {
 
           uploadResults.push(response.data);
         } else {
-          console.error('Invalid URL:', url);
         }
       }
 

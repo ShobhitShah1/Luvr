@@ -108,9 +108,7 @@ const ExploreCardScreen: FC = () => {
 
         const thresholdValue = remoteConfig().getValue('swipe_add_count').asNumber();
         setAdSwipeThreshold(thresholdValue || 3);
-      } catch (error) {
-        console.error('Remote config error:', error);
-      }
+      } catch (error) {}
     };
 
     setupRemoteConfig();
@@ -337,7 +335,6 @@ const ExploreCardScreen: FC = () => {
               await interstitialAd.show();
             }
           } catch (error) {
-            console.error('Failed to show ad:', error);
           } finally {
             interstitialAd.load();
             appOpenAd.load();

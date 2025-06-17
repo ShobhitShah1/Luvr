@@ -53,9 +53,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     [InitializationStep.PROFILE_IMAGE]: false,
   });
 
-  // For debugging - logs the current initialization state
   const logInitializationState = (step: InitializationStep, success: boolean, details?: any) => {
-    console.log(`[SplashScreen] ${step}: ${success ? 'SUCCESS' : 'FAILED'}`, details || '');
     setInitializationStatus((prev) => ({
       ...prev,
       [step]: success,
@@ -72,14 +70,12 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     try {
       // Validate URL format
       if (!url || typeof url !== 'string') {
-        console.error('Invalid deep link URL');
         return;
       }
 
       // Extract and validate profile ID
       const profileId = url.split('/').pop();
       if (!profileId) {
-        console.error('Invalid profile ID in deep link');
         return;
       }
 
@@ -98,7 +94,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       // Apply navigation state
       navigationRef.reset(navigationState);
     } catch (error) {
-      console.error('Error handling deep link navigation:', error);
       // Fallback to BottomTab if navigation fails
       navigationRef.reset({
         index: 0,
@@ -108,8 +103,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   }, []);
 
   const navigateToDestination = (destination: NavigationDestination, params?: object) => {
-    console.log(`[SplashScreen] Navigating to ${destination}`, params || '');
-
     // Check if we have a deep link URL to handle
     const deepLinkUrl = store.getState().user?.deepLinkUrl;
 
@@ -119,7 +112,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
 
       // Validate user state before deep link navigation
       if (!userStoreData?.isVerified || !userStoreData?.mobile_no) {
-        console.log('User not verified or missing phone number, skipping deep link');
         navigation.reset({
           index: 0,
           routes: [{ name: destination, ...(params && { params }) }],
@@ -152,7 +144,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       return false;
     } catch (error) {
       logInitializationState(InitializationStep.NOTIFICATIONS, false, { error: String(error) });
-      console.error('[SplashScreen] Notification Permission Error:', error);
       return false;
     }
   };
@@ -164,7 +155,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       return true;
     } catch (error) {
       logInitializationState(InitializationStep.GOOGLE_SIGN_IN, false, { error: String(error) });
-      console.error('[SplashScreen] Google Sign In Error:', error);
       return false;
     }
   };
@@ -176,7 +166,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       return isLocationEnabled;
     } catch (error) {
       logInitializationState(InitializationStep.LOCATION_PERMISSION, false, { error: String(error) });
-      console.error('[SplashScreen] Location Permission Error:', error);
       return false;
     }
   };
@@ -205,8 +194,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
 
   const initializeAppFlow = async () => {
     try {
-      console.log('[SplashScreen] Starting app initialization');
-
       // First check if user is verified/logged in
       const isUserVerified = checkUserVerification();
 
@@ -244,7 +231,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
 
       navigateToDestination(NavigationDestination.BOTTOM_TAB);
     } catch (error) {
-      console.error('[SplashScreen] Initialization Error:', error);
       showToast('Initialization Error', `Could not complete setup: ${String(error)}`, 'error');
 
       // Prioritize user verification in error handling

@@ -25,7 +25,6 @@ export const fetchCountryCode = async () => {
     const response = await axios.get(ApiConfig.GET_LOCATION_API);
     return response.data.countryCode;
   } catch (error) {
-    console.error('Error fetching device country code:', error);
     throw error;
   }
 };

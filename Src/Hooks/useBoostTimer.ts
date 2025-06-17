@@ -36,9 +36,7 @@ export const useBoostTimer = () => {
           showModal();
         }, timerDuration);
       }
-    } catch (error) {
-      console.error('Boost timer setup error:', error);
-    }
+    } catch (error) {}
   };
 
   const resetBoostTimer = () => {

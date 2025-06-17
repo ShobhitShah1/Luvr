@@ -92,9 +92,7 @@ const checkSubscriptionActive = (subscription: SubscriptionData | null): boolean
       if (receipt.expiryTimeMillis && parseInt(receipt.expiryTimeMillis) <= currentTime) {
         return false; // Expired
       }
-    } catch (error) {
-      console.warn('Failed to parse Android receipt for validation:', error);
-    }
+    } catch (error) {}
   }
 
   // Check auto-renewal status

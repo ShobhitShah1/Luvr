@@ -34,9 +34,7 @@ const askNotificationPermission = async () => {
   try {
     await requestNotifications(['alert', 'sound']);
     await messaging().requestPermission();
-  } catch (error) {
-    console.error('Notification permission error:', error);
-  }
+  } catch (error) {}
 };
 
 const HomeScreen = () => {
@@ -80,9 +78,7 @@ const HomeScreen = () => {
   const setupApp = async () => {
     try {
       await Promise.all([askNotificationPermission(), requestLocationPermission(), updateDeviceToken()]);
-    } catch (error) {
-      console.error('App setup error:', error);
-    }
+    } catch (error) {}
   };
 
   const fetchData = async () => {
@@ -94,7 +90,6 @@ const HomeScreen = () => {
       await Promise.all([getMyLikes(), getProfileData(), fetchCategoryListData(), fetchNearbyListData()]);
       listOpacity.value = withSpring(1, { damping: 15 });
     } catch (error) {
-      console.error('Error fetching data on focus:', error);
     } finally {
       setIsLoading(false);
       setIsNearbyFetching(false);
@@ -178,7 +173,6 @@ const HomeScreen = () => {
     try {
       await fetchData();
     } catch (error) {
-      console.error('Error refreshing data:', error);
     } finally {
       setRefreshing(false);
     }

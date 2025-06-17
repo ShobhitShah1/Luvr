@@ -53,9 +53,7 @@ export const useChat = (
           setAvatarUrl(ApiConfig.IMAGE_BASE_URL + apiResponse.data?.recent_pik[0]);
         }
       }
-    } catch (error) {
-      console.error('[Chat Debug] Error in getOtherUserDataCall:', error);
-    }
+    } catch (error) {}
   };
 
   const transformDataForGiftedChat = (apiData: any) => {

@@ -31,7 +31,6 @@ export async function onDisplayNotification(title: string, body: string): Promis
       store.dispatch(addNotification({ title, description: body, date: new Date() }));
     }
   } catch (error) {
-    console.error('Error displaying notification:', error);
     throw error;
   }
 }

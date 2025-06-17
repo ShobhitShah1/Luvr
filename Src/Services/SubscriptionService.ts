@@ -139,7 +139,6 @@ const validateWithPlatformStore = async (
 
     return { isValid: false, error: 'Unsupported platform' };
   } catch (error) {
-    console.warn('Store validation failed:', error);
     return {
       isValid: false,
       error: error instanceof Error ? error.message : 'Unknown validation error',
@@ -211,13 +210,10 @@ const calculateExpiryTimestamp = (subscription: SubscriptionData): number => {
  */
 const handleSubscriptionExpiry = async (subscription: SubscriptionData): Promise<void> => {
   try {
-    console.log('Handling subscription expiry for:', subscription._id);
-
     // Final validation with store before cancellation
     const storeValidation = await validateWithPlatformStore(subscription);
 
     if (storeValidation.isValid) {
-      console.log('Store validation shows subscription is still valid, rescheduling check');
       scheduleSubscriptionCheck(subscription);
       return;
     }
@@ -226,15 +222,12 @@ const handleSubscriptionExpiry = async (subscription: SubscriptionData): Promise
     const cancelled = await cancelSubscription(subscription._id);
 
     if (cancelled) {
-      console.log('Subscription successfully cancelled due to expiry');
       clearAllTimers();
 
       // Refresh subscription data after cancellation
       await getSubscription();
     }
-  } catch (error) {
-    console.error('Error handling subscription expiry:', error);
-  }
+  } catch (error) {}
 };
 
 /**
@@ -257,7 +250,6 @@ const scheduleSubscriptionCheck = async (subscription: SubscriptionData): Promis
   }
 
   const timeUntilExpiry = validation.expiryTimestamp - Date.now();
-  console.log(`Subscription expires in ${validation.daysUntilExpiry} days`);
 
   // Determine check frequency based on time until expiry
   let checkDelay: number;
@@ -302,7 +294,6 @@ const scheduleSubscriptionCheck = async (subscription: SubscriptionData): Promis
 
     if (gracePeriodTime > 0 && gracePeriodTime < timeUntilExpiry) {
       gracePeriodTimeout = setTimeout(async () => {
-        console.log('Grace period expired, forcing validation');
         const finalValidation = await validateSubscription(subscription, true);
         if (!finalValidation.isValid) {
           await handleSubscriptionExpiry(subscription);
@@ -332,7 +323,6 @@ const startPeriodicValidation = (): void => {
         if (!validation.isValid || validation.isExpired) {
           await handleSubscriptionExpiry(subscription);
         } else if (validation.needsRenewal) {
-          console.log('Subscription needs renewal, performing store validation');
           // Additional store validation is already included above
         }
       }
@@ -414,7 +404,6 @@ export const cancelSubscription = async (purchaseId: string): Promise<boolean> =
     }
     return false;
   } catch (error) {
-    console.error('Cancel subscription error:', error);
     return false;
   }
 };
@@ -557,8 +546,6 @@ const clearAllTimers = (): void => {
  * Initialize subscription monitoring
  */
 export const initializeSubscriptionMonitoring = async (): Promise<void> => {
-  console.log('Initializing unified subscription monitoring');
-
   // Clear any existing timers
   clearAllTimers();
 

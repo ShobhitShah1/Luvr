@@ -85,9 +85,7 @@ const LoginScreen = () => {
         TermsOfService: termsOfService || '',
         EULA: EULA || '',
       });
-    } catch (error) {
-      console.error('Error fetching remote config', error);
-    }
+    } catch (error) {}
   };
 
   const handleGoogleLogin = async () => {

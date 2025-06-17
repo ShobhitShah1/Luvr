@@ -31,9 +31,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const loadThemePreference = async (): Promise<void> => {
       try {
         setThemePreference(systemColorScheme as ThemeOption);
-      } catch (error) {
-        console.error('Failed to load theme preference:', error);
-      }
+      } catch (error) {}
     };
 
     loadThemePreference();
@@ -43,9 +41,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const saveThemePreference = async (): Promise<void> => {
       try {
         await AsyncStorage.setItem(THEME_PREFERENCE_KEY, themePreference);
-      } catch (error) {
-        console.error('Failed to save theme preference:', error);
-      }
+      } catch (error) {}
     };
 
     saveThemePreference();

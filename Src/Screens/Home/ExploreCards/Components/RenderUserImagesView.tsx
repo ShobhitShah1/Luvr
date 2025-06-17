@@ -34,7 +34,6 @@ const RenderUserImagesView: FC<UserImagesProps> = ({ Images, index }) => {
   }, []);
 
   const handleError = useCallback((errorEvent: NativeSyntheticEvent<ImageErrorEventData>) => {
-    console.error('Image loading error:', errorEvent.nativeEvent.error);
     setIsImageLoading(false);
 
     const errorMessage = errorEvent.nativeEvent.error;

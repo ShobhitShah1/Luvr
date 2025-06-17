@@ -75,8 +75,6 @@ export const scheduleBoostExpiryCheck = (boost: BoostData): void => {
 
   const timeUntilExpiry = expiryTimestamp - currentTime;
 
-  console.log(`Boost expiry in: ${Math.floor(timeUntilExpiry / (1000 * 60))} minutes`);
-
   if (timeUntilExpiry <= 0 || timeUntilExpiry === 0) {
     debouncedGetBoost(0).then((refreshed) => {
       if (refreshed) {
@@ -84,7 +82,6 @@ export const scheduleBoostExpiryCheck = (boost: BoostData): void => {
         const updatedBoost = state?.boost?.activeBoost;
 
         if (updatedBoost && updatedBoost._id && calculateBoostExpiryTimestamp(updatedBoost) <= Date.now()) {
-          console.log('Confirmed expiry, canceling boost');
           cancelBoost(updatedBoost._id);
         }
       }
@@ -108,8 +105,6 @@ export const scheduleBoostExpiryCheck = (boost: BoostData): void => {
     // Check every minute
     checkDelay = 60 * 1000;
   }
-
-  console.log(`Scheduling next boost check in ${Math.floor(checkDelay / (1000 * 60))} minutes`);
 
   setTimeout(() => {
     debouncedGetBoost(0);

@@ -93,9 +93,7 @@ export const useLocationPermission = () => {
           ]);
         }
       },
-      (error) => {
-        console.error('Error getting current location:', error);
-      },
+      (error) => {},
       { enableHighAccuracy: false, timeout: 15000, maximumAge: 10000 }
     );
   };

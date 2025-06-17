@@ -40,9 +40,7 @@ const useAppStateTracker = (): AppStateStatus => {
 
       lastApiCallTimeRef.current = now;
       await UserService.UserRegister(dataToSend);
-    } catch (error) {
-      console.error('Failed to update online status:', error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {

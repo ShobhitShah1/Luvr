@@ -32,7 +32,6 @@ const AgeVerificationModal: React.FC = () => {
       }
       setIsLoading(false);
     } catch (error) {
-      console.error('Error checking age verification status:', error);
       setIsLoading(false);
     }
   };
@@ -41,9 +40,7 @@ const AgeVerificationModal: React.FC = () => {
     try {
       await AsyncStorage.setItem(AGE_VERIFICATION_KEY, 'true');
       dispatch(setAgeVerified(true));
-    } catch (error) {
-      console.error('Error saving age verification status:', error);
-    }
+    } catch (error) {}
   };
 
   const handleDecline = () => {
