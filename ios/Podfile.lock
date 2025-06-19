@@ -1167,7 +1167,7 @@ PODS:
     - React-Core
   - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-pager-view (6.7.1):
+  - react-native-pager-view (6.8.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1421,7 +1421,7 @@ PODS:
     - React-utils (= 0.74.7)
   - RNAppleAuthentication (2.4.1):
     - React-Core
-  - RNCAsyncStorage (2.1.2):
+  - RNCAsyncStorage (2.2.0):
     - React-Core
   - RNCClipboard (1.16.2):
     - React-Core
@@ -1631,11 +1631,11 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.0)
-  - VisionCamera (4.6.4):
-    - VisionCamera/Core (= 4.6.4)
-    - VisionCamera/React (= 4.6.4)
-  - VisionCamera/Core (4.6.4)
-  - VisionCamera/React (4.6.4):
+  - VisionCamera (4.7.0):
+    - VisionCamera/Core (= 4.7.0)
+    - VisionCamera/React (= 4.7.0)
+  - VisionCamera/Core (4.7.0)
+  - VisionCamera/React (4.7.0):
     - React-Core
   - Yoga (0.0.0)
 
@@ -1999,7 +1999,7 @@ SPEC CHECKSUMS:
   react-native-image-picker: 5af4a7bee8d8e9bd0d5fc3c5c88e7d4a70ff2ce1
   react-native-in-app-review: 668f4c80d7f95945e0ad7833e98c466cb40d6808
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
-  react-native-pager-view: 53ad8fd847a852b5bda55c5391c55f6340d87052
+  react-native-pager-view: 4c9fbf3593cdbcadb91047654cdc25ebc08f073f
   react-native-safe-area-context: b72c4611af2e86d80a59ac76279043d8f75f454c
   React-nativeconfig: fc1e87992e794e20f5e22116221577f21e05a18c
   React-NativeModulesApple: 02a87759a8b359b91e5f5c57d05204d012bbce20
@@ -2025,7 +2025,7 @@ SPEC CHECKSUMS:
   React-utils: e45cd7466d8fd9f1a88611fb8e9d38b92ef05b76
   ReactCommon: 82c202f4ec2759b2e8461a5a524e3d0e9ec14b1e
   RNAppleAuthentication: c3dddf5918126c9aae85dc2e2ce9fb87835e9e04
-  RNCAsyncStorage: b9f5f78da5d16a853fe3dc22e8268d932fc45a83
+  RNCAsyncStorage: b44e8a4e798c3e1f56bffccd0f591f674fb9198f
   RNCClipboard: e1d17c9d093d8129ef50b39b63a17a0e8ccd0ade
   RNCMaskedView: d7d429af166e632081fc0933bebad668e8e700b7
   RNFastImage: 9ce20899ec62610d1eb5a7912b955d1e30981f22
@@ -2048,7 +2048,7 @@ SPEC CHECKSUMS:
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  VisionCamera: f56eaedde0d3fa095143b78374d29e89e71735f9
+  VisionCamera: c5c07db74721d37f4c9f8331ad1f8da7b2539995
   Yoga: 6986e115ef4e300f1f5b4910d5eef51c711c8747
 
 PODFILE CHECKSUM: 03f8603e2de5dc3805af0f31201ecf4e82b2b923

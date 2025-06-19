@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import { addEventListener } from '@react-native-community/netinfo';
+import { useNetInfo } from '@react-native-community/netinfo';
 import remoteConfig from '@react-native-firebase/remote-config';
 import { useIsFocused } from '@react-navigation/native';
 import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -32,6 +32,7 @@ import { CardDelay, CardLimit, MAX_RADIUS } from '../../Config/Setting';
 import { useSubscriptionModal } from '../../Contexts/SubscriptionModalContext';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { useUserData } from '../../Contexts/UserDataContext';
+import { useBoostModal } from '../../Hooks/useBoostModal';
 import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import useInterval from '../../Hooks/useInterval';
 import { onSwipeLeft, onSwipeRight, resetSwipeCount, setCardSkipNumber } from '../../Redux/Action/actions';
@@ -42,7 +43,6 @@ import { useCustomToast } from '../../Utils/toastUtils';
 import BottomTabHeader from '../Home/Components/BottomTabHeader';
 import ItsAMatch from './Components/ItsAMatch';
 import RenderSwiperCard from './Components/RenderSwiperCard';
-import { useBoostModal } from '../../Hooks/useBoostModal';
 
 const appOpenAdUnitId = __DEV__ ? TestIds.APP_OPEN : ApiConfig.ANDROID_AD_ID;
 const interstitialAdUnitId = __DEV__ ? TestIds.INTERSTITIAL : ApiConfig.ANDROID_AD_ID;
@@ -56,12 +56,19 @@ const interstitialAd = InterstitialAd.createForAdRequest(interstitialAdUnitId, {
 });
 
 const ExploreCardScreen: FC = () => {
-  const { colors, isDark } = useTheme();
-  const { width } = useWindowDimensions();
   const dispatch = useDispatch();
+  const { width } = useWindowDimensions();
+  const { showToast } = useCustomToast();
+
+  const isFocused = useIsFocused();
+  const { isConnected } = useNetInfo();
+  const navigation = useCustomNavigation();
+
+  const { colors, isDark } = useTheme();
   const { subscription } = useUserData();
-  const { showSubscriptionModal } = useSubscriptionModal();
-  const { showModal } = useBoostModal();
+
+  const { showModal, isVisible: isBoostModalVisible } = useBoostModal();
+  const { showSubscriptionModal, isVisible: isSubscriptionModalVisible } = useSubscriptionModal();
 
   const swipeRef = useRef<any>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
@@ -71,35 +78,63 @@ const ExploreCardScreen: FC = () => {
   const currentSkipNumberRef = useRef(0);
   const isRequestInProgressRef = useRef(false);
 
-  const navigation = useCustomNavigation();
-  const isFocused = useIsFocused();
-
   const userData = useSelector((state: any) => state?.user);
   const swipeCount = useSelector((state: any) => state?.user?.swipeCount || 0);
-  const { showToast } = useCustomToast();
 
   const LeftSwipedUserIds = useSelector((state: any) => state?.user?.swipedLeftUserIds || []);
   const RightSwipedUserIds = useSelector((state: any) => state?.user?.swipedRightUserIds || []);
   const storedSkipNumber = useSelector((state: any) => state?.user?.cardSkipNumber || 0);
 
   const [cards, setCards] = useState<ProfileType[]>([]);
-  const [cardToSkipNumber, setCardToSkipNumber] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [CurrentCardIndex, setCurrentCardIndex] = useState(0);
   const [firstImageLoading, setFirstImageLoading] = useState(true);
-  const [IsAPILoading, setIsAPILoading] = useState(true);
-  const [IsNetConnected, setIsNetConnected] = useState(true);
+  const [isAPILoading, setIsAPILoading] = useState(true);
   const [isMatchModalVisible, setIsMatchModalVisible] = useState(false);
   const [MatchedUserInfo, setMatchedUserInfo] = useState<ProfileType | null>(null);
+  const [isAdShowing, setIsAdShowing] = useState(false);
 
   const [adSwipeThreshold, setAdSwipeThreshold] = useState(2);
 
   const [appOpenAdLoaded, setAppOpenAdLoaded] = useState(false);
   const [interstitialAdLoaded, setInterstitialAdLoaded] = useState(false);
 
+  const { startInterval, stopInterval, clearInterval } = useInterval(
+    () => {
+      if (cards && isFocused) {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik?.length || 0);
+        Animated.timing(animatedOpacity, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }).start();
+        swipeRef.current?.forceUpdate();
+      }
+    },
+    cards && cards?.length > 0 ? CardDelay : null
+  );
+
   useEffect(() => {
     currentSkipNumberRef.current = storedSkipNumber;
   }, [storedSkipNumber]);
+
+  useEffect(() => {
+    if (!isBoostModalVisible || !isSubscriptionModalVisible) {
+      setTimeout(() => swipeRef.current?.forceUpdate(), 100);
+    }
+  }, [isBoostModalVisible, isSubscriptionModalVisible]);
+
+  useEffect(() => {
+    if (isFocused && !isAdShowing) {
+      // Small delay to ensure proper initialization
+      setTimeout(() => {
+        if (swipeRef.current && cards.length > 0) {
+          swipeRef.current.forceUpdate();
+        }
+      }, 100);
+    }
+  }, [isFocused, isAdShowing, cards.length]);
 
   useEffect(() => {
     const setupRemoteConfig = async () => {
@@ -121,10 +156,25 @@ const ExploreCardScreen: FC = () => {
 
     const unsubscribeAppOpenOpened = appOpenAd.addAdEventListener(AdEventType.OPENED, () => {
       setAppOpenAdLoaded(false);
+      setIsAdShowing(true);
+      stopInterval();
     });
 
     const unsubscribeAppOpenClosed = appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
+      setAppOpenAdLoaded(false);
+      setIsAdShowing(false);
       appOpenAd.load();
+
+      // Resume functionality with proper delay
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          resetSwiperState();
+
+          if (isFocused && !isMatchModalVisible && !isAdShowing) {
+            startInterval();
+          }
+        }, 200);
+      });
     });
 
     const unsubscribeInterstitialLoaded = interstitialAd.addAdEventListener(AdEventType.LOADED, () => {
@@ -133,50 +183,39 @@ const ExploreCardScreen: FC = () => {
 
     const unsubscribeInterstitialOpened = interstitialAd.addAdEventListener(AdEventType.OPENED, () => {
       setInterstitialAdLoaded(false);
+      // Stop interval during ad display
+      stopInterval();
     });
 
     const unsubscribeInterstitialClosed = interstitialAd.addAdEventListener(AdEventType.CLOSED, () => {
+      setInterstitialAdLoaded(false);
+      // Reload ad for next time
       interstitialAd.load();
+      // Resume functionality with proper delay
+      setTimeout(() => {
+        if (swipeRef.current) {
+          swipeRef.current.forceUpdate();
+        }
+        // Restart interval if screen is focused
+        if (isFocused && !isMatchModalVisible) {
+          startInterval();
+        }
+      }, 300); // Increased delay
     });
 
+    // Initial ad loading
     interstitialAd.load();
-
     appOpenAd.load();
 
     return () => {
       unsubscribeAppOpenLoaded();
       unsubscribeAppOpenOpened();
       unsubscribeAppOpenClosed();
-
       unsubscribeInterstitialLoaded();
       unsubscribeInterstitialOpened();
       unsubscribeInterstitialClosed();
     };
-  }, []);
-
-  const { startInterval, stopInterval, clearInterval } = useInterval(
-    () => {
-      if (cards && isFocused) {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % cards[CurrentCardIndex]?.recent_pik?.length || 0);
-        Animated.timing(animatedOpacity, {
-          toValue: 1,
-          duration: 1000,
-          easing: Easing.linear,
-          useNativeDriver: true,
-        }).start();
-        swipeRef.current?.forceUpdate();
-      }
-    },
-    cards && cards?.length > 0 ? CardDelay : null
-  );
-
-  useEffect(() => {
-    const unsubscribe = addEventListener((state) => {
-      setIsNetConnected(state?.isConnected || false);
-    });
-
-    return unsubscribe;
-  }, []);
+  }, [isFocused, isMatchModalVisible, startInterval, stopInterval]);
 
   useEffect(() => {
     if (isMatchModalVisible) {
@@ -202,8 +241,6 @@ const ExploreCardScreen: FC = () => {
       stopInterval();
       clearInterval();
     }
-
-    // setCardToSkipNumber(0);
   }, [isFocused, storedSkipNumber]);
 
   useEffect(() => {
@@ -219,13 +256,12 @@ const ExploreCardScreen: FC = () => {
   const resetCardSkip = () => {
     currentSkipNumberRef.current = 0;
     dispatch(setCardSkipNumber(0));
-    setCardToSkipNumber(0);
     fetchAPIData(0);
   };
 
   const fetchAPIData = useCallback(
     async (cardSkipValue: number | undefined) => {
-      if (!IsNetConnected) {
+      if (!isConnected) {
         showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
         setIsAPILoading(false);
         return;
@@ -309,9 +345,11 @@ const ExploreCardScreen: FC = () => {
     swipeCardAction(cardIndex, onSwipeLeft);
   };
 
+  // Replace your existing onSwipedCard function with this improved version
+
   const onSwipedCard = async (cardIndex: any) => {
     try {
-      if (!IsNetConnected) {
+      if (!isConnected) {
         showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
         swipeRef.current?.swipeBack();
         return;
@@ -326,26 +364,53 @@ const ExploreCardScreen: FC = () => {
         showModal();
       }
 
+      // Show ad logic with better error handling
       if ((swipeCount + 1) % adSwipeThreshold === 0 && !subscription.isActive) {
+        // Stop interval before showing ad
+        stopInterval();
+
         setTimeout(async () => {
           try {
+            let adShown = false;
+
             if (appOpenAdLoaded) {
               await appOpenAd.show();
+              adShown = true;
             } else if (interstitialAdLoaded) {
               await interstitialAd.show();
+              adShown = true;
+            }
+
+            // If no ad was shown, restart interval immediately
+            if (!adShown && isFocused && !isMatchModalVisible) {
+              startInterval();
             }
           } catch (error) {
+            // Restart interval on error
+            if (isFocused && !isMatchModalVisible) {
+              startInterval();
+            }
           } finally {
-            interstitialAd.load();
-            appOpenAd.load();
+            // Ensure ads are reloaded
+            if (!interstitialAdLoaded) {
+              interstitialAd.load();
+            }
+            if (!appOpenAdLoaded) {
+              appOpenAd.load();
+            }
           }
-        }, 1000);
+        }, 500); // Slight delay before showing ad
       }
-    } catch (error) {}
+    } catch (error) {
+      // Ensure interval is running if there's an error
+      if (isFocused && !isMatchModalVisible) {
+        startInterval();
+      }
+    }
   };
 
   const onSwipedAllCard = useCallback(async () => {
-    if (isRequestInProgressRef.current || IsAPILoading) {
+    if (isRequestInProgressRef.current || isAPILoading) {
       return;
     }
 
@@ -356,7 +421,6 @@ const ExploreCardScreen: FC = () => {
       const newSkipNumber = currentSkipNumberRef.current + CardLimit;
       currentSkipNumberRef.current = newSkipNumber;
 
-      setCardToSkipNumber(newSkipNumber);
       dispatch(setCardSkipNumber(newSkipNumber));
 
       await fetchAPIData(newSkipNumber);
@@ -372,7 +436,7 @@ const ExploreCardScreen: FC = () => {
       isRequestInProgressRef.current = false;
       setIsAPILoading(false);
     }
-  }, [fetchAPIData, CardLimit, IsAPILoading, dispatch]);
+  }, [fetchAPIData, CardLimit, isAPILoading, dispatch]);
 
   const SwipeLeft = async () => {
     if (isMatchModalVisible) {
@@ -391,7 +455,7 @@ const ExploreCardScreen: FC = () => {
   };
 
   const likeUserAPICall = async (id: string, cardData: ProfileType) => {
-    if (!IsNetConnected) {
+    if (!isConnected) {
       showToast(TextString.error.toUpperCase(), TextString.PleaseCheckYourInternetConnection, TextString.error);
       return;
     }
@@ -415,7 +479,17 @@ const ExploreCardScreen: FC = () => {
     }
   };
 
-  if (IsAPILoading) {
+  const resetSwiperState = useCallback(() => {
+    if (swipeRef.current) {
+      // Force a complete re-render of the swiper
+      setCurrentCardIndex((prevIndex) => prevIndex);
+      setTimeout(() => {
+        swipeRef.current?.forceUpdate();
+      }, 100);
+    }
+  }, []);
+
+  if (isAPILoading) {
     return (
       <GradientView>
         <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
@@ -426,7 +500,7 @@ const ExploreCardScreen: FC = () => {
     );
   }
 
-  if (!IsNetConnected && !IsAPILoading) {
+  if (!isConnected && !isAPILoading) {
     return (
       <GradientView>
         <BottomTabHeader showSetting={true} hideSettingAndNotification={false} />
@@ -466,8 +540,8 @@ const ExploreCardScreen: FC = () => {
               backgroundColor={'transparent'}
               disableBottomSwipe={true}
               disableTopSwipe={true}
-              disableLeftSwipe={isMatchModalVisible}
-              disableRightSwipe={isMatchModalVisible}
+              disableLeftSwipe={isMatchModalVisible || isAdShowing}
+              disableRightSwipe={isMatchModalVisible || isAdShowing}
               stackScale={0}
               cardStyle={{
                 height: '100%',
@@ -506,7 +580,7 @@ const ExploreCardScreen: FC = () => {
               }}
             />
           ) : (
-            !IsAPILoading && (
+            !isAPILoading && (
               <View style={styles.EmptyCardView}>
                 <Text style={[styles.EmptyCardText, { color: colors.TextColor }]}>
                   Ready to find your match? Let's adjust your preferences to discover meaningful connections.
@@ -554,10 +628,11 @@ const ExploreCardScreen: FC = () => {
         )}
 
         <ItsAMatch
-          isVisible={!IsAPILoading && isMatchModalVisible}
+          isVisible={!isAPILoading && isMatchModalVisible}
           onClose={() => {
             setIsMatchModalVisible(false);
             setMatchedUserInfo(null);
+            setTimeout(() => swipeRef.current?.forceUpdate(), 100);
           }}
           user={MatchedUserInfo}
           onSayHiClick={() => {
@@ -582,10 +657,12 @@ const ExploreCardScreen: FC = () => {
             navigation.navigate('Chat', {
               id: MatchedUserInfo?._id?.toString(),
             });
+            setTimeout(() => swipeRef.current?.forceUpdate(), 100);
           }}
           onCloseModalClick={() => {
             setIsMatchModalVisible(false);
             setMatchedUserInfo(null);
+            setTimeout(() => swipeRef.current?.forceUpdate(), 100);
           }}
           setItsMatch={setIsMatchModalVisible}
         />
@@ -642,7 +719,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   CardContainerStyle: {
-    zIndex: 9999,
+    zIndex: 999999,
     alignSelf: 'center',
     justifyContent: 'center',
   },
