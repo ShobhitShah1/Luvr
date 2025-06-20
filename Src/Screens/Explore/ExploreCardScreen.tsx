@@ -615,6 +615,7 @@ const ExploreCardScreen: FC = () => {
 
             <LinearGradient colors={['rgba(92, 196, 255, 1)', 'rgba(12, 145, 219, 1)']} style={styles.infoIconView}>
               <Pressable
+                hitSlop={15}
                 onPress={() => {
                   cards?.[CurrentCardIndex] &&
                     navigation.navigate('ExploreCardDetail', { props: cards?.[CurrentCardIndex] });
@@ -645,7 +646,11 @@ const ExploreCardScreen: FC = () => {
                 {
                   text: 'Upgrade',
                   onPress: () => {
-                    showSubscriptionModal();
+                    setIsMatchModalVisible(false);
+
+                    setTimeout(() => {
+                      showSubscriptionModal();
+                    }, 500);
                   },
                 },
               ]);

@@ -15,8 +15,8 @@ export const GET_RECEIVER_SOCKET_EVENT = 'get_reciver_socket';
 export const READ_ALL = 'read_all';
 export const UPDATE_LIST = 'updateList';
 
-export const ANDROID_APP_VERSION = '2.0';
-export const IOS_APP_VERSION = '1.0.0';
+export const ANDROID_APP_VERSION = '2.5';
+export const IOS_APP_VERSION = '1.1';
 
 export const APP_NAME = 'Luvr';
 

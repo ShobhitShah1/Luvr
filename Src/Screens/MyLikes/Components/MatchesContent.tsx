@@ -1,16 +1,15 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useSelector } from 'react-redux';
 import CommonIcons from '../../../Common/CommonIcons';
 import { COLORS, FONTS, GROUP_FONT } from '../../../Common/Theme';
 import ApiConfig from '../../../Config/ApiConfig';
+import { useSubscriptionModal } from '../../../Contexts/SubscriptionModalContext';
 import { useTheme } from '../../../Contexts/ThemeContext';
+import { useUserData } from '../../../Contexts/UserDataContext';
 import { useCustomNavigation } from '../../../Hooks/useCustomNavigation';
 import { ListDetailProps } from '../../../Types/Interface';
-import { useUserData } from '../../../Contexts/UserDataContext';
-import { useCustomToast } from '../../../Utils/toastUtils';
-import { useSubscriptionModal } from '../../../Contexts/SubscriptionModalContext';
 
 const NO_IMAGE_CONTAINER = 150;
 

@@ -885,6 +885,7 @@ Let's make every moment count together! #LoveConnects`,
           ButtonCloseText="No"
           ButtonTitle="Yes, Logout"
         />
+
         <SettingCustomModal
           isVisible={DeleteAccountModalView}
           setState={setDeleteAccountModalView}
@@ -899,6 +900,7 @@ Let's make every moment count together! #LoveConnects`,
           ButtonCloseText="Cancel"
           onActionPress={() => onDeleteAccount()}
         />
+
         <SettingCustomModal
           isVisible={RateUsModalView}
           setState={setRateUsModalView}

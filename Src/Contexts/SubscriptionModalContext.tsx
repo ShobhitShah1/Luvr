@@ -28,6 +28,7 @@ export const SubscriptionModalProvider: React.FC<{ children: React.ReactNode }> 
     if (options?.handlePlanSelection) {
       setHandlePlanSelection(() => options.handlePlanSelection);
     }
+
     setIsVisible(true);
   }, []);
 
@@ -35,7 +36,7 @@ export const SubscriptionModalProvider: React.FC<{ children: React.ReactNode }> 
     setIsVisible(false);
     setSelectedPlan(undefined);
     setHandlePlanSelection(undefined);
-  }, []);
+  }, [isVisible, selectedPlan, handlePlanSelection]);
 
   return (
     <SubscriptionModalContext.Provider
