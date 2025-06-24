@@ -3,7 +3,7 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import remoteConfig from '@react-native-firebase/remote-config';
 import { useIsFocused } from '@react-navigation/native';
-import React, { FC, memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, memo, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -75,6 +75,9 @@ const ExploreCardScreen: FC = () => {
   const slideDownAnimation = useRef(new Animated.Value(1)).current;
   const swipeCountRef = useRef(0);
 
+  const [_, forceRender] = useReducer((x) => x + 1, 0);
+  const prevSubscriptionModalVisible = useRef(isSubscriptionModalVisible);
+
   const currentSkipNumberRef = useRef(0);
   const isRequestInProgressRef = useRef(false);
 
@@ -99,6 +102,8 @@ const ExploreCardScreen: FC = () => {
   const [appOpenAdLoaded, setAppOpenAdLoaded] = useState(false);
   const [interstitialAdLoaded, setInterstitialAdLoaded] = useState(false);
 
+  const prevSubscriptionActive = useRef(subscription.isActive);
+
   const { startInterval, stopInterval, clearInterval } = useInterval(
     () => {
       if (cards && isFocused) {
@@ -116,11 +121,18 @@ const ExploreCardScreen: FC = () => {
   );
 
   useEffect(() => {
+    if (prevSubscriptionModalVisible.current && !isSubscriptionModalVisible) {
+      forceRender();
+    }
+    prevSubscriptionModalVisible.current = isSubscriptionModalVisible;
+  }, [isSubscriptionModalVisible]);
+
+  useEffect(() => {
     currentSkipNumberRef.current = storedSkipNumber;
   }, [storedSkipNumber]);
 
   useEffect(() => {
-    if (!isBoostModalVisible || !isSubscriptionModalVisible) {
+    if (!isBoostModalVisible && !isSubscriptionModalVisible) {
       setTimeout(() => swipeRef.current?.forceUpdate(), 100);
     }
   }, [isBoostModalVisible, isSubscriptionModalVisible]);
@@ -253,6 +265,15 @@ const ExploreCardScreen: FC = () => {
     }
   }, [cards, slideDownAnimation]);
 
+  useEffect(() => {
+    // Only refresh if subscription just became active
+    if (!prevSubscriptionActive.current && subscription.isActive) {
+      // Reset skip number and refresh the list
+      fetchAPIData(0);
+    }
+    prevSubscriptionActive.current = subscription.isActive;
+  }, [subscription.isActive]);
+
   const resetCardSkip = () => {
     currentSkipNumberRef.current = 0;
     dispatch(setCardSkipNumber(0));
@@ -344,8 +365,6 @@ const ExploreCardScreen: FC = () => {
   const onSwipeLeftCard = (cardIndex: number) => {
     swipeCardAction(cardIndex, onSwipeLeft);
   };
-
-  // Replace your existing onSwipedCard function with this improved version
 
   const onSwipedCard = async (cardIndex: any) => {
     try {
