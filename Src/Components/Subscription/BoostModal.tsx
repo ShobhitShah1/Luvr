@@ -1,6 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 import React, { memo, useEffect, useRef, useState } from 'react';
-import { Dimensions, Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, Platform, Pressable, StyleSheet, Text, View, DeviceEventEmitter } from 'react-native';
 import * as RNIap from 'react-native-iap';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
@@ -19,6 +19,8 @@ import { useCustomToast } from '../../Utils/toastUtils';
 import GradientButton from '../AuthComponents/GradientButton';
 import { GradientBorderView } from '../GradientBorder';
 import GradientBorder from '../GradientBorder/GradientBorder';
+import { useBoostModal } from '../../Hooks/useBoostModal';
+import { safeJsonParse } from '../../Utils/flattenObject';
 
 const { width } = Dimensions.get('window');
 
@@ -51,6 +53,7 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
   const { showToast } = useCustomToast();
   const { userData } = useUserData();
   const { isBoostActive, timeRemaining } = useBoost();
+  const { hideModal } = useBoostModal();
 
   const [countdown, setCountdown] = useState<string>(formatTimeRemaining(timeRemaining * 60));
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -182,13 +185,14 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
         return;
       }
 
-      const payment_response = {
+      let payment_response = {
+        ...purchaseResponse,
         platform: Platform.OS?.toLowerCase(),
         productId: purchaseResponse.productId,
         productIds: purchaseResponse.productIds || [],
         purchaseToken: purchaseResponse.purchaseToken,
         transactionId: purchaseResponse.transactionId,
-        transactionDate: purchaseResponse.transactionDate,
+        transactionDate: purchaseResponse.transactionDate || purchaseResponse.originalTransactionDateIOS || Date.now(),
         autoRenewing: purchaseResponse.autoRenewingAndroid,
         isAcknowledged: purchaseResponse.isAcknowledgedAndroid,
         purchaseState: purchaseResponse.purchaseStateAndroid,
@@ -197,8 +201,8 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
         developerPayload: purchaseResponse.developerPayloadAndroid || '',
         obfuscatedAccountId: purchaseResponse.obfuscatedAccountIdAndroid || '',
         obfuscatedProfileId: purchaseResponse.obfuscatedProfileIdAndroid || '',
-        transactionReceipt: JSON.parse(purchaseResponse.transactionReceipt || '{}'),
-        dataAndroid: JSON.parse(purchaseResponse.dataAndroid || '{}'),
+        transactionReceipt: safeJsonParse(purchaseResponse.transactionReceipt),
+        dataAndroid: safeJsonParse(purchaseResponse.dataAndroid),
       };
 
       const dataToSend = { eventName: 'boost', user_id: userData?._id, payment_response };
@@ -206,11 +210,17 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
 
       if (APIResponse.code === 200) {
         await getProfileData();
+        DeviceEventEmitter.emit('boost:purchase:success');
+        if (onBoostMe) {
+          onBoostMe();
+        }
       }
     } catch (error: any) {
       showToast(TextString.error, error?.message?.toString(), TextString.error);
     } finally {
       setIsPurchasing(false);
+      hideModal();
+      onClose();
       debouncedGetBoost(1000);
     }
   };

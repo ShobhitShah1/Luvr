@@ -14,3 +14,14 @@ export function flattenObject(obj: any): Record<string, any> {
     return acc;
   }, {});
 }
+
+export function safeJsonParse(value: any): any {
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return value;
+    }
+  }
+  return value;
+}

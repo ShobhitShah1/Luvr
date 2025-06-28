@@ -18,6 +18,7 @@ import { getProfileData } from '../../Utils/profileUtils';
 import { useCustomToast } from '../../Utils/toastUtils';
 import OpenURL from '../OpenURL';
 import { useSubscriptionModal } from '../../Contexts/SubscriptionModalContext';
+import { safeJsonParse } from '../../Utils/flattenObject';
 
 const { width } = Dimensions.get('window');
 
@@ -238,34 +239,59 @@ const SubscriptionView = ({
           dataAndroid: JSON.parse(purchaseResponse.dataAndroid || '{}'),
         };
       } else {
-        // iOS payment response
-        const transactionReceipt = JSON.parse(purchaseResponse.transactionReceipt || '{}');
+        const transactionReceipt = safeJsonParse(purchaseResponse.transactionReceipt);
+        let expiresDate = null;
+        let gracePeriodExpiresDate = null;
+
+        if (transactionReceipt.expires_date_ms) {
+          expiresDate = parseInt(transactionReceipt.expires_date_ms);
+        }
+
+        if (transactionReceipt.grace_period_expires_date_ms) {
+          gracePeriodExpiresDate = parseInt(transactionReceipt.grace_period_expires_date_ms);
+        }
+
+        // Ensure transactionDate is current (within 1 min), else use current time
+        const now = Date.now();
+        let transactionDate = purchaseResponse.transactionDate;
+        if (!transactionDate || Math.abs(now - transactionDate) > 60000) {
+          transactionDate = now;
+        }
+
+        if (!expiresDate && purchaseResponse.transactionDate && purchaseResponse.productId) {
+          let periodInDays = 30; // Default monthly
+          const productIdLower = purchaseResponse.productId.toLowerCase();
+          if (productIdLower.includes('yearly') || productIdLower.includes('annual')) {
+            periodInDays = 365;
+          } else if (productIdLower.includes('quarterly') || productIdLower.includes('3month')) {
+            periodInDays = 90;
+          } else if (productIdLower.includes('6month') || productIdLower.includes('halfyear')) {
+            periodInDays = 180;
+          } else if (productIdLower.includes('weekly') || productIdLower.includes('week')) {
+            periodInDays = 7;
+          }
+          expiresDate = transactionDate + periodInDays * 24 * 60 * 60 * 1000;
+        }
 
         payment_response = {
           platform: 'ios',
           productId: purchaseResponse.productId,
           productIds: purchaseResponse.productIds || [],
           transactionId: purchaseResponse.transactionId,
-          transactionDate: purchaseResponse.transactionDate,
+          transactionDate: transactionDate,
           originalTransactionDate: purchaseResponse.originalTransactionDateIOS,
           originalTransactionIdentifier: purchaseResponse.originalTransactionIdentifierIOS,
           transactionReceipt: transactionReceipt,
-          // iOS specific fields
           appAccountToken: purchaseResponse.appAccountToken || '',
-          // Receipt validation data
           receiptData: purchaseResponse.transactionReceipt,
-          // Auto-renewal info (extracted from receipt if needed)
-          autoRenewing: true, // Default for subscriptions, can be updated based on receipt validation
-          purchaseState: 1, // Active state for iOS
-          // Additional iOS fields
+          autoRenewing: true,
+          purchaseState: 1,
           webOrderLineItemId: transactionReceipt.web_order_line_item_id || '',
           subscriptionGroupIdentifier: transactionReceipt.subscription_group_identifier || '',
           isInIntroOfferPeriod: transactionReceipt.is_in_intro_offer_period === 'true',
           isTrialPeriod: transactionReceipt.is_trial_period === 'true',
-          expiresDate: transactionReceipt.expires_date_ms ? parseInt(transactionReceipt.expires_date_ms) : null,
-          gracePeriodExpiresDate: transactionReceipt.grace_period_expires_date_ms
-            ? parseInt(transactionReceipt.grace_period_expires_date_ms)
-            : null,
+          expiresDate: expiresDate,
+          gracePeriodExpiresDate: gracePeriodExpiresDate,
         };
       }
 

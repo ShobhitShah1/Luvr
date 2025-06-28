@@ -22,6 +22,7 @@ import { LocalStorageFields } from '../../../Types/LocalStorageFields';
 import { ProfileType } from '../../../Types/ProfileType';
 import { useCustomToast } from '../../../Utils/toastUtils';
 import styles from './styles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const appleLoginAlert = () => {
   Alert.alert(
@@ -45,6 +46,7 @@ const appleLoginAlert = () => {
 const LoginScreen = () => {
   const style = useThemedStyles(styles);
   const { showToast } = useCustomToast();
+  const { top } = useSafeAreaInsets();
 
   const { colors, isDark } = useTheme();
 
@@ -287,9 +289,10 @@ const LoginScreen = () => {
       style={style.Container}
     >
       <ScrollView bounces={false} style={style.ContentView} contentContainerStyle={style.ScrollViewContainContainer}>
-        <View style={style.AppNameTitleView}>
+        <View style={[style.AppNameTitleView, { top: Platform.OS === 'ios' ? top : undefined }]}>
           <Text style={style.AppNameTitle}>Welcome to the {APP_NAME}</Text>
         </View>
+
         <LinearGradient
           colors={isDark ? colors.BackgroundGradient : ['rgba(29,18,68,0.6)', 'rgba(8,2,29,1)']}
           style={{

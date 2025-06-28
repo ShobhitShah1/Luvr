@@ -15,6 +15,7 @@ import {
   Text,
   View,
   useWindowDimensions,
+  DeviceEventEmitter,
 } from 'react-native';
 import { AdEventType, AppOpenAd, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 import LinearGradient from 'react-native-linear-gradient';
@@ -506,6 +507,27 @@ const ExploreCardScreen: FC = () => {
         swipeRef.current?.forceUpdate();
       }, 100);
     }
+  }, []);
+
+  // Add this at the top level of the component
+  const boostRefreshRef = useRef(false);
+
+  // Handler to refresh cards after boost purchase
+  const handleBoostPurchaseSuccess = () => {
+    if (!boostRefreshRef.current) {
+      boostRefreshRef.current = true;
+      fetchAPIData(currentSkipNumberRef.current);
+      setTimeout(() => {
+        boostRefreshRef.current = false;
+      }, 2000); // Prevent double calls
+    }
+  };
+
+  // Listen for a custom event dispatched after boost purchase
+  useEffect(() => {
+    const listener = () => handleBoostPurchaseSuccess();
+    const subscription = DeviceEventEmitter.addListener('boost:purchase:success', listener);
+    return () => subscription.remove();
   }, []);
 
   if (isAPILoading) {

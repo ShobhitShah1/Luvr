@@ -127,7 +127,7 @@ export const getBoost = async (): Promise<boolean> => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 20000);
 
-    const dataToSend = { eventName: 'get_boost', user_id: store.getState()?.user?._id || '' };
+    const dataToSend = { eventName: 'get_boost' };
 
     const response = await UserService.UserRegister(dataToSend);
 

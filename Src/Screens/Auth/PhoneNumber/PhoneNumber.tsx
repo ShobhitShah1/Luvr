@@ -200,9 +200,11 @@ const PhoneNumber = () => {
       const IS_NOTIFICATION_ENABLE = await checkLocationPermission();
       dispatch(updateField(LocalStorageFields.isVerified, true));
 
-      const nextScreen = IS_NOTIFICATION_ENABLE ? 'BottomTab' : 'LocationStack';
-      const navigationParams = IS_NOTIFICATION_ENABLE ? undefined : { screen: 'LocationPermission' };
-      navigation.replace(nextScreen, navigationParams);
+      if (IS_NOTIFICATION_ENABLE) {
+        navigation.replace('BottomTab');
+      } else {
+        navigation.replace('LocationStack', { screen: 'LocationPermission' });
+      }
 
       setIsAPILoading(false);
     } catch (error: any) {

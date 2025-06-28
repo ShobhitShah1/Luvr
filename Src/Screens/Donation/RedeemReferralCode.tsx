@@ -168,7 +168,6 @@ const RedeemReferralCode = () => {
 
       const dataToSend = {
         eventName: ApiConfig.HaveReferralCode,
-        user_id: userData?._id,
         referral_code: code,
         subscription_count: 1,
         subscription_month: 3,
