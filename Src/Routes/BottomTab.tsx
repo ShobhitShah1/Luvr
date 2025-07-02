@@ -1,18 +1,19 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useEffect } from 'react';
 import { Dimensions, Image, Pressable, StyleSheet, View } from 'react-native';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import LinearGradient from 'react-native-linear-gradient';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import CommonIcons from '../Common/CommonIcons';
+import { FONTS } from '../Common/Theme';
+import { GradientBorderView } from '../Components/GradientBorder';
 import { useTheme } from '../Contexts/ThemeContext';
 import ChatRoomScreen from '../Screens/Chat/ChatRoomScreen';
 import ExploreCardScreen from '../Screens/Explore/ExploreCardScreen';
 import { HomeScreen } from '../Screens/Home/index';
 import MyLikesScreen from '../Screens/MyLikes/MyLikesScreen';
 import ProfileScreen from '../Screens/Profile/ProfileScreen';
-import { GradientBorderView } from '../Components/GradientBorder';
-import { FONTS } from '../Common/Theme';
-import LinearGradient from 'react-native-linear-gradient';
+import { getSubscription } from '../Services/SubscriptionService';
 
 interface TabScreen {
   name: string;
@@ -141,6 +142,7 @@ const FloatingTabBar: React.FC<FloatingTabBarProps> = ({ state, descriptors, nav
               requestAnimationFrame(() => {
                 navigation.navigate(route.name);
               });
+              getSubscription();
             }
           };
 

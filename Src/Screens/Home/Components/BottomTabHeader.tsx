@@ -104,7 +104,7 @@ const BottomTabHeader: FC<BottomTabHeaderProps> = ({
         </View>
 
         {showTitle && (
-          <View style={styles.titleTextView}>
+          <View style={[styles.titleTextView]}>
             <Text style={[styles.titleText, { color: colors.TitleText }]}>{APP_NAME?.toUpperCase()}</Text>
           </View>
         )}
@@ -181,6 +181,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
+
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',

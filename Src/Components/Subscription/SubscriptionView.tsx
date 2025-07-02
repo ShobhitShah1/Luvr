@@ -12,7 +12,7 @@ import ApiConfig from '../../Config/ApiConfig';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import UserService from '../../Services/AuthService';
-import { debouncedGetSubscription } from '../../Services/SubscriptionService';
+import { debouncedGetSubscription, getSubscription } from '../../Services/SubscriptionService';
 import { SubscriptionPlanProps } from '../../Types/Interface';
 import { getProfileData } from '../../Utils/profileUtils';
 import { useCustomToast } from '../../Utils/toastUtils';
@@ -54,6 +54,10 @@ const SubscriptionView = ({
       setInternalSelectedPlan(key);
     }
   };
+
+  useEffect(() => {
+    getSubscription();
+  }, []);
 
   useEffect(() => {
     if (apiSubscriptionData.length > 0 && !selectedPlan) {

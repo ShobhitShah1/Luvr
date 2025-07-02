@@ -1,8 +1,8 @@
-import React, { memo, useState, useEffect } from 'react';
-import { View, Image, Text, Platform, Keyboard } from 'react-native';
-import { Composer, InputToolbar, InputToolbarProps, Send, SendProps, IMessage } from 'react-native-gifted-chat';
-import { FONTS } from '../../../Common/Theme';
+import React, { memo, useEffect, useState } from 'react';
+import { Image, Keyboard, Platform, View } from 'react-native';
+import { Composer, IMessage, InputToolbar, InputToolbarProps, Send, SendProps } from 'react-native-gifted-chat';
 import CommonIcons from '../../../Common/CommonIcons';
+import { FONTS } from '../../../Common/Theme';
 import { useTheme } from '../../../Contexts/ThemeContext';
 
 interface ChatInputProps {
@@ -43,6 +43,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage
         overflow: 'hidden',
         flexDirection: 'row',
         paddingHorizontal: 10,
+        alignContent: 'center',
         opacity: canSendMessage ? 1 : 0.5,
         borderColor: isDark ? colors.White : 'transparent',
         backgroundColor: isDark ? 'rgba(255, 255, 255, 0.3))' : colors.White,
@@ -64,6 +65,13 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputToolbarProps, canSendMessage
             marginLeft: 0,
             fontSize: 14,
             fontFamily: FONTS.Medium,
+            ...(Platform.OS === 'ios' && {
+              height: '100%',
+              justifyContent: 'center',
+              alignContent: 'center',
+              textAlignVertical: 'center',
+              paddingTop: 13,
+            }),
           }}
           textInputProps={{
             textAlignVertical: 'center',

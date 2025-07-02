@@ -29,6 +29,7 @@ import RenderHomeNearby from './Components/RenderHomeNearby';
 import RenderRecommendation from './Components/RenderRecommendation';
 import RenderLookingView from './Components/RenderlookingView';
 import styles from './styles';
+import { getSubscription } from '../../Services/SubscriptionService';
 
 const askNotificationPermission = async () => {
   try {
@@ -66,11 +67,12 @@ const HomeScreen = () => {
 
   useEffect(() => {
     fetchCategoryListData();
-  }, [selectedCategory, userData]);
+  }, [selectedCategory]);
 
   useFocusEffect(
     useCallback(() => {
       fetchData();
+      getSubscription();
       return () => {};
     }, [])
   );

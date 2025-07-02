@@ -34,6 +34,7 @@ import { useSubscriptionModal } from '../../Contexts/SubscriptionModalContext';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { useUserData } from '../../Contexts/UserDataContext';
 import { useBoostModal } from '../../Hooks/useBoostModal';
+import { useBoost } from '../../Hooks/useBoost';
 import { useCustomNavigation } from '../../Hooks/useCustomNavigation';
 import useInterval from '../../Hooks/useInterval';
 import { onSwipeLeft, onSwipeRight, resetSwipeCount, setCardSkipNumber } from '../../Redux/Action/actions';
@@ -70,6 +71,7 @@ const ExploreCardScreen: FC = () => {
 
   const { showModal, isVisible: isBoostModalVisible } = useBoostModal();
   const { showSubscriptionModal, isVisible: isSubscriptionModalVisible } = useSubscriptionModal();
+  const { isBoostActive } = useBoost();
 
   const swipeRef = useRef<any>(null);
   const animatedOpacity = useRef(new Animated.Value(0)).current;
@@ -379,7 +381,7 @@ const ExploreCardScreen: FC = () => {
       setCurrentCardIndex(cardIndex + 1);
 
       swipeCountRef.current += 1;
-      if (swipeCountRef.current >= 5) {
+      if (swipeCountRef.current >= 5 && !isBoostActive) {
         swipeCountRef.current = 0;
         showModal();
       }

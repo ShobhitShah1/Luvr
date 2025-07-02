@@ -85,9 +85,9 @@ async function makeRequest(
 }
 
 function handleResponse(response: any) {
-  if (ApiConfig.DEBUG) {
-    console.log('Response:', response.data);
-  }
+  // if (ApiConfig.DEBUG) {
+  //   console.log('Response:', response.data);
+  // }
 
   if (response.data?.code === 200) {
     return response.data;

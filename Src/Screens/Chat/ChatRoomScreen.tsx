@@ -212,7 +212,7 @@ const ChatRoomScreen = () => {
           }}
         >
           <View style={styles.contentView}>
-            <View style={[styles.titleTextView, Platform.OS === 'ios' ? { height: 40 } : {}]}>
+            <View style={[styles.titleTextView, Platform.OS === 'ios' ? { height: 30, top: 13 } : {}]}>
               <Text style={[styles.titleText, { color: colors.TitleText }]}>{APP_NAME?.toUpperCase()}</Text>
             </View>
           </View>

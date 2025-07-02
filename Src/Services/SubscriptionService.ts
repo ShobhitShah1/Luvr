@@ -19,6 +19,105 @@ let gracePeriodTimeout: NodeJS.Timeout | null = null;
 let fetchTimeout: NodeJS.Timeout | null = null;
 
 /**
+ * Helper function to format dates for logging
+ */
+const formatDateForLog = (timestamp: number): string => {
+  if (!timestamp || timestamp <= 0) return 'Invalid/No Date';
+  return new Date(timestamp).toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZoneName: 'short',
+  });
+};
+
+/**
+ * Helper function to format duration for logging
+ */
+const formatDurationForLog = (milliseconds: number): string => {
+  if (milliseconds <= 0) return 'Expired';
+
+  const days = Math.floor(milliseconds / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((milliseconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
+
+  if (days > 0) {
+    return `${days} day${days !== 1 ? 's' : ''} ${hours} hour${hours !== 1 ? 's' : ''}`;
+  } else if (hours > 0) {
+    return `${hours} hour${hours !== 1 ? 's' : ''} ${minutes} minute${minutes !== 1 ? 's' : ''}`;
+  } else {
+    return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+  }
+};
+
+/**
+ * Log subscription status with detailed information
+ */
+const logSubscriptionStatus = (
+  subscription: SubscriptionData | null,
+  validation?: any,
+  context: string = 'Subscription Status'
+): void => {
+  console.log(`\n🔍 [${context}] ==========================================`);
+
+  if (!subscription) {
+    console.log('❌ No subscription found');
+    console.log('==========================================\n');
+    return;
+  }
+
+  const { payment_response } = subscription;
+  const currentTime = Date.now();
+
+  console.log(`📱 Platform: ${payment_response?.platform || 'Unknown'}`);
+  console.log(`🆔 Subscription ID: ${subscription._id || 'N/A'}`);
+  console.log(`📦 Product ID: ${payment_response?.productId || 'N/A'}`);
+  console.log(`💰 Purchase State: ${payment_response?.purchaseState || 'N/A'}`);
+  console.log(`🔄 Auto Renewing: ${payment_response?.autoRenewing ? 'Yes' : 'No'}`);
+
+  // Transaction dates
+  if (payment_response?.transactionDate) {
+    console.log(`📅 Transaction Date: ${formatDateForLog(payment_response.transactionDate)}`);
+  }
+
+  if (payment_response?.expiresDate) {
+    console.log(`⏰ Expires Date: ${formatDateForLog(payment_response.expiresDate)}`);
+  }
+
+  if (payment_response?.gracePeriodExpiresDate) {
+    console.log(`🛡️ Grace Period Expires: ${formatDateForLog(payment_response.gracePeriodExpiresDate)}`);
+  }
+
+  // Current time
+  console.log(`🕐 Current Time: ${formatDateForLog(currentTime)}`);
+
+  if (validation) {
+    console.log(`\n✅ Validation Results:`);
+    console.log(`   Active: ${validation.isValid ? '✅ Yes' : '❌ No'}`);
+    console.log(`   Expired: ${validation.isExpired ? '❌ Yes' : '✅ No'}`);
+    console.log(`   Needs Renewal: ${validation.needsRenewal ? '⚠️ Yes' : '✅ No'}`);
+    console.log(`   Days Until Expiry: ${validation.daysUntilExpiry}`);
+    console.log(`   Time Until Expiry: ${formatDurationForLog(validation.expiryTimestamp - currentTime)}`);
+
+    if (validation.storeValidation) {
+      console.log(`\n🏪 Store Validation:`);
+      console.log(`   Valid: ${validation.storeValidation.isValid ? '✅ Yes' : '❌ No'}`);
+      if (validation.storeValidation.error) {
+        console.log(`   Error: ${validation.storeValidation.error}`);
+      }
+      if (validation.storeValidation.storeData) {
+        console.log(`   Store Data:`, validation.storeValidation.storeData);
+      }
+    }
+  }
+
+  console.log('==========================================\n');
+};
+
+/**
  * Unified subscription validation with comprehensive checks
  */
 export const validateSubscription = async (
@@ -36,7 +135,10 @@ export const validateSubscription = async (
     storeData?: any;
   };
 }> => {
+  console.log('🔍 [VALIDATE] Starting subscription validation...');
+
   if (!subscription?.payment_response) {
+    console.log('❌ [VALIDATE] No payment response found');
     return {
       isValid: false,
       isExpired: true,
@@ -51,17 +153,26 @@ export const validateSubscription = async (
   const currentTime = Date.now();
   const expiryTimestamp = calculateExpiryTimestamp(subscription);
 
+  console.log(`⏰ [VALIDATE] Calculated expiry timestamp: ${formatDateForLog(expiryTimestamp)}`);
+
   const daysUntilExpiry = Math.floor((expiryTimestamp - currentTime) / (1000 * 60 * 60 * 24));
   const isExpired = expiryTimestamp <= currentTime;
   const isValidState = payment_response.purchaseState === 1 || payment_response?.purchaseState === 'purchased';
   const isAutoRenewing = payment_response.autoRenewing !== false;
 
+  console.log(`📊 [VALIDATE] Days until expiry: ${daysUntilExpiry}`);
+  console.log(`📊 [VALIDATE] Is expired: ${isExpired}`);
+  console.log(`📊 [VALIDATE] Valid state: ${isValidState}`);
+  console.log(`📊 [VALIDATE] Auto renewing: ${isAutoRenewing}`);
+
   let storeValidation;
   if (includeStoreValidation) {
+    console.log('🏪 [VALIDATE] Including store validation...');
     storeValidation = await validateWithPlatformStore(subscription);
+    console.log(`🏪 [VALIDATE] Store validation result: ${storeValidation.isValid ? 'Valid' : 'Invalid'}`);
   }
 
-  return {
+  const finalValidation = {
     isValid: isValidState && !isExpired && storeValidation?.isValid !== false,
     isExpired,
     needsRenewal: daysUntilExpiry <= 3 && isAutoRenewing,
@@ -69,6 +180,10 @@ export const validateSubscription = async (
     expiryTimestamp,
     storeValidation,
   };
+
+  console.log(`✅ [VALIDATE] Final validation result: ${finalValidation.isValid ? 'Valid' : 'Invalid'}`);
+
+  return finalValidation;
 };
 
 /**
@@ -81,12 +196,16 @@ const validateWithPlatformStore = async (
   error?: string;
   storeData?: any;
 }> => {
+  console.log(`🏪 [STORE_VALIDATE] Starting platform store validation for ${Platform.OS}`);
+
   try {
     const { payment_response } = subscription;
 
     if (Platform.OS === 'ios') {
+      console.log('🍎 [STORE_VALIDATE] iOS validation logic');
       const receiptData = payment_response.receiptData || payment_response.transactionReceipt;
       if (!receiptData) {
+        console.log('❌ [STORE_VALIDATE] No receipt data available for iOS');
         return { isValid: false, error: 'No receipt data available' };
       }
 
@@ -95,9 +214,15 @@ const validateWithPlatformStore = async (
       const gracePeriodExpiresDate = payment_response.gracePeriodExpiresDate || 0;
       const currentTime = Date.now();
 
+      console.log(`🍎 [STORE_VALIDATE] iOS expires date: ${formatDateForLog(expiresDate)}`);
+      console.log(`🍎 [STORE_VALIDATE] iOS grace period expires: ${formatDateForLog(gracePeriodExpiresDate)}`);
+
       // Consider grace period for iOS
       const effectiveExpiryDate = Math.max(expiresDate, gracePeriodExpiresDate);
       const isValid = effectiveExpiryDate > currentTime;
+
+      console.log(`🍎 [STORE_VALIDATE] iOS effective expiry: ${formatDateForLog(effectiveExpiryDate)}`);
+      console.log(`🍎 [STORE_VALIDATE] iOS validation result: ${isValid ? 'Valid' : 'Invalid'}`);
 
       return {
         isValid,
@@ -108,16 +233,21 @@ const validateWithPlatformStore = async (
         },
       };
     } else if (Platform.OS === 'android') {
+      console.log('🤖 [STORE_VALIDATE] Android validation logic');
       const purchaseToken = payment_response.purchaseToken;
       const productId = payment_response.productId;
 
       if (!purchaseToken || !productId) {
+        console.log('❌ [STORE_VALIDATE] Missing purchase token or product ID for Android');
         return { isValid: false, error: 'Missing purchase token or product ID' };
       }
 
       // Android validation logic
       const currentTime = Date.now();
       const purchaseTime = payment_response.transactionDate || payment_response.purchaseTime || 0;
+
+      console.log(`🤖 [STORE_VALIDATE] Android purchase time: ${formatDateForLog(purchaseTime)}`);
+      console.log(`🤖 [STORE_VALIDATE] Android purchase state: ${payment_response.purchaseState}`);
 
       // For Android, we consider the subscription valid if:
       // 1. It has a valid purchase token
@@ -127,6 +257,8 @@ const validateWithPlatformStore = async (
         purchaseToken &&
         (payment_response.purchaseState === 1 || payment_response.purchaseState === 0) &&
         purchaseTime > 0;
+
+      console.log(`🤖 [STORE_VALIDATE] Android validation result: ${isValid ? 'Valid' : 'Invalid'}`);
 
       return {
         isValid,
@@ -138,8 +270,10 @@ const validateWithPlatformStore = async (
       };
     }
 
+    console.log('❌ [STORE_VALIDATE] Unsupported platform');
     return { isValid: false, error: 'Unsupported platform' };
   } catch (error) {
+    console.log(`❌ [STORE_VALIDATE] Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     return {
       isValid: false,
       error: error instanceof Error ? error.message : 'Unknown validation error',
@@ -212,24 +346,35 @@ const calculateExpiryTimestamp = (subscription: SubscriptionData): number => {
  * Handle subscription expiry with proper cleanup
  */
 const handleSubscriptionExpiry = async (subscription: SubscriptionData): Promise<void> => {
+  console.log('⚠️ [EXPIRY] Handling subscription expiry...');
+  logSubscriptionStatus(subscription, null, 'EXPIRY HANDLER');
+
   try {
     // Final validation with store before cancellation
+    console.log('🔍 [EXPIRY] Performing final store validation...');
     const storeValidation = await validateWithPlatformStore(subscription);
 
     if (storeValidation.isValid) {
+      console.log('✅ [EXPIRY] Store validation passed, scheduling next check...');
       scheduleSubscriptionCheck(subscription);
       return;
     }
 
+    console.log('❌ [EXPIRY] Store validation failed, cancelling subscription...');
     // Cancel the subscription
     const cancelled = await cancelSubscription(subscription._id);
 
     if (cancelled) {
+      console.log('✅ [EXPIRY] Subscription cancelled successfully');
       clearAllTimers();
       // Instead of calling getSubscription again, update the Redux state to null to break the loop
       store.dispatch(fetchSubscriptionSuccess(null));
+    } else {
+      console.log('❌ [EXPIRY] Failed to cancel subscription');
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log(`❌ [EXPIRY] Error handling expiry: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 };
 
 /**
@@ -309,12 +454,16 @@ const scheduleSubscriptionCheck = async (subscription: SubscriptionData): Promis
  * Main subscription fetcher with unified validation
  */
 export const getSubscription = async (): Promise<boolean> => {
+  console.log('📡 [FETCH] Starting subscription fetch...');
+
   try {
     const netInfo = await NetInfo.fetch();
     if (!netInfo.isConnected) {
+      console.log('❌ [FETCH] No internet connection');
       return false;
     }
 
+    console.log('✅ [FETCH] Internet connection available');
     store.dispatch(fetchSubscriptionRequest());
 
     const controller = new AbortController();
@@ -326,33 +475,43 @@ export const getSubscription = async (): Promise<boolean> => {
       timestamp: Date.now(),
     };
 
+    console.log('📡 [FETCH] Sending API request...');
     const response = await UserService.UserRegister(dataToSend);
     clearTimeout(timeoutId);
 
     if (response?.code !== 200) {
+      console.log(`❌ [FETCH] Invalid response code: ${response?.code}`);
       store.dispatch(fetchSubscriptionFailure('Invalid response'));
       return false;
     }
 
+    console.log('✅ [FETCH] API response received successfully');
     const subscriptionData = response.data;
 
     if (subscriptionData?._id) {
+      console.log('🔍 [FETCH] Subscription data found, validating...');
       const validation = await validateSubscription(subscriptionData, true);
 
+      logSubscriptionStatus(subscriptionData, validation, 'FETCH RESULT');
+
       if (validation.isValid) {
+        console.log('✅ [FETCH] Subscription is valid, dispatching success...');
         store.dispatch(fetchSubscriptionSuccess(subscriptionData));
-        // scheduleSubscriptionCheck(subscriptionData);
+        scheduleSubscriptionCheck(subscriptionData);
       } else {
+        console.log('❌ [FETCH] Subscription is invalid, dispatching null...');
         // await handleSubscriptionExpiry(subscriptionData);
         store.dispatch(fetchSubscriptionSuccess(null));
       }
     } else {
+      console.log('❌ [FETCH] No subscription data found, dispatching null...');
       store.dispatch(fetchSubscriptionSuccess(null));
     }
 
     return true;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.log(`❌ [FETCH] Error fetching subscription: ${errorMessage}`);
     store.dispatch(fetchSubscriptionFailure(errorMessage));
     return false;
   }
@@ -394,10 +553,13 @@ export const getDetailedSubscriptionStatus = async (): Promise<{
   platform: string;
   storeValidation?: any;
 }> => {
+  console.log('📊 [DETAILED_STATUS] Getting detailed subscription status...');
+
   const state = store.getState();
   const subscription = state?.membership?.subscription;
 
   if (!subscription) {
+    console.log('❌ [DETAILED_STATUS] No subscription found in store');
     return {
       hasSubscription: false,
       isActive: false,
@@ -409,9 +571,12 @@ export const getDetailedSubscriptionStatus = async (): Promise<{
     };
   }
 
+  console.log('🔍 [DETAILED_STATUS] Validating subscription...');
   const validation = await validateSubscription(subscription, true);
 
-  return {
+  logSubscriptionStatus(subscription, validation, 'DETAILED_STATUS');
+
+  const result = {
     hasSubscription: true,
     isActive: validation.isValid,
     isExpired: validation.isExpired,
@@ -421,6 +586,9 @@ export const getDetailedSubscriptionStatus = async (): Promise<{
     platform: subscription.payment_response.platform || 'unknown',
     storeValidation: validation.storeValidation,
   };
+
+  console.log('📊 [DETAILED_STATUS] Status result:', result);
+  return result;
 };
 
 /**
@@ -431,29 +599,41 @@ export const forceValidateSubscription = async (): Promise<{
   error?: string;
   details?: any;
 }> => {
+  console.log('🔍 [FORCE_VALIDATE] Force validating subscription...');
+
   const state = store.getState();
   const subscription = state?.membership?.subscription;
 
   if (!subscription) {
+    console.log('❌ [FORCE_VALIDATE] No subscription found');
     return { isValid: false, error: 'No subscription found' };
   }
 
   try {
+    console.log('🔍 [FORCE_VALIDATE] Performing validation with store...');
     const validation = await validateSubscription(subscription, true);
 
+    logSubscriptionStatus(subscription, validation, 'FORCE_VALIDATE');
+
     if (!validation.isValid) {
+      console.log('❌ [FORCE_VALIDATE] Validation failed, handling expiry...');
       await handleSubscriptionExpiry(subscription);
     }
 
-    return {
+    const result = {
       isValid: validation.isValid,
       error: validation.storeValidation?.error,
       details: validation.storeValidation?.storeData,
     };
+
+    console.log('📊 [FORCE_VALIDATE] Force validation result:', result);
+    return result;
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Validation failed';
+    console.log(`❌ [FORCE_VALIDATE] Error: ${errorMessage}`);
     return {
       isValid: false,
-      error: error instanceof Error ? error.message : 'Validation failed',
+      error: errorMessage,
     };
   }
 };
@@ -463,19 +643,25 @@ export const forceValidateSubscription = async (): Promise<{
  */
 export const hasActiveSubscription = (): boolean => {
   const state = store.getState();
-  return state?.membership?.isSubscriptionActive || false;
+  const isActive = state?.membership?.isSubscriptionActive || false;
+  console.log(`🔍 [HAS_ACTIVE] Subscription active: ${isActive ? 'Yes' : 'No'}`);
+  return isActive;
 };
 
 /**
  * Debounced subscription fetcher
  */
 export const debouncedGetSubscription = (delayMs = 300): Promise<boolean> => {
+  console.log(`⏰ [DEBOUNCE] Debouncing subscription fetch with ${delayMs}ms delay`);
+
   return new Promise((resolve) => {
     if (fetchTimeout) {
+      console.log('⏰ [DEBOUNCE] Clearing existing timeout');
       clearTimeout(fetchTimeout);
     }
 
     fetchTimeout = setTimeout(async () => {
+      console.log('⏰ [DEBOUNCE] Debounced fetch triggered');
       const result = await getSubscription();
       resolve(result);
       fetchTimeout = null;
@@ -487,12 +673,16 @@ export const debouncedGetSubscription = (delayMs = 300): Promise<boolean> => {
  * Clear subscription-specific timers
  */
 const clearSubscriptionTimers = (): void => {
+  console.log('🧹 [CLEAR_TIMERS] Clearing subscription timers...');
+
   if (subscriptionCheckTimeout) {
+    console.log('🧹 [CLEAR_TIMERS] Clearing subscription check timeout');
     clearTimeout(subscriptionCheckTimeout);
     subscriptionCheckTimeout = null;
   }
 
   if (gracePeriodTimeout) {
+    console.log('🧹 [CLEAR_TIMERS] Clearing grace period timeout');
     clearTimeout(gracePeriodTimeout);
     gracePeriodTimeout = null;
   }
@@ -502,14 +692,18 @@ const clearSubscriptionTimers = (): void => {
  * Clear all timers
  */
 const clearAllTimers = (): void => {
+  console.log('🧹 [CLEAR_ALL] Clearing all timers...');
+
   clearSubscriptionTimers();
 
   if (periodicValidationInterval) {
+    console.log('🧹 [CLEAR_ALL] Clearing periodic validation interval');
     clearInterval(periodicValidationInterval);
     periodicValidationInterval = null;
   }
 
   if (fetchTimeout) {
+    console.log('🧹 [CLEAR_ALL] Clearing fetch timeout');
     clearTimeout(fetchTimeout);
     fetchTimeout = null;
   }
@@ -519,14 +713,21 @@ const clearAllTimers = (): void => {
  * Initialize subscription monitoring
  */
 export const initializeSubscriptionMonitoring = async (): Promise<void> => {
+  console.log('🚀 [INIT] Initializing subscription monitoring...');
+
   // Clear any existing timers
   clearAllTimers();
 
   // Fetch current subscription with validation
+  console.log('📡 [INIT] Fetching current subscription...');
   await getSubscription();
+
+  console.log('✅ [INIT] Subscription monitoring initialized');
 };
 
 // Export cleanup function with different name to avoid confusion
 export const cleanupSubscriptionService = (): void => {
+  console.log('🧹 [CLEANUP] Cleaning up subscription service...');
   clearAllTimers();
+  console.log('✅ [CLEANUP] Subscription service cleaned up');
 };

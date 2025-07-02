@@ -249,41 +249,6 @@ const MyLikesScreen = () => {
         </View>
       </View>
 
-      {/* {sub && (
-        <Pressable
-          style={{
-            position: 'absolute',
-            bottom: 100,
-            right: 20,
-            backgroundColor: colors.Primary,
-            padding: 10,
-            borderRadius: 8,
-          }}
-          onPress={() => setShowSubModal(true)}
-        >
-          <Text style={{ color: '#fff', fontFamily: FONTS.SemiBold }}>Show Subscription Debug</Text>
-        </Pressable>
-      )}
-
-      <Modal visible={showSubModal} transparent animationType="slide" onRequestClose={() => setShowSubModal(false)}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' }}>
-          <View style={{ backgroundColor: colors.Primary, borderRadius: 12, padding: 24, width: '85%' }}>
-            <Text style={{ fontSize: 18, fontFamily: FONTS.Bold, marginBottom: 12, color: colors.TitleText }}>
-              Subscription Details
-            </Text>
-            {sub &&
-              Object.entries(sub).map(([key, value]) => (
-                <Text key={key} style={{ fontSize: 15, marginBottom: 6, color: colors.TitleText }}>
-                  <Text style={{ fontFamily: FONTS.SemiBold }}>{key}:</Text> {String(value)}
-                </Text>
-              ))}
-            <Pressable style={{ marginTop: 18, alignSelf: 'flex-end' }} onPress={() => setShowSubModal(false)}>
-              <Text style={{ color: colors.TextColor, fontFamily: FONTS.Bold }}>Close</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal> */}
-
       {isDark && (
         <LinearGradient
           start={{ x: 0, y: 0 }}

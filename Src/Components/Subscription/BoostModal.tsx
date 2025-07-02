@@ -211,9 +211,7 @@ const BoostModal = ({ isVisible, onClose, isLoading = false, onBoostMe }: BoostM
       if (APIResponse.code === 200) {
         await getProfileData();
         DeviceEventEmitter.emit('boost:purchase:success');
-        if (onBoostMe) {
-          onBoostMe();
-        }
+        onBoostMe && onBoostMe();
       }
     } catch (error: any) {
       showToast(TextString.error, error?.message?.toString(), TextString.error);
