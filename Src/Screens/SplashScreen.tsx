@@ -17,6 +17,7 @@ import { LocalStorageFields } from '../Types/LocalStorageFields';
 import { useCustomToast } from '../Utils/toastUtils';
 import { navigationRef } from '../Routes/RootNavigation';
 import { DeepLinkEvent } from '../../App';
+import { SafeAreaView, useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface SplashScreenProps {
   navigation: NavigationProp<any>;
@@ -41,6 +42,7 @@ enum InitializationStep {
 const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   const { isDark, colors } = useTheme();
   const { showToast } = useCustomToast();
+  const { bottom } = useSafeAreaInsets();
   const { checkLocationPermission } = useLocationPermission();
 
   const userStoreData = useSelector((state: any) => state.user);
@@ -249,7 +251,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   const backgroundImage = isDark ? CommonImages.dark_splash_bg : CommonImages.light_splash_bg;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <LinearGradient
         start={gradientStart}
         end={gradientEnd}
@@ -268,8 +270,10 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
         </View>
       </LinearGradient>
 
-      <Image source={backgroundImage} style={styles.bottomImage} resizeMode="contain" />
-    </View>
+      <Image source={backgroundImage} style={[styles.bottomImage, { bottom: bottom + 20 }]} resizeMode="contain" />
+      {/* App Version at the bottom */}
+      <Text style={[styles.appVersion, { color: colors.White, bottom: 18 }]}>v0.0.1</Text>
+    </SafeAreaView>
   );
 };
 
@@ -329,6 +333,17 @@ const styles = StyleSheet.create({
     right: 0,
     width: '100%',
     height: '30%',
+  },
+  appVersion: {
+    position: 'absolute',
+    bottom: 15,
+    left: 0,
+    right: 0,
+    textAlign: 'center',
+    fontFamily: FONTS.SemiBold,
+    fontSize: 16,
+    opacity: 0.7,
+    zIndex: 99999999,
   },
 });
 

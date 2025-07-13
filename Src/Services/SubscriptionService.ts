@@ -479,6 +479,8 @@ export const getSubscription = async (): Promise<boolean> => {
     const response = await UserService.UserRegister(dataToSend);
     clearTimeout(timeoutId);
 
+    console.log('response:', response);
+
     if (response?.code !== 200) {
       console.log(`❌ [FETCH] Invalid response code: ${response?.code}`);
       store.dispatch(fetchSubscriptionFailure('Invalid response'));
