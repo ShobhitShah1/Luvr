@@ -81,8 +81,8 @@ android {
         applicationId "com.luvr.dating"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 16
-        versionName "2.5"
+        versionCode 17
+        versionName "2.6"
         missingDimensionStrategy "store", "play"
     }
     signingConfigs {
