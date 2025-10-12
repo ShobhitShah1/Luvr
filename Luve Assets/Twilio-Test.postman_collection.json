@@ -1,0 +1,132 @@
+{
+	"info": {
+		"_postman_id": "e3425f8a-4af3-4d69-8559-99fddb656544",
+		"name": "Twilio-Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27175918",
+		"_collection_link": "https://quizzpe.postman.co/workspace/Niravana-Tech-Labs---Dipeshbha~45ddf340-add3-4caf-b17c-eb50fc019192/collection/27175918-e3425f8a-4af3-4d69-8559-99fddb656544?action=share&source=collection_link&creator=27175918"
+	},
+	"item": [
+		{
+			"name": "Send OTP",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "375ea4a45416820a6c7a750e9bdaa3c4",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "AC5eeeb0e046be463f0b79053383eaef46",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "To",
+							"value": "+19789735520",
+							"type": "text"
+						},
+						{
+							"key": "Channel",
+							"value": "sms",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://verify.twilio.com/v2/Services/VAbef34d26f2a732e2b4b0d2b8235b12f6/Verifications",
+					"protocol": "https",
+					"host": [
+						"verify",
+						"twilio",
+						"com"
+					],
+					"path": [
+						"v2",
+						"Services",
+						"VAbef34d26f2a732e2b4b0d2b8235b12f6",
+						"Verifications"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify OTP",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "375ea4a45416820a6c7a750e9bdaa3c4",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "AC5eeeb0e046be463f0b79053383eaef46",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "To",
+							"value": "+19789735520",
+							"type": "text"
+						},
+						{
+							"key": "Code",
+							"value": "585709",
+							"type": "text"
+						},
+						{
+							"key": "Channel",
+							"value": "sms",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://verify.twilio.com/v2/Services/VAbef34d26f2a732e2b4b0d2b8235b12f6/VerificationCheck",
+					"protocol": "https",
+					"host": [
+						"verify",
+						"twilio",
+						"com"
+					],
+					"path": [
+						"v2",
+						"Services",
+						"VAbef34d26f2a732e2b4b0d2b8235b12f6",
+						"VerificationCheck"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
